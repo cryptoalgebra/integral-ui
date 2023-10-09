@@ -11,7 +11,7 @@
 //   border-radius: 16px;
 // `;
 
-import { useAllowance } from "@/hooks/common/useAllowance";
+import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
 import { Currency, CurrencyAmount, Field, maxAmountSpend } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
@@ -80,12 +80,12 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
     return;
   }, [mintInfo, currencyB]);
 
-  const allowanceA = useAllowance(
+  const allowanceA = useNeedAllowance(
     currencyA,
     mintInfo.parsedAmounts[Field.CURRENCY_B]
   );
 
-  const allowanceB = useAllowance(
+  const allowanceB = useNeedAllowance(
     currencyB,
     mintInfo.parsedAmounts[Field.CURRENCY_B]
   );

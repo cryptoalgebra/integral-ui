@@ -2,21 +2,27 @@ import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
 import { Currency, CurrencyAmount, getTickToPrice, maxAmountSpend, tryParseAmount, Percent } from "@cryptoalgebra/integral-sdk";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
+import { ChevronsUpDown, ChevronsUpDownIcon } from "lucide-react";
 
 const SwapPair = () => {
 
-    const { tradeState, toggledTrade: trade, allowedSlippage, currencyBalances, parsedAmount, currencies, inputError: swapInputError, poolFee } = useDerivedSwapInfo();
-
-    const { tick } = useDerivedSwapInfo();
+    const { tradeState, toggledTrade: trade, allowedSlippage, currencyBalances, parsedAmount, currencies, tick } = useDerivedSwapInfo();
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
 
     const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, tick);
 
-    const { independentField, typedValue, [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice, wasInverted, limitOrderPriceFocused, lastFocusedField } = useSwapState();
+    const { 
+        independentField, 
+        typedValue, 
+        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice, 
+        wasInverted, 
+        limitOrderPriceFocused, 
+        lastFocusedField
+    } = useSwapState();
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
     const { onSwitchTokens, onCurrencySelection, onUserInput } = useSwapActionHandlers();
@@ -109,7 +115,14 @@ const SwapPair = () => {
         [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toSignificant(6) ?? "",
     };
 
-    return <div className="flex flex-col">
+    useEffect(() => {
+        // if (parsedAmounts[SwapField.INPUT] && parsedAmounts[SwapField.OUTPUT]) {
+            // setLimitOrderAmounts(parsedAmounts)
+        // }
+        console.log('parsed amounts', parsedAmounts)
+    }, [parsedAmounts])
+
+    return <div className="flex flex-col gap-1 relative">
         <TokenCard value={formattedAmounts[SwapField.INPUT] || ""}
             currency={baseCurrency}
             otherCurrency={quoteCurrency}
@@ -120,28 +133,8 @@ const SwapPair = () => {
             showMaxButton={showMaxButton}
             priceImpact={priceImpact}
             field={SwapField.INPUT} />
-
-        <button
-            className="swap-pair__switch"
-            onClick={() => {
-                onSwitchTokens();
-                // setTimeout(() => {
-                //     if (independentField === Field.INPUT) {
-                //         handleTypeInput(formattedAmounts[Field.INPUT]);
-                //     } else {
-                //         handleTypeInput(formattedAmounts[Field.OUTPUT]);
-                //     }
-                // }, 0);
-            }}
-        >
-            <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M4.57572 0.575644L0.757344 4.39402C0.523029 4.62834 0.523029 5.00823 0.757344 5.24255C0.991659 5.47686 1.37156 5.47686 1.60587 5.24255L4.84851 1.99991H5.15146L8.3941 5.24255C8.62841 5.47686 9.00831 5.47686 9.24263 5.24255C9.47694 5.00823 9.47694 4.62834 9.24263 4.39402L5.42425 0.575644C5.18993 0.34133 4.81004 0.34133 4.57572 0.575644ZM5.42425 15.4242L9.24263 11.6058C9.47694 11.3715 9.47694 10.9916 9.24263 10.7573C9.00831 10.523 8.62841 10.523 8.3941 10.7573L5.15146 13.9999H4.84851L1.60587 10.7573C1.37156 10.523 0.991659 10.523 0.757344 10.7573C0.523029 10.9916 0.523029 11.3715 0.757344 11.6058L4.57572 15.4242C4.81004 15.6585 5.18993 15.6585 5.42425 15.4242Z"
-                    fill="black"
-                />
-            </svg>
+        <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-[#101321] w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover" onClick={onSwitchTokens}>
+            <ChevronsUpDownIcon size={16} />
         </button>
         <TokenCard
             value={formattedAmounts[SwapField.OUTPUT] || ""}

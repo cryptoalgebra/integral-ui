@@ -1,26 +1,37 @@
-import { gql } from "@apollo/client"
-import { useClients } from "../graphql/useClients"
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client"
 
 import dayjs from 'dayjs'
 import { getBlocksFromTimestamps } from "@/graphql/utils/getBlocksFromTimestamps"
 
+const mainnetInfoClient = new ApolloClient({
+    uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+    cache: new InMemoryCache(),
+});
+
+const mainnetBlocksClient = new ApolloClient({
+    uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+    cache: new InMemoryCache()
+})
+
+const CHART_STEPS = {
+    day: 3600,
+    week: 3600,
+    month: 3600 * 24,
+}
+
 export function useSwapChart() {
 
-    const { infoClient, blocksClient } = useClients()
-
-    async function fetchPoolPriceData(address: string,
-        span: 'day' | 'week') {
+    async function fetchPoolPriceData(address: string, span: 'day' | 'week' | 'month') {
         return fetchPriceData(address, span, 'pool')
     }
 
-    async function fetchTokenPriceData(address: string,
-        span: 'day' | 'week') {
+    async function fetchTokenPriceData(address: string, span: 'day' | 'week' | 'month') {
         return fetchPriceData(address, span, 'token')
     }
 
     async function fetchPriceData(
         address: string,
-        span: 'day' | 'week',
+        span: 'day' | 'week' | 'month',
         field: string
     ): Promise<{
         data: any[]
@@ -31,6 +42,10 @@ export function useSwapChart() {
         const utcCurrentTime = dayjs()
 
         const startTimestamp = utcCurrentTime.subtract(1, span).startOf('hour').unix()
+
+        const fetchEntity = span === 'day' || span === 'week' ? 'Hour' : 'Day'
+
+        const timestamp = span === 'day' || span === 'week' ? 'periodStartUnix' : 'date'
 
         try {
             const endTimestamp = utcCurrentTime.unix()
@@ -43,15 +58,13 @@ export function useSwapChart() {
                 }
             }
 
-            // create an array of hour start times until we reach current hour
             const timestamps: any = []
             let time = startTimestamp
             while (time <= endTimestamp) {
                 timestamps.push(time)
-                time += 3600
+                time += CHART_STEPS[span]
             }
 
-            // backout if invalid timestamp format
             if (timestamps.length === 0) {
                 return {
                     data: [],
@@ -59,8 +72,7 @@ export function useSwapChart() {
                 }
             }
 
-            // fetch blocks based on timestamp
-            const blocks = await getBlocksFromTimestamps(timestamps, blocksClient, 500)
+            const blocks = await getBlocksFromTimestamps(timestamps, mainnetBlocksClient, 500)
             if (!blocks || blocks.length === 0) {
                 console.log('Error fetching blocks')
                 return {
@@ -79,30 +91,35 @@ export function useSwapChart() {
             let skip = 0
             let allFound = false
             while (!allFound) {
-                const { data: priceData, errors, loading } = await infoClient.query<any>({
+                const {
+                    data: priceData,
+                    errors,
+                    loading,
+                } = await mainnetInfoClient.query<any>({
                     query: gql`
-                    query ${field}HourDatas($startTime: Int!, $skip: Int!, $address: Bytes!) {
-                        ${field}HourDatas(
-                        first: 100
-                        skip: $skip
-                        where: { ${field}: $address, periodStartUnix_gt: $startTime }
-                        orderBy: periodStartUnix
-                        orderDirection: asc
-                      ) {
-                        periodStartUnix
-                        high
-                        low
-                        open
-                        close
-                        ${field === 'pool'
-                            ? `token0Price 
-                        token1Price`
-                            : 'priceUSD'}
-                      }
-                    }
-                  `,
+                        query ${field}${fetchEntity}Datas($startTime: Int!, $skip: Int!, $address: Bytes!) {
+                            ${field}${fetchEntity}Datas(
+                            first: 1000
+                            skip: $skip
+                            where: { ${field}: $address, ${timestamp}_gt: $startTime }
+                            orderBy: ${timestamp}
+                            orderDirection: asc
+                          ) {
+                            periodStartUnix: ${timestamp}
+                            high
+                            low
+                            open
+                            close
+                            ${field === 'pool'
+                            ? `token0Price
+                            token1Price`
+                            : 'priceUSD'
+                        }
+                          }
+                        }
+                      `,
                     variables: {
-                        address: address,
+                        address: address.toLowerCase(),
                         startTime: startTimestamp,
                         skip,
                     },
@@ -111,17 +128,19 @@ export function useSwapChart() {
 
                 if (!loading) {
                     skip += 100
-                    if ((priceData && priceData[`${field}HourDatas`].length < 100) || errors) {
+                    if ((priceData && priceData[`${field}${fetchEntity}Datas`].length < 100) || errors) {
                         allFound = true
                     }
                     if (priceData) {
-                        data = data.concat(priceData[`${field}HourDatas`])
+                        data = data.concat(priceData[`${field}${fetchEntity}Datas`])
                     }
                 }
             }
 
+            const periods = data.map((v) => v.periodStartUnix)
+
             return {
-                data,
+                data: data.filter((v, idx) => !periods.includes(v.periodStartUnix, idx + 1)),
                 error: false,
             }
         } catch (e) {
@@ -132,6 +151,7 @@ export function useSwapChart() {
             }
         }
     }
+
 
     return {
         fetchPoolPriceData, fetchTokenPriceData

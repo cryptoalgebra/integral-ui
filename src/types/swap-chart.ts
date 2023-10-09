@@ -14,9 +14,10 @@ export const SwapChartPair = {
 
 export type SwapChartPairType = typeof SwapChartPair[keyof typeof SwapChartPair]
 
-export const SwapChartSpan: { WEEK: 'week', DAY: 'day' } = {
+export const SwapChartSpan: { WEEK: 'week', DAY: 'day', MONTH: 'month' } = {
     WEEK: "week",
     DAY: "day",
+    MONTH: 'month',
 } as const
 
 export type SwapChartSpanType = typeof SwapChartSpan[keyof typeof SwapChartSpan]

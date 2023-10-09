@@ -46,17 +46,17 @@ export const AddLiquidityButton = ({
   }, [mintInfo, account]);
 
 
-  const isReadyLimit = baseCurrency && quoteCurrency && mintInfo.positionLO
+  const isReadyLimit = baseCurrency && quoteCurrency && mintInfo.positionLimitOrder
 
   const { data: addLimitOrderData, write: placeOrder } = useAlgebraLimitOrderPluginPlace({
-    args: isReadyLimit && mintInfo.positionLO ? [
+    args: isReadyLimit && mintInfo.positionLimitOrder ? [
         {
             token0: baseCurrency.wrapped.address as Address,
             token1: quoteCurrency.wrapped.address as Address
         },
-        mintInfo.positionLO.tickLower,
+        mintInfo.positionLimitOrder.tickLower,
         true,
-        BigInt(mintInfo.positionLO.liquidity.toString())
+        BigInt(mintInfo.positionLimitOrder.liquidity.toString())
     ] : undefined
   })
   

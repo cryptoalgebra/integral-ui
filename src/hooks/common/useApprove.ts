@@ -1,48 +1,37 @@
 import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
-import { useAllowance } from "./useAllowance";
+import { useNeedAllowance } from "./useNeedAllowance";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 import { useMemo } from "react";
-import { Address, erc20ABI, useContractWrite } from "wagmi";
+import { Address, erc20ABI, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { ALGEBRA_ROUTER } from "@/constants/addresses";
+import { useTransitionAwait } from "./useTransactionAwait";
+import { formatCurrency } from "@/utils/common/formatCurrency";
 
 export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: string) {
 
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined
-    const needAllowance = useAllowance(token, amountToApprove)
-    // const pendingApproval = useHasPendingApproval(token?.address, spender)
+    const needAllowance = useNeedAllowance(token, amountToApprove)
 
     const approvalState: ApprovalStateType = useMemo(() => {
         if (!amountToApprove || !spender) return ApprovalState.UNKNOWN
         if (amountToApprove.currency.isNative) return ApprovalState.APPROVED
 
-        // if (!currentAllowance) return ApprovalState.UNKNOWN
-
         return needAllowance ? ApprovalState.NOT_APPROVED : ApprovalState.APPROVED
     }, [amountToApprove, needAllowance, spender])
 
-    const { data: approvalData, writeAsync: approve } = useContractWrite({
+    const { data, config } = usePrepareContractWrite({
         address: amountToApprove ? (amountToApprove.currency.wrapped.address as Address) : undefined,
         abi: erc20ABI,
         functionName: 'approve',
         args: [
             spender,
             amountToApprove ? BigInt(amountToApprove.quotient.toString()) : 0,
-        ] as [Address, bigint],
-        onSuccess() {
-            //   generateToast(
-            //     'Transaction sent',
-            //     'Your transaction has been submitted to the network',
-            //     'loading'
-            //   );
-        },
-        onError(error) {
-            //   generateToast(
-            //     'Error meanwhile waiting for transaction',
-            //     error.message,
-            //     'error'
-            //   );
-        },
-    });
+        ] as [Address, bigint]
+    })
+
+    const { data: approvalData, writeAsync: approve } = useContractWrite(config);
+
+    useTransitionAwait(approvalData?.hash, `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`)
 
     return {
         approvalState,

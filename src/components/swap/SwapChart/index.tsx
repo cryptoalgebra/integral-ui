@@ -3,32 +3,90 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
+import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon, Loader2, Loader2Icon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import CurrencyLogo from "@/components/common/CurrencyLogo";
+import { Token } from "@cryptoalgebra/integral-sdk";
+import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/utils/common/formatCurrency";
+import { Address } from "wagmi";
+import { formatUSD } from "@/utils/common/formatUSD";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const getTokenTitle = (chartPair: SwapChartPairType, tokenA: Token, tokenB: Token) => {
+    switch (chartPair) {
+        case SwapChartPair.AB:
+            return [
+                <div className="flex">
+                    <CurrencyLogo currency={tokenA} size={30} />
+                    <CurrencyLogo currency={tokenB} size={30} style={{ marginLeft: '-8px' }} />
+                </div>,
+                `${tokenA.symbol} / ${tokenB.symbol}`,
+            ];
+        case SwapChartPair.BA:
+            return [
+                <div className="flex">
+                    <CurrencyLogo currency={tokenB} size={30} />
+                    <CurrencyLogo currency={tokenA} size={30} style={{ marginLeft: '-8px' }} />
+                </div>,
+                `${tokenB.symbol} / ${tokenA.symbol}`,
+            ];
+        case SwapChartPair.A:
+            return [
+                <CurrencyLogo currency={tokenA} size={30} />,
+                `${tokenA.symbol}`
+            ];
+        case SwapChartPair.B:
+            return [
+                <CurrencyLogo currency={tokenB} size={30} />,
+                `${tokenB.symbol}`
+            ];
+    }
+}
+
+const mainnetPoolsMapping: { [key: Address]: Address } = {
+    ['0x884df586548c07f6a0e846bc532a07bf837861b8']: '0x99ac8ca7087fa4a2a1fb6357269965a2014abc35',
+    ['0xb104f0535a35a69880dab51008756c31d47dbf0f']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
+    ['0xc420468eb0c9c08666a4aeffab8cfaf489bcd1c6']: '0xcbcdf9626bc03e24f779434178a73a0b4bad62ed'
+}
+
+const mainnetTokensMapping: { [key: Address]: Address } = {
+    ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+}
 
 const SwapChart = () => {
 
     const chartRef = useRef<HTMLDivElement>(null);
 
-    const [chartType, setChartType] = useState<SwapChartViewType>(SwapChartView.CANDLES);
-    const [chartSpan, setChartSpan] = useState<SwapChartSpanType>(SwapChartSpan.WEEK);
+    const [chartType, setChartType] = useState<SwapChartViewType>(SwapChartView.LINE);
+    const [chartSpan, setChartSpan] = useState<SwapChartSpanType>(SwapChartSpan.DAY);
     const [chartPair, setChartPair] = useState<SwapChartPairType>(SwapChartPair.AB);
 
-    const { currencies } = useDerivedSwapInfo();
+    const { currencies, poolAddress: poolId } = useDerivedSwapInfo();
 
     const [tokenA, tokenB] = [currencies.INPUT?.wrapped, currencies.OUTPUT?.wrapped];
 
     const [chartCreated, setChart] = useState<any | undefined>();
+    const [series, setSeries] = useState<LightWeightCharts.ISeriesApi<"Area" | "Candlestick"> | undefined>();
+
+    const [displayValue, setDisplayValued] = useState<string>()
+    const [displayDate, setDisplayDate] = useState(new Date().toLocaleDateString())
+
     const [chartData, setChartData] = useState<any | undefined>();
 
     const { fetchPoolPriceData, fetchTokenPriceData } = useSwapChart();
 
-    const poolAddress = "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640";
-
-    // const prevPair = usePrevious(chartPair);
-
-    const tokenAddress = chartPair === SwapChartPair.A ? "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" : "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    const poolAddress = poolId ? mainnetPoolsMapping[poolId] : '';
+    const tokenAddress = chartPair === SwapChartPair.A && tokenA ? mainnetTokensMapping[tokenA.address.toLowerCase() as Address] : tokenB ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address] : '';
 
     useEffect(() => {
         setChart(undefined);
+
+        if ((chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) && !poolAddress) return
+
+        if ((chartPair === SwapChartPair.A || chartPair === SwapChartPair.B) && !tokenAddress) return
 
         let fetchFn: () => Promise<any>;
 
@@ -67,7 +125,7 @@ const SwapChart = () => {
             return chartData.map((d: any) => {
                 return {
                     time: d.periodStartUnix,
-                    value: +d[token0Price] / (+d[token1Price] || 1),
+                    value: +d[token0Price],
                 };
             });
         }
@@ -88,7 +146,6 @@ const SwapChart = () => {
         }
     }, [chartCreated, chartRef, chartRef]);
 
-    // add event listener for resize
     const isClient = typeof window === "object";
     useEffect(() => {
         if (!isClient) {
@@ -96,7 +153,7 @@ const SwapChart = () => {
         }
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [isClient, chartRef, handleResize]); // Empty array ensures that effect is only run on mount and unmount
+    }, [isClient, chartRef, handleResize]);
 
     useLayoutEffect(() => {
         if (!chartRef.current || !formattedData) return;
@@ -121,14 +178,24 @@ const SwapChart = () => {
                 },
             },
             crosshair: {
-                mode: LightWeightCharts.CrosshairMode.Normal,
+                mode: LightWeightCharts.CrosshairMode.Magnet,
             },
             rightPriceScale: {
-                borderColor: "#eaeaea",
+                visible: false,
+                borderColor: "transparent",
             },
             timeScale: {
-                borderColor: "#eaeaea",
+                visible: false,
+                borderColor: "transparent",
             },
+            handleScale: {
+                mouseWheel: false,
+            },
+            handleScroll: {
+                pressedMouseMove: false,
+                vertTouchDrag: false,
+                horzTouchDrag: false
+            }
         });
 
         let series;
@@ -144,9 +211,9 @@ const SwapChart = () => {
             });
         } else {
             series = chart?.addAreaSeries({
-                topColor: "rgba(161, 97, 255, 0.6)",
-                bottomColor: "rgba(161, 97, 255, 0.04)",
-                lineColor: "rgba(161, 97, 255, 1)",
+                topColor: "rgba(39, 151, 255, 0.6)",
+                bottomColor: "rgba(39, 151, 255, 0)",
+                lineColor: "rgba(39, 151, 255, 1)",
             });
         }
 
@@ -155,102 +222,137 @@ const SwapChart = () => {
         chart.timeScale().fitContent();
 
         setChart(chart);
+        setSeries(series);
     }, [chartRef, chartType, formattedData]);
+
+    const currentValue = useMemo(() => {
+        if (!formattedData) return ''
+
+        const value = formattedData[formattedData.length - 1].value;
+
+        if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
+            return formatCurrency.format(value)
+        }
+
+        return formatUSD.format(value)
+    }, [formattedData, chartPair])
+
+    const displayValueCurrency = chartPair === SwapChartPair.AB ? tokenB?.symbol : chartPair === SwapChartPair.BA ? tokenA?.symbol : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B ? '' : ''
+
+    const crosshairMoveHandler = useCallback((param: any) => {
+        if (param.point) {
+            const formatter = chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA ? formatCurrency : formatUSD
+            setDisplayValued(formatter.format(param.seriesData.get(series).value))
+            setDisplayDate(new Date(param.time * 1000).toLocaleDateString())
+        } else {
+            setDisplayDate(new Date().toLocaleDateString())
+            setDisplayValued(currentValue)
+        }
+    }, [series, currentValue, chartPair])
+
+    useEffect(() => {
+        if (!chartCreated) return
+        chartCreated.subscribeCrosshairMove(crosshairMoveHandler)
+        return () => chartCreated.unsubscribeCrosshairMove(crosshairMoveHandler)
+    }, [chartCreated])
+
+    useEffect(() => {
+        setDisplayValued(currentValue)
+    }, [currentValue])
 
     const [pairImage, pairTitle] = useMemo(() => {
         if (!tokenA || !tokenB) return [
-            undefined, 
-            // <Loader stroke="var(--black)" size="16px" />
+            <Loader2 size={16} className="animate-spin" />,
             'Loading...'
         ];
 
-        switch (chartPair) {
-            case SwapChartPair.AB:
-                return [
-                    <>
-                        {/* <CurrencyLogo size="20px" currency={tokenA as WrappedCurrency} />
-                        <CurrencyLogo size="20px" currency={tokenB as WrappedCurrency} /> */}
-                    </>,
-                    `${tokenA.symbol} / ${tokenB.symbol}`,
-                ];
-            case SwapChartPair.BA:
-                return [
-                    <>
-                        {/* <CurrencyLogo size="20px" currency={tokenB as WrappedCurrency} />
-                        <CurrencyLogo size="20px" currency={tokenA as WrappedCurrency} /> */}
-                    </>,
-                    `${tokenB.symbol} / ${tokenA.symbol}`,
-                ];
-            case SwapChartPair.A:
-                return [
-                // <CurrencyLogo size="20px" currency={tokenA as WrappedCurrency} />,
-                <></>,
-                `${tokenA.symbol}`
-            ];
-            case SwapChartPair.B:
-                return [
-                // <CurrencyLogo size="20px" currency={tokenA as WrappedCurrency} />, 
-                <></>,
-                `${tokenB.symbol}`
-            ];
-        }
+        return getTokenTitle(chartPair, tokenA, tokenB)
+
     }, [tokenA, tokenB, chartPair]);
 
-    const handleBlur = useCallback((e: React.ChangeEvent<HTMLLabelElement>) => {
-        const target = e.target.control as HTMLInputElement;
+    const pairSelectorList = useMemo(() => {
 
-        if (!target) return;
+        if (!tokenA || !tokenB) return
 
-        setTimeout(() => (target.checked = false), 100);
-    }, []);
+        return Object.keys(SwapChartPair).filter(v => v !== chartPair).map((pair: any) => ({
+            pair,
+            title: getTokenTitle(pair, tokenA, tokenB)
+        }))
+    }, [tokenA, tokenB, chartPair])
 
-    return (
-        <div className="limit-order-chart f c w-100 h-100">
-            <div className="limit-order-chart-toolbar f f-jb">
-                <input id="pair" type="checkbox" className="limit-order-chart-toolbar__pair-checkbox" />
-                <label htmlFor="pair" role="button" tabIndex={0} className="limit-order-chart-toolbar__pair-toggler pos-r f f-ac" onBlur={handleBlur}>
-                    <span className="f mr-05">{pairImage}</span>
-                    <span className="mr-05">{pairTitle}</span>
-                    <span className="limit-order-chart-toolbar__pair-toggler-chevron">
-                        {/* <ChevronDown size={18} /> */}
+    return (<div className="flex flex-col gap-6 w-full h-full">
+        <div className="flex justify-between">
+            <Popover>
+                <PopoverTrigger className="flex items-center justify-between min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover">
+                    <div className="flex items-center gap-4 font-semibold">
+                        <span className="flex">{pairImage}</span>
+                        <span>{pairTitle}</span>
+                    </div>
+                    <span>
+                        <ChevronDownIcon size={18} />
                     </span>
+                </PopoverTrigger>
 
-                    <ul className="limit-order-chart-toolbar__pair-inner pos-a">
-                        <li onClick={() => setChartPair(SwapChartPair.AB)}>{`${tokenA?.symbol} / ${tokenB?.symbol}`}</li>
-                        <li onClick={() => setChartPair(SwapChartPair.BA)}>{`${tokenB?.symbol} / ${tokenA?.symbol}`}</li>
-                        <li onClick={() => setChartPair(SwapChartPair.A)}>{`${tokenA?.symbol}`}</li>
-                        <li onClick={() => setChartPair(SwapChartPair.B)}>{`${tokenB?.symbol}`}</li>
-                    </ul>
-                </label>
-                <div className="limit-order-chart-toolbar__settings f">
-                    <div className="limit-order-chart-toolbar__settings-span f mr-1">
-                        <button className={`btn mr-05`} data-active={chartSpan === SwapChartSpan.DAY} onClick={() => setChartSpan(SwapChartSpan.DAY)}>
-                            1 Day
-                        </button>
-                        <button className="btn" data-active={chartSpan === SwapChartSpan.WEEK} onClick={() => setChartSpan(SwapChartSpan.WEEK)}>
-                            1 Week
-                        </button>
+                <PopoverContent className="bg-card rounded-3xl border border-card-border">
+                    <div className="flex flex-col gap-2 text-white">
+                        {
+                            pairSelectorList?.map((item) => <div key={`chart-pair-selector-item-${item.pair}`} className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover" onClick={() => setChartPair(item.pair)}>{item.title}</div>)
+                        }
                     </div>
-                    <div className="limit-order-chart-toolbar__settings-type f">
-                        <button className="btn mr-05" data-active={chartType === SwapChartView.CANDLES} onClick={() => setChartType(SwapChartView.CANDLES)}>
-                            Candles
-                        </button>
-                        <button className="btn" data-active={chartType === SwapChartView.LINE} onClick={() => setChartType(SwapChartView.LINE)}>
-                            Line
-                        </button>
-                    </div>
+                </PopoverContent>
+            </Popover>
+            <div className="flex gap-4 p-2 bg-card border border-card-border rounded-3xl">
+                <div className="flex gap-2">
+                    <Button variant={chartSpan === SwapChartSpan.DAY ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.DAY)}>
+                        1D
+                    </Button>
+                    <Button variant={chartSpan === SwapChartSpan.WEEK ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.WEEK)}>
+                        1W
+                    </Button>
+                    <Button variant={chartSpan === SwapChartSpan.MONTH ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.MONTH)}>
+                        1M
+                    </Button>
+                </div>
+                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                <div className="flex gap-2">
+                    <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
+                        <LineChartIcon size={20} />
+                    </Button>
+                    <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
+                        <CandlestickChartIcon size={20} />
+                    </Button>
+                </div>
+                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                <div>
+                    <Button variant={'icon'} size={'icon'} disabled>
+                        <BarChartHorizontalIcon size={20} />
+                    </Button>
                 </div>
             </div>
-            <div className={`pos-r f f-ac f-jc full-w full-h ${!chartCreated ? "mxs_p-1" : ""} `} style={{ minHeight: "300px" }}>
-                <div className="f f-ac f-jc full-w full-h" ref={chartRef}></div>
-                {!chartCreated ? (
-                    <div className="pos-a f f-ac f-jc full-w full-h limit-order-chart__loader">
-                        {/* <Loader stroke={"var(--black)"} size={"18px"} /> */}
-                        Loading...
-                    </div>
-                ) : null}
-            </div>
         </div>
+        <div className="flex flex-col items-end w-full text-3xl text-right">
+            { chartCreated ? <>
+            <div className="text-3xl font-bold">
+                <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader2 size={18} className="animate-spin" />}</span>
+                <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
+            </div>
+            <div className="text-[#b7b7b7] text-sm">
+                {displayValue ? displayDate : null}
+            </div>
+            </> : <>
+                <Skeleton className="w-[150px] h-[38px] bg-card" />
+                <Skeleton className="w-[60px] h-[18px] bg-card mt-[2px]" />
+            </>}
+        </div>
+        <div className={`flex items-center justify-center relative w-full h-full`}>
+            <div className="flex items-center justify-center w-full h-full" ref={chartRef}></div>
+            {!chartCreated ? (
+                <div className="flex items-center justify-center absolute w-full h-full">
+                    <Loader2Icon className="animate-spin" />
+                </div>
+            ) : null}
+        </div>
+    </div>
     );
 
 }

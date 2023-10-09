@@ -6,7 +6,7 @@ import EnterAmounts from "@/components/create-position/EnterAmounts"
 import RangeSelector from "@/components/create-position/RangeSelector"
 import SelectRange from "@/components/liquidity/SelectRange"
 import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated"
-import { useAllowance } from "@/hooks/common/useAllowance"
+import { useNeedAllowance } from "@/hooks/common/useNeedAllowance"
 import { useCurrency } from "@/hooks/common/useCurrency"
 import { PoolState, usePool } from "@/hooks/pools/usePool"
 import { useMintState, useDerivedMintInfo, useMintActionHandlers } from "@/state/mintStore"
@@ -114,12 +114,12 @@ const NewPositionPage = () => {
             : false;
     }, [mintInfo, startPriceTypedValue]);
 
-    const needApproveA = useAllowance(
+    const needApproveA = useNeedAllowance(
         currencyA,
         mintInfo.parsedAmounts[Field.CURRENCY_B]
     );
 
-    const needApproveB = useAllowance(
+    const needApproveB = useNeedAllowance(
         currencyB,
         mintInfo.parsedAmounts[Field.CURRENCY_B]
     );
@@ -187,7 +187,7 @@ const NewPositionPage = () => {
 
         <div className="grid grid-cols-5 w-full">
 
-            <div className="col-span-4 w-full px-8 py-6 bg-[#1A1D2B] text-left rounded-l-3xl border border-card-border">
+            <div className="col-span-4 w-full px-8 py-6 bg-card text-left rounded-l-3xl border border-card-border">
 
                 <div className="flex w-full justify-between">
                     <div>

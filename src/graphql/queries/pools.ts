@@ -67,6 +67,14 @@ export const SINGLE_POOL = gql`
     }
 `
 
+export const MULTIPLE_POOLS = gql`
+    query MultiplePools($poolIds: [ID!]) {
+        pools(where: { id_in: $poolIds }) {
+            ...PoolFields
+        }
+    }
+`
+
 export const POOL_FEE_DATA = gql`
     query PoolFeeData($poolId: String) {
         poolDayDatas(where: { pool: $poolId }, orderBy: date, orderDirection: desc, first: 1) {

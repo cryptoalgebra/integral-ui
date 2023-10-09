@@ -25,8 +25,8 @@ export const LIMIT_ORDER_FRAGMENT = gql`
 `
 
 export const LIMIT_ORDERS_LIST = gql`
-    query limitOrdersList {
-        limitOrders {
+    query LimitOrdersList($account: Bytes) {
+        limitOrders (where: { owner: $account }) {
             ...LimitOrderFields
         }
     }

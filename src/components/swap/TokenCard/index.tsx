@@ -1,3 +1,4 @@
+import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
 import { SwapFieldType } from "@/types/swap-field";
 import { Currency, CurrencyAmount, Percent, Token } from "@cryptoalgebra/integral-sdk";
@@ -43,27 +44,23 @@ const TokenCard = ({ handleTokenSelection, handleValueChange, handleMaxValue, va
             return "< 0.0001";
         }
 
-        return balance.formatted
+        return Number(balance.formatted).toFixed(3)
     }, [balance, isLoading]);
 
-    return  <div className="flex">
-    <div className="flex flex-col">
-        <div className="token-card-selector">
-            <button className="token-swap-card-selector__btn f f-ac f-jb">
-                <div className="token-swap-card-selector__logo">
-                    {/* <CurrencyLogo size={"24px"} currency={currency as WrappedCurrency}></CurrencyLogo> */}
-                </div>
-                <span>{currency ? currency.symbol : "Select a token"}</span>
-                <span className="token-swap-card-selector__btn-chevron">
-                    {/* <ChevronRight size={18} /> */}
-                </span>
-            </button>
+    return  <div className="flex bg-[#101321] p-3 rounded-2xl">
+    <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-4">
+                <CurrencyLogo currency={currency} size={35} />
+                <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
         </div>
         {currency && account && (
-            <div className={"f token-swap-card__balance mt-1 f-ac"}>
-                <div>{`Balance: ${balanceString}`}</div>
+            <div className={"flex text-sm whitespace-nowrap"}>
+                <div>
+                    <span className="font-bold">Balance: </span>
+                    <span>{balanceString}</span>
+                </div>
                 {showMaxButton && (
-                    <button className="token-swap-card__max-button ml-05" onClick={handleMaxValue}>
+                    <button className="ml-2 text-cyan-500" onClick={handleMaxValue}>
                         Max
                     </button>
                 )}
@@ -71,9 +68,10 @@ const TokenCard = ({ handleTokenSelection, handleValueChange, handleMaxValue, va
         )}
     </div>
 
-    <div className="f c w-100">
-        <Input value={value} id={`amount-${currency?.symbol}`} onChange={(e) => handleValueChange(e.target.value.trim())} className={`token-swap-card-input`} placeholder={"0"} />
+    <div className="w-full">
+        <Input value={value} id={`amount-${currency?.symbol}`} onChange={(e) => handleValueChange(e.target.value.trim())} className={`text-right border-none text-xl font-bold`} placeholder={'0.0'} />
         {/* {currency && value && <div className="token-swap-card__fiat">{value && <FiatValue fiatValue={fiatValue} priceImpact={priceImpact} />}</div>} */}
+        {/* {fiatValue?.toSignificant()} */}
     </div>
 </div>
 

@@ -1,6 +1,5 @@
-
 interface PageTitleProps {
-    children: string
+    children: React.ReactNode
 }
 
 const PageTitle = ({ children }: PageTitleProps) => {

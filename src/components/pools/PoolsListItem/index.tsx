@@ -1,4 +1,4 @@
-import CreateLimitOrder from "@/components/limit-orders/CreateLimitOrder";
+import CreateLimitOrder from "@/components/limit-orders/LimitOrderButton";
 import { TokenFieldsFragment } from "@/graphql/generated/graphql";
 import { NavLink } from "react-router-dom";
 import { Address } from "wagmi";

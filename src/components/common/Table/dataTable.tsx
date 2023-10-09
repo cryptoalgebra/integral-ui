@@ -34,7 +34,7 @@ const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValu
     return <>
       {/* <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
+          placeholder="Search"
           value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("id")?.setFilterValue(event.target.value)
@@ -43,10 +43,10 @@ const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValu
         />
       </div> */}
     <Table>
-        <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => <TableRow key={headerGroup.id}>
+        <TableHeader className="[&_tr]:border-b-0">
+            {table.getHeaderGroups().map(headerGroup => <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {
-                    headerGroup.headers.map(header => <TableHead key={header.id}>
+                    headerGroup.headers.map(header => <TableHead key={header.id} className="rounded-xl text-white">
                         {
                             header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())
                         }
@@ -54,10 +54,10 @@ const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValu
                 }
             </TableRow>)}
         </TableHeader>
-        <TableBody>
+        <TableBody className="hover:bg-transparent">
             {
-                table.getRowModel().rows?.length ? table.getRowModel().rows.map(row => <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} >
-                    {row.getVisibleCells().map(cell => <TableCell key={cell.id}>
+                table.getRowModel().rows?.length ? table.getRowModel().rows.map(row => <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className="bg-[#101321] hover:bg-[#101321]" >
+                    {row.getVisibleCells().map(cell => <TableCell key={cell.id} className="rounded-l">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>)}
                 </TableRow>) : <TableRow>

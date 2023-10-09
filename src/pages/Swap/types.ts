@@ -1,10 +1,10 @@
-export const SWAP_PAGE_TYPE = {
+export const SwapPageView = {
     SWAP: 'SWAP',
     LIMIT_ORDER: 'LIMIT_ORDER'
 } as const
 
-export type SwapPageType = typeof SWAP_PAGE_TYPE[keyof typeof SWAP_PAGE_TYPE]
+export type SwapPageViewType = typeof SwapPageView[keyof typeof SwapPageView]
 
 export interface SwapPageProps {
-    type: SwapPageType
+    type: SwapPageViewType
 }

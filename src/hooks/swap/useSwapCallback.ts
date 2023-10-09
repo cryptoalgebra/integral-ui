@@ -33,8 +33,6 @@ export function useSwapCallback(
 
     const swapCalldata = useSwapCallArguments(trade, allowedSlippage)
 
-    console.log('swapCalldata', swapCalldata)
-
     useEffect(() => {
 
         async function findBestCall() {
@@ -100,8 +98,6 @@ export function useSwapCallback(
 
     }, [swapCalldata])
 
-
-    console.log('BEST CALL', bestCall)
 
     const { config: swapConfig } = usePrepareAlgebraRouterMulticall({
         args: bestCall && [bestCall.calldata],

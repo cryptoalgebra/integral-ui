@@ -16,7 +16,7 @@ import PoolsPage from "@/pages/Pools";
 import NewPositionPage from "@/pages/NewPosition";
 import PositionPage from "@/pages/Position";
 
-import { SWAP_PAGE_TYPE } from "@/pages/Swap/types";
+import { SwapPageView } from "@/pages/Swap/types";
 import PoolPage from "@/pages/Pool/index";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
@@ -28,11 +28,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/swap',
-    element: <App> <SwapPage type={SWAP_PAGE_TYPE.SWAP} /> </App>,
+    element: <App> <SwapPage type={SwapPageView.SWAP} /> </App>,
   },
   {
     path: '/limit-order',
-    element: <App> <SwapPage type={SWAP_PAGE_TYPE.LIMIT_ORDER} /> </App>
+    element: <App> <SwapPage type={SwapPageView.LIMIT_ORDER} /> </App>
   },
   {
     path: '/pools',

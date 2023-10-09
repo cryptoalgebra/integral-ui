@@ -78,7 +78,7 @@ export interface IDerivedMintInfo {
     dependentField: Field;
     parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> };
     position: Position | undefined;
-    positionLO: Position | undefined;
+    positionLimitOrder: Position | undefined;
     noLiquidity?: boolean;
     errorMessage?: string;
     errorCode?: number;
@@ -200,7 +200,8 @@ export function useDerivedMintInfo(
     poolAddress?: Address,
     feeAmount?: InitialPoolFee,
     baseCurrency?: Currency,
-    existingPosition?: Position
+    existingPosition?: Position,
+    limitOrderTick?: number
 ): IDerivedMintInfo {
     const { address: account } = useAccount();
 
@@ -314,7 +315,7 @@ export function useDerivedMintInfo(
         const invalid =
             price &&
             sqrtRatioX96 &&
-            !(BigInt(sqrtRatioX96) >= TickMath.MIN_SQRT_RATIO && BigInt(sqrtRatioX96 < TickMath.MAX_SQRT_RATIO));
+            !(BigInt(sqrtRatioX96.toString()) >= BigInt(TickMath.MIN_SQRT_RATIO.toString()) && BigInt(sqrtRatioX96.toString()) < BigInt(TickMath.MAX_SQRT_RATIO.toString()));
         return invalid;
     }, [price]);
 
@@ -548,6 +549,9 @@ export function useDerivedMintInfo(
 
     // create position entity based on users selection
     const position: Position | undefined = useMemo(() => {
+
+        console.log('AMOUNTSQQQ qq', poolForPosition, tokenA, tokenB, tickLower, tickUpper, invalidRange)
+
         if (
             !poolForPosition ||
             !tokenA ||
@@ -575,7 +579,18 @@ export function useDerivedMintInfo(
             ]?.quotient
             : ZERO;
 
+        console.log('AMOUNTSQQQ', amount0, amount1)
+
         if (amount0 !== undefined && amount1 !== undefined) {
+
+            console.log('AMOUNTSQQQ', amount0, amount1, tickLower, tickUpper, Position.fromAmounts({
+                pool: poolForPosition,
+                tickLower,
+                tickUpper,
+                amount0,
+                amount1,
+                useFullPrecision: true, // we want full precision for the theoretical position
+            }))
             return Position.fromAmounts({
                 pool: poolForPosition,
                 tickLower,
@@ -599,14 +614,16 @@ export function useDerivedMintInfo(
         tickUpper,
     ]);
 
-    const positionLO: Position | undefined = useMemo(() => {
+    const positionLimitOrder: Position | undefined = useMemo(() => {
+
+        console.log('limitOrderTick', invalidRange, limitOrderTick)
+
         if (
             !poolForPosition ||
             !tokenA ||
             !tokenB ||
-            typeof tickLower !== 'number' ||
-            typeof tickUpper !== 'number' ||
-            invalidRange
+            invalidRange ||
+            typeof limitOrderTick !== 'number'
         ) {
             return undefined;
         }
@@ -630,11 +647,11 @@ export function useDerivedMintInfo(
         if (amount0 !== undefined && amount1 !== undefined) {
             return Position.fromAmounts({
                 pool: poolForPosition,
-                tickLower: 28320 + 60,
-                tickUpper: 28320 + 120,
+                tickLower: limitOrderTick + 60,
+                tickUpper: limitOrderTick + 120,
                 amount0,
                 amount1,
-                useFullPrecision: true, // we want full precision for the theoretical position
+                useFullPrecision: true,
             });
         } else {
             return undefined;
@@ -647,8 +664,7 @@ export function useDerivedMintInfo(
         deposit0Disabled,
         deposit1Disabled,
         invalidRange,
-        tickLower,
-        tickUpper,
+        limitOrderTick
     ]);
 
     let errorMessage: string | undefined;
@@ -713,7 +729,7 @@ export function useDerivedMintInfo(
         price,
         pricesAtTicks,
         position,
-        positionLO,
+        positionLimitOrder,
         noLiquidity,
         errorMessage,
         errorCode,

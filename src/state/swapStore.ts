@@ -1,10 +1,11 @@
 import { useAlgebraPoolGlobalState, useAlgebraPoolTickSpacing } from "@/generated"
 import { useCurrency } from "@/hooks/common/useCurrency"
+import { usePool } from "@/hooks/pools/usePool"
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Trade, TradeType, computePoolAddress } from "@cryptoalgebra/integral-sdk"
-import { useCallback, useEffect } from "react"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Pool, Position, Token, Trade, TradeType, ZERO, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { useCallback, useEffect, useMemo } from "react"
 import { parseUnits, zeroAddress } from "viem"
 import { Address, useAccount, useBalance, useChainId } from "wagmi"
 import { create } from "zustand"
@@ -23,7 +24,7 @@ interface SwapState {
     readonly limitOrderPriceFocused: boolean;
     readonly lastFocusedField: SwapFieldType
     actions: {
-        selectCurrency: (field: SwapFieldType, currencyId: string) => void,
+        selectCurrency: (field: SwapFieldType, currencyId: string | undefined) => void,
         switchCurrencies: () => void,
         typeInput: (field: SwapFieldType, typedValue: string) => void,
         typeLimitOrderPrice: (limitOrderPrice: string) => void,
@@ -38,7 +39,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: '1',
     [SwapField.INPUT]: {
-        currencyId: '0x5aefba317baba46eaf98fd6f381d07673bca6467'
+        currencyId: '0x49a390a3dfd2d01389f799965f3af5961f87d228'
     },
     [SwapField.OUTPUT]: {
         currencyId: '0x0000000000000000000000000000000000000000'
@@ -149,7 +150,8 @@ export function useDerivedSwapInfo(): {
     allowedSlippage: Percent
     poolFee: number | undefined,
     tick: number | undefined,
-    tickSpacing: number | undefined
+    tickSpacing: number | undefined,
+    poolAddress: Address | undefined
 } {
 
     const { address: account } = useAccount()
@@ -169,8 +171,6 @@ export function useDerivedSwapInfo(): {
 
     const bestTradeExactIn = useBestTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
     const bestTradeExactOut = useBestTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
-
-    console.log('bestTradeExactIn', bestTradeExactIn)
 
     const trade = (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined
 
@@ -220,7 +220,7 @@ export function useDerivedSwapInfo(): {
     const poolAddress = currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
         tokenA: currencies[SwapField.INPUT]!.wrapped,
         tokenB: currencies[SwapField.OUTPUT]!.wrapped
-    }) as Address
+    }).toLowerCase() as Address
 
     const { data: globalState } = useAlgebraPoolGlobalState({
         address: poolAddress
@@ -240,6 +240,50 @@ export function useDerivedSwapInfo(): {
         allowedSlippage,
         poolFee: globalState && globalState[2],
         tick: globalState && globalState[1],
-        tickSpacing: tickSpacing
+        tickSpacing: tickSpacing,
+        poolAddress
     }
+}
+
+export function useLimitOrderInfo(poolAddress: Address | undefined, limitOrderTick: number | undefined) {
+
+    const { parsedAmount } = useDerivedSwapInfo()
+
+    const tokenForSale = parsedAmount?.currency
+
+    const [, pool] = usePool(poolAddress)
+
+    return useMemo(() => {
+
+        if (!tokenForSale || !pool || typeof limitOrderTick !== 'number') return undefined;
+
+        const amount0 = tokenForSale.equals(pool.token0) ? parsedAmount.quotient : ZERO
+        const amount1 = tokenForSale.equals(pool.token1) ? parsedAmount.quotient : ZERO
+
+        if (amount0 !== undefined && amount1 !== undefined) {
+            console.log('AMOUNTS PPPP', amount0, amount1, Position.fromAmounts({
+                pool,
+                tickLower: limitOrderTick,
+                tickUpper: limitOrderTick + 60,
+                amount0,
+                amount1,
+                useFullPrecision: true,
+            }))
+            return Position.fromAmounts({
+                pool,
+                tickLower: limitOrderTick,
+                tickUpper: limitOrderTick + 60,
+                amount0,
+                amount1,
+                useFullPrecision: true,
+            });
+        } else {
+            return undefined;
+        }
+    }, [
+        limitOrderTick,
+        parsedAmount,
+        tokenForSale
+    ]);
+
 }

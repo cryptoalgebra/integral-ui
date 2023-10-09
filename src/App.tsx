@@ -11,7 +11,15 @@ const projectId = 'f370559ba7976e89ed93819ecdc03c64'
 const chains = [goerli]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral' } })
 
-createWeb3Modal({ wagmiConfig, projectId, chains })
+createWeb3Modal({ 
+  wagmiConfig, 
+  projectId, 
+  chains, 
+  chainImages: {
+    5: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+  },
+  defaultChain: goerli
+})
 
 function App({ children }: { children: React.ReactNode }) {
 

@@ -37,8 +37,6 @@ export function useBestTradeExactIn(
         }))
     })
 
-    console.log('quotesResults', quotesResults)
-
     const trade = useMemo(() => {
         if (!amountIn || !currencyOut) {
             return {

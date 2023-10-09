@@ -8,10 +8,12 @@ import { TradeState } from "@/types/trade-state";
 import { computePoolAddress, getTickToPrice, tickToPrice, tryParseTick } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address, parseUnits } from "viem";
+import LimitPriceCard from "../LimitPriceCard";
+import LimitOrderButton from "../LimitOrderButton";
 
 const LimitOrder = () => {
 
-    const { toggledTrade: trade, tick, tradeState, parsedAmount, currencies, inputError, tickSpacing } = useDerivedSwapInfo();
+    const { toggledTrade: trade, tick, tradeState, parsedAmount, currencies, inputError, tickSpacing, poolAddress } = useDerivedSwapInfo();
 
     // const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly();
     const singleHopOnly = false
@@ -42,7 +44,7 @@ const LimitOrder = () => {
     //     return placeLimitOrderLoading && placing && placing.state !== "done";
     // }, [placeLimitOrderLoading, placing]);
 
-    const { independentField, typedValue, actions:  { typeLimitOrderPrice, limitOrderPriceLastFocused } } = useSwapState();
+    const { independentField, typedValue, actions: { typeLimitOrderPrice, limitOrderPriceLastFocused, limitOrderPriceWasInverted } } = useSwapState();
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
     // const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue);
@@ -59,13 +61,13 @@ const LimitOrder = () => {
         () =>
             showWrap
                 ? {
-                      [SwapField.INPUT]: parsedAmount,
-                      [SwapField.OUTPUT]: parsedAmount,
-                  }
+                    [SwapField.INPUT]: parsedAmount,
+                    [SwapField.OUTPUT]: parsedAmount,
+                }
                 : {
-                      [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : pairPrice ? parsedAmount?.divide(pairPrice.asFraction) : undefined,
-                      [SwapField.OUTPUT]: independentField === SwapField.OUTPUT ? parsedAmount : pairPrice ? parsedAmount?.multiply(pairPrice.asFraction) : undefined,
-                  },
+                    [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : pairPrice ? parsedAmount?.divide(pairPrice.asFraction) : undefined,
+                    [SwapField.OUTPUT]: independentField === SwapField.OUTPUT ? parsedAmount : pairPrice ? parsedAmount?.multiply(pairPrice.asFraction) : undefined,
+                },
         [independentField, parsedAmount, showWrap, pairPrice]
     );
 
@@ -76,16 +78,13 @@ const LimitOrder = () => {
 
     const [token0, token1] = tokenA && tokenB && !showWrap ? (tokenA?.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]) : [undefined, undefined];
 
-    const previousTokens = usePrevious(token0 && token1 ? token0.address + token1.address : "");
+    // const previousTokens = usePrevious(token0 && token1 ? token0.address + token1.address : "");
 
     const invertPrice = Boolean(currencies[SwapField.INPUT] && token0 && !currencies[SwapField.INPUT]?.wrapped.equals(token0));
 
-    const [wasInverted, setWasInverted] = useState(false);
+    const zeroToOne = !invertPrice
 
-    const poolAddress = currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
-        tokenA: currencies[SwapField.INPUT]!.wrapped,
-        tokenB: currencies[SwapField.OUTPUT]!.wrapped
-    }) as Address
+    const [wasInverted, setWasInverted] = useState(false);
 
     const [poolState, pool] = usePool(poolAddress);
 
@@ -166,7 +165,7 @@ const LimitOrder = () => {
 
         // console.log("ADDITIONAL", additionalTick, __tick);
 
-        placeLimitOrderFn(token0, token1, depositedToken, amount, wasInverted ? -_tick : _tick, currencies.INPUT.isNative);
+        // placeLimitOrderFn(token0, token1, depositedToken, amount, wasInverted ? -_tick : _tick, currencies.INPUT.isNative);
     }, [currencies, formattedAmounts, wasInverted, sellPrice, token0, token1, tick, invertPrice, tickSpacing]);
 
     const showApproveButton = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING || approving;
@@ -188,17 +187,9 @@ const LimitOrder = () => {
                 return;
             }
 
-            let limitOrderPrice;
-
-            // With small tickSpacing sometimes next and previous prices are the same. BigNumber wrongly compares two real small values
-
-            if (tickSpacing < 2) {
-                limitOrderPrice = String(Number(sellPrice) + Number(0.0001 * tickSpacing) * Number(sellPrice) * direction * (invertPrice ? -1 : 1));
-            } else {
-                limitOrderPrice = invertPrice
-                    ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(18)
-                    : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(18);
-            }
+            const limitOrderPrice = invertPrice
+                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(18)
+                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(18);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);
@@ -207,33 +198,33 @@ const LimitOrder = () => {
     );
 
     const blockCreation = useMemo(() => {
-        if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick) return true;
+        if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return true;
 
-        const _tick = invertPrice ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing) : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+        const _priceTick = invertPrice ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing) : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_tick === undefined) return true;
+        if (_priceTick === undefined) return true;
 
-        console.log(currencies.INPUT.wrapped.address === token0.address, wasInverted, _tick, tick);
+        const priceTick = wasInverted ? -_priceTick : _priceTick
 
-        if (currencies.INPUT.wrapped.address === token0.address && (wasInverted ? -tick : _tick) <= tick) return true;
+        if (currencies.INPUT.wrapped.equals(token0) && priceTick < tick) return true
+        
+        if (currencies.INPUT.wrapped.equals(token1) && (priceTick + tickSpacing >= tick)) return true
 
-        if (currencies.INPUT.wrapped.address === token1.address && (wasInverted ? -_tick : _tick) > tick) return true;
-
-        return false;
+        return false
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
 
     const [plusDisabled, minusDisabled] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return [true, true];
 
-        const _tick = invertPrice ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing) : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+        const _priceTick = invertPrice ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing) : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_tick === undefined) return [true, true];
+        if (_priceTick === undefined) return [true, true];
 
-        if (currencies.INPUT.wrapped.address === token0.address && (wasInverted ? -_tick : _tick) <= tick + tickSpacing)
-            return wasInverted ? (invertPrice ? [false, true] : [true, false]) : invertPrice ? [true, false] : [false, true];
+        const priceTick = wasInverted ? -_priceTick : _priceTick
 
-        if (currencies.INPUT.wrapped.address === token1.address && (wasInverted ? -_tick : _tick) + tickSpacing >= tick)
-            return wasInverted ? (invertPrice ? [true, false] : [false, true]) : invertPrice ? [false, true] : [true, false];
+        if (currencies.INPUT.wrapped.equals(token0) && (priceTick - tickSpacing <= tick)) return wasInverted ? [true, false] : [false, true]
+        
+        if (currencies.INPUT.wrapped.equals(token1) && (priceTick + tickSpacing >= tick - tickSpacing)) return wasInverted ? [true, false] : [false, true]
 
         return [false, false];
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
@@ -267,39 +258,68 @@ const LimitOrder = () => {
         [initialSellPrice]
     );
 
-    useEffect(() => {
-        if (!token0 || !token1) return;
+    // useEffect(() => {
+    //     if (!token0 || !token1) return;
 
-        if (sellPrice && previousTokens === token0.address + token1.address) {
-            const tick = tryParseTick(token0, token1, sellPrice, tickSpacing);
+    //     if (sellPrice && previousTokens === token0.address + token1.address) {
+    //         const tick = tryParseTick(token0, token1, sellPrice, tickSpacing);
 
-            const newPrice = getTickToPrice(token0, token1, tick)?.invert();
+    //         const newPrice = getTickToPrice(token0, token1, tick)?.invert();
 
-            setSellPrice(newPrice ? newPrice.toSignificant(18) : "");
-            typeLimitOrderPrice(newPrice ? newPrice.toSignificant(18) : "");
-        } else if (sellPrice) {
-            setSellPrice("");
-            typeLimitOrderPrice(limitOrderPrice);
-        }
-    }, [currencies[Field.INPUT]?.wrapped.address, currencies[Field.OUTPUT]?.wrapped.address]);
+    //         setSellPrice(newPrice ? newPrice.toSignificant(18) : "");
+    //         typeLimitOrderPrice(newPrice ? newPrice.toSignificant(18) : "");
+    //     } else if (sellPrice) {
+    //         setSellPrice("");
+    //         typeLimitOrderPrice("");
+    //     }
+    // }, [currencies[SwapField.INPUT]?.wrapped.address, currencies[SwapField.OUTPUT]?.wrapped.address]);
 
     useEffect(() => {
         if (initialSellPrice && !sellPrice) {
             setSellPrice(initialSellPrice);
-            dispatch(typeLimitOrderPrice({ limitOrderPrice: initialSellPrice }));
+            typeLimitOrderPrice(initialSellPrice);
         }
     }, [initialSellPrice, invertPrice]);
 
     useEffect(() => {
         setInitialSingleHop(singleHopOnly);
-        setSingleHopOnly(true);
+        // setSingleHopOnly(true);
 
         return () => {
-            dispatch(typeLimitOrderPrice({ limitOrderPrice: "" }));
-            dispatch(limitOrderPriceWasInverted({ wasInverted: false }));
-            setSingleHopOnly(initialSingleHop);
+            typeLimitOrderPrice("");
+            limitOrderPriceWasInverted(false);
+            // setSingleHopOnly(initialSingleHop);
         };
     }, [initialSingleHop]);
+
+    return <>
+        <LimitPriceCard
+            currency={currencies[SwapField.INPUT]}
+            otherCurrency={currencies[SwapField.OUTPUT]}
+            sellPrice={sellPrice}
+            invertTick={(value: string) => {
+                handleSetSellPrice(value, true);
+                setWasInverted(!wasInverted);
+                limitOrderPriceWasInverted(!wasInverted);
+            }}
+            setSellPrice={handleSetSellPrice}
+            tickStep={tickStep}
+            setToMarketPrice={setToMarketPrice}
+            plusDisabled={plusDisabled}
+            minusDisabled={minusDisabled}
+            disabled={showWrap || !isPoolExists}
+        />
+        <LimitOrderButton 
+            disabled={blockCreation} 
+            token0={token0} 
+            token1={token1} 
+            poolAddress={poolAddress} 
+            sellPrice={sellPrice} 
+            tickSpacing={tickSpacing} 
+            wasInverted={wasInverted}
+            zeroToOne={zeroToOne}
+        />
+    </>
 
 }
 

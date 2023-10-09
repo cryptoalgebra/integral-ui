@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
@@ -6,10 +7,13 @@ import { ApprovalState } from "@/types/approve-state";
 import { SwapField } from "@/types/swap-field";
 import { TradeState } from "@/types/trade-state";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
 const SwapButton = () => {
+
+    const { open } = useWeb3Modal()
 
     const { address: account } = useAccount()
 
@@ -156,9 +160,14 @@ const SwapButton = () => {
 
     if (!account) {
         return (
-            <button className={"btn primary w-100 pv-1 b"} >
-                Connect Wallet
-            </button>
+            // <Button  onClick={() => toast({
+            //     title: 'Swap',
+            //     description: 'Tx was sent',
+            //     action: <ToastAction altText="View Tx">View TX</ToastAction>
+            // })}>
+            //     Connect Wallet
+            // </Button>
+            <Button onClick={() => open()}>Connect Wallet</Button>
         );
     }
 
@@ -192,7 +201,7 @@ const SwapButton = () => {
             <div className="swap-button__approve-flow">
                 <button
                     className={`w-100 b f f-ac f-jc swap-button__approve-button ${approvalState !== ApprovalState.APPROVED ? "btn primary" : ""}`}
-                    onClick={() => approvalCallback()}
+                    onClick={() => approvalCallback && approvalCallback()}
                     disabled={approvalState !== ApprovalState.NOT_APPROVED || approvalSubmitted}
                 >
                     {approvalState === ApprovalState.PENDING ? (
@@ -225,40 +234,12 @@ const SwapButton = () => {
                             showConfirm: true,
                             txHash: undefined,
                         });
-                        // }
                     }}
-                    // style={{
-                    //     backgroundColor:
-                    //         !isValid ||
-                    //         (approvalState !== ApprovalState.APPROVED && signatureState !== UseERC20PermitState.SIGNED) ||
-                    //         priceImpactTooHigh ||
-                    //         priceImpactSeverity
-                    //             ? theme.winterDisabledButton
-                    //             : theme.winterMainButton,
-                    //     color:
-                    //         !isValid ||
-                    //         (approvalState !== ApprovalState.APPROVED && signatureState !== UseERC20PermitState.SIGNED) ||
-                    //         priceImpactTooHigh ||
-                    //         priceImpactSeverity
-                    //             ? "rgb(195, 197, 203)"
-                    //             : "white",
-                    //     border:
-                    //         !isValid ||
-                    //         (approvalState !== ApprovalState.APPROVED && signatureState !== UseERC20PermitState.SIGNED) ||
-                    //         priceImpactTooHigh ||
-                    //         priceImpactSeverity
-                    //             ? "1px solid #073c66"
-                    //             : `1px solid ${({ theme }: any) => theme.winterMainButton}`,
-                    // }}
-                    // width="100%"
                     id="swap-button"
                     className="btn primary w-100 pv-1 b"
                     disabled={!isValid || (approvalState !== ApprovalState.APPROVED || priceImpactTooHigh)}
-                    // error={isValid && priceImpactSeverity > 2}
                 >
-                    {/* <Text fontSize={16} fontWeight={500}> */}
                     {priceImpactTooHigh ? 'High Price Impact' : priceImpactSeverity > 2 ? '2. Swap Anyway' : '2. Swap'}
-                    {/* </Text> */}
                 </button>
             </div>
         );
@@ -280,7 +261,7 @@ const SwapButton = () => {
                 // }
             }}
             id="swap-button"
-            className="btn primary w-100 pv-1 b"
+            className="w-full bg-primary-button p-4 font-bold rounded-2xl"
             disabled={!isValid || priceImpactTooHigh || !!swapCallbackError}
             // error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
         >

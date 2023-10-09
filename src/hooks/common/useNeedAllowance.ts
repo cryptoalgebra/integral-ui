@@ -2,7 +2,7 @@ import { ALGEBRA_LIMIT_ORDER_PLUGIN, ALGEBRA_POSITION_MANAGER } from "@/constant
 import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { erc20ABI, useAccount, useContractRead } from "wagmi";
 
-export function useAllowance(currency: Currency | null | undefined, amount: CurrencyAmount<Currency> | undefined) {
+export function useNeedAllowance(currency: Currency | null | undefined, amount: CurrencyAmount<Currency> | undefined) {
 
     const { address: account } = useAccount()
 
