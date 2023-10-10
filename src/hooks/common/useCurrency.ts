@@ -12,16 +12,13 @@ export function useCurrency(
     address: Address | undefined
 ): Currency | ExtendedNative | undefined {
 
-    const isWeth = address?.toLowerCase() === WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase()
+    const isWETH = address?.toLowerCase() === WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase()
 
     const isETH = address === ADDRESS_ZERO;
 
-    const token = useAlgebraToken(isWeth ? ADDRESS_ZERO : address)
+    const token = useAlgebraToken(isETH || isWETH ? ADDRESS_ZERO : address)
 
     const extendedEther = ExtendedNative.onChain(DEFAULT_CHAIN_ID);
-    // const weth = WNATIVE[DEFAULT_CHAIN_ID];
 
-    // if (weth?.address?.toLowerCase() === address?.toLowerCase()) return weth;
-
-    return isETH ? extendedEther : token;
+    return isETH || isWETH ? extendedEther : token;
 }

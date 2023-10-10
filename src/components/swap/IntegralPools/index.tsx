@@ -35,7 +35,7 @@ const IntegralPools = () => {
                         <CurrencyLogo currency={currencyA} size={25} />
                         <CurrencyLogo currency={currencyB} size={25} style={{ marginLeft: '-8px' }} />
                     </div>
-                    <div className="text-lg font-semibold">{title}</div>
+                    <div className="text-md md:text-lg font-semibold">{title}</div>
                     <div>
                         <ChevronDownIcon size={20} />
                     </div>

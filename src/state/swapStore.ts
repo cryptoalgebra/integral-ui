@@ -260,14 +260,6 @@ export function useLimitOrderInfo(poolAddress: Address | undefined, limitOrderTi
         const amount1 = tokenForSale.equals(pool.token1) ? parsedAmount.quotient : ZERO
 
         if (amount0 !== undefined && amount1 !== undefined) {
-            console.log('AMOUNTS PPPP', amount0, amount1, Position.fromAmounts({
-                pool,
-                tickLower: limitOrderTick,
-                tickUpper: limitOrderTick + 60,
-                amount0,
-                amount1,
-                useFullPrecision: true,
-            }))
             return Position.fromAmounts({
                 pool,
                 tickLower: limitOrderTick,

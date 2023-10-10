@@ -70,7 +70,18 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
 
     if (!disabled && needAllowance) return <Button onClick={() => approvalCallback && approvalCallback()}>{approvalState === ApprovalState.PENDING ? <Loader /> : 'Approve'}</Button>
 
-    return <Button disabled={disabled || isPlaceLoading} onClick={() => placeLimitOrder && placeLimitOrder()}>
+    return <Button disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING} onClick={() => {
+        console.log('[PLACE LIMIT ORDER]', isReady && [
+            {
+                token0: token0.address as Address,
+                token1: token1.address as Address
+            },
+            limitOrder.tickLower,
+            zeroToOne,
+            BigInt(limitOrder.liquidity.toString())
+        ])
+        placeLimitOrder && placeLimitOrder()
+    }}>
         {isPlaceLoading ? <Loader /> : 'Place an order'}
     </Button>
 

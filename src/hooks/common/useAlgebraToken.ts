@@ -7,8 +7,6 @@ import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
 
 export function useAlgebraToken(address: Address | undefined) {
 
-    if (!address) return
-
     const isETH = address === ADDRESS_ZERO
 
     const { data: tokenData, isLoading } = useToken({
@@ -17,6 +15,8 @@ export function useAlgebraToken(address: Address | undefined) {
     })
 
     return useMemo(() => {
+
+        if (!address) return
 
         if (address === ADDRESS_ZERO) return ExtendedNative.onChain(DEFAULT_CHAIN_ID)
 
