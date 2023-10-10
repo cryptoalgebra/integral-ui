@@ -35,8 +35,6 @@ export function useSwapCallback(
 
     const swapCalldata = useSwapCallArguments(trade, allowedSlippage)
 
-    console.log('trade qqqqs', trade, swapCalldata)
-
     useEffect(() => {
 
         async function findBestCall() {
@@ -76,8 +74,6 @@ export function useSwapCallback(
                 })
 
             }))
-
-            console.log('callsqqq', calls)
 
             let bestCallOption: SuccessfulCall | SwapCallEstimate | undefined = calls.find(
                 (el, ix, list): el is SuccessfulCall =>

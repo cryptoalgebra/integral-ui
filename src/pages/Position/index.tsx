@@ -1,9 +1,6 @@
 import PageContainer from "@/components/common/PageContainer"
 import PageTitle from "@/components/common/PageTitle"
 import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal"
-import PositionAPR from "@/components/position/PositionAPR"
-import PositionLiquidity from "@/components/position/PositionLiquidity"
-import PositionNFT from "@/components/position/PositionNFT"
 import PositionRangeChart from "@/components/position/PositionRangeChart"
 import PositionTokenRatio from "@/components/position/PositionTokenRatio"
 import { usePool } from "@/hooks/pools/usePool"
@@ -37,9 +34,9 @@ const PositionPage = () => {
 
         <div className="flex flex-col gap-8">
             <div className="mt-8 flex gap-8">
-                <PositionNFT positionId={positionId} />
+                {/* <PositionNFT positionId={positionId} />
                 <PositionLiquidity />
-                <PositionAPR />
+                <PositionAPR /> */}
             </div>
             <div className="flex w-full">
                 <div className="w-full h-[200px]">

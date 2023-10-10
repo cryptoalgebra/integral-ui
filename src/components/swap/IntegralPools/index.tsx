@@ -23,15 +23,17 @@ const IntegralPools = () => {
 
     return <div className="relative flex flex-col w-full gap-2 py-2 pt-3 px-4 bg-card rounded-3xl border border-card-border">
 
-        <div className="absolute text-sm font-bold text-left -top-[10px] bg-[#771bff] w-fit px-2 rounded-lg">∫ INTEGRAL POOLS</div>
+        <div className="absolute text-sm font-semibold text-left -top-[10px] text-[#e97fff] bg-[#450174] w-fit px-2 pb-1 rounded-lg">
+            Integral Pools
+        </div>
 
         <div className="flex items-center justify-between">
 
             <Popover>
-                <PopoverTrigger className="flex items-center gap-4 w-fit py-2 px-4 rounded-2xl  border-card-border hover:bg-card-hover">
+                <PopoverTrigger className="flex items-center gap-4 w-fit py-2 px-4 rounded-2xl border-card-border hover:bg-card-hover duration-200">
                     <div className="flex">
-                        <CurrencyLogo currency={currencyA} size={30} />
-                        <CurrencyLogo currency={currencyB} size={30} style={{ marginLeft: '-8px' }} />
+                        <CurrencyLogo currency={currencyA} size={25} />
+                        <CurrencyLogo currency={currencyB} size={25} style={{ marginLeft: '-8px' }} />
                     </div>
                     <div className="text-lg font-semibold">{title}</div>
                     <div>
@@ -39,7 +41,7 @@ const IntegralPools = () => {
                     </div>
                 </PopoverTrigger>
 
-                <PopoverContent className="w-fit bg-card rounded-3xl border border-card-border">
+                <PopoverContent className="bg-card rounded-3xl border border-card-border">
                     <IntegralPoolsList poolAddress={poolAddress} />
                 </PopoverContent>
             </Popover>
@@ -60,7 +62,7 @@ const IntegralPoolsList = memo(({ poolAddress }: { poolAddress: Address | undefi
 
     const { data: pools, loading } = usePoolsListQuery()
 
-    if (loading) return <span className="text-white">Loading...</span>
+    if (loading) return <span className="flex w-full justify-center text-white !min-w-[240px] m-auto"> <Loader /> </span>
 
     return <div className="flex flex-col gap-2">{pools?.pools.filter((pool) => poolAddress?.toLowerCase() !== pool.id.toLowerCase()).map((pool, idx) => <IntegralPoolsListItem key={`integral-pool-item-${idx}`} pool={pool} />)}</div>
 
@@ -82,7 +84,7 @@ const IntegralPoolsListItem = memo(({ pool }: { pool: PoolFieldsFragment }) => {
         selectCurrency(SwapField.OUTPUT, pool.token1.id)
     }
 
-    return <div className="flex items-center gap-4 min-h-[40px] text-white px-2 py-1 rounded-2xl cursor-pointer hover:bg-card-hover" onClick={selectPool}>
+    return <div className="flex items-center gap-4 min-h-[40px] text-white px-2 py-1 rounded-2xl whitespace-nowrap cursor-pointer hover:bg-card-hover duration-200" onClick={selectPool}>
         <div className="flex">
             <CurrencyLogo currency={currencyA} size={25} />
             <CurrencyLogo currency={currencyB} size={25} style={{marginLeft: '-8px'}} />

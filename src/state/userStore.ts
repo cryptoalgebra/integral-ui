@@ -1,4 +1,5 @@
 import { Percent } from "@cryptoalgebra/integral-sdk";
+import { useMemo } from "react";
 import { Address } from "wagmi";
 import { create } from "zustand";
 
@@ -13,12 +14,12 @@ interface PendingTransactions {
 }
 
 interface UserState {
-    txDeadline: string;
-    slippage: Percent;
+    txDeadline: number;
+    slippage: Percent | "auto";
     pendingTransactions: PendingTransactions;
     actions: {
-        setTxDeadline: (txDeadline: string) => void;
-        setSlippage: (slippage: Percent) => void;
+        setTxDeadline: (txDeadline: number) => void;
+        setSlippage: (slippage: Percent | "auto") => void;
         addPendingTransaction: (hash: Address) => void;
         updatePendingTransaction: (hash: Address, transaction: Transaction) => void;
         deletePendingTransaction: (hash: Address) => void
@@ -26,8 +27,8 @@ interface UserState {
 }
 
 export const useUserState = create<UserState>((set, get) => ({
-    txDeadline: '300',
-    slippage: new Percent('1', '100'),
+    txDeadline: 180,
+    slippage: "auto",
     pendingTransactions: {},
     actions: {
         setTxDeadline: (txDeadline) => set({
@@ -61,3 +62,9 @@ export const useUserState = create<UserState>((set, get) => ({
         }
     }
 }))
+
+
+export function useUserSlippageToleranceWithDefault(defaultSlippageTolerance: Percent): Percent {
+    const { slippage } = useUserState();
+    return useMemo(() => (slippage === "auto" ? defaultSlippageTolerance : slippage), [slippage, defaultSlippageTolerance]);
+}

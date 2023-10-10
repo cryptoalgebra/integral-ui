@@ -2,7 +2,7 @@ import { useAlgebraPositionManagerTokenUri } from "@/generated";
 import { useEffect, useRef } from "react";
 
 interface PositionNFTProps {
-    positionId: string;
+    positionId: number;
 }
 
 const PositionNFT = ({ positionId }: PositionNFTProps) => {

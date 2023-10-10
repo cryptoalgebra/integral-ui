@@ -2,6 +2,7 @@ import { useAlgebraPoolGlobalState, useAlgebraPoolTickSpacing } from "@/generate
 import { useCurrency } from "@/hooks/common/useCurrency"
 import { usePool } from "@/hooks/pools/usePool"
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade"
+import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
 import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Position, Trade, TradeType, ZERO, computePoolAddress } from "@cryptoalgebra/integral-sdk"
@@ -206,11 +207,9 @@ export function useDerivedSwapInfo(): {
     }
 
     const toggledTrade = trade.trade ?? undefined
-    // const allowedSlippage = useSwapSlippageTolerance(toggledTrade)
-    const allowedSlippage = new Percent(50, 10_000)
 
+    const allowedSlippage = useSwapSlippageTolerance(toggledTrade)
 
-    // compare input balance to max input based on version
     const [balanceIn, amountIn] = [currencyBalances[SwapField.INPUT], toggledTrade?.maximumAmountIn(allowedSlippage)]
 
     if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {

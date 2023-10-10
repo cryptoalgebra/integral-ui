@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from "react-router-dom";
 
@@ -12,18 +13,14 @@ import './index.css'
 
 import SwapPage from "@/pages/Swap";
 import Page404 from "@/pages/Page404";
-import PoolsPage from "@/pages/Pools";
-import NewPositionPage from "@/pages/NewPosition";
-import PositionPage from "@/pages/Position";
 
 import { SwapPageView } from "@/pages/Swap/types";
-import PoolPage from "@/pages/Pool/index";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App> Hello </App>,
+    element: <Navigate replace to={'/swap'} />,
     errorElement: <Page404 />
   },
   {
@@ -34,22 +31,22 @@ const router = createBrowserRouter([
     path: '/limit-order',
     element: <App> <SwapPage type={SwapPageView.LIMIT_ORDER} /> </App>
   },
-  {
-    path: '/pools',
-    element: <App> <PoolsPage /> </App>
-  },
-  {
-    path: '/pools/:pool',
-    element: <App> <PoolPage /> </App>
-  },
-  {
-    path: '/pools/:pool/new-position',
-    element: <App> <NewPositionPage/> </App>
-  },
-  {
-    path: '/positions/:position',
-    element: <App> <PositionPage/> </App>
-  }
+  // {
+  //   path: '/pools',
+  //   element: <App> <PoolsPage /> </App>
+  // },
+  // {
+  //   path: '/pools/:pool',
+  //   element: <App> <PoolPage /> </App>
+  // },
+  // {
+  //   path: '/pools/:pool/new-position',
+  //   element: <App> <NewPositionPage/> </App>
+  // },
+  // {
+  //   path: '/positions/:position',
+  //   element: <App> <PositionPage/> </App>
+  // }
 ]);
 
 const client = new ApolloClient({

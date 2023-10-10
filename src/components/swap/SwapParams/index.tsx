@@ -28,7 +28,7 @@ const SwapParams = () => {
         return 100 - p;
     }, [tradeState.fee]);
 
-    const { realizedLPFee, priceImpact } = useMemo(() => {
+    const { realizedLPFee } = useMemo(() => {
         if (!trade) return { realizedLPFee: undefined, priceImpact: undefined };
 
         const realizedLpFeePercent = computeRealizedLPFeePercent(trade);
@@ -56,7 +56,7 @@ const SwapParams = () => {
                     </div>
                 </button>
             </div>
-            <div className={`h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-xl ${isExpanded && "h-[180px]"}`}>
+            <div className={`h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-xl ${isExpanded && "h-[140px]"}`}>
                 <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
                     <div className="flex items-center justify-between">
                         <span className="font-semibold">Route</span>
@@ -76,13 +76,12 @@ const SwapParams = () => {
                         <span className="font-semibold">LP Fee</span>
                         <span>{LPFeeString}</span>
                     </div>
-                    <div className="flex items-center justify-between">
+                    {/* <div className="flex items-center justify-between">
                         <span className="font-semibold">Price impact</span>
                         <span>
-                        {priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}
-                            {/* <FormattedPriceImpact priceImpact={priceImpact} /> */}
+                            <PriceImpact priceImpact={priceImpact} />
                         </span>
-                    </div>
+                    </div> */}
                     <div className="flex items-center justify-between">
                         <span className="font-semibold">Slippage tolerance</span>
                         <span>{allowedSlippage.toFixed(2)}%</span>
@@ -113,5 +112,15 @@ const SwapRoute = ({ trade }: { trade: Trade<Currency, Currency, TradeType> }) =
     </div>
 
 }
+
+// const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
+
+//     const severity = warningSeverity(priceImpact)
+
+//     const color = severity === 3 || severity === 4 ? 'text-red-400' : severity === 2 ? 'text-yellow-400' : 'text-white'
+    
+//     return <span className={color}>{priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}</span>
+
+// }
 
 export default SwapParams

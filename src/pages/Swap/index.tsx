@@ -6,7 +6,6 @@ import SwapChart from "@/components/swap/SwapChart";
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import IntegralPools from "@/components/swap/IntegralPools";
-import { NavLink } from "react-router-dom";
 import LimitOrdersList from "@/components/limit-orders/LimitOrdersList";
 import LimitOrder from "@/components/limit-orders/LimitOrder";
 
@@ -16,16 +15,11 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return <PageContainer>
 
-        <div className="flex gap-8">
-            <PageTitle>
-                <NavLink to={'/swap'} className={({ isActive }) => isActive ? "text-white" : "text-gray-500"}>Swap</NavLink>
-            </PageTitle>
-            <PageTitle>
-                <NavLink to={'/limit-order'} className={({ isActive }) => isActive ? "text-white" : "text-gray-500"}>Limit Order</NavLink>
-            </PageTitle>
-        </div>
+        <PageTitle>
+            {isLimitOrder ? 'Limit Order' : 'Swap'}
+        </PageTitle>
 
-        <div className="grid grid-cols-3 gap-8 w-full mt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
 
             <div className="flex flex-col gap-2">
 
@@ -34,7 +28,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
                 <div className="flex flex-col gap-1 w-full bg-card border border-card-border p-2 rounded-3xl">
                     <SwapPair />
                     {isLimitOrder ? <LimitOrder /> : <SwapParams />}
-                    {!isLimitOrder && <SwapButton />  }
+                    {!isLimitOrder && <SwapButton />}
                 </div>
             </div>
 

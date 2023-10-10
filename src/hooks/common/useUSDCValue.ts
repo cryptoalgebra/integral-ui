@@ -1,6 +1,6 @@
 import { STABLECOINS } from "@/constants/tokens"
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql"
-import { Currency, CurrencyAmount, tryParseAmount } from "@cryptoalgebra/integral-sdk"
+import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/integral-sdk"
 import { useMemo } from "react"
 
 export function useUSDCPrice(currency: Currency | undefined) {
@@ -15,21 +15,31 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
     return useMemo(() => {
 
-        if (!currency || !bundles?.bundles?.[0] || !token?.token) return undefined
+        if (!currency || !bundles?.bundles?.[0] || !token?.token) return {
+            price: undefined,
+            formatted: 0
+        }
 
-        if (STABLECOINS.USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) return 1
+        if (STABLECOINS.USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) return {
+            price: new Price(STABLECOINS.USDC, STABLECOINS.USDC, '1', '1'),
+            formatted: 1
+        }
 
         const tokenUSDValue = Number(token.token.derivedMatic) * Number(bundles.bundles[0].maticPriceUSD)
 
         const usdAmount = tryParseAmount(tokenUSDValue.toString(), currency)
 
-        console.log('tokenUSDValue', usdAmount?.toSignificant())
-
         if (usdAmount) {
-            return Number(usdAmount.toSignificant())
+            return {
+                price: new Price(currency, STABLECOINS.USDC, usdAmount.denominator, usdAmount.numerator),
+                formatted: Number(usdAmount.toSignificant())
+            }
         }
 
-        return undefined
+        return {
+            price: undefined,
+            formatted: 0
+        }
 
     }, [currency, bundles, token])
 
@@ -37,16 +47,25 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
 export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefined | null) {
 
-    const price = useUSDCPrice(currencyAmount?.currency)
+    const { price, formatted } = useUSDCPrice(currencyAmount?.currency)
 
     return useMemo(() => {
 
-        if (!price || !currencyAmount) return null
+        if (!price || !currencyAmount) return {
+            price: null,
+            formatted: null
+        }
 
         try {
-            return Number(currencyAmount.toSignificant()) * price;
+            return {
+                price: price.quote(currencyAmount),
+                formatted: Number(currencyAmount.toSignificant()) * formatted
+            }
         } catch {
-            return null
+            return {
+                price: null,
+                formatted: null
+            }
         }
 
     }, [currencyAmount, price])

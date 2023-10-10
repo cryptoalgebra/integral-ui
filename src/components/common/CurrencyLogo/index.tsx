@@ -33,7 +33,7 @@ const CurrencyLogo = ({ currency, size, style }: CurrencyLogoProps) => {
 
     const address = currency.wrapped.address.toLowerCase() as Address;
 
-    const classString = `w-[${size}px] h-[${size}px] bg-black rounded-full`
+    const classString = `w-[${size}px] h-[${size}px] bg-card-dark rounded-full`
 
     if (address in specialTokens) {
         return <img src={specialTokens[address].logo} alt={specialTokens[address].symbol} width={size} height={size} className={classString} style={style} />

@@ -3,10 +3,13 @@ import { CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/integral-sdk"
 import { ColumnDef } from '@tanstack/react-table'
 import { CheckCircle2Icon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
-import { usePrepareAlgebraLimitOrderPluginKill, usePrepareAlgebraLimitOrderPluginWithdraw } from "@/generated";
+import { usePrepareAlgebraLimitOrderPluginWithdraw } from "@/generated";
 import { Address, useContractWrite } from "wagmi";
 import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
 import Loader from "../Loader";
+import { useWeb3ModalState } from "@web3modal/wagmi/react";
+import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import KillLimitOrderModal from "@/components/modals/KillLimitOrderModal";
 
 interface Epoch {
     id: string;
@@ -41,7 +44,7 @@ interface Amounts {
     sell: Amount;
 }
 
-interface LimitOrder {
+export interface LimitOrder {
     liquidity: string;
     owner: Address;
     epoch: Epoch;
@@ -53,25 +56,19 @@ interface LimitOrder {
     pool: Pool;
 }
 
-const TokenAmount = ({ amount }: { amount: Amount } ) => {
-
-    return <div className="flex items-center gap-4">
-    <CurrencyLogo currency={amount.token} size={35}/>
-    <div className="text-left">
-        <div className="font-bold">{amount.token.symbol}</div>
-        <div>{amount.amount.toSignificant()}</div>
+const TokenAmount = ({ amount }: { amount: Amount }) => <div className="flex items-center gap-4">
+        <CurrencyLogo currency={amount.token} size={35} />
+        <div className="text-left">
+            <div className="font-bold">{amount.token.symbol}</div>
+            <div>{amount.amount.toSignificant()}</div>
+        </div>
     </div>
-</div>
 
-}
-
-const TokenRates = ({ rates }: { rates: Rates }) => {
-
-    return <div className="flex flex-col text-left">
+const TokenRates = ({ rates }: { rates: Rates }) => <div className="flex flex-col text-left">
         <div>{`1 ${rates.buy.token.symbol} = ${rates.buy.rate.toSignificant()} ${rates.sell.token.symbol}`}</div>
         <div>{`1 ${rates.sell.token.symbol} = ${rates.sell.rate.toSignificant()} ${rates.buy.token.symbol}`}</div>
     </div>
-}
+
 
 const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
 
@@ -80,37 +77,25 @@ const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
         <span>Completed</span>
     </div>
 
-    if (ticks.tickCurrent < ticks.tickLower) return 0
+    if (ticks.tickCurrent < ticks.tickLower) return <div className="text-left">0%</div>
 
-    const progress = 100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower) 
+    const progress = 100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower)
 
-    return <div>{progress}</div>
+    return <div className="text-left">{`${progress}%`}</div>
 
 }
 
-const KillLimitOrderButton = ({ ticks, liquidity, zeroToOne, owner, pool }: LimitOrder) => {
+const Action = (props: LimitOrder) => {
 
-    const { config: killConfig } = usePrepareAlgebraLimitOrderPluginKill({
-        args: [
-            {
-                token0: pool.token0.address as Address,
-                token1: pool.token1.address as Address
-            },
-            ticks.tickLower,
-            ticks.tickUpper,
-            BigInt(liquidity),
-            zeroToOne,
-            owner
-        ]
-    })
+    const { selectedNetworkId } = useWeb3ModalState()
 
-    const { data: killData, write: kill } = useContractWrite(killConfig)
+    if (selectedNetworkId !== DEFAULT_CHAIN_ID) return
 
-    const { isLoading: isKillLoading } = useTransitionAwait(killData?.hash, 'Remove liquidity')
+    if (props.epoch.filled && props.liquidity === "0") return
 
-    return <Button onClick={() => kill && kill()}>
-        {isKillLoading ? <Loader /> : 'Kill' }
-    </Button>
+    if (props.epoch.filled) return <WithdrawLimitOrderButton {...props} />
+    
+    return <KillLimitOrderModal {...props} />
 
 }
 
@@ -126,38 +111,40 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
     const { data: withdrawData, write: withdraw } = useContractWrite(withdrawConfig)
 
     const { isLoading: isWithdrawLoading } = useTransitionAwait(withdrawData?.hash, 'Collect Limit Order')
-    
-    return <Button onClick={() => withdraw && withdraw()}>
-        {isWithdrawLoading ? <Loader /> : 'Withdraw' }
-    </Button>
 
+    return <Button size={'sm'} onClick={() => withdraw && withdraw()}>
+        {isWithdrawLoading ? <Loader /> : 'Withdraw'}
+    </Button>
 
 }
 
+const HeaderItem = ({ title }: { title: string }) => <div className="pt-1">
+    <span className="rounded-xl px-2 py-1 hover:bg-card-hover duration-300 cursor-pointer -ml-2">{title}</span>
+</div>
+
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
-        accessorKey: 'amounts.buy', 
-        // header: () => <div className="py-1 py-2 hover:bg-red-500 -ml-4 h-full rounded-tl-3xl">You buy</div>,
-        header: () => 'You buy',
-        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />
+        accessorKey: 'amounts.buy',
+        header: () => <HeaderItem title={'You buy'} />,
+        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
     },
     {
         accessorKey: 'amounts.sell',
-        header: 'You sell',
+        header: () => <HeaderItem title={'You sell'} />,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />
     },
     {
         accessorKey: 'rates',
-        header: 'Rates',
-        cell: ({ getValue }) => <TokenRates rates={getValue() as Rates } />
+        header: () => <HeaderItem title={'Rates'} />,
+        cell: ({ getValue }) => <TokenRates rates={getValue() as Rates} />
     },
     {
         accessorKey: 'ticks',
-        header: 'Status',
-        cell: ({ getValue }) => <LimitOrderStatus ticks={getValue() as Ticks} />,
+        header: () => <HeaderItem title={'Status'} />,
+        cell: ({ getValue }) => <LimitOrderStatus ticks={getValue() as Ticks} />
     },
     {
-        header: 'Actions',
-        cell: (props) => props.row.original.epoch.filled ? <WithdrawLimitOrderButton {...props.row.original} /> : <KillLimitOrderButton {...props.row.original} />
+        id: 'action',
+        cell: (props) => <Action {...props.row.original} />
     }
 ]

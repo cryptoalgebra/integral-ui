@@ -128,7 +128,7 @@ export function usePositions() {
     }
 }
 
-export function usePosition(tokenId: string | undefined): { loading: boolean; position: PositionFromTokenId | undefined } {
+export function usePosition(tokenId: string | number | undefined): { loading: boolean; position: PositionFromTokenId | undefined } {
     const { isLoading, positions } = usePositionsFromTokenIds(tokenId ? [tokenId] : undefined)
     return {
         loading: isLoading,

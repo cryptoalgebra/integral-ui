@@ -9,7 +9,7 @@ interface PoolsListItemProps {
 
 const PoolsListItem = ({ token0, token1, pool }: PoolsListItemProps) => {
 
-    return <NavLink to={`/pools/${pool}/new-position`}>
+    return <NavLink to={`/pools/${pool}`}>
         {`${token0.symbol} / ${token1.symbol}`}
     </NavLink>
 

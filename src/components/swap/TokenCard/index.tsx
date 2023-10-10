@@ -4,7 +4,7 @@ import { SwapFieldType } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { Currency, Percent } from "@cryptoalgebra/integral-sdk";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Address, useAccount, useBalance } from "wagmi";
 
 interface TokenSwapCardProps {
@@ -36,8 +36,12 @@ const TokenCard = ({ handleValueChange, handleMaxValue, value, currency, fiatVal
         return formatCurrency.format(Number(balance.formatted))
 
     }, [balance, isLoading]);
+    
+    const handleInput = useCallback((value: string) => {
+        if (value === ".") value = "0.";
+        handleValueChange(value);
+    }, []);
 
-    console.log('fiatValue', fiatValue)
 
     return <div className="flex bg-card-dark p-3 rounded-2xl">
         <div className="flex flex-col gap-2">
@@ -61,7 +65,7 @@ const TokenCard = ({ handleValueChange, handleMaxValue, value, currency, fiatVal
         </div>
 
         <div className="flex flex-col items-end w-full">
-            <Input value={value} id={`amount-${currency?.symbol}`} onChange={(e) => handleValueChange(e.target.value.trim())} className={`text-right border-none text-xl font-bold w-9/12 p-0`} placeholder={'0.0'} />
+            <Input value={value} id={`amount-${currency?.symbol}`} onChange={(e) => handleInput(e.target.value.trim())} className={`text-right border-none text-xl font-bold w-9/12 p-0`} placeholder={'0.0'} />
             <div className="text-sm">{fiatValue && formatUSD.format(fiatValue)}</div>
         </div>
     </div>

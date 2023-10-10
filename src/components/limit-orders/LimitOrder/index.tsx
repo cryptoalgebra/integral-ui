@@ -5,6 +5,7 @@ import {  getTickToPrice, tickToPrice, tryParseTick } from "@cryptoalgebra/integ
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
+import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 
 const LimitOrder = () => {
 
@@ -23,8 +24,6 @@ const LimitOrder = () => {
 
     const [token0, token1] = tokenA && tokenB && !showWrap ? (tokenA?.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]) : [undefined, undefined];
 
-    // const previousTokens = usePrevious(token0 && token1 ? token0.address + token1.address : "");
-
     const invertPrice = Boolean(currencies[SwapField.INPUT] && token0 && !currencies[SwapField.INPUT]?.wrapped.equals(token0));
 
     const zeroToOne = !invertPrice
@@ -32,6 +31,8 @@ const LimitOrder = () => {
     const [wasInverted, setWasInverted] = useState(false);
 
     const [poolState, pool] = usePool(poolAddress);
+
+    const { limitOrderPlugin } = usePoolPlugins(poolAddress)
 
     const initialSellPrice = useMemo(() => {
         if (!pool) return "";
@@ -137,12 +138,10 @@ const LimitOrder = () => {
 
     useEffect(() => {
         setInitialSingleHop(singleHopOnly);
-        // setSingleHopOnly(true);
 
         return () => {
             typeLimitOrderPrice("");
             limitOrderPriceWasInverted(false);
-            // setSingleHopOnly(initialSingleHop);
         };
     }, [initialSingleHop]);
 
@@ -164,7 +163,8 @@ const LimitOrder = () => {
             disabled={showWrap || !isPoolExists}
         />
         <LimitOrderButton 
-            disabled={blockCreation} 
+            disabled={blockCreation}
+            limitOrderPlugin={limitOrderPlugin}
             token0={token0} 
             token1={token1} 
             poolAddress={poolAddress} 

@@ -18,7 +18,10 @@ createWeb3Modal({
   chainImages: {
     5: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
   },
-  defaultChain: goerli
+  defaultChain: goerli,
+  themeVariables: {
+    '--w3m-accent': '#2797ff'
+  }
 })
 
 function App({ children }: { children: React.ReactNode }) {

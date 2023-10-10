@@ -1,20 +1,22 @@
 import { Currency, CurrencyAmount, Fraction, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk"
+import JSBI from "jsbi"
 
-const ONE_HUNDRED_PERCENT = new Percent('10000', '10000')
+export const ONE_BIPS = new Percent(JSBI.BigInt(1), JSBI.BigInt(10000))
+export const BIPS_BASE = JSBI.BigInt(10000)
+const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000))
 
-const BIPS_BASE = '10000'
+export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(JSBI.BigInt(100), BIPS_BASE) // 1%
+export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(JSBI.BigInt(300), BIPS_BASE) // 3%
+export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(JSBI.BigInt(500), BIPS_BASE) // 5%
+export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(JSBI.BigInt(1000), BIPS_BASE) // 10%
+export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(JSBI.BigInt(1500), BIPS_BASE) // 15%
 
-const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent('100', BIPS_BASE) // 1%
-const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent('300', BIPS_BASE) // 3%
-const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent('500', BIPS_BASE) // 5%
-const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent('1500', BIPS_BASE) // 15%
 
-// computes realized lp fee as a percent
 export function computeRealizedLPFeePercent(
     trade: Trade<Currency, Currency, TradeType>
 ): Percent {
 
-    let percent = ONE_HUNDRED_PERCENT.subtract(
+    const percent = ONE_HUNDRED_PERCENT.subtract(
         trade.route.pools.reduce<Percent>(
             (currentFee: Percent, pool): Percent =>
                 currentFee.multiply(ONE_HUNDRED_PERCENT.subtract(new Fraction(pool.fee, 1_000_000))),
@@ -25,14 +27,12 @@ export function computeRealizedLPFeePercent(
     return new Percent(percent.numerator, percent.denominator)
 }
 
-// computes price breakdown for the trade
 export function computeRealizedLPFeeAmount(
     trade?: Trade<Currency, Currency, TradeType> | null
 ): CurrencyAmount<Currency> | undefined {
     if (trade) {
         const realizedLPFee = computeRealizedLPFeePercent(trade)
 
-        // the amount of the input that accrues to LPs
         return CurrencyAmount.fromRawAmount(trade.inputAmount.currency, trade.inputAmount.multiply(realizedLPFee).quotient)
     }
 

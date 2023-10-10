@@ -1,12 +1,11 @@
 import PageContainer from "@/components/common/PageContainer"
 import PageTitle from "@/components/common/PageTitle"
 import MyPositions from "@/components/pool/MyPositions"
-import PositionLiquidity from "@/components/position/PositionLiquidity"
-import PositionNFT from "@/components/position/PositionNFT"
-import { Button } from "@/components/ui/button"
+import PositionCard from "@/components/position/PositionCard"
 import { usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql"
 import { usePool } from "@/hooks/pools/usePool"
 import { usePositions } from "@/hooks/positions/usePositions"
+import { FormattedPosition } from "@/types/formatted-position"
 import { getPositionAPR } from "@/utils/positions/getPositionAPR"
 import { getPositionFees } from "@/utils/positions/getPositionFees"
 import { Position } from "@cryptoalgebra/integral-sdk"
@@ -14,9 +13,13 @@ import { useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Address } from "viem"
 
+
+
 const PoolPage = () => {
 
     const { pool: poolId } = useParams() as { pool: Address }
+
+    const [selectedPositionId] = useState<number | null>(4)
 
     const [, poolEntity] = usePool(poolId)
 
@@ -39,7 +42,7 @@ const PoolPage = () => {
 
     const poolFee = poolEntity && poolEntity.fee / 10_000
 
-    const {  positions } = usePositions()
+    const { positions } = usePositions()
 
     const filteredPositions = useMemo(() => {
 
@@ -109,16 +112,22 @@ const PoolPage = () => {
             id: positionId,
             outOfRange: poolEntity.tickCurrent < position.tickLower || poolEntity.tickCurrent > position.tickUpper,
             range: `${position.token0PriceLower.toFixed()} - ${position.token0PriceUpper.toFixed()}`,
-            liquidity: formatLiquidityUSD(position),
-            fees: formatFeesUSD(idx),
+            liquidityUSD: formatLiquidityUSD(position),
+            feesUSD: formatFeesUSD(idx),
             apr: formatAPR(idx)
-        }))
+        }) as FormattedPosition)
 
     }, [filteredPositions, poolEntity, poolInfo, positionsFees, positionsAPRs])
 
-    const [myLiquidityUSD, myFeesUSD] = positionsData ? positionsData.reduce((acc, { liquidity, fees }) => [acc[0] + liquidity, acc[1] + fees], [0, 0]) : []
+    // const [myLiquidityUSD, myFeesUSD] = positionsData ? positionsData.reduce((acc, { liquidityUSD, feesUSD }) => [acc[0] + liquidityUSD, acc[1] + feesUSD], [0, 0]) : []
 
-    console.log(myLiquidityUSD, myFeesUSD)
+    const selectedPosition = useMemo(() => {
+
+        if (!positionsData || !selectedPositionId) return
+
+        return positionsData.find(({ id }) => Number(id) === Number(selectedPositionId))
+
+    }, [selectedPositionId, positionsData])
 
     return <PageContainer>
         <PageTitle>{`${token0?.symbol} / ${token1?.symbol}`}</PageTitle>
@@ -126,7 +135,7 @@ const PoolPage = () => {
 
         <h3>My Positions</h3>
         <div className="grid grid-cols-3 gap-8 w-full">
-            <div className="col-span-2 bg-card-gradient border border-card-border p-4 rounded-2xl">
+            <div className="col-span-2">
                 <MyPositions positions={positionsData} poolId={poolId} />
             </div>
             <div className="flex flex-col gap-8 w-full h-full">
@@ -141,20 +150,7 @@ const PoolPage = () => {
                     </div>
                     <Button>Claim</Button>
                 </div> */}
-                <div className="flex flex-col gap-8">
-                    <div className="flex w-full text-right">
-                        <PositionNFT positionId={'1'} />
-                        <div className="w-[235px]">
-                        <h2 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-2xl">Position #1</h2>
-                        <div>Liquidity $20</div>
-                        <div>APR 12%</div>
-                        <div>Opensea</div>
-                        <Button>Manage</Button>
-                        </div>
-                    </div>
-                    <PositionLiquidity />
-                    {/* <PositionAPR /> */}
-                </div>
+               <PositionCard selectedPosition={selectedPosition} />
             </div>
         </div>
     </PageContainer>

@@ -17,7 +17,7 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
+        border: "#5F5F82",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
@@ -25,7 +25,8 @@ module.exports = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          button: "#2797ff"
+          button: "#2797ff",
+          text: "#56adff"
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -38,6 +39,7 @@ module.exports = {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
+          primary: "#0a2b49"
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -78,6 +80,10 @@ module.exports = {
       },
       borderColor: {
         "card-border": "#5F5F82"
+      },
+      dropShadow: {
+        "cyan": "0 0 5px rgba(7, 142, 253, 0.8)",
+        "pink": "0 0 5px rgba(255, 120, 217, 0.7)"
       }
     },
   },

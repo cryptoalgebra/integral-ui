@@ -5,6 +5,13 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Address, useWaitForTransaction } from "wagmi";
 
+const ViewTxOnExplorer = ({hash}: { hash: Address | undefined }) => hash ? <ToastAction altText="View on explorer" asChild>
+    <Link to={`https://goerli.etherscan.io/tx/${hash}`} target={'_blank'} className="border-none gap-2 hover:bg-transparent hover:text-blue-400">
+        View on explorer
+        <ExternalLinkIcon size={16} />
+    </Link>
+</ToastAction> : null
+
 export function useTransitionAwait(hash: Address | undefined, title: string, description?: string) {
 
     // const { pendingTransactions, actions: { updatePendingTransaction } } = useUserState()
@@ -20,12 +27,7 @@ export function useTransitionAwait(hash: Address | undefined, title: string, des
             toast({
                 title: title,
                 description: description || 'Transaction was sent',
-                action: <ToastAction altText="View on explorer" asChild>
-                    <Link to={'https://goerli.etherscan.io'} target={'_blank'} className="border-none gap-2 hover:bg-transparent hover:text-blue-400">
-                        View on explorer
-                        <ExternalLinkIcon size={16} />
-                    </Link>
-                </ToastAction>,
+                action: <ViewTxOnExplorer hash={hash} />,
             })
         }
     }, [isLoading])
@@ -35,12 +37,7 @@ export function useTransitionAwait(hash: Address | undefined, title: string, des
             toast({
                 title: title,
                 description: description || 'Transaction failed',
-                action: <ToastAction altText="View on explorer" asChild>
-                    <Link to={'https://goerli.etherscan.io'} target={'_blank'} className="border-none gap-2 hover:bg-transparent hover:text-blue-400">
-                        View on explorer
-                        <ExternalLinkIcon size={16} />
-                    </Link>
-                </ToastAction>,
+                action: <ViewTxOnExplorer hash={hash} />,
             })
         }
     }, [isError])
@@ -50,20 +47,15 @@ export function useTransitionAwait(hash: Address | undefined, title: string, des
             toast({
                 title: title,
                 description: description || 'Transaction approved',
-                action: <ToastAction altText="View on explorer" asChild>
-                    <Link to={'https://goerli.etherscan.io'} target={'_blank'} className="border-none gap-2 hover:bg-transparent hover:text-blue-400">
-                        View on explorer
-                        <ExternalLinkIcon size={16} />
-                    </Link>
-                </ToastAction>,
+                action: <ViewTxOnExplorer hash={hash} />,
             })
         }
     }, [isSuccess])
 
     return {
-        data, 
-        isError, 
-        isLoading, 
+        data,
+        isError,
+        isLoading,
         isSuccess
     }
 

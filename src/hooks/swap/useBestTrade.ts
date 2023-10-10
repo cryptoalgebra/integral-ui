@@ -56,8 +56,6 @@ export function useBestTradeExactIn(
             (currentBest: { bestRoute: Route<Currency, Currency> | null; amountOut: any | null; fee: bigint[] | null }, { result }: any, i) => {
                 if (!result) return currentBest
 
-                console.log('currentBest', currentBest.amountOut)
-
                 if (currentBest.amountOut === null) {
                     return {
                         bestRoute: routes[i],

@@ -282,10 +282,10 @@ const SwapChart = () => {
         }))
     }, [tokenA, tokenB, chartPair])
 
-    return (<div className="flex flex-col gap-6 w-full h-full">
-        <div className="flex justify-between">
+    return (<div className="flex flex-col gap-6 w-full h-full relative">
+        <div className="flex flex-col md:flex-row gap-4 justify-between">
             <Popover>
-                <PopoverTrigger className="flex items-center justify-between min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover">
+                <PopoverTrigger className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
                     <div className="flex items-center gap-4 font-semibold">
                         <span className="flex">{pairImage}</span>
                         <span>{pairTitle}</span>
@@ -298,12 +298,12 @@ const SwapChart = () => {
                 <PopoverContent className="bg-card rounded-3xl border border-card-border">
                     <div className="flex flex-col gap-2 text-white">
                         {
-                            pairSelectorList?.map((item) => <div key={`chart-pair-selector-item-${item.pair}`} className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover" onClick={() => setChartPair(item.pair)}>{item.title}</div>)
+                            pairSelectorList?.map((item) => <div key={`chart-pair-selector-item-${item.pair}`} className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover duration-200" onClick={() => setChartPair(item.pair)}>{item.title}</div>)
                         }
                     </div>
                 </PopoverContent>
             </Popover>
-            <div className="flex gap-4 p-2 bg-card border border-card-border rounded-3xl">
+            <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
                 <div className="flex gap-2">
                     <Button variant={chartSpan === SwapChartSpan.DAY ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.DAY)}>
                         1D
@@ -322,9 +322,9 @@ const SwapChart = () => {
                     </Button>
                     <HoverCard>
                         <HoverCardTrigger>
-                        <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
-                        <CandlestickChartIcon size={20} />
-                    </Button>
+                            <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
+                                <CandlestickChartIcon size={20} />
+                            </Button>
                         </HoverCardTrigger>
                         <HoverCardContent>
                             <div className="font-bold">Candlestick chart</div>
@@ -346,27 +346,31 @@ const SwapChart = () => {
                 </HoverCard>
             </div>
         </div>
-        <div className="flex flex-col items-end w-full text-3xl text-right">
-            {chartCreated ? <>
-                <div className="text-3xl font-bold">
-                    <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
-                    <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
-                </div>
-                <div className="text-[#b7b7b7] text-sm">
-                    {displayValue ? displayDate : null}
-                </div>
-            </> : <>
-                <Skeleton className="w-[150px] h-[38px] bg-card" />
-                <Skeleton className="w-[60px] h-[18px] bg-card mt-[2px]" />
-            </>}
-        </div>
-        <div className={`flex items-center justify-center relative w-full h-full`}>
+        <div className={`flex items-center justify-center relative w-full h-[300px]`}>
+
             <div className="flex items-center justify-center w-full h-full" ref={chartRef}></div>
+
+            <div className="absolute right-0 top-0 flex flex-col items-end w-full text-3xl text-right">
+                {chartCreated ? <>
+                    <div className="text-3xl font-bold">
+                        <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
+                        <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
+                    </div>
+                    <div className="text-[#b7b7b7] text-sm">
+                        {displayValue ? displayDate : null}
+                    </div>
+                </> : <>
+                    <Skeleton className="w-[150px] h-[38px] bg-card" />
+                    <Skeleton className="w-[60px] h-[18px] bg-card mt-[2px]" />
+                </>}
+            </div>
+            
             {!chartCreated ? (
                 <div className="flex items-center justify-center absolute w-full h-full">
                     <Loader />
                 </div>
             ) : null}
+
         </div>
     </div>
     );

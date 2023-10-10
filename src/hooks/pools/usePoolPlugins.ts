@@ -27,7 +27,7 @@ export function usePoolPlugins(poolId: Address | undefined) {
     return {
         dynamicFeePlugin: hasDynamicFee,
         farmingPlugin: hasFarmingPlugin !== ADDRESS_ZERO,
-        limitOrderPlugin: hasLimitOrderPlugin,
+        limitOrderPlugin: Boolean(hasLimitOrderPlugin),
         isLoading
     }
 

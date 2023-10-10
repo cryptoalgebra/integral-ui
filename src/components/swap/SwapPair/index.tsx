@@ -1,10 +1,11 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { Currency, CurrencyAmount, getTickToPrice, maxAmountSpend, tryParseAmount, Percent } from "@cryptoalgebra/integral-sdk";
-import { useCallback, useEffect, useMemo } from "react";
+import { Currency, CurrencyAmount, getTickToPrice, maxAmountSpend, tryParseAmount } from "@cryptoalgebra/integral-sdk";
+import { useCallback, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
+import { computeFiatValuePriceImpact } from "@/utils/swap/computePriceImpact";
 
 const SwapPair = () => {
 
@@ -27,11 +28,8 @@ const SwapPair = () => {
 
     const { onSwitchTokens, onCurrencySelection, onUserInput } = useSwapActionHandlers();
 
-    // const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false);
-
     const handleInputSelect = useCallback(
         (inputCurrency: Currency) => {
-            // setApprovalSubmitted(false); // reset 2 step UI for approvals
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
         [onCurrencySelection]
@@ -105,24 +103,15 @@ const SwapPair = () => {
         maxInputAmount && onUserInput(SwapField.INPUT, maxInputAmount.toExact());
     }, [maxInputAmount, onUserInput]);
 
-    const fiatValueInput = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(18), baseCurrency));
-    const fiatValueOutput = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.OUTPUT]?.toSignificant(18), quoteCurrency));
+    const { price: fiatValueInputPrice, formatted: fiatValueInputFormatted } = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(18), baseCurrency));
+    const { price: fiatValueOutputPrice, formatted: fiatValueOutputFormatted } = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.OUTPUT]?.toSignificant(18), quoteCurrency));
     
-
-    // const priceImpact = computeFiatValuePriceImpact(fiatValueInput, fiatValueOutput);
-    const priceImpact = new Percent('1')
+    const priceImpact = computeFiatValuePriceImpact(fiatValueInputPrice, fiatValueOutputPrice);
 
     const formattedAmounts = {
-        [independentField]: independentField === SwapField.OUTPUT ? parsedAmounts[independentField]?.toSignificant(6) : typedValue,
+        [independentField]: typedValue,
         [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toSignificant(6) ?? "",
     };
-
-    useEffect(() => {
-        // if (parsedAmounts[SwapField.INPUT] && parsedAmounts[SwapField.OUTPUT]) {
-            // setLimitOrderAmounts(parsedAmounts)
-        // }
-        console.log('parsed amounts', parsedAmounts)
-    }, [parsedAmounts])
 
     return <div className="flex flex-col gap-1 relative">
         <TokenCard value={formattedAmounts[SwapField.INPUT] || ""}
@@ -131,11 +120,11 @@ const SwapPair = () => {
             handleTokenSelection={handleInputSelect}
             handleValueChange={handleTypeInput}
             handleMaxValue={handleMaxInput}
-            fiatValue={fiatValueInput ?? undefined}
+            fiatValue={fiatValueInputFormatted ?? undefined}
             showMaxButton={showMaxButton}
             priceImpact={priceImpact}
             field={SwapField.INPUT} />
-        <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover" onClick={onSwitchTokens}>
+        <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover duration-200" onClick={onSwitchTokens}>
             <ChevronsUpDownIcon size={16} />
         </button>
         <TokenCard
@@ -144,7 +133,7 @@ const SwapPair = () => {
             otherCurrency={baseCurrency}
             handleTokenSelection={handleOutputSelect}
             handleValueChange={handleTypeOutput}
-            fiatValue={fiatValueOutput ?? undefined}
+            fiatValue={fiatValueOutputFormatted ?? undefined}
             priceImpact={priceImpact}
             field={SwapField.OUTPUT}
         />

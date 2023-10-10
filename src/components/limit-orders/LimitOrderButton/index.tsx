@@ -5,10 +5,12 @@ import { useApprove } from "@/hooks/common/useApprove";
 import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
 import { useLimitOrderInfo } from "@/state/swapStore";
 import { Token, tryParseTick } from "@cryptoalgebra/integral-sdk";
-import { Address, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 import { ALGEBRA_LIMIT_ORDER_PLUGIN } from "@/constants/addresses";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
+import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
+import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 
 interface LimitOrderButtonProps {
     token0: Token | undefined;
@@ -19,9 +21,16 @@ interface LimitOrderButtonProps {
     wasInverted: boolean;
     tickSpacing: number | undefined;
     zeroToOne: boolean;
+    limitOrderPlugin: boolean;
 }
 
-const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, sellPrice, tickSpacing, zeroToOne }: LimitOrderButtonProps) => {
+const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, sellPrice, tickSpacing, zeroToOne, limitOrderPlugin }: LimitOrderButtonProps) => {
+
+    const { address: account } = useAccount()
+
+    const { open } = useWeb3Modal()
+
+    const { selectedNetworkId } = useWeb3ModalState()
 
     const limitOrderTick = tryParseTick(token0, token1, sellPrice, tickSpacing)
 
@@ -51,11 +60,19 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
 
     useTransitionAwait(placeData?.hash, 'Place an order')
 
-    return (!disabled && needAllowance ?
-        <Button onClick={() => approvalCallback && approvalCallback()}>{approvalState === ApprovalState.PENDING ? <Loader  /> : 'Approve'}</Button> :
-        <Button disabled={disabled || isPlaceLoading} onClick={() => placeLimitOrder && placeLimitOrder()}>
-            {isPlaceLoading ? <Loader  /> : 'Place an order'}
-        </Button>);
+    const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID
+
+    if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
+
+    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({ view: 'Networks' })}>Connect to Goerli</Button>
+
+    if (!limitOrderPlugin) return <Button disabled>This pool doesn't support Limit Orders</Button>
+
+    if (!disabled && needAllowance) return <Button onClick={() => approvalCallback && approvalCallback()}>{approvalState === ApprovalState.PENDING ? <Loader /> : 'Approve'}</Button>
+
+    return <Button disabled={disabled || isPlaceLoading} onClick={() => placeLimitOrder && placeLimitOrder()}>
+        {isPlaceLoading ? <Loader /> : 'Place an order'}
+    </Button>
 
 }
 

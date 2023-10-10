@@ -36,6 +36,13 @@ html, body {
   }
 }
 
+@media (max-width: 480px) {
+  #root {
+    padding: 1rem;
+  }
+}
+
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
