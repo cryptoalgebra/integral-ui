@@ -1,6 +1,8 @@
 import PageContainer from "@/components/common/PageContainer"
 import PageTitle from "@/components/common/PageTitle"
 import MyPositions from "@/components/pool/MyPositions"
+import PositionLiquidity from "@/components/position/PositionLiquidity"
+import PositionNFT from "@/components/position/PositionNFT"
 import { Button } from "@/components/ui/button"
 import { usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql"
 import { usePool } from "@/hooks/pools/usePool"
@@ -37,25 +39,27 @@ const PoolPage = () => {
 
     const poolFee = poolEntity && poolEntity.fee / 10_000
 
-    const { loading, positions } = usePositions()
+    const {  positions } = usePositions()
 
     const filteredPositions = useMemo(() => {
 
         if (!positions || !poolEntity) return []
 
-        return positions.filter(({ pool }) => pool.toLowerCase() === poolId.toLowerCase()).map(position => ({ positionId: position.tokenId, position: new Position({
-            pool: poolEntity,
-            liquidity: position.liquidity.toString(),
-            tickLower: Number(position.tickLower),
-            tickUpper: Number(position.tickUpper)
-        })}))
+        return positions.filter(({ pool }) => pool.toLowerCase() === poolId.toLowerCase()).map(position => ({
+            positionId: position.tokenId, position: new Position({
+                pool: poolEntity,
+                liquidity: position.liquidity.toString(),
+                tickLower: Number(position.tickLower),
+                tickUpper: Number(position.tickUpper)
+            })
+        }))
 
     }, [positions])
 
     useEffect(() => {
 
         async function getPositionsFees() {
-            const fees = await Promise.all(filteredPositions.map(({positionId, position}) => getPositionFees(position.pool, positionId)))
+            const fees = await Promise.all(filteredPositions.map(({ positionId, position }) => getPositionFees(position.pool, positionId)))
             setPositionsFees(fees)
         }
 
@@ -86,8 +90,8 @@ const PoolPage = () => {
     const formatFeesUSD = (idx: number) => {
         if (!positionsFees || !positionsFees[idx] || !poolInfo?.pool) return 0
 
-        const fees0USD = positionsFees[idx][0] ? Number(positionsFees[idx][0].toSignificant()) * Number(poolInfo.pool.token1Price) : 0
-        const fees1USD = positionsFees[idx][1] ? Number(positionsFees[idx][1].toSignificant()) * Number(poolInfo.pool.token0Price) : 0
+        const fees0USD = positionsFees[idx][0] ? Number(positionsFees[idx][0].toSignificant()) * Number(poolInfo.pool.token0Price) : 0
+        const fees1USD = positionsFees[idx][1] ? Number(positionsFees[idx][1].toSignificant()) * Number(poolInfo.pool.token1Price) : 0
 
         return fees0USD + fees1USD
     }
@@ -101,7 +105,7 @@ const PoolPage = () => {
 
         if (!filteredPositions || !poolEntity) return []
 
-        return filteredPositions.map(({positionId, position} , idx) => ({
+        return filteredPositions.map(({ positionId, position }, idx) => ({
             id: positionId,
             outOfRange: poolEntity.tickCurrent < position.tickLower || poolEntity.tickCurrent > position.tickUpper,
             range: `${position.token0PriceLower.toFixed()} - ${position.token0PriceUpper.toFixed()}`,
@@ -114,6 +118,8 @@ const PoolPage = () => {
 
     const [myLiquidityUSD, myFeesUSD] = positionsData ? positionsData.reduce((acc, { liquidity, fees }) => [acc[0] + liquidity, acc[1] + fees], [0, 0]) : []
 
+    console.log(myLiquidityUSD, myFeesUSD)
+
     return <PageContainer>
         <PageTitle>{`${token0?.symbol} / ${token1?.symbol}`}</PageTitle>
         <div>{`${poolFee}%`}</div>
@@ -124,7 +130,7 @@ const PoolPage = () => {
                 <MyPositions positions={positionsData} poolId={poolId} />
             </div>
             <div className="flex flex-col gap-8 w-full h-full">
-                <div className="flex flex-col justify-center flex-1 bg-card-gradient border border-card-border rounded-2xl">
+                {/* <div className="flex flex-col justify-center flex-1 bg-card-gradient border border-card-border rounded-2xl">
                     <div className="text-[20px] font-bold">My Liquidity</div>
                     <div className="text-[#78FFD7] text-[48px] font-bold drop-shadow-[0_0_5px_rgba(7,142,253,0.8)]">{`$${myLiquidityUSD}`}</div>
                 </div>
@@ -134,6 +140,20 @@ const PoolPage = () => {
                         <div className="text-[#78FFD7] text-[48px] font-bold drop-shadow-[0_0_5px_rgba(7,142,253,0.8)]">{`$${myFeesUSD}`}</div>
                     </div>
                     <Button>Claim</Button>
+                </div> */}
+                <div className="flex flex-col gap-8">
+                    <div className="flex w-full text-right">
+                        <PositionNFT positionId={'1'} />
+                        <div className="w-[235px]">
+                        <h2 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-2xl">Position #1</h2>
+                        <div>Liquidity $20</div>
+                        <div>APR 12%</div>
+                        <div>Opensea</div>
+                        <Button>Manage</Button>
+                        </div>
+                    </div>
+                    <PositionLiquidity />
+                    {/* <PositionAPR /> */}
                 </div>
             </div>
         </div>

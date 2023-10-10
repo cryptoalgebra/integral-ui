@@ -12,7 +12,7 @@ import { InitialPoolFee } from "@cryptoalgebra/integral-sdk";
 
 import { Bound, Field, Rounding } from '@cryptoalgebra/integral-sdk'
 import { tryParseAmount, tryParseTick } from "@cryptoalgebra/integral-sdk";
-import { tickToPrice, priceToClosestTick, nearestUsableTick, encodeSqrtRatioX96, TickMath, computePoolAddress } from "@cryptoalgebra/integral-sdk";
+import { tickToPrice, priceToClosestTick, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/integral-sdk";
 
 import { getTickToPrice } from "@cryptoalgebra/integral-sdk";
 
@@ -20,9 +20,7 @@ import { useCallback, useMemo } from 'react';
 import { Address, useAccount, useBalance } from 'wagmi';
 import { create } from 'zustand';
 import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
-import { ALGEBRA_POOL_DEPLOYER } from "@/constants/addresses";
 import { PresetsType } from "@/types/presets";
-import { usePrepareAlgebraLimitOrderPluginSetTickSpacing } from "@/generated";
 
 export type FullRange = true;
 

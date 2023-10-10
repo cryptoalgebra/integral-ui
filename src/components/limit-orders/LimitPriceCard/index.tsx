@@ -45,19 +45,19 @@ const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minu
     }, [sellPrice]);
 
     return (
-        <div className={`flex flex-col gap-4 bg-[#101321] p-3 rounded-2xl ${disabled ? "disabled" : ""} `}>
+        <div className={`flex flex-col gap-4 bg-card-dark p-3 rounded-2xl ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
-                <div className="text-sm font-bold">
+                <div className="text-sm font-semibold">
                     {currency ? limitOrderType === LimitOrderDirection.SELL ? `Sell ${currency?.symbol} at rate` : `Buy ${otherCurrency?.symbol} at rate` : '' }
                 </div>
                 <div className="flex gap-4">
-                    <button className="text-sm text-[#63b4ff]" disabled={disabled} onClick={() => setToMarketPrice(Boolean(limitOrderType))}>
+                    <button className="text-sm font-semibold text-[#63b4ff]" disabled={disabled} onClick={() => setToMarketPrice(Boolean(limitOrderType))}>
                         Set to market
                     </button>
                     {otherCurrency ? (
                         <button
                             disabled={disabled}
-                            className="text-sm flex items-center text-[#63b4ff]"
+                            className="flex items-center text-sm font-semibold text-[#63b4ff]"
                             onClick={() => {
                                 setLimitOrderType(Number(!Boolean(limitOrderType)));
                                 invertTick(localPrice);

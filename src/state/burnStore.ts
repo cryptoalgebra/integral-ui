@@ -17,7 +17,7 @@ interface BurnState {
 }
 
 
-export const useBurnState = create<BurnState>((set, get) => ({
+export const useBurnState = create<BurnState>((set) => ({
     percent: 0,
     actions: {
         selectPercent: (percent: number) => set({ percent }),

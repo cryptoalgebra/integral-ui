@@ -4,10 +4,10 @@ import { usePool } from "@/hooks/pools/usePool"
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Pool, Position, Token, Trade, TradeType, ZERO, computePoolAddress } from "@cryptoalgebra/integral-sdk"
-import { useCallback, useEffect, useMemo } from "react"
-import { parseUnits, zeroAddress } from "viem"
-import { Address, useAccount, useBalance, useChainId } from "wagmi"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Position, Trade, TradeType, ZERO, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { useCallback, useMemo } from "react"
+import { parseUnits } from "viem"
+import { Address, useAccount, useBalance } from "wagmi"
 import { create } from "zustand"
 
 interface SwapState {
@@ -145,7 +145,7 @@ export function useDerivedSwapInfo(): {
     currencyBalances: { [field in SwapFieldType]?: CurrencyAmount<Currency> }
     parsedAmount: CurrencyAmount<Currency> | undefined
     inputError?: string
-    tradeState: { trade: Trade<Currency, Currency, TradeType> | null; state: TradeStateType; fees?: number[] }
+    tradeState: { trade: Trade<Currency, Currency, TradeType> | null; state: TradeStateType; fee?: bigint[] | null }
     toggledTrade: Trade<Currency, Currency, TradeType> | undefined
     allowedSlippage: Percent
     poolFee: number | undefined,

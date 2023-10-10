@@ -1,7 +1,7 @@
 import { Address } from 'wagmi';
 import {
     Currency,
-    ExtendedEther,
+    ExtendedNative,
     WNATIVE
 } from '@cryptoalgebra/integral-sdk';
 import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
@@ -10,7 +10,7 @@ import { useAlgebraToken } from "./useAlgebraToken";
 
 export function useCurrency(
     address: Address | undefined
-): Currency | undefined {
+): Currency | ExtendedNative | undefined {
 
     const isWeth = address?.toLowerCase() === WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase()
 
@@ -18,8 +18,8 @@ export function useCurrency(
 
     const token = useAlgebraToken(isWeth ? ADDRESS_ZERO : address)
 
-    const extendedEther = ExtendedEther.onChain(DEFAULT_CHAIN_ID);
-    const weth = WNATIVE[DEFAULT_CHAIN_ID];
+    const extendedEther = ExtendedNative.onChain(DEFAULT_CHAIN_ID);
+    // const weth = WNATIVE[DEFAULT_CHAIN_ID];
 
     // if (weth?.address?.toLowerCase() === address?.toLowerCase()) return weth;
 

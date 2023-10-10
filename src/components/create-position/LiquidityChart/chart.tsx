@@ -1,7 +1,7 @@
 // import { formatNumber } from "app/functions"
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
-import { Currency, Price, Token } from "@cryptoalgebra/integral-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 
 interface CustomBarProps {
     x: number;
@@ -64,8 +64,8 @@ const CustomTooltip = ({
 
     const price0 = props?.payload?.[0]?.payload.price0
     const price1 = props?.payload?.[0]?.payload.price1
-    const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
-    const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
+    // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
+    // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
 
     return <div className="flex flex-col gap-2 p-4 rounded bg-[#13192894] backdrop-blur-sm">
         <div className="flex gap-4 justify-between">

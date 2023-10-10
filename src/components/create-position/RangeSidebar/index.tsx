@@ -74,12 +74,12 @@ const RangeSidebar = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => 
         mintInfo.pool
     );
 
-    const tokenA = (currencyA ?? undefined)?.wrapped;
-    const tokenB = (currencyB ?? undefined)?.wrapped;
+    // const tokenA = (currencyA ?? undefined)?.wrapped;
+    // const tokenB = (currencyB ?? undefined)?.wrapped;
 
-    const isSorted = useMemo(() => {
-        return tokenA && tokenB && tokenA.sortsBefore(tokenB);
-    }, [tokenA, tokenB, mintInfo]);
+    // const isSorted = useMemo(() => {
+    //     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
+    // }, [tokenA, tokenB, mintInfo]);
 
 
     function handlePresetRangeSelection(preset: any | null) {

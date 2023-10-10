@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { Address, useToken } from "wagmi"
 import { Token } from "@cryptoalgebra/integral-sdk"
-import { ExtendedEther } from "@cryptoalgebra/integral-sdk"
+import { ExtendedNative } from "@cryptoalgebra/integral-sdk"
 import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk"
 import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
 
@@ -18,7 +18,7 @@ export function useAlgebraToken(address: Address | undefined) {
 
     return useMemo(() => {
 
-        if (address === ADDRESS_ZERO) return ExtendedEther.onChain(DEFAULT_CHAIN_ID)
+        if (address === ADDRESS_ZERO) return ExtendedNative.onChain(DEFAULT_CHAIN_ID)
 
         if (isLoading || !tokenData) return undefined
 

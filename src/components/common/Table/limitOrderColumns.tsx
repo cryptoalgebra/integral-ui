@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { CurrencyAmount, Price, Token } from "@cryptoalgebra/integral-sdk";
+import { CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/integral-sdk";
 import { ColumnDef } from '@tanstack/react-table'
-import { ArrowUpDown, CheckCircle2Icon } from "lucide-react";
+import { CheckCircle2Icon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
+import { usePrepareAlgebraLimitOrderPluginKill, usePrepareAlgebraLimitOrderPluginWithdraw } from "@/generated";
+import { Address, useContractWrite } from "wagmi";
+import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
+import Loader from "../Loader";
 
 interface Epoch {
     id: string;
@@ -38,12 +42,15 @@ interface Amounts {
 }
 
 interface LimitOrder {
+    liquidity: string;
+    owner: Address;
     epoch: Epoch;
     zeroToOne: boolean;
     isClosed: boolean;
     ticks: Ticks;
     rates: Rates;
     amounts: Amounts;
+    pool: Pool;
 }
 
 const TokenAmount = ({ amount }: { amount: Amount } ) => {
@@ -81,6 +88,52 @@ const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
 
 }
 
+const KillLimitOrderButton = ({ ticks, liquidity, zeroToOne, owner, pool }: LimitOrder) => {
+
+    const { config: killConfig } = usePrepareAlgebraLimitOrderPluginKill({
+        args: [
+            {
+                token0: pool.token0.address as Address,
+                token1: pool.token1.address as Address
+            },
+            ticks.tickLower,
+            ticks.tickUpper,
+            BigInt(liquidity),
+            zeroToOne,
+            owner
+        ]
+    })
+
+    const { data: killData, write: kill } = useContractWrite(killConfig)
+
+    const { isLoading: isKillLoading } = useTransitionAwait(killData?.hash, 'Remove liquidity')
+
+    return <Button onClick={() => kill && kill()}>
+        {isKillLoading ? <Loader /> : 'Kill' }
+    </Button>
+
+}
+
+const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
+
+    const { config: withdrawConfig } = usePrepareAlgebraLimitOrderPluginWithdraw({
+        args: [
+            BigInt(epoch.id),
+            owner
+        ]
+    })
+
+    const { data: withdrawData, write: withdraw } = useContractWrite(withdrawConfig)
+
+    const { isLoading: isWithdrawLoading } = useTransitionAwait(withdrawData?.hash, 'Collect Limit Order')
+    
+    return <Button onClick={() => withdraw && withdraw()}>
+        {isWithdrawLoading ? <Loader /> : 'Withdraw' }
+    </Button>
+
+
+}
+
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
         accessorKey: 'amounts.buy', 
@@ -105,8 +158,6 @@ export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     },
     {
         header: 'Actions',
-        cell: (props) => {
-            return 'Actions'
-        }
+        cell: (props) => props.row.original.epoch.filled ? <WithdrawLimitOrderButton {...props.row.original} /> : <KillLimitOrderButton {...props.row.original} />
     }
 ]

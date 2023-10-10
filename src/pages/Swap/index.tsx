@@ -1,4 +1,3 @@
-import TokenSelectorModal from "@/components/modals/TokenSelectorModal";
 import { SwapPageProps, SwapPageView } from "./types";
 import SwapPair from "@/components/swap/SwapPair";
 import SwapButton from "@/components/swap/SwapButton";
@@ -6,12 +5,10 @@ import SwapParams from "@/components/swap/SwapParams";
 import SwapChart from "@/components/swap/SwapChart";
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import IntegralPools from "@/components/swap/IntegralPools";
 import { NavLink } from "react-router-dom";
 import LimitOrdersList from "@/components/limit-orders/LimitOrdersList";
 import LimitOrder from "@/components/limit-orders/LimitOrder";
-import LimitOrderButton from "@/components/limit-orders/LimitOrderButton";
 
 const SwapPage = ({ type }: SwapPageProps) => {
 

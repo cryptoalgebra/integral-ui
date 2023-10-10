@@ -1,8 +1,6 @@
-import { Currency, POOL_DEPLOYER_ADDRESSES, Pool, Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { Currency, Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
 import { useEffect, useMemo, useState } from "react"
-import { PoolState, usePool } from "../pools/usePool"
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
-import { ALGEBRA_POOL_DEPLOYER } from "@/constants/addresses"
 import { getAlgebraPool } from "@/generated"
 import { Address } from "wagmi"
 

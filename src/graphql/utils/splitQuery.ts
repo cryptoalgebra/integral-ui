@@ -26,7 +26,7 @@ export async function splitQuery<T>(
                 end = skip + skipCount
             }
             const sliced = values.slice(skip, end)
-            const result = await client.query<T>({
+            const result = await client.query<any>({
                 query: query(...vars, sliced),
                 fetchPolicy: 'network-only'
             })

@@ -5,7 +5,7 @@ import { Address } from "wagmi"
 
 export function usePositionAPR(poolId: Address | undefined, position: Position | undefined) {
 
-    const { data: liquidity, isLoading } = useAlgebraPoolLiquidity({
+    const { data: liquidity } = useAlgebraPoolLiquidity({
         address: poolId
     })
 

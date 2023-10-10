@@ -2,10 +2,6 @@ import Navigation from "@/components/common/Navigation"
 import AlgebraLogo from "@/assets/algebra-logo.svg"
 import AlgebraIntegral from "@/assets/algebra-itegral.svg"
 import { NavLink } from "react-router-dom"
-import { useWatchPendingTransactions } from "wagmi"
-import { useState } from "react"
-import { OnTransactionsParameter } from "viem"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 const Header = () => {
 
@@ -18,38 +14,37 @@ const Header = () => {
     )
 }
 
-const Algebra = () => <NavLink to={'/'}>
-    <div className="flex items-center gap-2">
+const Algebra = () => <div className="flex items-center gap-2">
+     <NavLink to={'/'}>
         <div className="flex items-center gap-2 py-1 pl-2 pr-3 bg-card rounded-3xl hover:bg-card-hover">
             <div className="flex items-center justify-center w-[32px] h-[32px] rounded-full">
                 <img src={AlgebraLogo} width={25} height={25} />
             </div>
             <img src={AlgebraIntegral} width={140} height={25} />
         </div>
+        </NavLink>
     </div>
-</NavLink>
 
 const Account = () => {
 
     return <div className="flex justify-end gap-4 pt-[2px]">
         <w3m-network-button />
         <w3m-button />
-        <Transactions/>
     </div>
 }
 
-const Transactions = () => {
+// const Transactions = () => {
 
-    const [pendingTransactions, setPendingTransactions] = useState<OnTransactionsParameter>([])
+//     const [pendingTransactions, setPendingTransactions] = useState<OnTransactionsParameter>([])
 
-    useWatchPendingTransactions({
-        listener: (hashes) => setPendingTransactions(hashes)
-    })
+//     useWatchPendingTransactions({
+//         listener: (hashes) => setPendingTransactions(hashes)
+//     })
 
-    return <Avatar className="w-[35px] h-[35px]">
-        <AvatarFallback>{pendingTransactions.length}</AvatarFallback>
-    </Avatar>
+//     return <Avatar className="w-[35px] h-[35px]">
+//         <AvatarFallback>{pendingTransactions.length}</AvatarFallback>
+//     </Avatar>
 
-}
+// }
 
 export default Header

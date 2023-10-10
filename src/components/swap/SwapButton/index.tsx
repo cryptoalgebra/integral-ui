@@ -1,6 +1,6 @@
+import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
-import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { ApprovalState } from "@/types/approve-state";
@@ -17,8 +17,8 @@ const SwapButton = () => {
 
     const { address: account } = useAccount()
 
-    const { independentField, typedValue } = useSwapState();
-    const { tradeState, toggledTrade: trade, allowedSlippage, currencyBalances, parsedAmount, currencies, inputError: swapInputError, poolFee } = useDerivedSwapInfo();
+    const { independentField } = useSwapState();
+    const { tradeState, toggledTrade: trade, allowedSlippage,  parsedAmount, currencies, inputError: swapInputError } = useDerivedSwapInfo();
 
     // const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue);
 
@@ -29,13 +29,13 @@ const SwapButton = () => {
         () =>
             showWrap
                 ? {
-                      [SwapField.INPUT]: parsedAmount,
-                      [SwapField.OUTPUT]: parsedAmount,
-                  }
+                    [SwapField.INPUT]: parsedAmount,
+                    [SwapField.OUTPUT]: parsedAmount,
+                }
                 : {
-                      [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : trade?.inputAmount,
-                      [SwapField.OUTPUT]: independentField === SwapField.OUTPUT ? parsedAmount : trade?.outputAmount,
-                  },
+                    [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : trade?.inputAmount,
+                    [SwapField.OUTPUT]: independentField === SwapField.OUTPUT ? parsedAmount : trade?.outputAmount,
+                },
         [independentField, parsedAmount, showWrap, trade]
     );
 
@@ -47,8 +47,6 @@ const SwapButton = () => {
     // const [singleHopOnly] = useUserSingleHopOnly();
     const singleHopOnly = false
 
-    const fiatValueInput = useUSDCValue(parsedAmounts[SwapField.INPUT]);
-    const fiatValueOutput = useUSDCValue(parsedAmounts[SwapField.OUTPUT]);
     // const priceImpact = computeFiatValuePriceImpact(fiatValueInput, fiatValueOutput);
     const priceImpact = new Percent('1');
 
@@ -56,10 +54,10 @@ const SwapButton = () => {
 
     const { approvalState, approvalCallback } = useApproveCallbackFromTrade(trade, allowedSlippage);
 
+                console.log('approvalState', approvalState)
+
     // const [isExpertMode] = useExpertModeManager();
     const isExpertMode = false
-
-    
 
     useEffect(() => {
         if (approvalState === ApprovalState.PENDING) {
@@ -73,7 +71,7 @@ const SwapButton = () => {
 
     // warnings on the greater of fiat value price impact and execution price impact
     const priceImpactSeverity = useMemo(() => {
-        const executionPriceImpact = trade?.priceImpact;
+        // const executionPriceImpact = trade?.priceImpact;
         // return warningSeverity(executionPriceImpact && priceImpact ? (executionPriceImpact.greaterThan(priceImpact) ? executionPriceImpact : priceImpact) : executionPriceImpact ?? priceImpact);
         return 0
     }, [priceImpact, trade]);
@@ -103,7 +101,7 @@ const SwapButton = () => {
     // }, [approveCallback, gatherPermitSignature, signatureState]);
 
     // modal and loading
-    const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
+    const [{ showConfirm, tradeToConfirm }, setSwapState] = useState<{
         showConfirm: boolean;
         tradeToConfirm: Trade<Currency, Currency, TradeType> | undefined;
         attemptingTxn: boolean;
@@ -117,7 +115,7 @@ const SwapButton = () => {
         txHash: undefined,
     });
 
-    const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(trade, allowedSlippage);
+    const { callback: swapCallback, error: swapCallbackError, isLoading: isSwapLoading } = useSwapCallback(trade, allowedSlippage);
 
     const handleSwap = useCallback(() => {
         if (!swapCallback) {
@@ -134,7 +132,7 @@ const SwapButton = () => {
             txHash: undefined,
         });
         swapCallback()
-            .then(({hash}) => {
+            .then(({ hash }) => {
                 setSwapState({
                     attemptingTxn: false,
                     tradeToConfirm,
@@ -160,40 +158,21 @@ const SwapButton = () => {
 
     if (!account) {
         return (
-            // <Button  onClick={() => toast({
-            //     title: 'Swap',
-            //     description: 'Tx was sent',
-            //     action: <ToastAction altText="View Tx">View TX</ToastAction>
-            // })}>
-            //     Connect Wallet
-            // </Button>
             <Button onClick={() => open()}>Connect Wallet</Button>
         );
     }
 
-    // if (showWrap) {
-    //     return (
-    //         <button className={"btn primary w-100 pv-1 b"} disabled={Boolean(wrapInputError)} onClick={onWrap}>
-    //             {wrapInputError ?? (wrapType === WrapType.WRAP ? <Trans>Wrap</Trans> : wrapType === WrapType.UNWRAP ? <Trans>Unwrap</Trans> : null)}
-    //         </button>
-    //     );
-    // }
-
     if (routeNotFound && userHasSpecifiedInputOutput)
         return (
-            <button className={`btn primary w-100 pv-1 b`} disabled={true}>
-                <div>
-                    <div>
-                        {isLoadingRoute ? (
-                                'Loading'
-                        ) : singleHopOnly ? (
-                            'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
-                        ) : (
-                            'Insufficient liquidity for this trade.'
-                        )}
-                    </div>
-                </div>
-            </button>
+            <Button disabled>
+                {isLoadingRoute ? (
+                    <Loader />
+                ) : singleHopOnly ? (
+                    'Insufficient liquidity for this trade. Try enabling multi-hop trades.'
+                ) : (
+                    'Insufficient liquidity for this trade.'
+                )}
+            </Button>
         );
 
     if (showApproveFlow)
@@ -214,7 +193,7 @@ const SwapButton = () => {
                         <div></div>
                     )}
                     <span className="ml-05">
-                        {approvalState === ApprovalState.APPROVED  ? (
+                        {approvalState === ApprovalState.APPROVED ? (
                             <div>1. {currencies[SwapField.INPUT]?.symbol} is approved</div>
                         ) : (
                             <div>1. Approve {currencies[SwapField.INPUT]?.symbol}</div>
@@ -223,9 +202,7 @@ const SwapButton = () => {
                 </button>
                 <button
                     onClick={() => {
-                        // if (isExpertMode) {
                         handleSwap();
-                        // } else {
                         setSwapState({
                             //@ts-ignore
                             tradeToConfirm: trade,
@@ -245,28 +222,21 @@ const SwapButton = () => {
         );
 
     return (
-        <button
+        <Button
             onClick={() => {
-                // if (isExpertMode) {
                 handleSwap();
-                // } else {
                 setSwapState({
-                    //@ts-ignore
                     tradeToConfirm: trade,
                     attemptingTxn: false,
                     swapErrorMessage: undefined,
                     showConfirm: true,
                     txHash: undefined,
                 });
-                // }
             }}
-            id="swap-button"
-            className="w-full bg-primary-button p-4 font-bold rounded-2xl"
-            disabled={!isValid || priceImpactTooHigh || !!swapCallbackError}
-            // error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
+            disabled={!isValid || priceImpactTooHigh || !!swapCallbackError || isSwapLoading}
         >
-            <span>{swapInputError ? swapInputError : priceImpactTooHigh ? 'Price Impact Too High' : priceImpactSeverity > 2 ? 'Swap Anyway' : 'Swap'}</span>
-        </button>
+            {isSwapLoading ? <Loader />  : swapInputError ? swapInputError : priceImpactTooHigh ? 'Price Impact Too High' : priceImpactSeverity > 2 ? 'Swap Anyway' : 'Swap'}
+        </Button>
     );
 
 }

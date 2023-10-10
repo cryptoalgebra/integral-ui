@@ -46,7 +46,7 @@ const LimitOrdersList = () => {
             )
         }), {})
 
-        return limitOrders.limitOrders.map(({ liquidity, tickLower, tickUpper, zeroToOne, epoch, pool: poolId }) => {
+        return limitOrders.limitOrders.map(({ liquidity, owner, tickLower, tickUpper, zeroToOne, epoch, pool: poolId }) => {
 
             const pool = pools[poolId]
 
@@ -57,7 +57,7 @@ const LimitOrdersList = () => {
                 tickUpper: Number(tickUpper)
             })
 
-            const { amount0, token0PriceLower } = positionLO 
+            const { amount0, token0PriceLower } = positionLO
 
             const { amount1 } = new Position({
                 pool: new Pool(pool.token0, pool.token1, pool.fee, zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO, pool.liquidity, zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK, pool.tickSpacing),
@@ -72,6 +72,8 @@ const LimitOrdersList = () => {
                 epoch,
                 zeroToOne,
                 isClosed,
+                liquidity,
+                owner,
                 ticks: {
                     tickLower: Number(tickLower),
                     tickUpper: Number(tickUpper),
@@ -97,7 +99,8 @@ const LimitOrdersList = () => {
                         token: zeroToOne ? pool.token0 : pool.token1,
                         amount: zeroToOne ? amount0 : amount1
                     }
-                }
+                },
+                pool
             }
         })
 
@@ -112,7 +115,7 @@ const LimitOrdersList = () => {
                 return [
                     acc[0],
                     [...acc[1], order]
-                ] 
+                ]
             }
             return [
                 [...acc[0], order],
@@ -122,84 +125,11 @@ const LimitOrdersList = () => {
 
     }, [formattedLimitOrders])
 
-    // const b = useStaticCall({
-    //     address: ALGEBRA_LIMIT_ORDER_PLUGIN,
-    //     abi: algebraLimitOrderPluginABI,
-    //     functionName: 'kill',
-    //     args: isReady ? [
-    //         {
-    //             token0: pool.token0.address,
-    //             token1 : pool.token1.address
-    //         },
-    //         28380,
-    //         28440,
-    //         true,
-    //         '0xDeaD1F5aF792afc125812E875A891b038f888258'
-    //     ] : undefined
-    // })
-
-    // const c = useStaticCall({
-    //     address: ALGEBRA_LIMIT_ORDER_PLUGIN,
-    //     abi: algebraLimitOrderPluginABI,
-    //     functionName: 'withdraw',
-    //     args: isReady ? [
-    //         1n,
-    //         '0xDeaD1F5aF792afc125812E875A891b038f888258'
-    //     ] : undefined
-    // })
-
-    // const { data: withdrawData, write: withdraw } = useAlgebraLimitOrderPluginWithdraw({
-    //     args: [
-    //         1n,
-    //         '0xDeaD1F5aF792afc125812E875A891b038f888258'
-    //     ]
-    // })
-
-    // const rewards = await readContract<any, 'collectRewards'>({
-    //     account,
-    //     address: V3_FARMING_CENTER_ADDRESS,
-    //     abi: algebraFarmingCenterABI,
-    //     functionName: 'collectRewards',
-    //     args: [
-    //         [rewardToken, bonusRewardToken, pool, startTime, endTime],
-    //         +positionIds[i]
-    //     ],
-    // })
-
-    // console.log('cccccc', b, c)
-
-    // if (limitOrders && pool) {
-
-    //     const positions = data.limitOrders.map(({ liquidity, tickLower, tickUpper, zeroToOne }) => {
-
-    //     const positionAmount0 = new Position({
-    //             pool,
-    //             liquidity: Number(liquidity),
-    //             tickLower: Number(tickLower),
-    //             tickUpper: Number(tickUpper)
-    //         }).amount0
-
-    //     const positionAmount1 = new Position({
-    //         pool: new Pool(pool.token0, pool.token1, pool.fee, zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO, pool.liquidity, zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK, pool.tickSpacing),
-    //         liquidity: Number(liquidity),
-    //         tickLower: Number(tickLower),
-    //         tickUpper: Number(tickUpper)
-    //     }).amount1
-
-    //       return { 
-    //         amount0: positionAmount0.toSignificant(18),
-    //         amount1: positionAmount1.toSignificant(18),
-    //        }
-    // })
-
-    // }
-
 
     const limitOrdersForTable = useMemo(() => tab ? openedOrders : closedOrders, [openedOrders, closedOrders, tab])
 
-
     return <div className="flex flex-col w-full">
-        {isLimitOrdersLoading ? <LimitOrdersLoading/> : <>
+        {isLimitOrdersLoading ? <LimitOrdersLoading /> : <>
             <div className="flex gap-4 pl-10">
                 <button onClick={() => setTab(0)} className={`py-2 px-4 bg-card relative rounded-t-xl ${tab === 0 && 'border border-card-border border-b-0 -mb-[0.7px]'}`}>Opened Orders</button>
                 <button onClick={() => setTab(1)} className={`py-2 px-4 bg-card relative rounded-t-xl ${tab === 1 && 'border border-card-border border-b-0 -mb-[0.7px]'}`}>Closed Orders</button>
@@ -208,16 +138,14 @@ const LimitOrdersList = () => {
                 <DataTable columns={limitOrderColumns} data={limitOrdersForTable} />
             </div>
         </>}
-        {/* <Skeleton/> */}
-        {/* <button onClick={() => withdraw()}>WITHDRAW</button> */}
     </div>
 
 }
 
 const LimitOrdersLoading = () => <div className="flex flex-col w-full gap-4">
-<Skeleton className="w-full h-[50px] bg-card rounded-xl" />
-<Skeleton className="w-full h-[50px] bg-card rounded-xl" />
-<Skeleton className="w-full h-[50px] bg-card rounded-xl" />
+    <Skeleton className="w-full h-[50px] bg-card rounded-xl" />
+    <Skeleton className="w-full h-[50px] bg-card rounded-xl" />
+    <Skeleton className="w-full h-[50px] bg-card rounded-xl" />
 </div>
 
 export default LimitOrdersList

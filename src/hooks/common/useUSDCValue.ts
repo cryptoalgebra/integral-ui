@@ -1,6 +1,6 @@
 import { STABLECOINS } from "@/constants/tokens"
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql"
-import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/integral-sdk"
+import { Currency, CurrencyAmount, tryParseAmount } from "@cryptoalgebra/integral-sdk"
 import { useMemo } from "react"
 
 export function useUSDCPrice(currency: Currency | undefined) {
@@ -17,14 +17,16 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
         if (!currency || !bundles?.bundles?.[0] || !token?.token) return undefined
 
-        if (STABLECOINS.USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) return new Price(STABLECOINS.USDC, STABLECOINS.USDC, '1', '1')
+        if (STABLECOINS.USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) return 1
 
         const tokenUSDValue = Number(token.token.derivedMatic) * Number(bundles.bundles[0].maticPriceUSD)
 
         const usdAmount = tryParseAmount(tokenUSDValue.toString(), currency)
 
+        console.log('tokenUSDValue', usdAmount?.toSignificant())
+
         if (usdAmount) {
-            return new Price(currency, STABLECOINS.USDC, '1', usdAmount.quotient)
+            return Number(usdAmount.toSignificant())
         }
 
         return undefined
@@ -42,7 +44,7 @@ export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefine
         if (!price || !currencyAmount) return null
 
         try {
-            return price.quote(currencyAmount)
+            return Number(currencyAmount.toSignificant()) * price;
         } catch {
             return null
         }

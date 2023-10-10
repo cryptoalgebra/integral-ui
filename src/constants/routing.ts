@@ -1,11 +1,7 @@
-import { WNATIVE, Token, ChainId, Currency } from "@cryptoalgebra/integral-sdk"
+import { WNATIVE, Token, ChainId } from "@cryptoalgebra/integral-sdk"
 
 type ChainTokenList = {
     readonly [chainId: number]: Token[]
-}
-
-type ChainCurrencyList = {
-    readonly [chainId: number]: Currency[]
 }
 
 export const WMATIC_EXTENDED: { [chainId: number]: Token } = {

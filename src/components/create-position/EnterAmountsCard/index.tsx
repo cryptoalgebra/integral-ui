@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ALGEBRA_LIMIT_ORDER_PLUGIN, ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
+import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
 import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useEffect } from "react";
 import { erc20ABI, useAccount, useBalance, useContractWrite, useWaitForTransaction } from "wagmi";
@@ -51,7 +51,7 @@ const EnterAmountCard = ({
     abi: erc20ABI,
     functionName: 'approve',
     args: [
-        ALGEBRA_LIMIT_ORDER_PLUGIN,
+      ALGEBRA_POSITION_MANAGER,
       valueForApprove ? BigInt(valueForApprove.quotient.toString()) : 0,
     ] as [`0x${string}`, bigint],
     onSuccess() {
@@ -61,7 +61,7 @@ const EnterAmountCard = ({
     //     'loading'
     //   );
     },
-    onError(error) {
+    onError() {
     //   generateToast(
     //     'Error meanwhile waiting for transaction',
     //     error.message,

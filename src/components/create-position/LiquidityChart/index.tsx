@@ -1,7 +1,7 @@
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
-import { IDerivedMintInfo, useMintState } from "@/state/mintStore";
+import { useMintState } from "@/state/mintStore";
 import { Presets } from "@/types/presets";
-import { Bound, CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency } from "@cryptoalgebra/integral-sdk";
+import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
 
@@ -13,7 +13,7 @@ interface LiquidityChartProps {
     priceUpper: Price<Token, Token> | undefined;
 }
 
-const ZOOM_STEP = 5
+// const ZOOM_STEP = 5
 
 const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceUpper }: LiquidityChartProps) => {
 
@@ -136,11 +136,11 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
         return isSorted ? priceUpper?.toSignificant(18) : priceLower?.invert().toSignificant(18)
     }, [isSorted, priceLower, priceUpper])
     
-    const isZoomMin = zoom - ZOOM_STEP <= 10
-    const isZoomMax = zoom + ZOOM_STEP > 40
+    // const isZoomMin = zoom - ZOOM_STEP <= 10
+    // const isZoomMax = zoom + ZOOM_STEP > 40
 
-    const handleZoomIn = () => setZoom((zoom) => zoom + ZOOM_STEP)
-    const handleZoomOut = () => setZoom((zoom) => zoom - ZOOM_STEP)
+    // const handleZoomIn = () => setZoom((zoom) => zoom + ZOOM_STEP)
+    // const handleZoomOut = () => setZoom((zoom) => zoom - ZOOM_STEP)
 
     return <div className="flex w-full h-full">
         {/* <div>{`${priceLower?.invert().toSignificant(18)} - ${priceUpper?.invert().toSignificant(18)}`}</div> */}

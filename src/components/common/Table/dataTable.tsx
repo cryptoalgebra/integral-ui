@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
 import { useState } from "react";
@@ -56,7 +55,7 @@ const DataTable = <TData, TValue>({ columns, data }: DataTableProps<TData, TValu
         </TableHeader>
         <TableBody className="hover:bg-transparent">
             {
-                table.getRowModel().rows?.length ? table.getRowModel().rows.map(row => <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className="bg-[#101321] hover:bg-[#101321]" >
+                table.getRowModel().rows?.length ? table.getRowModel().rows.map(row => <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'} className="bg-card-dark hover:bg-card-dark" >
                     {row.getVisibleCells().map(cell => <TableCell key={cell.id} className="rounded-l">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>)}

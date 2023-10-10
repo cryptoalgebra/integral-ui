@@ -5,7 +5,6 @@ import { useAccount, useChainId } from "wagmi";
 export function useSwapCallArguments(
     trade: Trade<Currency, Currency, TradeType> | undefined,
     allowedSlippage: Percent,
-    //   signatureData: SignatureData | null | undefined,
 ) {
 
     const { address: account } = useAccount()

@@ -44,7 +44,7 @@ export default defineConfig({
   contracts,
   plugins: [
     actions({
-
+      watchContractEvent: false
     }),
     react({
       useContractEvent: false,

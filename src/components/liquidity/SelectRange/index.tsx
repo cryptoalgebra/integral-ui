@@ -35,7 +35,6 @@ const SelectRange = ({ currencyA,
         getIncrementLower,
         getDecrementUpper,
         getIncrementUpper,
-        getSetFullRange,
     } = useRangeHopCallbacks(
         currencyA ?? undefined,
         currencyB ?? undefined,
@@ -49,28 +48,28 @@ const SelectRange = ({ currencyA,
         mintInfo.noLiquidity
     );
 
-    const tokenA = (currencyA ?? undefined)?.wrapped;
-    const tokenB = (currencyB ?? undefined)?.wrapped;
+    // const tokenA = (currencyA ?? undefined)?.wrapped;
+    // const tokenB = (currencyB ?? undefined)?.wrapped;
 
-    const isSorted = useMemo(() => {
-        return tokenA && tokenB && tokenA.sortsBefore(tokenB);
-    }, [tokenA, tokenB, mintInfo]);
+    // const isSorted = useMemo(() => {
+    //     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
+    // }, [tokenA, tokenB, mintInfo]);
 
-    const leftPrice = useMemo(() => {
-        return isSorted ? priceLower : priceUpper?.invert();
-    }, [isSorted, priceLower, priceUpper, mintInfo]);
+    // const leftPrice = useMemo(() => {
+    //     return isSorted ? priceLower : priceUpper?.invert();
+    // }, [isSorted, priceLower, priceUpper, mintInfo]);
 
-    const rightPrice = useMemo(() => {
-        return isSorted ? priceUpper : priceLower?.invert();
-    }, [isSorted, priceUpper, priceLower, mintInfo]);
+    // const rightPrice = useMemo(() => {
+    //     return isSorted ? priceUpper : priceLower?.invert();
+    // }, [isSorted, priceUpper, priceLower, mintInfo]);
 
-    const price = useMemo(() => {
-        if (!mintInfo.price) return;
+    // const price = useMemo(() => {
+    //     if (!mintInfo.price) return;
 
-        return mintInfo.invertPrice
-            ? mintInfo.price.invert().toSignificant(5)
-            : mintInfo.price.toSignificant(5);
-    }, [mintInfo]);
+    //     return mintInfo.invertPrice
+    //         ? mintInfo.price.invert().toSignificant(5)
+    //         : mintInfo.price.toSignificant(5);
+    // }, [mintInfo]);
 
 
     return (

@@ -3,7 +3,7 @@ import Card from "@/components/common/Card";
 const PositionLiquidity = () => {
 
     return <Card>
-        <div className="w-[450px] h-full flex flex-col gap-4 p-6">
+        <div className="h-full flex flex-col gap-4 p-6">
             <div className="flex justify-between">
                 <div className="flex flex-col text-left gap-2">
                     <div className="text-[14px] font-bold">LIQUIDITY</div>

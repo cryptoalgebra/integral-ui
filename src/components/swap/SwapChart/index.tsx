@@ -3,7 +3,7 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
-import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon, Loader2, Loader2Icon } from "lucide-react";
+import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Token } from "@cryptoalgebra/integral-sdk";
@@ -12,6 +12,8 @@ import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Address } from "wagmi";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
+import Loader from "@/components/common/Loader";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 const getTokenTitle = (chartPair: SwapChartPairType, tokenA: Token, tokenB: Token) => {
     switch (chartPair) {
@@ -121,7 +123,7 @@ const SwapChart = () => {
         }
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
-            const [token0Price, token1Price] = chartPair === SwapChartPair.AB ? ["token0Price", "token1Price"] : ["token1Price", "token0Price"];
+            const [token0Price] = chartPair === SwapChartPair.AB ? ["token0Price", "token1Price"] : ["token1Price", "token0Price"];
             return chartData.map((d: any) => {
                 return {
                     time: d.periodStartUnix,
@@ -262,7 +264,7 @@ const SwapChart = () => {
 
     const [pairImage, pairTitle] = useMemo(() => {
         if (!tokenA || !tokenB) return [
-            <Loader2 size={16} className="animate-spin" />,
+            <Loader size={16} />,
             'Loading...'
         ];
 
@@ -318,27 +320,41 @@ const SwapChart = () => {
                     <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
                         <LineChartIcon size={20} />
                     </Button>
-                    <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
+                    <HoverCard>
+                        <HoverCardTrigger>
+                        <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
                         <CandlestickChartIcon size={20} />
                     </Button>
+                        </HoverCardTrigger>
+                        <HoverCardContent>
+                            <div className="font-bold">Candlestick chart</div>
+                            <div>Coming Soon</div>
+                        </HoverCardContent>
+                    </HoverCard>
                 </div>
                 <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
-                <div>
-                    <Button variant={'icon'} size={'icon'} disabled>
-                        <BarChartHorizontalIcon size={20} />
-                    </Button>
-                </div>
+                <HoverCard>
+                    <HoverCardTrigger>
+                        <Button variant={'icon'} size={'icon'} disabled>
+                            <BarChartHorizontalIcon size={20} />
+                        </Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent>
+                        <div className="font-bold">Market Depth</div>
+                        <div>Coming Soon</div>
+                    </HoverCardContent>
+                </HoverCard>
             </div>
         </div>
         <div className="flex flex-col items-end w-full text-3xl text-right">
-            { chartCreated ? <>
-            <div className="text-3xl font-bold">
-                <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader2 size={18} className="animate-spin" />}</span>
-                <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
-            </div>
-            <div className="text-[#b7b7b7] text-sm">
-                {displayValue ? displayDate : null}
-            </div>
+            {chartCreated ? <>
+                <div className="text-3xl font-bold">
+                    <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
+                    <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
+                </div>
+                <div className="text-[#b7b7b7] text-sm">
+                    {displayValue ? displayDate : null}
+                </div>
             </> : <>
                 <Skeleton className="w-[150px] h-[38px] bg-card" />
                 <Skeleton className="w-[60px] h-[18px] bg-card mt-[2px]" />
@@ -348,7 +364,7 @@ const SwapChart = () => {
             <div className="flex items-center justify-center w-full h-full" ref={chartRef}></div>
             {!chartCreated ? (
                 <div className="flex items-center justify-center absolute w-full h-full">
-                    <Loader2Icon className="animate-spin" />
+                    <Loader />
                 </div>
             ) : null}
         </div>

@@ -51,7 +51,7 @@ const RangeSelector = ({
 
   // TODO
   //   const initialTokenPrice = useInitialTokenPrice();
-  const initialTokenPrice = 11;
+  // const initialTokenPrice = 11;
 
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
@@ -65,19 +65,19 @@ const RangeSelector = ({
     return isSorted ? priceUpper : priceLower?.invert();
   }, [isSorted, priceUpper, priceLower]);
 
-  const currentPrice = useMemo(() => {
-    if (!mintInfo.price) return;
+  // const currentPrice = useMemo(() => {
+  //   if (!mintInfo.price) return;
 
-    let _price = mintInfo.invertPrice
-      ? parseFloat(mintInfo.price.invert().toSignificant(5))
-      : parseFloat(mintInfo.price.toSignificant(5));
+  //   let _price = mintInfo.invertPrice
+  //     ? parseFloat(mintInfo.price.invert().toSignificant(5))
+  //     : parseFloat(mintInfo.price.toSignificant(5));
 
-    if (Number(_price) <= 0.0001) {
-      return `< 0.0001 ${currencyB?.symbol}`;
-    } else {
-      return `${_price} ${currencyB?.symbol}`;
-    }
-  }, [mintInfo.price, initialTokenPrice]);
+  //   if (Number(_price) <= 0.0001) {
+  //     return `< 0.0001 ${currencyB?.symbol}`;
+  //   } else {
+  //     return `${_price} ${currencyB?.symbol}`;
+  //   }
+  // }, [mintInfo.price, initialTokenPrice]);
 
   return (
     <>

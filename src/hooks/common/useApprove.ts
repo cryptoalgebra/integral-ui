@@ -7,10 +7,10 @@ import { ALGEBRA_ROUTER } from "@/constants/addresses";
 import { useTransitionAwait } from "./useTransactionAwait";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 
-export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: string) {
+export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: Address) {
 
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined
-    const needAllowance = useNeedAllowance(token, amountToApprove)
+    const needAllowance = useNeedAllowance(token, amountToApprove, spender)
 
     const approvalState: ApprovalStateType = useMemo(() => {
         if (!amountToApprove || !spender) return ApprovalState.UNKNOWN
@@ -19,7 +19,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
         return needAllowance ? ApprovalState.NOT_APPROVED : ApprovalState.APPROVED
     }, [amountToApprove, needAllowance, spender])
 
-    const { data, config } = usePrepareContractWrite({
+    const { config } = usePrepareContractWrite({
         address: amountToApprove ? (amountToApprove.currency.wrapped.address as Address) : undefined,
         abi: erc20ABI,
         functionName: 'approve',
@@ -31,10 +31,10 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 
     const { data: approvalData, writeAsync: approve } = useContractWrite(config);
 
-    useTransitionAwait(approvalData?.hash, `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`)
+    const { isLoading, isSuccess } = useTransitionAwait(approvalData?.hash, `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`)
 
     return {
-        approvalState,
+        approvalState: isLoading ? ApprovalState.PENDING : isSuccess ? ApprovalState.APPROVED : approvalState,
         approvalCallback: approve
     }
 

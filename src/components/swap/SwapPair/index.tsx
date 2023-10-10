@@ -4,11 +4,11 @@ import { SwapField, SwapFieldType } from "@/types/swap-field";
 import { Currency, CurrencyAmount, getTickToPrice, maxAmountSpend, tryParseAmount, Percent } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
-import { ChevronsUpDown, ChevronsUpDownIcon } from "lucide-react";
+import { ChevronsUpDownIcon } from "lucide-react";
 
 const SwapPair = () => {
 
-    const { tradeState, toggledTrade: trade, allowedSlippage, currencyBalances, parsedAmount, currencies, tick } = useDerivedSwapInfo();
+    const { toggledTrade: trade, currencyBalances, parsedAmount, currencies, tick } = useDerivedSwapInfo();
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
@@ -107,6 +107,8 @@ const SwapPair = () => {
 
     const fiatValueInput = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(18), baseCurrency));
     const fiatValueOutput = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.OUTPUT]?.toSignificant(18), quoteCurrency));
+    
+
     // const priceImpact = computeFiatValuePriceImpact(fiatValueInput, fiatValueOutput);
     const priceImpact = new Percent('1')
 
@@ -133,7 +135,7 @@ const SwapPair = () => {
             showMaxButton={showMaxButton}
             priceImpact={priceImpact}
             field={SwapField.INPUT} />
-        <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-[#101321] w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover" onClick={onSwitchTokens}>
+        <button className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover" onClick={onSwitchTokens}>
             <ChevronsUpDownIcon size={16} />
         </button>
         <TokenCard

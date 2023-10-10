@@ -23,8 +23,8 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
 
     }, [imgRef, json])
     
-    return <div className="inline-block relative w-[200px] h-[200px] overflow-hidden rounded-full">
-            <img ref={imgRef} />
+    return <div className="inline-block relative w-[150px] h-[150px] overflow-hidden rounded-full">
+            <img ref={imgRef} style={{ transform: 'scale(2)' }} className="mt-4" />
         </div>
 
 }

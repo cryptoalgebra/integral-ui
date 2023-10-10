@@ -4,6 +4,8 @@ import { useSwapCallArguments } from "./useSwapCallArguments";
 import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
+import { useTransitionAwait } from "../common/useTransactionAwait";
+import { formatCurrency } from "@/utils/common/formatCurrency";
 
 interface SwapCallEstimate {
     calldata: string
@@ -33,6 +35,8 @@ export function useSwapCallback(
 
     const swapCalldata = useSwapCallArguments(trade, allowedSlippage)
 
+    console.log('trade qqqqs', trade, swapCalldata)
+
     useEffect(() => {
 
         async function findBestCall() {
@@ -59,7 +63,7 @@ export function useSwapCallback(
                     ], {
                         account,
                         value
-                    }).then(res => ({
+                    }).then(() => ({
                         calldata,
                         value,
                         error: new Error(`Unexpected issue with estimating the gas. Please try again. ${gasError}`)
@@ -106,21 +110,24 @@ export function useSwapCallback(
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
 
+    const { isLoading } = useTransitionAwait(swapData?.hash, `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol} `)
 
     return useMemo(() => {
 
         if (!trade) return {
             state: SwapCallbackState.INVALID,
             callback: null,
-            error: "No trade was found"
+            error: "No trade was found",
+            isLoading: false
         }
 
         return {
             state: SwapCallbackState.VALID,
             callback: swapCallback,
-            error: null
+            error: null,
+            isLoading
         }
 
-    }, [trade, swapCalldata])
+    }, [trade, isLoading, swapCalldata])
 
 }

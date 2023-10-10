@@ -24,6 +24,7 @@ export function useStaticCall({ address, abi, functionName, args }: StaticCallPr
         args,
         listenToBlock: true
     }, (d) => {
+        console.log(d)
     })
 
     useEffect(() => {
@@ -36,6 +37,10 @@ export function useStaticCall({ address, abi, functionName, args }: StaticCallPr
             args,
         }).then(setCallData).catch(err => console.error('STATIC CALL', err))
 
+    }, [])
+
+    useEffect(() => {
+        return () => unwatch()
     }, [])
 
     return {

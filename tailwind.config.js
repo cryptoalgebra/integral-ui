@@ -51,6 +51,7 @@ module.exports = {
           DEFAULT: "#1A1D2B",
           foreground: "hsl(var(--card-foreground))",
           hover: "#2e3242",
+          dark: "#101321"
         },
       },
       borderRadius: {

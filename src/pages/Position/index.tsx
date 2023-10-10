@@ -6,11 +6,9 @@ import PositionLiquidity from "@/components/position/PositionLiquidity"
 import PositionNFT from "@/components/position/PositionNFT"
 import PositionRangeChart from "@/components/position/PositionRangeChart"
 import PositionTokenRatio from "@/components/position/PositionTokenRatio"
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
-import { useAlgebraPositionManagerPositions, useAlgebraPositionManagerTokenUri } from "@/generated"
 import { usePool } from "@/hooks/pools/usePool"
 import { usePosition } from "@/hooks/positions/usePositions"
-import { Position, Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { Position} from "@cryptoalgebra/integral-sdk"
 import { useParams } from "react-router-dom"
 
 const PositionPage = () => {
@@ -41,7 +39,7 @@ const PositionPage = () => {
             <div className="mt-8 flex gap-8">
                 <PositionNFT positionId={positionId} />
                 <PositionLiquidity />
-                {/* <PositionAPR /> */}
+                <PositionAPR />
             </div>
             <div className="flex w-full">
                 <div className="w-full h-[200px]">

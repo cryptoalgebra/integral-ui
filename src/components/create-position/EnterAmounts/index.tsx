@@ -1,21 +1,9 @@
-// export const StyledDisabledDeposit = styled(Flex)`
-//   align-items: center;
-//   justify-content: center;
-//   z-index: 2;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 1rem;
-//   background-color: rgba(0, 0, 0, 0.6);
-//   border-radius: 16px;
-// `;
-
 import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
-import { Currency, CurrencyAmount, Field, maxAmountSpend } from "@cryptoalgebra/integral-sdk";
+import { Currency,  Field, } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import EnterAmountCard from "../EnterAmountsCard";
+import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
 
 interface EnterAmountsProps {
   currencyA: Currency | undefined;
@@ -37,15 +25,15 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
   };
 
   // get the max amounts user can add
-  const maxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
-    Field.CURRENCY_A,
-    Field.CURRENCY_B,
-  ].reduce((accumulator, field) => {
-    return {
-      ...accumulator,
-      [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
-    };
-  }, {});
+  // const maxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
+  //   Field.CURRENCY_A,
+  //   Field.CURRENCY_B,
+  // ].reduce((accumulator, field) => {
+  //   return {
+  //     ...accumulator,
+  //     [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
+  //   };
+  // }, {});
 
   const currencyAError = useMemo(() => {
     if (
@@ -82,12 +70,14 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
 
   const allowanceA = useNeedAllowance(
     currencyA,
-    mintInfo.parsedAmounts[Field.CURRENCY_B]
+    mintInfo.parsedAmounts[Field.CURRENCY_B],
+    ALGEBRA_POSITION_MANAGER
   );
 
   const allowanceB = useNeedAllowance(
     currencyB,
-    mintInfo.parsedAmounts[Field.CURRENCY_B]
+    mintInfo.parsedAmounts[Field.CURRENCY_B],
+    ALGEBRA_POSITION_MANAGER
   );
 
   return (

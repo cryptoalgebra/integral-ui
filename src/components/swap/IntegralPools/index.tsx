@@ -1,13 +1,13 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo"
+import Loader from "@/components/common/Loader"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { PoolFieldsFragment, usePoolsListQuery } from "@/graphql/generated/graphql"
 import { useCurrency } from "@/hooks/common/useCurrency"
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins"
-import { usePoolsList } from "@/hooks/pools/usePoolsList"
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore"
 import { SwapField } from "@/types/swap-field"
-import { CandlestickChartIcon, ChevronDown, ChevronDownIcon, Loader2, MoveRightIcon, TrendingUpIcon, ZapIcon } from "lucide-react"
+import { ChevronDownIcon, TrendingUpIcon, ZapIcon } from "lucide-react"
 import { memo } from "react"
 import { Address } from "wagmi"
 
@@ -19,11 +19,11 @@ const IntegralPools = () => {
 
     const title = currencyA && currencyB && `${currencyA.symbol} / ${currencyB.symbol}`
 
-    const { isLoading: isPluginsLoading, dynamicFeePlugin, limitOrderPlugin, farmingPlugin } = usePoolPlugins(poolAddress)
+    const { isLoading: isPluginsLoading, dynamicFeePlugin, limitOrderPlugin } = usePoolPlugins(poolAddress)
 
-    return <div className="flex flex-col w-full gap-2 py-2 px-4 bg-card rounded-3xl border border-card-border">
+    return <div className="relative flex flex-col w-full gap-2 py-2 pt-3 px-4 bg-card rounded-3xl border border-card-border">
 
-        <div className="text-sm font-bold text-left relative -mt-4 bg-[#771bff] w-fit px-2 rounded-lg">INTEGRAL POOLS</div>
+        <div className="absolute text-sm font-bold text-left -top-[10px] bg-[#771bff] w-fit px-2 rounded-lg">∫ INTEGRAL POOLS</div>
 
         <div className="flex items-center justify-between">
 
@@ -39,13 +39,13 @@ const IntegralPools = () => {
                     </div>
                 </PopoverTrigger>
 
-                <PopoverContent className="bg-card rounded-3xl border border-card-border">
+                <PopoverContent className="w-fit bg-card rounded-3xl border border-card-border">
                     <IntegralPoolsList poolAddress={poolAddress} />
                 </PopoverContent>
             </Popover>
 
             <div>
-                {isPluginsLoading ? <Loader2 className="animate-spin" /> : <div className="flex">
+                {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
                     {dynamicFeePlugin && <DynamicFeePluginIcon />}
                     {limitOrderPlugin && <LimitOrderPluginIcon />}
                 </div>}
@@ -89,7 +89,7 @@ const IntegralPoolsListItem = memo(({ pool }: { pool: PoolFieldsFragment }) => {
         </div>
         <div className="font-semibold">{`${pool.token0.symbol} / ${pool.token1.symbol}`}</div>
         <div className="ml-auto">
-            {isPluginsLoading ? <Loader2 className="animate-spin" size={16} /> : <div className="flex">
+            {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
                 {dynamicFeePlugin && <DynamicFeePluginIcon />}
                 {limitOrderPlugin && <LimitOrderPluginIcon />}
             </div>}
