@@ -1,14 +1,15 @@
 import { usePool } from "@/hooks/pools/usePool";
 import { usePosition } from "@/hooks/positions/usePositions";
-import { Position } from "@cryptoalgebra/integral-sdk";
+import { INITIAL_POOL_FEE, Position } from "@cryptoalgebra/integral-sdk";
 import PositionNFT from "../PositionNFT";
-import { Button } from "@/components/ui/button";
 import { FormattedPosition } from "@/types/formatted-position";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPercent } from "@/utils/common/formatPercent";
 import PositionRangeChart from "../PositionRangeChart";
-import { BarChartBigIcon } from "lucide-react";
+import TokenRatio from "@/components/create-position/TokenRatio";
+import { useDerivedMintInfo } from "@/state/mintStore";
+import CollectFees from "../CollectFees";
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined
@@ -27,21 +28,30 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
         tickUpper: Number(position.tickUpper)
     })
 
-    const [positionLiquidityUSD, _, positionAPR] = selectedPosition ? [
+    const mintInfo = useDerivedMintInfo(
+        positionEntity?.amount0.currency,
+        positionEntity?.amount1.currency,
+        position?.pool,
+        INITIAL_POOL_FEE,
+        positionEntity?.amount0.currency,
+        positionEntity || undefined
+    )
+
+    const [positionLiquidityUSD, positionFeesUSD, positionAPR] = selectedPosition ? [
         formatUSD.format(selectedPosition.liquidityUSD),
         formatUSD.format(selectedPosition.feesUSD),
         formatPercent.format(selectedPosition.apr)
     ] : []
 
-    if (!selectedPosition || loading) return <div>Skeleton</div>
+    if (!selectedPosition || loading) return
 
-    return <div className="flex flex-col gap-6">
+    return <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl py-4 px-6 animate-fade-in">
         <div className="relative flex w-full justify-end text-right">
             <div className="absolute left-2 top-2">
                 <PositionNFT positionId={selectedPosition.id} />
             </div>
             <div className="flex flex-col gap-2 w-[235px]">
-                <h2 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-2xl">Position #1</h2>
+                <h2 className="scroll-m-20 text-2xl font-bold tracking-tight lg:text-2xl">{`Position #${selectedPosition?.id}`}</h2>
                 <div className="flex flex-col gap-2">
                     <div>
                         <div className="font-bold text-sm">LIQUIDITY</div>
@@ -55,33 +65,11 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
                             {positionAPR ? <span className="text-fuchsia-400 drop-shadow-pink">{positionAPR}</span> : <Skeleton className="w-[100px] h-[30px]" />}
                         </div>
                     </div>
-                    {/* {positionFeesUSD ? `Fees ${positionFeesUSD}` : <Skeleton className="w-[100px] h-[30px]" />} */}
-                    {/* { positionAPR ? `APR ${positionAPR}` : <Skeleton className="w-[100px] h-[30px]" /> } */}
                 </div>
             </div>
         </div>
-        <Button>Add liquidity</Button>
-        <div className="flex w-full justify-between">
-            <div className="text-left">
-                <div className="font-bold text-sm">EARNED FEES</div>
-                <div className="font-semibold text-2xl">
-                    {positionLiquidityUSD ? <span className="text-cyan-300 drop-shadow-cyan">{positionLiquidityUSD}</span> : <Skeleton className="w-[100px] h-[30px]" />}
-                </div>
-            </div>
-            <Button>Collect</Button>
-        </div>
-        <div className="flex w-full h-[35px] bg-red-500 rounded-xl">
-            
-        </div>
-        <div className="flex gap-2">
-            {
-                ['Info', 'Range'].map(v => <div key={v} className="py-2 px-4 bg-card border border-card-border rounded-2xl">{v}</div>)
-            }
-            <Button variant={'icon'} size={'icon'}>
-                <BarChartBigIcon  />
-            </Button>
-        </div>
-
+       <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} />
+        <TokenRatio mintInfo={mintInfo} />
         {
             pool && positionEntity &&
             <PositionRangeChart pool={pool} position={positionEntity} />

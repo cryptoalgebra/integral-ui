@@ -17,11 +17,11 @@ const menuItems = [
         link: '/limit-order',
         active: [PATHS.LIMIT_ORDERS]
     },
-    // {
-    //     title: 'Pools',
-    //     link: '/pools',
-    //     active: [PATHS.POOLS]
-    // }
+    {
+        title: 'Pools',
+        link: '/pools',
+        active: [PATHS.POOLS]
+    }
 ]
 
 const Navigation = () => {

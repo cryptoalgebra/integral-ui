@@ -44,12 +44,12 @@ const CustomBar = ({
         <g>
             <defs>
                 <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='100%'>
-                    <stop offset='0' stopColor='#5161f2' />
-                    <stop offset='1' stopColor='transparent' />
+                    <stop offset='0' stopColor='#2797ff' />
+                    <stop offset='1' stopColor='rgba(35, 133, 222, 0.05)' />
                 </linearGradient>
             </defs>
-            {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
-            {isCurrent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} textAnchor="middle">Current Price</text>}
+            {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
+            {isCurrent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
     )
@@ -59,7 +59,6 @@ const CustomTooltip = ({
     props,
     currencyA,
     currencyB,
-    currentPrice
 }: CustomTooltipProps) => {
 
     const price0 = props?.payload?.[0]?.payload.price0
@@ -67,7 +66,7 @@ const CustomTooltip = ({
     // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
     // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
 
-    return <div className="flex flex-col gap-2 p-4 rounded bg-[#13192894] backdrop-blur-sm">
+    return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
         <div className="flex gap-4 justify-between">
             <div>{`${currencyA?.symbol} Price:`}</div>
             <div>{`${price0 ? `${Number(price0).toLocaleString(undefined, {
@@ -80,13 +79,13 @@ const CustomTooltip = ({
                 maximumSignificantDigits: 3,
             })} ${currencyA?.symbol}` : ''}`}</div>
         </div>
-        {currentPrice && price0 && currentPrice > price1 ? <div className="flex gap-4 justify-between">
+        {/* {currentPrice && price0 && currentPrice > price1 ? <div className="flex gap-4 justify-between">
             <div>{`${currencyA?.symbol} Locked: `}</div>
-            {/* <div>{`${tvlToken0 ? formatNumber(tvlToken0) : ''} ${currencyA?.symbol}`}</div> */}
+            <div>{`${tvlToken0 ? formatNumber(tvlToken0) : ''} ${currencyA?.symbol}`}</div>
         </div> : <div className="flex gap-4 justify-between">
             <div>{`${currencyB?.symbol} Locked: `}</div>
-            {/* <div>{`${tvlToken1 ? formatNumber(tvlToken1) : ''} ${currencyB?.symbol}`}</div> */}
-        </div>}
+            <div>{`${tvlToken1 ? formatNumber(tvlToken1) : ''} ${currencyB?.symbol}`}</div>
+        </div>} */}
     </div>
 }
 
@@ -94,11 +93,11 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
 
     const [focusBar, setFocusBar] = useState<number | undefined>(undefined);
 
-    return <ResponsiveContainer width={'100%'} height={300}>
+    return <ResponsiveContainer width={'100%'} height={250}>
         <BarChart
             data={formattedData}
             margin={{
-                top: 20,
+                top: 30,
                 right: 0,
                 left: 0,
                 bottom: 0,
@@ -149,11 +148,10 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
 
                     const value = isSorted ? entry.price0 : entry.price1
 
-
                     if (focusBar === index) {
-                        fill = '#5161f2'
+                        fill = '#cdd1ff'
                     } else if (entry.isCurrent) {
-                        fill = 'white'
+                        fill = '#cd27f0'
                     } else if (leftPrice && rightPrice) {
                         if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
                             fill = 'url(#colorUv)'

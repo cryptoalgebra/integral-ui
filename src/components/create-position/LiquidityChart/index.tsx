@@ -21,7 +21,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
 
     const [processedData, setProcessedData] = useState<any>(null)
 
-    const [zoom, setZoom] = useState(40)
+    const [zoom, setZoom] = useState(50)
 
     const {
         fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },

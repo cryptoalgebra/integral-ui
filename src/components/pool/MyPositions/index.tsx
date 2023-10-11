@@ -1,19 +1,20 @@
-import { columns } from "@/components/common/Table/columns"
+import { myPositionsColumns } from "@/components/common/Table/myPositionsColumns"
 import DataTable from "@/components/common/Table/dataTable"
 import { Address } from "wagmi"
+import { FormattedPosition } from "@/types/formatted-position"
 
 interface MyPositionsProps {
-    positions: any
-    poolId: Address | undefined
+    positions: FormattedPosition[];
+    poolId: Address | undefined;
+    selectedPosition: number | undefined;
+    selectPosition: (positionId: number | null) => void; 
 }
 
-const MyPositions = ({ positions }: MyPositionsProps) => {
+const MyPositions = ({ positions, selectedPosition, selectPosition }: MyPositionsProps) => {
 
-    console.log('My positions', positions)
-
-    return <div className="min-h-[400px]">
-            <DataTable columns={columns} data={positions} />
-        </div>
+    return <div className="flex flex-col min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl">
+        <DataTable columns={myPositionsColumns} data={positions} action={selectPosition} selectedRow={selectedPosition} />
+    </div>
 
 }
 

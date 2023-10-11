@@ -283,6 +283,9 @@ const SwapChart = () => {
     }, [tokenA, tokenB, chartPair])
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
+
+        {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId}  /> */}
+
         <div className="flex flex-col md:flex-row gap-4 justify-between">
             <Popover>
                 <PopoverTrigger className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">

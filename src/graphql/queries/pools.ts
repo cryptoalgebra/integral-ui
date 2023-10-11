@@ -14,6 +14,8 @@ export const POOL_FRAGMENT = gql`
         liquidity
         tick
         tickSpacing
+        totalValueLockedUSD
+        volumeUSD
         feesUSD
         untrackedFeesUSD
         token0Price

@@ -4,10 +4,12 @@ import { Address } from "wagmi";
 import EthLogo from '@/assets/tokens/ether.svg'
 import USDTLogo from '@/assets/tokens/usdt.png'
 import WBTCLogo from '@/assets/tokens/wbtc.svg'
+import { cn } from "@/lib/utils";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
     size: number;
+    className?: string;
     style?: React.CSSProperties
 }
 
@@ -27,13 +29,13 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
 }
 
 
-const CurrencyLogo = ({ currency, size, style }: CurrencyLogoProps) => {
+const CurrencyLogo = ({ currency, size, className, style }: CurrencyLogoProps) => {
 
     if (!currency) return 
 
     const address = currency.wrapped.address.toLowerCase() as Address;
 
-    const classString = `w-[${size}px] h-[${size}px] bg-card-dark rounded-full`
+    const classString = cn(`min-w-[${size}px] min-h-[${size}px] bg-card-dark rounded-full`, className)
 
     if (address in specialTokens) {
         return <img src={specialTokens[address].logo} alt={specialTokens[address].symbol} width={size} height={size} className={classString} style={style} />

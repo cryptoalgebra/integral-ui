@@ -12,11 +12,13 @@ import App from './App.tsx'
 import './index.css'
 
 import SwapPage from "@/pages/Swap";
-import Page404 from "@/pages/Page404";
-
 import { SwapPageView } from "@/pages/Swap/types";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import Page404 from "@/pages/Page404";
+import PoolsPage from "@/pages/Pools";
+import PoolPage from "@/pages/Pool";
+import NewPositionPage from "@/pages/NewPosition";
 
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,22 +33,18 @@ const router = createBrowserRouter([
     path: '/limit-order',
     element: <App> <SwapPage type={SwapPageView.LIMIT_ORDER} /> </App>
   },
-  // {
-  //   path: '/pools',
-  //   element: <App> <PoolsPage /> </App>
-  // },
-  // {
-  //   path: '/pools/:pool',
-  //   element: <App> <PoolPage /> </App>
-  // },
-  // {
-  //   path: '/pools/:pool/new-position',
-  //   element: <App> <NewPositionPage/> </App>
-  // },
-  // {
-  //   path: '/positions/:position',
-  //   element: <App> <PositionPage/> </App>
-  // }
+  {
+    path: '/pools',
+    element: <App> <PoolsPage /> </App>
+  },
+  {
+    path: '/pool/:pool',
+    element: <App> <PoolPage /> </App>
+  },
+  {
+    path: '/pool/:pool/new-position',
+    element: <App> <NewPositionPage/> </App>
+  }
 ]);
 
 const client = new ApolloClient({

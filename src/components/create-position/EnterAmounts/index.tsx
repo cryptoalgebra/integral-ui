@@ -24,16 +24,6 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
       mintInfo.parsedAmounts[mintInfo.dependentField]?.toSignificant(6) ?? '',
   };
 
-  // get the max amounts user can add
-  // const maxAmounts: { [field in Field]?: CurrencyAmount<Currency> } = [
-  //   Field.CURRENCY_A,
-  //   Field.CURRENCY_B,
-  // ].reduce((accumulator, field) => {
-  //   return {
-  //     ...accumulator,
-  //     [field]: maxAmountSpend(mintInfo.currencyBalances[field]),
-  //   };
-  // }, {});
 
   const currencyAError = useMemo(() => {
     if (
@@ -81,8 +71,8 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex relative">
+    <div className="flex flex-col md:flex-row lg:flex-col gap-2">
+      <div className="flex w-full relative">
         <EnterAmountCard
           currency={currencyA}
           value={formattedAmounts[Field.CURRENCY_A]}
@@ -92,12 +82,12 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
           error={currencyAError}
         />
         {mintInfo.depositADisabled && (
-          <div>
+          <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-3xl">
             For selected range this deposit is disabled
           </div>
         )}
       </div>
-      <div className="flex relative">
+      <div className="flex w-full relative">
         <EnterAmountCard
           currency={currencyB}
           value={formattedAmounts[Field.CURRENCY_B]}
@@ -107,7 +97,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
           error={currencyBError}
         />
         {mintInfo.depositBDisabled && (
-          <div>
+          <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-3xl">
             For selected range this deposit is disabled
           </div>
         )}

@@ -15,9 +15,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return <PageContainer>
 
-        <PageTitle>
-            {isLimitOrder ? 'Limit Order' : 'Swap'}
-        </PageTitle>
+        <PageTitle title={isLimitOrder ? 'Limit Order' : 'Swap'} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
 

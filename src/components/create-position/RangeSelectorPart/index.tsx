@@ -65,11 +65,15 @@ const RangeSelectorPart = ({
 
     return (
         <div>
-            <div className="flex mb-2 font-bold text-md">
-                {title}
-            </div>
+             <div className="font-bold text-xs mb-3">{title.toUpperCase()}</div>
             <div className="flex relative">
-                <Button onClick={handleDecrement} disabled={decrementDisabled || disabled} className="border border-card-border rounded-xl rounded-r-none">
+                <Button 
+                    variant={'ghost'}
+                    size={'sm'}
+                    onClick={handleDecrement} 
+                    disabled={decrementDisabled || disabled}
+                    className="border border-card-border rounded-xl rounded-r-none"    
+                >
                     -
                 </Button>
 
@@ -84,10 +88,15 @@ const RangeSelectorPart = ({
                         updateSelectedPreset(null)
                     }}
                     placeholder={'0.00'}
-                    className="border-y border-x-0 border-card-border rounded-none"
+                    className="w-full border-y border-x-0 border-card-border rounded-none text-sm h-[36px]"
                 />
 
-                <Button onClick={handleIncrement} disabled={incrementDisabled || disabled} className="border border-card-border rounded-xl rounded-l-none">
+                <Button 
+                    variant={'ghost'}
+                  size={'sm'}
+                    onClick={handleIncrement} 
+                    disabled={incrementDisabled || disabled} 
+                    className="border border-card-border rounded-xl rounded-l-none">
                     +
                 </Button>
             </div>

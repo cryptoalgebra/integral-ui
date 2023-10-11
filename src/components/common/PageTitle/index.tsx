@@ -1,16 +1,19 @@
 import Settings from "../Settings";
 
 interface PageTitleProps {
-    children: React.ReactNode
+    title: string;
+    showSettings?: boolean;
+    children?: React.ReactNode
 }
 
-const PageTitle = ({ children }: PageTitleProps) => {
+const PageTitle = ({ title, children, showSettings = true }: PageTitleProps) => {
 
     return <div className="flex w-full items-center justify-between">
-        <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight md:text-3xl lg:text-4xl">
-            {children}
-        </h1>
-        <Settings />
+        <div className="flex items-center gap-8">
+            <h1 className="scroll-m-20 text-2xl font-bold tracking-tight md:text-3xl lg:text-4xl">{title}</h1>
+            {children && children}
+        </div>
+        {showSettings && <Settings />}
     </div>
 
 }

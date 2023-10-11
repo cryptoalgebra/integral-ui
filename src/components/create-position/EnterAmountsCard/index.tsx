@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
+import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
-import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
+import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
-import { useEffect } from "react";
-import { erc20ABI, useAccount, useBalance, useContractWrite, useWaitForTransaction } from "wagmi";
+import { useCallback, useMemo } from "react";
+import { Address, useAccount, useBalance } from "wagmi";
 
 
 interface EnterAmountsCardProps {
@@ -18,137 +18,116 @@ interface EnterAmountsCardProps {
 const EnterAmountCard = ({
   currency,
   value,
-  valueForApprove,
-  needApprove,
-  error,
   handleChange,
 }: EnterAmountsCardProps) => {
-  const { address } = useAccount();
+  const { address: account } = useAccount();
 
-//   const {
-//     actions: { getBaseAsset },
-//   } = useBaseAssetStore();
-
-//   const asset = getBaseAsset(currency?.wrapped.address || '');
-
-  const {
-    data: balanceData,
-    isLoading,
-    isError,
-  } = useBalance({
-    address,
-    token: currency?.isNative
-      ? undefined
-      : (currency?.wrapped.address as `0x${string}`),
-    watch: true,
+  const { data: balance, isLoading } = useBalance({
+    address: account,
+    token: currency?.isNative ? undefined : currency?.wrapped.address as Address,
+    watch: true
   });
 
-  const balance =
-    !isLoading && !isError && balanceData ? balanceData.formatted : 0;
+  const balanceString = useMemo(() => {
+    if (isLoading || !balance) return "Loading...";
 
-  const { data: approvalData, write: approve } = useContractWrite({
-    address: currency ? (currency.wrapped.address as `0x${string}`) : undefined,
-    abi: erc20ABI,
-    functionName: 'approve',
-    args: [
-      ALGEBRA_POSITION_MANAGER,
-      valueForApprove ? BigInt(valueForApprove.quotient.toString()) : 0,
-    ] as [`0x${string}`, bigint],
-    onSuccess() {
-    //   generateToast(
-    //     'Transaction sent',
-    //     'Your transaction has been submitted to the network',
-    //     'loading'
-    //   );
-    },
-    onError() {
-    //   generateToast(
-    //     'Error meanwhile waiting for transaction',
-    //     error.message,
-    //     'error'
-    //   );
-    },
-  });
+    return formatCurrency.format(Number(balance.formatted))
 
-  const { data: waitForApproval, isLoading: isApprovalLoading } =
-    useWaitForTransaction({
-      hash: approvalData?.hash,
-    });
+  }, [balance, isLoading]);
 
-  useEffect(() => {
-    if (waitForApproval && waitForApproval.status === 'success') {
-    //   generateToast(
-    //     `${currency?.symbol} approved`,
-    //     '',
-    //     'success',
-    //     waitForApproval.transactionHash
-    //   );
-    }
-  }, [waitForApproval]);
+  const handleInput = useCallback((value: string) => {
+    if (value === ".") value = "0.";
+    handleChange(value);
+  }, []);
 
   function setMax() {
-    handleChange(balance || '0');
+    handleChange(balance?.formatted || '0');
   }
 
-  return (
-    <div
-        className="flex flex-col justify-between w-full relative">
-      <div
-      className="absolute text-right">
-        {/* // {`Balance: ${displayNumber(balance)}`} */}
-        {`Balance: ${balance.toString()}`}
+  return <div className="flex w-full bg-card-dark p-3 rounded-2xl">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-4">
+        <CurrencyLogo currency={currency} size={35} />
+        <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
       </div>
-
-      <div
-      className="flex items-center justify-between">
-        <div className="flex items-center p-2">
-          {/* <EquilibreAvatar
-            src={asset?.logoURI || ''}
-            size={'md'}
-            ml={1}
-            mr={4}
-          /> */}
-          <Input value={value} onChange={v => handleChange(v.target.value)} />
-          {/* <InputGroup flexDirection={'column'}>
-            <NumberInput
-              step={0.1}
-              colorScheme="white"
-              variant={'unstyled'}
-              value={value}
-              onChange={handleChange}>
-              <NumberInputField
-                fontSize={'2xl'}
-                placeholder="0"
-                textAlign={'left'}
-              />
-            </NumberInput>
-          </InputGroup> */}
+      {currency && account && (
+        <div className={"flex text-sm whitespace-nowrap"}>
+          <div>
+            <span className="font-semibold">Balance: </span>
+            <span>{balanceString}</span>
+          </div>
+          <button className="ml-2 text-[#63b4ff]" onClick={setMax}>
+            Max
+          </button>
         </div>
-        <Button
-          onClick={setMax}>
-          MAX
-        </Button>
-      </div>
-      <div className="mt-4">
-        {error ? (
-          <div className="flex flex-col absolute">
-            {error}
-          </div>
-        ) : needApprove ? (
-          <Button
-            disabled={!approve || isApprovalLoading}
-            onClick={() => approve()}>
-            {isApprovalLoading ? 'Loading...' : `Approve ${currency?.symbol}`}
-          </Button>
-        ) : valueForApprove ? (
-          <div className="absolute">
-            {/* <CheckIcon /> */}
-            Approved
-          </div>
-        ) : null}
-      </div>
+      )}
     </div>
-  );
+
+    <div className="flex flex-col items-end w-full">
+      <Input value={value} id={`amount-${currency?.symbol}`} onChange={(e) => handleInput(e.target.value.trim())} className={`text-right border-none text-xl font-bold w-9/12 p-0`} placeholder={'0.0'} />
+      {/* <div className="text-sm">{fiatValue && formatUSD.format(fiatValue)}</div> */}
+    </div>
+  </div>
+
+  // return (
+  //   <div
+  //       className="flex flex-col justify-between w-full relative">
+  //     <div
+  //     className="absolute text-right">
+  //       {/* // {`Balance: ${displayNumber(balance)}`} */}
+  //       {`Balance: ${balance.toString()}`}
+  //     </div>
+
+  //     <div
+  //     className="flex items-center justify-between">
+  //       <div className="flex items-center p-2">
+  //         {/* <EquilibreAvatar
+  //           src={asset?.logoURI || ''}
+  //           size={'md'}
+  //           ml={1}
+  //           mr={4}
+  //         /> */}
+  //         <Input value={value} onChange={v => handleChange(v.target.value)} />
+  //         {/* <InputGroup flexDirection={'column'}>
+  //           <NumberInput
+  //             step={0.1}
+  //             colorScheme="white"
+  //             variant={'unstyled'}
+  //             value={value}
+  //             onChange={handleChange}>
+  //             <NumberInputField
+  //               fontSize={'2xl'}
+  //               placeholder="0"
+  //               textAlign={'left'}
+  //             />
+  //           </NumberInput>
+  //         </InputGroup> */}
+  //       </div>
+  //       <Button
+  //         onClick={setMax}>
+  //         MAX
+  //       </Button>
+  //     </div>
+  //     <div className="mt-4">
+  //       {error ? (
+  //         <div className="flex flex-col absolute">
+  //           {error}
+  //         </div>
+  //       ) : needApprove ? (
+  //         <Button
+  //           disabled={!approve || isApprovalLoading}
+  //           onClick={() => approve()}>
+  //           {isApprovalLoading ? 'Loading...' : `Approve ${currency?.symbol}`}
+  //         </Button>
+  //       ) : valueForApprove ? (
+  //         <div className="absolute">
+  //           {/* <CheckIcon /> */}
+  //           Approved
+  //         </div>
+  //       ) : null}
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default EnterAmountCard;

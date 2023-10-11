@@ -1,19 +1,35 @@
-import PoolsListItem from "@/components/pools/PoolsListItem"
+import DataTable from "@/components/common/Table/dataTable"
+import { poolsColumns } from "@/components/common/Table/poolsColumns"
 import { usePoolsListQuery } from "@/graphql/generated/graphql"
+import { useMemo } from "react"
+import { Address } from "viem"
 
 const PoolsList = () => {
 
-    const { data, loading } = usePoolsListQuery()
+    const { data: pools, loading } = usePoolsListQuery()
 
-    if (loading) return 'Loading Pools...'
+    const formattedPools = useMemo(() => {
 
-    if (!data) return 'No pools'
+        if (!pools?.pools) return []
 
-    return <div className="flex flex-col">
-        {
-            data.pools.map(({ token0, token1, id }, i) => <PoolsListItem key={`pool-list-item-${i}`} token0={token0} token1={token1} pool={id} />)
-        }
+        return pools.pools.map(({ id, token0, token1, fee, totalValueLockedUSD, volumeUSD }) => ({
+            id: id as Address,
+            pair: {
+                token0,
+                token1
+            },
+            fee: Number(fee) / 10_000,
+            tvlUSD: Number(totalValueLockedUSD),
+            volume24USD: Number(volumeUSD),
+            apr: 0
+        }))
+
+    }, [pools])
+
+    return <div className="flex flex-col gap-4">
+        <DataTable columns={poolsColumns} data={formattedPools} defaultSortingID={'tvlUSD'} link={'pool'} showPagination={false} loading={loading}  />
     </div>
 
 }
+
 export default PoolsList

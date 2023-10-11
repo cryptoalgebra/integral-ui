@@ -10,6 +10,7 @@ import Loader from "../Loader";
 import { useWeb3ModalState } from "@web3modal/wagmi/react";
 import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 import KillLimitOrderModal from "@/components/modals/KillLimitOrderModal";
+import { HeaderItem } from "./common";
 
 interface Epoch {
     id: string;
@@ -57,17 +58,17 @@ export interface LimitOrder {
 }
 
 const TokenAmount = ({ amount }: { amount: Amount }) => <div className="flex items-center gap-4">
-        <CurrencyLogo currency={amount.token} size={35} />
-        <div className="text-left">
-            <div className="font-bold">{amount.token.symbol}</div>
-            <div>{amount.amount.toSignificant()}</div>
-        </div>
+    <CurrencyLogo currency={amount.token} size={35} />
+    <div className="text-left">
+        <div className="font-bold">{amount.token.symbol}</div>
+        <div>{amount.amount.toSignificant()}</div>
     </div>
+</div>
 
 const TokenRates = ({ rates }: { rates: Rates }) => <div className="flex flex-col text-left">
-        <div>{`1 ${rates.buy.token.symbol} = ${rates.buy.rate.toSignificant()} ${rates.sell.token.symbol}`}</div>
-        <div>{`1 ${rates.sell.token.symbol} = ${rates.sell.rate.toSignificant()} ${rates.buy.token.symbol}`}</div>
-    </div>
+    <div>{`1 ${rates.buy.token.symbol} = ${rates.buy.rate.toSignificant()} ${rates.sell.token.symbol}`}</div>
+    <div>{`1 ${rates.sell.token.symbol} = ${rates.sell.rate.toSignificant()} ${rates.buy.token.symbol}`}</div>
+</div>
 
 
 const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
@@ -94,7 +95,7 @@ const Action = (props: LimitOrder) => {
     if (props.epoch.filled && props.liquidity === "0") return
 
     if (props.epoch.filled) return <WithdrawLimitOrderButton {...props} />
-    
+
     return <KillLimitOrderModal {...props} />
 
 }
@@ -118,29 +119,25 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
 
 }
 
-const HeaderItem = ({ title }: { title: string }) => <div className="pt-1">
-    <span className="rounded-xl px-2 py-1 hover:bg-card-hover duration-300 cursor-pointer -ml-2">{title}</span>
-</div>
-
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
         accessorKey: 'amounts.buy',
-        header: () => <HeaderItem title={'You buy'} />,
+        header: () => <HeaderItem>You buy</HeaderItem>,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
     },
     {
         accessorKey: 'amounts.sell',
-        header: () => <HeaderItem title={'You sell'} />,
+        header: () => <HeaderItem>You sell</HeaderItem>,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />
     },
     {
         accessorKey: 'rates',
-        header: () => <HeaderItem title={'Rates'} />,
+        header: () => <HeaderItem>Rates</HeaderItem>,
         cell: ({ getValue }) => <TokenRates rates={getValue() as Rates} />
     },
     {
         accessorKey: 'ticks',
-        header: () => <HeaderItem title={'Status'} />,
+        header: () => <HeaderItem>Status</HeaderItem>,
         cell: ({ getValue }) => <LimitOrderStatus ticks={getValue() as Ticks} />
     },
     {

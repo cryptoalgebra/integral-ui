@@ -1,255 +1,195 @@
-// import { Bound } from "@cryptoalgebra/integral-sdk"
-// import { useMemo } from "react"
-// import { useParams } from "react-router-dom"
-// import { Address } from "wagmi"
-// import { usePositionAPR } from "@/hooks/positions/usePositionAPR"
-// import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins"
+import PageContainer from "@/components/common/PageContainer"
+import PageTitle from "@/components/common/PageTitle"
+import EnterAmounts from "@/components/create-position/EnterAmounts"
+import LiquidityChart from "@/components/create-position/LiquidityChart"
+import RangeSelector from "@/components/create-position/RangeSelector"
+import PresetTabs from "@/components/create-position/PresetTabs"
+import TokenRatio from "@/components/create-position/TokenRatio"
+import AddLiquidityButton from "@/components/liquidity/AddLiquidityButton"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated"
+import { useCurrency } from "@/hooks/common/useCurrency"
+import { useDerivedMintInfo, useMintActionHandlers, useMintState, useRangeHopCallbacks } from "@/state/mintStore"
+import { Bound, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk"
+import { useEffect, useMemo, useState } from "react"
+import { useParams } from "react-router-dom"
+import { Address } from "wagmi"
+import { formatPercent } from "@/utils/common/formatPercent"
+import { usePositionAPR } from "@/hooks/positions/usePositionAPR"
+import { getPoolAPR } from "@/utils/pool/getPoolAPR"
 
-// type NewPositionPageParams = Record<'pool', Address>
+type NewPositionPageParams = Record<'pool', Address>
 
 const NewPositionPage = () => {
 
-    // const { pool: poolAddress } = useParams<NewPositionPageParams>()
+    const { pool: poolAddress } = useParams<NewPositionPageParams>()
 
-    // const { address: account } = useAccount()
+    const [poolAPR, setPoolAPR] = useState<number>()
 
-    // const [poolState, pool] = usePool(poolAddress)
+    const { data: token0 } = useAlgebraPoolToken0({
+        address: poolAddress
+    })
 
-    // console.log('Pool tick', pool && pool.tickCurrent)
+    const { data: token1 } = useAlgebraPoolToken1({
+        address: poolAddress
+    })
 
-    // const { data: token0 } = useAlgebraPoolToken0({
-    //     address: poolAddress
-    // })
+    const currencyA = useCurrency(token0)
+    const currencyB = useCurrency(token1)
 
-    // const { data: token1 } = useAlgebraPoolToken1({
-    //     address: poolAddress
-    // })
+    const mintInfo = useDerivedMintInfo(
+        currencyA ?? undefined,
+        currencyB ?? undefined,
+        poolAddress,
+        INITIAL_POOL_FEE,
+        currencyA ?? undefined,
+        undefined
+    );
 
-    // const currencyA = useCurrency(token0)
-    // const currencyB = useCurrency(token1)
+    const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = mintInfo.pricesAtTicks
 
-    // const mintInfo = useDerivedMintInfo(
-    //     currencyA ?? undefined,
-    //     currencyB ?? undefined,
-    //     poolAddress,
-    //     INITIAL_POOL_FEE,
-    //     currencyA ?? undefined,
-    //     undefined
-    // );
+    const price = useMemo(() => {
+        if (!mintInfo.price) return
 
-    //   const {
-    //     onFieldAInput,
-    //     onFieldBInput,
-    //     onLeftRangeInput,
-    //     onRightRangeInput,
-    //     onStartPriceInput,
-    //   } = useV3MintActionHandlers(mintInfo.noLiquidity);
+        return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
+    }, [mintInfo])
 
-    // const {
-    //     startPriceTypedValue,
-    //     // independentField,
-    //     // typedValue,
-    //     // preset,
-    //     // actions: {
-    //     //   updateSelectedPreset,
-    //     //   setInitialTokenPrice,
-    //     //   updateCurrentStep,
-    //     //   setFullRange,
-    //     // },
-    // } = useMintState();
+    const currentPrice = useMemo(() => {
+        if (!mintInfo.price) return;
+
+        if (Number(price) <= 0.0001) {
+            return `< 0.0001 ${currencyB?.symbol}`;
+        } else {
+            return `${price} ${currencyB?.symbol}`;
+        }
+    }, [mintInfo.price, price]);
 
 
-    // const stepPair = useMemo(() => {
-    //     return Boolean(
-    //         currencyA &&
-    //         currencyB &&
-    //         mintInfo.poolState !== PoolState.INVALID &&
-    //         mintInfo.poolState !== PoolState.LOADING
-    //     );
-    // }, [currencyA, currencyB, mintInfo]);
+    const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
+        return mintInfo.ticks;
+    }, [mintInfo]);
 
-    // const stepRange = useMemo(() => {
-    //     return Boolean(
-    //         mintInfo.lowerPrice &&
-    //         mintInfo.upperPrice &&
-    //         !mintInfo.invalidRange &&
-    //         account
-    //     );
-    // }, [mintInfo]);
+    const {
+        getDecrementLower,
+        getIncrementLower,
+        getDecrementUpper,
+        getIncrementUpper,
+    } = useRangeHopCallbacks(
+        currencyA ?? undefined,
+        currencyB ?? undefined,
+        mintInfo.tickSpacing,
+        tickLower,
+        tickUpper,
+        mintInfo.pool
+    );
 
-    // const stepAmounts = useMemo(() => {
-    //     if (mintInfo.outOfRange) {
-    //         return Boolean(
-    //             mintInfo.parsedAmounts[Field.CURRENCY_A] ||
-    //             (mintInfo.parsedAmounts[Field.CURRENCY_B] && account)
-    //         );
-    //     }
-    //     return Boolean(
-    //         mintInfo.parsedAmounts[Field.CURRENCY_A] &&
-    //         mintInfo.parsedAmounts[Field.CURRENCY_B] &&
-    //         account
-    //     );
-    // }, [mintInfo]);
+    const {
+        onLeftRangeInput,
+        onRightRangeInput,
+    } = useMintActionHandlers(mintInfo.noLiquidity);
 
-    // const stepInitialPrice = useMemo(() => {
-    //     return mintInfo.noLiquidity
-    //         ? Boolean(+startPriceTypedValue && account)
-    //         : false;
-    // }, [mintInfo, startPriceTypedValue]);
+    const {
+        startPriceTypedValue,
+    } = useMintState();
 
-    // const needApproveA = useNeedAllowance(
-    //     currencyA,
-    //     mintInfo.parsedAmounts[Field.CURRENCY_B],
-    //     ALGEBRA_POSITION_MANAGER
-    // );
+    const apr = usePositionAPR(poolAddress, mintInfo.position)
 
-    // const needApproveB = useNeedAllowance(
-    //     currencyB,
-    //     mintInfo.parsedAmounts[Field.CURRENCY_B],
-    //     ALGEBRA_POSITION_MANAGER
-    // );
+    useEffect(() => {
+        if (!poolAddress) return
+        getPoolAPR(poolAddress).then(setPoolAPR)
+    }, [poolAddress])
 
-    // const isReady = Boolean(
-    //     (mintInfo.depositADisabled ? true : !needApproveA) &&
-    //     (mintInfo.depositBDisabled ? true : !needApproveB) &&
-    //     !mintInfo.errorMessage &&
-    //     !mintInfo.invalidRange
-    // );
+    return <PageContainer>
 
+        <PageTitle title={'Create Position'} />
 
-    // const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = mintInfo.pricesAtTicks
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16 text-left">
 
+            <div className="col-span-2">
 
-    // const tokenA = (currencyA ?? undefined)?.wrapped
-    // const tokenB = (currencyB ?? undefined)?.wrapped
+                <div className="flex items-center justify-between w-full mb-6">
+                    <h2 className="font-semibold text-2xl text-left">1. Select Range</h2>
+                    <PresetTabs
+                        currencyA={currencyA}
+                        currencyB={currencyB}
+                        mintInfo={mintInfo}
+                    />
+                </div>
 
-    // const isSorted = useMemo(() => {
-    //     return tokenA && tokenB && tokenA.sortsBefore(tokenB)
-    // }, [tokenA, tokenB, mintInfo])
+                <div className="flex flex-col w-full">
 
-    // const leftPrice = useMemo(() => {
-    //     return isSorted ? priceLower : priceUpper?.invert()
-    // }, [isSorted, priceLower, priceUpper, mintInfo])
+                    <div className="w-full px-8 py-6 bg-card text-left rounded-3xl border border-card-border">
 
-    // const rightPrice = useMemo(() => {
-    //     return isSorted ? priceUpper : priceLower?.invert()
-    // }, [isSorted, priceUpper, priceLower, mintInfo])
+                        <div className="flex w-full flex-col md:flex-row gap-4">
+                            <RangeSelector
+                                priceLower={priceLower}
+                                priceUpper={priceUpper}
+                                getDecrementLower={getDecrementLower}
+                                getIncrementLower={getIncrementLower}
+                                getDecrementUpper={getDecrementUpper}
+                                getIncrementUpper={getIncrementUpper}
+                                onLeftRangeInput={onLeftRangeInput}
+                                onRightRangeInput={onRightRangeInput}
+                                currencyA={currencyA}
+                                currencyB={currencyB}
+                                mintInfo={mintInfo}
+                                disabled={!startPriceTypedValue && !mintInfo.price}
+                            />
+                            <div className="md:ml-auto md:text-right">
+                                <div className="font-bold text-xs mb-3">CURRENT PRICE</div>
+                                <div className="font-bold text-xl">{`${currentPrice}`}</div>
+                            </div>
+                        </div>
 
-    // const price = useMemo(() => {
-    //     if (!mintInfo.price) return
+                        <LiquidityChart currencyA={currencyA} currencyB={currencyB} currentPrice={price ? parseFloat(price) : undefined}
+                            priceLower={priceLower}
+                            priceUpper={priceUpper} />
 
-    //     return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5)
-    // }, [mintInfo])
+                    </div>
 
-    // const currentPrice = useMemo(() => {
-    //     if (!mintInfo.price) return;
+                </div>
 
-    //     if (Number(price) <= 0.0001) {
-    //         return `< 0.0001 ${currencyB?.symbol}`;
-    //     } else {
-    //         return `${price} ${currencyB?.symbol}`;
-    //     }
-    // }, [mintInfo.price, price]);
+            </div>
 
+            <div className="flex flex-col">
 
-    // const apr = usePositionAPR(poolAddress, mintInfo.position)
+                <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2>
 
-    // const pluginList = usePoolPlugins(poolAddress)
+                <div className="flex flex-col w-full h-full gap-2 bg-card border border-card-border rounded-3xl p-2">
 
-    // console.log('pluginList', apr, pluginList)
+                    <EnterAmounts currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
 
+                    <HoverCard>
+                        <HoverCardTrigger>
+                            <TokenRatio mintInfo={mintInfo} />
+                        </HoverCardTrigger>
+                        <HoverCardContent className="flex flex-col gap-2 bg-card rounded-3xl border border-card-border text-white w-fit">
+                            <div className="flex items-center">
+                                <span className="font-bold">Token Ratio</span>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
 
-    // return <PageContainer>
-    //     <h1 className="scroll-m-20 text-2xl font-extrabold tracking-tight lg:text-4xl">
-    //         Create Position
-    //     </h1>
+                    <div className="flex justify-between bg-card-dark p-2 px-3 rounded-xl">
+                        <div>
+                            <div className="text-xs font-bold">ESTIMATED POSITION APR</div>
+                            <div className="text-lg font-bold text-green-300">{apr ? formatPercent.format(apr) : 0}</div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-xs font-bold">POOL APR</div>
+                            <div className="text-lg font-bold text-cyan-300">{poolAPR !== undefined ? `${poolAPR}%` : null}</div>
+                        </div>
+                    </div>
 
-    //     <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} />
+                    <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} />
 
-    //     <h2 className="my-8 scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-    //         1. Select Range
-    //     </h2>
+                </div>
 
-    //     <div className="grid grid-cols-5 w-full">
+            </div>
 
-    //         <div className="col-span-4 w-full px-8 py-6 bg-card text-left rounded-l-3xl border border-card-border">
+        </div>
 
-    //             <div className="flex w-full justify-between">
-    //                 <div>
-    //                 <div className="font-bold text-xs">RANGE</div>
-    //                 <div className="font-bold text-xl">{`${leftPrice?.toSignificant(18)} - ${rightPrice?.toSignificant(18)} ${currencyA?.symbol}`}</div>
-    //                 </div>
-    //                 <div className="text-right">
-    //                 <div className="font-bold text-xs">CURRENT PRICE</div>
-    //                 <div className="font-bold text-xl">{`${currentPrice}`}</div>
-    //                 </div>
-    //             </div>
-
-    //             <LiquidityChart currencyA={currencyA} currencyB={currencyB} currentPrice={price ? parseFloat(price) : undefined}
-    //                 priceLower={priceLower}
-    //                 priceUpper={priceUpper} />
-    //         </div>
-
-    //         <div className="bg-[#151722] rounded-r-3xl border-card-border border-y border-r">
-    //             <RangeSidebar
-    //                 currencyA={currencyA}
-    //                 currencyB={currencyB}
-    //                 mintInfo={mintInfo}
-    //             />
-    //         </div>
-    //     </div>
-
-    //     <div className="flex gap-16 w-full mt-4">
-
-    //         <div className="flex flex-col items-start w-full">
-    //             <h2 className="my-8 scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-    //                 2. Enter amounts
-    //             </h2>
-    //             <Card className="w-full">
-    //                 <CardContent>
-    //                     <EnterAmounts currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
-    //                 </CardContent>
-    //                 <CardFooter>
-    //                     Amounts
-    //                 </CardFooter>
-    //             </Card>
-    //         </div>
-
-    //         <div className="flex flex-col items-start w-full">
-    //             <h2 className="my-8 scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-    //                 3. Confirm
-    //             </h2>
-    //             <div className="flex w-full h-[300px] bg-yellow-500 p-4">
-    //                 <Button className="w-full rounded-2xl p-6 mt-auto">Create Position</Button>
-    //             </div>
-    //         </div>
-    //     </div>
-
-    // </PageContainer>
-
-    {/*
-        <SelectRange
-            currencyA={currencyA}
-            currencyB={currencyB}
-            mintInfo={mintInfo}
-            disabled={!stepPair}
-            isCompleted={stepRange}
-            additionalStep={stepInitialPrice}
-            backStep={stepInitialPrice ? 1 : 0}
-        />
-
-        {mintInfo.price && mintInfo.lowerPrice && mintInfo.upperPrice && <EnterAmounts
-            currencyA={currencyA ?? undefined}
-            currencyB={currencyB ?? undefined}
-            mintInfo={mintInfo}
-        />}
-
-        <AddLiquidityButton currencyA={currencyA}
-            currencyB={currencyB}
-            mintInfo={mintInfo}
-            isReady={isReady} /> */}
-
-            return <div>aa</div>
+    </PageContainer>
 
 }
 

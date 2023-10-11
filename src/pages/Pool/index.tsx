@@ -1,7 +1,10 @@
 import PageContainer from "@/components/common/PageContainer"
-import PageTitle from "@/components/common/PageTitle"
 import MyPositions from "@/components/pool/MyPositions"
+import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar"
+import PoolHeader from "@/components/pool/PoolHeader"
 import PositionCard from "@/components/position/PositionCard"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql"
 import { usePool } from "@/hooks/pools/usePool"
 import { usePositions } from "@/hooks/positions/usePositions"
@@ -9,17 +12,20 @@ import { FormattedPosition } from "@/types/formatted-position"
 import { getPositionAPR } from "@/utils/positions/getPositionAPR"
 import { getPositionFees } from "@/utils/positions/getPositionFees"
 import { Position } from "@cryptoalgebra/integral-sdk"
+import { useWeb3Modal } from "@web3modal/wagmi/react"
+import { MoveRightIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
-import { useParams } from "react-router-dom"
-import { Address } from "viem"
-
+import { Link, useParams } from "react-router-dom"
+import { Address, useAccount } from "wagmi"
 
 
 const PoolPage = () => {
 
+    const { address: account } = useAccount()
+
     const { pool: poolId } = useParams() as { pool: Address }
 
-    const [selectedPositionId] = useState<number | null>(4)
+    const [selectedPositionId, selectPosition] = useState<number | null>()
 
     const [, poolEntity] = usePool(poolId)
 
@@ -38,11 +44,7 @@ const PoolPage = () => {
     const [positionsFees, setPositionsFees] = useState<any>()
     const [positionsAPRs, setPositionsAPRs] = useState<any>()
 
-    const [token0, token1] = poolEntity ? [poolEntity.token0, poolEntity.token1] : []
-
-    const poolFee = poolEntity && poolEntity.fee / 10_000
-
-    const { positions } = usePositions()
+    const { positions, loading: positionsLoading } = usePositions()
 
     const filteredPositions = useMemo(() => {
 
@@ -111,15 +113,13 @@ const PoolPage = () => {
         return filteredPositions.map(({ positionId, position }, idx) => ({
             id: positionId,
             outOfRange: poolEntity.tickCurrent < position.tickLower || poolEntity.tickCurrent > position.tickUpper,
-            range: `${position.token0PriceLower.toFixed()} - ${position.token0PriceUpper.toFixed()}`,
+            range: `${position.token0PriceLower.toFixed()} — ${position.token0PriceUpper.toFixed()}`,
             liquidityUSD: formatLiquidityUSD(position),
             feesUSD: formatFeesUSD(idx),
             apr: formatAPR(idx)
         }) as FormattedPosition)
 
     }, [filteredPositions, poolEntity, poolInfo, positionsFees, positionsAPRs])
-
-    // const [myLiquidityUSD, myFeesUSD] = positionsData ? positionsData.reduce((acc, { liquidityUSD, feesUSD }) => [acc[0] + liquidityUSD, acc[1] + feesUSD], [0, 0]) : []
 
     const selectedPosition = useMemo(() => {
 
@@ -129,32 +129,57 @@ const PoolPage = () => {
 
     }, [selectedPositionId, positionsData])
 
-    return <PageContainer>
-        <PageTitle>{`${token0?.symbol} / ${token1?.symbol}`}</PageTitle>
-        <div>{`${poolFee}%`}</div>
+    const noPositions = !positionsLoading && positionsData.length === 0
 
-        <h3>My Positions</h3>
-        <div className="grid grid-cols-3 gap-8 w-full">
+    return <PageContainer>
+
+        <PoolHeader pool={poolEntity} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
+
             <div className="col-span-2">
-                <MyPositions positions={positionsData} poolId={poolId} />
+                {
+                    !account ? <NoAccount /> : positionsLoading ? <LoadingState /> : noPositions ? <NoPositions poolId={poolId} /> : <>
+                        <MyPositionsToolbar positionsData={positionsData} poolId={poolId} />
+                        <MyPositions positions={positionsData} poolId={poolId} selectedPosition={selectedPosition?.id} selectPosition={(positionId) => selectPosition(prev => prev === positionId ? null : positionId)} />
+                    </>
+                }
             </div>
+
             <div className="flex flex-col gap-8 w-full h-full">
-                {/* <div className="flex flex-col justify-center flex-1 bg-card-gradient border border-card-border rounded-2xl">
-                    <div className="text-[20px] font-bold">My Liquidity</div>
-                    <div className="text-[#78FFD7] text-[48px] font-bold drop-shadow-[0_0_5px_rgba(7,142,253,0.8)]">{`$${myLiquidityUSD}`}</div>
-                </div>
-                <div className="flex flex-col justify-between flex-1 bg-card-gradient border border-card-border p-4 rounded-2xl">
-                    <div className="my-auto">
-                        <div className="text-[20px] font-bold">Unclaimed Fees</div>
-                        <div className="text-[#78FFD7] text-[48px] font-bold drop-shadow-[0_0_5px_rgba(7,142,253,0.8)]">{`$${myFeesUSD}`}</div>
-                    </div>
-                    <Button>Claim</Button>
-                </div> */}
-               <PositionCard selectedPosition={selectedPosition} />
+                <PositionCard selectedPosition={selectedPosition} />
             </div>
+
         </div>
     </PageContainer>
 
 }
+
+const NoPositions = ({ poolId }: { poolId: Address }) => <div className="flex flex-col items-start p-8 bg-card border border-card-border rounded-3xl animate-fade-in">
+    <h2 className="text-2xl font-bold">You don't have positions for this pool</h2>
+    <p className="text-md font-semibold my-4">Let's create one!</p>
+    <Button className="gap-2" asChild>
+        <Link to={`/pool/${poolId}/new-position`}>
+            Create Position
+            <MoveRightIcon />
+        </Link>
+    </Button>
+</div>
+
+const NoAccount = () => {
+
+    const { open } = useWeb3Modal()
+
+    return <div className="flex flex-col items-start p-8 bg-card border border-card-border rounded-3xl animate-fade-in">
+        <h2 className="text-2xl font-bold">Connect Wallet</h2>
+        <p className="text-md font-semibold my-4">Connect your account to view or create positions</p>
+        <Button onClick={() => open()}>Connect Wallet</Button>
+    </div>
+}
+
+const LoadingState = () => <div className="flex flex-col w-full gap-4 p-4">
+    {[1, 2, 3, 4].map(v => <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-[#31333e] rounded-xl" />)}
+</div>
+
 
 export default PoolPage
