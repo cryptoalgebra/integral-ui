@@ -1,7 +1,7 @@
 import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
 import { Currency,  Field, } from "@cryptoalgebra/integral-sdk";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import EnterAmountCard from "../EnterAmountsCard";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
 
@@ -69,6 +69,13 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
     mintInfo.parsedAmounts[Field.CURRENCY_B],
     ALGEBRA_POSITION_MANAGER
   );
+
+  useEffect(() => {
+    return () => {
+      onFieldAInput('')
+      onFieldBInput('')
+    }
+  }, [])
 
   return (
     <div className="flex flex-col md:flex-row lg:flex-col gap-2">

@@ -4,6 +4,8 @@ import { Presets } from "@/types/presets";
 import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MAX_UINT128 } from "@/constants/max-uint128";
 
 interface LiquidityChartProps {
     currencyA: Currency | undefined;
@@ -64,7 +66,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
                         ? TickMath.getSqrtRatioAtTick(ticksResult.ticksProcessed[i - 1].tickIdx)
                         : undefined
 
-                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, 340282366920938463463374607431768211455n.toString()) : undefined
+                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, MAX_UINT128.toString()) : undefined
                     
                     
                     const outputRes0 =
@@ -143,12 +145,35 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
     // const handleZoomOut = () => setZoom((zoom) => zoom - ZOOM_STEP)
 
     return <div className="flex w-full h-full">
-        {/* <div>{`${priceLower?.invert().toSignificant(18)} - ${priceUpper?.invert().toSignificant(18)}`}</div> */}
-        {/* <div className="ml-auto">USDC / ETH or ETH/ USDC</div> */}
 
-        <Chart formattedData={formattedData} leftPrice={leftPrice} rightPrice={rightPrice} currentPrice={currentPrice} isSorted={isSorted} zoom={zoom} currencyA={currencyA} currencyB={currencyB} />
+        {formattedData ?  <Chart 
+            formattedData={formattedData} 
+            leftPrice={leftPrice} 
+            rightPrice={rightPrice} 
+            currentPrice={currentPrice} 
+            isSorted={isSorted} 
+            zoom={zoom} 
+            currencyA={currencyA} 
+            currencyB={currencyB}
+         /> : <LiquidityChartLoader /> }
     </div>
 
 }
+
+const LiquidityChartLoader = () => <div className="flex items-end gap-4 w-full h-[250px]">
+    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[130px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[160px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[130px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[160px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[200px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[140px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[130px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[140px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
+    <Skeleton className="w-[40px] h-[190px] bg-card-light" />
+</div>
 
 export default LiquidityChart;

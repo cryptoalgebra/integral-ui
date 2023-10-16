@@ -14,6 +14,7 @@ import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import MarketDepthChart from "../MarketDepthChart";
 
 const getTokenTitle = (chartPair: SwapChartPairType, tokenA: Token, tokenB: Token) => {
     switch (chartPair) {
@@ -49,13 +50,15 @@ const getTokenTitle = (chartPair: SwapChartPairType, tokenA: Token, tokenB: Toke
 const mainnetPoolsMapping: { [key: Address]: Address } = {
     ['0x884df586548c07f6a0e846bc532a07bf837861b8']: '0x99ac8ca7087fa4a2a1fb6357269965a2014abc35',
     ['0xb104f0535a35a69880dab51008756c31d47dbf0f']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
-    ['0xc420468eb0c9c08666a4aeffab8cfaf489bcd1c6']: '0xcbcdf9626bc03e24f779434178a73a0b4bad62ed'
+    ['0xc420468eb0c9c08666a4aeffab8cfaf489bcd1c6']: '0xcbcdf9626bc03e24f779434178a73a0b4bad62ed',
+    ['0xb66ef0c01a734340524eae99cacd381f3b404daf']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640'
 }
 
 const mainnetTokensMapping: { [key: Address]: Address } = {
     ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    ['0xf2a0bc44debd394076c67962bb4869fd43c78018']: '0xdac17f958d2ee523a2206206994597c13d831ec7'
 }
 
 const SwapChart = () => {
@@ -82,6 +85,8 @@ const SwapChart = () => {
 
     const poolAddress = poolId ? mainnetPoolsMapping[poolId] : '';
     const tokenAddress = chartPair === SwapChartPair.A && tokenA ? mainnetTokensMapping[tokenA.address.toLowerCase() as Address] : tokenB ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address] : '';
+
+    const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
 
     useEffect(() => {
         setChart(undefined);
@@ -284,7 +289,7 @@ const SwapChart = () => {
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
-        {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId}  /> */}
+        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} />
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
             <Popover>
@@ -338,7 +343,7 @@ const SwapChart = () => {
                 <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 <HoverCard>
                     <HoverCardTrigger>
-                        <Button variant={'icon'} size={'icon'} disabled>
+                        <Button disabled variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
                             <BarChartHorizontalIcon size={20} />
                         </Button>
                     </HoverCardTrigger>

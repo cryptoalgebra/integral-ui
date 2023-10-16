@@ -1,7 +1,7 @@
 import { IDerivedMintInfo, useMintState, useRangeHopCallbacks, useMintActionHandlers } from "@/state/mintStore";
 import { Bound, Currency } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
-import RangeSelector from "../../create-position/RangeSelector";
+import RangeSelector from "../RangeSelector";
 
 interface SelectRangeProps {
     currencyA: Currency | null | undefined;

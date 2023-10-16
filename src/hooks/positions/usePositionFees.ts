@@ -1,13 +1,7 @@
-
-// const MAX_UINT128 = BigNumber.from(2).pow(128).sub(1)
-
-import { useAlgebraPositionManagerOwnerOf } from "@/generated"
+import { MAX_UINT128 } from "@/constants/max-uint128"
+import { useAlgebraPositionManagerOwnerOf, usePrepareAlgebraPositionManagerCollect } from "@/generated"
 import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/integral-sdk"
-import { useStaticCall } from "../common/useStaticCall"
-import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses"
-import { algebraPositionManagerABI } from "@/abis"
-
-const MAX_UINT128 = 340282366920938463463374607431768211455n
+import { Address } from "wagmi"
 
 interface PositionFeesResult {
     amount0: CurrencyAmount<Currency> | undefined
@@ -22,23 +16,23 @@ export function usePositionFees(
 
     const { data: owner } = useAlgebraPositionManagerOwnerOf({
         args: tokenId ? [BigInt(tokenId)] : undefined,
-        watch: true
     })
 
-    const { data: amounts } = useStaticCall({
-        address: ALGEBRA_POSITION_MANAGER,
-        abi: algebraPositionManagerABI,
-        functionName: 'collect',
-        args: tokenId && owner ? [
+    const isReady = tokenId && owner;
+
+    const { config: amountsConfig } = usePrepareAlgebraPositionManagerCollect({
+        args: Boolean(isReady) ? [
             {
-                tokenId: tokenId,
-                recipient: owner,
+                tokenId: BigInt(tokenId || 0),
+                recipient: owner as Address,
                 amount0Max: MAX_UINT128,
                 amount1Max: MAX_UINT128,
             }
         ] : undefined,
+        enabled: Boolean(isReady)
     })
 
+    const amounts = amountsConfig?.result
 
     if (pool && amounts) {
         return {

@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
@@ -18,7 +17,7 @@ interface DataTableProps<TData, TValue> {
   loading?: boolean;
 }
 
-const DataTable = <TData, TValue>({ columns, data, selectedRow, action, link, defaultSortingID, searchID, showPagination = true, loading }: DataTableProps<TData, TValue>) => {
+const DataTable = <TData, TValue>({ columns, data, selectedRow, action, link, defaultSortingID, showPagination = true, loading }: DataTableProps<TData, TValue>) => {
 
   const [sorting, setSorting] = useState<SortingState>(defaultSortingID ? [{id: defaultSortingID, desc: true}] : [])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -45,7 +44,7 @@ const DataTable = <TData, TValue>({ columns, data, selectedRow, action, link, de
   if (loading) return <LoadingState />
 
   return <>
-    {searchID && <div className="flex items-center p-4">
+    {/* {searchID && <div className="flex items-center p-4">
         <Input
           placeholder="Search"
           value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
@@ -54,7 +53,7 @@ const DataTable = <TData, TValue>({ columns, data, selectedRow, action, link, de
           }
           className="max-w-sm"
         />
-      </div>}
+      </div>} */}
     <Table>
       <TableHeader className="[&_tr]:border-b-0">
         {table.getHeaderGroups().map(headerGroup => <TableRow key={headerGroup.id} className="hover:bg-transparent">
@@ -75,7 +74,7 @@ const DataTable = <TData, TValue>({ columns, data, selectedRow, action, link, de
           return <TableRow
             key={row.id}
             data-state={row.getIsSelected() && 'selected'}
-            className={`border-card-border/40 ${isSelected ? 'bg-muted-primary/60 border-r-2' : 'bg-card-dark'} ${(action || link) && 'cursor-pointer'} ${(action || link) ? isSelected ? 'hover:bg-muted-primary' : 'hover:bg-card-hover' : 'hover:bg-card-dark'}`}
+            className={`border-card-border/40 ${isSelected ? 'bg-muted-primary/60' : 'bg-card-dark'} ${(action || link) && 'cursor-pointer'} ${(action || link) ? isSelected ? 'hover:bg-muted-primary' : 'hover:bg-card-hover' : 'hover:bg-card-dark'}`}
             onClick={() => {
               
               if (action) {
@@ -123,7 +122,7 @@ const DataTable = <TData, TValue>({ columns, data, selectedRow, action, link, de
 }
 
 const LoadingState = () => <div className="flex flex-col w-full gap-4 p-4">
-  {[1,2,3,4].map(v => <Skeleton key={`table-skeleton-${v}`} className="w-full h-[50px] bg-[#31333e] rounded-xl" />)}
+  {[1,2,3,4].map(v => <Skeleton key={`table-skeleton-${v}`} className="w-full h-[50px] bg-card-light rounded-xl" />)}
 </div>
 
 export default DataTable

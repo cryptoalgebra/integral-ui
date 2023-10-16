@@ -8,8 +8,11 @@ import PageTitle from "@/components/common/PageTitle";
 import IntegralPools from "@/components/swap/IntegralPools";
 import LimitOrdersList from "@/components/limit-orders/LimitOrdersList";
 import LimitOrder from "@/components/limit-orders/LimitOrder";
+import { useAccount } from "wagmi";
 
 const SwapPage = ({ type }: SwapPageProps) => {
+
+    const { address: account } = useAccount()
 
     const isLimitOrder = type === SwapPageView.LIMIT_ORDER
 
@@ -36,7 +39,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
         </div>
 
-        {isLimitOrder && <div className="w-full mt-12">
+        {isLimitOrder && account && <div className="w-full mt-12">
             <LimitOrdersList />
         </div>}
 

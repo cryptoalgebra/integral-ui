@@ -3,7 +3,7 @@ import { usePrepareAlgebraLimitOrderPluginPlace } from "@/generated";
 import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
-import { useLimitOrderInfo } from "@/state/swapStore";
+import { useDerivedSwapInfo, useLimitOrderInfo } from "@/state/swapStore";
 import { Token, tryParseTick } from "@cryptoalgebra/integral-sdk";
 import { Address, useAccount, useContractWrite } from "wagmi";
 import { ALGEBRA_LIMIT_ORDER_PLUGIN } from "@/constants/addresses";
@@ -11,6 +11,8 @@ import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { SwapField } from "@/types/swap-field";
+import { formatCurrency } from "@/utils/common/formatCurrency";
 
 interface LimitOrderButtonProps {
     token0: Token | undefined;
@@ -29,20 +31,22 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
     const { address: account } = useAccount()
 
     const { open } = useWeb3Modal()
-
     const { selectedNetworkId } = useWeb3ModalState()
+
+    const { currencies: { [SwapField.INPUT]: inputCurrency }, toggledTrade: trade, inputError } = useDerivedSwapInfo()
+    const amount = trade && trade.inputAmount
 
     const limitOrderTick = tryParseTick(token0, token1, sellPrice, tickSpacing)
 
     const formattedTick = limitOrderTick ? wasInverted ? -limitOrderTick : limitOrderTick : undefined
 
-    const limitOrder = useLimitOrderInfo(poolAddress, formattedTick)
+    const limitOrder = useLimitOrderInfo(poolAddress, amount, formattedTick)
 
-    const isReady = token0 && token1 && limitOrder && !disabled
+    const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError
 
-    const needAllowance = useNeedAllowance(limitOrder?.amount0.currency, limitOrder?.amount0, ALGEBRA_LIMIT_ORDER_PLUGIN)
+    const needAllowance = useNeedAllowance(inputCurrency?.wrapped, amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
 
-    const { approvalState, approvalCallback } = useApprove(limitOrder?.amount0, ALGEBRA_LIMIT_ORDER_PLUGIN)
+    const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
 
     const { config: placeLimitOrderConfig } = usePrepareAlgebraLimitOrderPluginPlace({
         args: isReady ? [
@@ -50,15 +54,17 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
                 token0: token0.address as Address,
                 token1: token1.address as Address
             },
-            limitOrder.tickLower,
+            limitOrder.tickLower,   
             zeroToOne,
             BigInt(limitOrder.liquidity.toString())
-        ] : undefined
+        ] : undefined,
+        value: amount?.currency.isNative ? BigInt(amount.quotient.toString()) : BigInt(0),
+        enabled: Boolean(isReady),
     })
 
-    const { data: placeData, write: placeLimitOrder, isLoading: isPlaceLoading } = useContractWrite(placeLimitOrderConfig)
+    const { data: placeData, write: placeLimitOrder } = useContractWrite(placeLimitOrderConfig)
 
-    useTransitionAwait(placeData?.hash, 'Place an order')
+    const { isLoading: isPlaceLoading } = useTransitionAwait(placeData?.hash, `Buy ${formatCurrency.format(Number(amount?.toSignificant()))} ${amount?.currency.symbol}`)
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID
 
@@ -68,7 +74,9 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
 
     if (!limitOrderPlugin) return <Button disabled>This pool doesn't support Limit Orders</Button>
 
-    if (!disabled && needAllowance) return <Button onClick={() => approvalCallback && approvalCallback()}>{approvalState === ApprovalState.PENDING ? <Loader /> : 'Approve'}</Button>
+    if (!disabled && inputError) return <Button disabled>{inputError}</Button>
+
+    if (!disabled && needAllowance) return <Button disabled={approvalState === ApprovalState.PENDING} onClick={() => approvalCallback && approvalCallback()}>{approvalState === ApprovalState.PENDING ? <Loader /> : `Approve ${amount?.currency.symbol}`}</Button>
 
     return <Button disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING} onClick={() => {
         console.log('[PLACE LIMIT ORDER]', isReady && [

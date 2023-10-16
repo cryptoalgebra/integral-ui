@@ -1,5 +1,6 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo"
 import PageTitle from "@/components/common/PageTitle"
+import { Skeleton } from "@/components/ui/skeleton"
 import { formatPercent } from "@/utils/common/formatPercent"
 import { Pool } from "@cryptoalgebra/integral-sdk"
 
@@ -20,9 +21,12 @@ const PoolHeader = ({ pool }: PoolHeaderProps) => {
             <CurrencyLogo currency={token1} size={40} className="-ml-2" />
         </div>
 
-        <PageTitle title={`${token0?.symbol} / ${token1?.symbol}`}>
+        {token0 && token1 ?
+        <PageTitle title={`${token0.symbol} / ${token1.symbol}`}>
             <span className="hidden sm:inline px-3 py-2 bg-muted-primary text-primary-text font-semibold rounded-2xl">{`${poolFee}`}</span>
         </PageTitle>
+        : <Skeleton className="w-[200px] h-[40px] bg-card" />
+        }
 
     </div>
 

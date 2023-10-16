@@ -36,7 +36,7 @@ const PoolPair = ({ pair, fee }: Pool) => {
 
         <div>{`${currencyA?.symbol} - ${currencyB?.symbol}`}</div>
 
-        <div>{`${fee}%`}</div>
+        <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
 
     </div>
 

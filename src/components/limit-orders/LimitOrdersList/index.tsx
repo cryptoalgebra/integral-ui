@@ -46,13 +46,13 @@ const LimitOrdersList = () => {
             )
         }), {})
 
-        return limitOrders.limitOrders.map(({ liquidity, owner, tickLower, tickUpper, zeroToOne, epoch, pool: poolId }) => {
+        return limitOrders.limitOrders.map(({ liquidity, initialLiquidity, owner, tickLower, tickUpper, zeroToOne, epoch, pool: poolId, killed }) => {
 
             const pool = pools[poolId]
 
             const positionLO = new Position({
                 pool,
-                liquidity: Number(liquidity),
+                liquidity: Number(initialLiquidity),
                 tickLower: Number(tickLower),
                 tickUpper: Number(tickUpper)
             })
@@ -61,7 +61,7 @@ const LimitOrdersList = () => {
 
             const { amount1 } = new Position({
                 pool: new Pool(pool.token0, pool.token1, pool.fee, zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO, pool.liquidity, zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK, pool.tickSpacing),
-                liquidity: Number(liquidity),
+                liquidity: Number(initialLiquidity),
                 tickLower: Number(tickLower),
                 tickUpper: Number(tickUpper)
             })
@@ -73,12 +73,15 @@ const LimitOrdersList = () => {
                 zeroToOne,
                 isClosed,
                 liquidity,
+                initialLiquidity,
                 owner,
+                killed,
                 ticks: {
                     tickLower: Number(tickLower),
                     tickUpper: Number(tickUpper),
                     tickCurrent: pool.tickCurrent,
-                    isClosed
+                    isClosed,
+                    killed
                 },
                 rates: {
                     buy: {
@@ -111,7 +114,7 @@ const LimitOrdersList = () => {
         if (!formattedLimitOrders) return []
 
         return formattedLimitOrders.reduce((acc, order) => {
-            if (order.isClosed) {
+            if (order.isClosed && order.liquidity === '0') {
                 return [
                     acc[0],
                     [...acc[1], order]
@@ -128,11 +131,11 @@ const LimitOrdersList = () => {
 
     const limitOrdersForTable = useMemo(() => tab ? openedOrders : closedOrders, [openedOrders, closedOrders, tab])
 
-    return <div className="flex flex-col w-full">
+    return <div className="flex flex-col gap-8 w-full">
         {isLimitOrdersLoading ? <LimitOrdersLoading /> : <>
-            <div className="flex gap-4 pl-10">
-                <button onClick={() => setTab(0)} className={`py-2 px-4 bg-card relative rounded-t-xl ${tab === 0 && 'border border-card-border border-b-0 -mb-[0.7px]'}`}>Opened Orders</button>
-                <button onClick={() => setTab(1)} className={`py-2 px-4 bg-card relative rounded-t-xl ${tab === 1 && 'border border-card-border border-b-0 -mb-[0.7px]'}`}>Closed Orders</button>
+            <div className="flex gap-4">
+                <button onClick={() => setTab(0)} className={`py-2 px-4 bg-card relative rounded-3xl font-semibold duration-300 ${tab === 0 ? 'text-primary-text bg-muted-primary' : 'hover:bg-card-hover'}`}>Opened Orders</button>
+                <button onClick={() => setTab(1)} className={`relative py-2 px-4 bg-card relative rounded-3xl font-semibold duration-300 ${tab === 1 ? 'text-primary-text bg-muted-primary' : 'hover:bg-card-hover'}`}>Closed Orders</button>
             </div>
             <div className="pb-4 bg-card border border-card-border rounded-3xl">
                 <DataTable columns={limitOrderColumns} data={limitOrdersForTable} />

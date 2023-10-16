@@ -34,7 +34,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
     const { isLoading, isSuccess } = useTransitionAwait(approvalData?.hash, `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`)
 
     return {
-        approvalState: isLoading ? ApprovalState.PENDING : isSuccess ? ApprovalState.APPROVED : approvalState,
+        approvalState: isLoading ? ApprovalState.PENDING : isSuccess && approvalState === ApprovalState.APPROVED ? ApprovalState.APPROVED : approvalState,
         approvalCallback: approve
     }
 

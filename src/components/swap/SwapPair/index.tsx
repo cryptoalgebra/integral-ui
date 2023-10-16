@@ -64,11 +64,11 @@ const SwapPair = () => {
     const parsedLimitOrderOutput = useMemo(() => {
         if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !pairPrice) return;
 
-        const independentPrice = independentField === SwapField.OUTPUT ? parsedAmount.divide(pairPrice.asFraction).toSignificant(5) ?? 1 : +parsedAmount.toSignificant(5) ?? 1;
+        const independentPrice = independentField === SwapField.OUTPUT ? parsedAmount.divide(pairPrice.asFraction).toSignificant(parsedAmount.currency.decimals / 2) ?? 1 : +parsedAmount.toSignificant(parsedAmount.currency.decimals / 2) ?? 1;
 
-        if (wasInverted) return tryParseAmount(String((Number(independentPrice) / (+limitOrderPrice || 1)).toFixed(5)), quoteCurrency);
+        if (wasInverted) return tryParseAmount(String((Number(independentPrice) / (+limitOrderPrice || 1)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
 
-        return tryParseAmount(String((+limitOrderPrice * Number(independentPrice)).toFixed(5)), quoteCurrency);
+        return tryParseAmount(String((+limitOrderPrice * Number(independentPrice)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
     }, [limitOrderPrice, wasInverted, parsedAmount, quoteCurrency, trade, pairPrice, independentField]);
 
     const parsedAmounts = useMemo(() => {
@@ -103,14 +103,14 @@ const SwapPair = () => {
         maxInputAmount && onUserInput(SwapField.INPUT, maxInputAmount.toExact());
     }, [maxInputAmount, onUserInput]);
 
-    const { price: fiatValueInputPrice, formatted: fiatValueInputFormatted } = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(18), baseCurrency));
-    const { price: fiatValueOutputPrice, formatted: fiatValueOutputFormatted } = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.OUTPUT]?.toSignificant(18), quoteCurrency));
+    const { price: fiatValueInputPrice, formatted: fiatValueInputFormatted } = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant((parsedAmounts[SwapField.INPUT]?.currency.decimals || 6) / 2), baseCurrency));
+    const { price: fiatValueOutputPrice, formatted: fiatValueOutputFormatted } = useUSDCValue(tryParseAmount(parsedAmounts[SwapField.OUTPUT]?.toSignificant((parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6) / 2), quoteCurrency));
     
     const priceImpact = computeFiatValuePriceImpact(fiatValueInputPrice, fiatValueOutputPrice);
 
     const formattedAmounts = {
         [independentField]: typedValue,
-        [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toSignificant(6) ?? "",
+        [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toFixed((parsedAmounts[dependentField]?.currency.decimals || 6) / 2) ?? "",
     };
 
     return <div className="flex flex-col gap-1 relative">

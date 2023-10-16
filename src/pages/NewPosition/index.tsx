@@ -5,7 +5,7 @@ import LiquidityChart from "@/components/create-position/LiquidityChart"
 import RangeSelector from "@/components/create-position/RangeSelector"
 import PresetTabs from "@/components/create-position/PresetTabs"
 import TokenRatio from "@/components/create-position/TokenRatio"
-import AddLiquidityButton from "@/components/liquidity/AddLiquidityButton"
+import AddLiquidityButton from "@/components/create-position/AddLiquidityButton"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated"
 import { useCurrency } from "@/hooks/common/useCurrency"
@@ -99,6 +99,14 @@ const NewPositionPage = () => {
         getPoolAPR(poolAddress).then(setPoolAPR)
     }, [poolAddress])
 
+
+    useEffect(() => {
+        return () => {
+            onLeftRangeInput('')
+            onRightRangeInput('')
+        }
+    }, [])
+
     return <PageContainer>
 
         <PageTitle title={'Create Position'} />
@@ -141,7 +149,10 @@ const NewPositionPage = () => {
                             </div>
                         </div>
 
-                        <LiquidityChart currencyA={currencyA} currencyB={currencyB} currentPrice={price ? parseFloat(price) : undefined}
+                        <LiquidityChart 
+                            currencyA={currencyA} 
+                            currencyB={currencyB} 
+                            currentPrice={price ? parseFloat(price) : undefined}
                             priceLower={priceLower}
                             priceUpper={priceUpper} />
 

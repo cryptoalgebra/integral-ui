@@ -63,6 +63,10 @@ const RangeSelectorPart = ({
         }
     }, [initialTokenPrice, value]);
 
+    useEffect(() => {
+        return () => updateSelectedPreset(null) 
+    }, [])
+
     return (
         <div>
              <div className="font-bold text-xs mb-3">{title.toUpperCase()}</div>
@@ -83,12 +87,12 @@ const RangeSelectorPart = ({
                     id={title}
                     onBlur={handleOnBlur}
                     disabled={disabled || locked}
-                    onChange={val => {
-                        setLocalTokenValue(val.target.value.trim())
+                    onUserInput={v => {
+                        setLocalTokenValue(v)
                         updateSelectedPreset(null)
                     }}
                     placeholder={'0.00'}
-                    className="w-full border-y border-x-0 border-card-border rounded-none text-sm h-[36px]"
+                    className="w-full bg-card-dark border-y border-x-0 border-card-border rounded-none text-sm h-[36px]"
                 />
 
                 <Button 

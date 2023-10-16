@@ -65,7 +65,15 @@ const TokenCard = ({ handleValueChange, handleMaxValue, value, currency, fiatVal
         </div>
 
         <div className="flex flex-col items-end w-full">
-            <Input value={value} id={`amount-${currency?.symbol}`} onChange={(e) => handleInput(e.target.value.trim())} className={`text-right border-none text-xl font-bold w-9/12 p-0`} placeholder={'0.0'} />
+            <Input 
+                type={'text'}
+                value={value} 
+                id={`amount-${currency?.symbol}`}
+                onUserInput={v => handleInput(v)}
+                className={`text-right border-none text-xl font-bold w-9/12 p-0`} 
+                placeholder={'0.0'}
+                maxDecimals={currency?.decimals}
+                />
             <div className="text-sm">{fiatValue && formatUSD.format(fiatValue)}</div>
         </div>
     </div>

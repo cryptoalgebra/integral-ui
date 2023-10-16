@@ -34,7 +34,8 @@ export function useBestTradeExactIn(
             abi: algebraQuoterABI,
             functionName: 'quoteExactInput',
             args: quote
-        }))
+        })),
+        cacheTime: 5_000
     })
 
     const trade = useMemo(() => {
@@ -99,7 +100,6 @@ export function useBestTradeExactIn(
         }
     }, [amountIn, currencyOut, quotesResults, routes, routesLoading])
 
-
     return useMemo(() => {
         return trade
     }, [trade])
@@ -130,7 +130,8 @@ export function useBestTradeExactOut(
             abi: algebraQuoterABI,
             functionName: 'quoteExactOutput',
             args: quote
-        }))
+        })),
+        cacheTime: 5_000
     })
 
     const trade = useMemo(() => {

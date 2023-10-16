@@ -557,6 +557,7 @@ export function useDerivedMintInfo(
             return undefined;
         }
 
+
         // mark as 0 if disabled because out of range
         const amount0 = !deposit0Disabled
             ? parsedAmounts?.[

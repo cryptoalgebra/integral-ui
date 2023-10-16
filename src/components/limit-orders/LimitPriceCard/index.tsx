@@ -44,6 +44,10 @@ const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minu
         }
     }, [sellPrice]);
 
+    useEffect(() => {
+        setToMarketPrice(Boolean(limitOrderType))
+    }, [currency, otherCurrency])
+
     return (
         <div className={`flex flex-col gap-4 bg-card-dark p-3 rounded-2xl ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
@@ -75,9 +79,10 @@ const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minu
                     onBlur={handleOnBlur}
                     onInput={handleInput}
                     disabled={disabled}
-                    onChange={(e) => setLocalPrice(e.target.value.trim())}
+                    onUserInput={v => setLocalPrice(v)}
                     className={`text-left border-none text-xl font-bold p-0`} 
                     placeholder={'0.0'}
+                    maxDecimals={limitOrderType === LimitOrderDirection.SELL ? otherCurrency?.decimals : currency?.decimals}
                 />
                 <div className="flex gap-2">
                     <Button size={'icon'} className="w-[25px] h-[25px] bg-[#262a3a] rounded-full" disabled={plusDisabled || disabled} onClick={() => tickStep(1)}>

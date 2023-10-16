@@ -5,6 +5,7 @@ import EthLogo from '@/assets/tokens/ether.svg'
 import USDTLogo from '@/assets/tokens/usdt.png'
 import WBTCLogo from '@/assets/tokens/wbtc.svg'
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
@@ -25,13 +26,17 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: {
         symbol: 'WBTC',
         logo: WBTCLogo
+    },
+    ['0xf2a0bc44debd394076c67962bb4869fd43c78018']: {
+        symbol: 'USDT',
+        logo: USDTLogo
     }
 }
 
 
-const CurrencyLogo = ({ currency, size, className, style }: CurrencyLogoProps) => {
+const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
 
-    if (!currency) return 
+    if (!currency) return <Skeleton className={cn(`min-w-[${size}px] min-h-[${size}px] flex rounded-full bg-card`, className)} style={{ width: `${size}px`, height: `${size}px`, ...style }} />
 
     const address = currency.wrapped.address.toLowerCase() as Address;
 

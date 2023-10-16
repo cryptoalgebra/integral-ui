@@ -45,22 +45,22 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
 
     if (!selectedPosition || loading) return
 
-    return <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl py-4 px-6 animate-fade-in">
+    return <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl p-4 animate-fade-in">
         <div className="relative flex w-full justify-end text-right">
-            <div className="absolute left-2 top-2">
+            <div className="absolute left-0 top-0">
                 <PositionNFT positionId={selectedPosition.id} />
             </div>
-            <div className="flex flex-col gap-2 w-[235px]">
+            <div className="flex flex-col gap-4 w-full">
                 <h2 className="scroll-m-20 text-2xl font-bold tracking-tight lg:text-2xl">{`Position #${selectedPosition?.id}`}</h2>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-4">
                     <div>
-                        <div className="font-bold text-sm">LIQUIDITY</div>
+                        <div className="font-bold text-xs">LIQUIDITY</div>
                         <div className="font-semibold text-2xl">
                             {positionLiquidityUSD ? <span className="text-cyan-300 drop-shadow-cyan">{positionLiquidityUSD}</span> : <Skeleton className="w-[100px] h-[30px]" />}
                         </div>
                     </div>
                     <div>
-                        <div className="font-bold text-sm">APR</div>
+                        <div className="font-bold text-xs">APR</div>
                         <div className="font-semibold text-2xl">
                             {positionAPR ? <span className="text-fuchsia-400 drop-shadow-pink">{positionAPR}</span> : <Skeleton className="w-[100px] h-[30px]" />}
                         </div>
@@ -74,6 +74,10 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
             pool && positionEntity &&
             <PositionRangeChart pool={pool} position={positionEntity} />
         }
+        {/* <div className="flex gap-4 w-full whitespace-nowrap">
+            <Button className="w-full">Add Liquidity</Button>
+            <Button className="w-full">Remove Liquidity</Button>
+        </div> */}
     </div>
 
 }

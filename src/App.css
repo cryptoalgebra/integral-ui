@@ -2,7 +2,7 @@
 
 html, body {
   height: 100%;
-  background: url("../public/bg.svg");
+  background: url("../bg.svg");
   background-color: var(--background);
   color: var(--foreground);
 }

@@ -9,18 +9,18 @@ import { formatCurrency } from "@/utils/common/formatCurrency";
 
 interface SwapCallEstimate {
     calldata: string
-    value: string
+    value: bigint
 }
 
 interface SuccessfulCall extends SwapCallEstimate {
     calldata: string
-    value: string
+    value: bigint
     gasEstimate: bigint
 }
 
 interface FailedCall extends SwapCallEstimate {
     calldata: string
-    value: string
+    value: bigint
     error: Error
 }
 
@@ -43,13 +43,15 @@ export function useSwapCallback(
 
             const algebraRouter = getAlgebraRouter({})
 
-            const calls = await Promise.all(swapCalldata.map(({ calldata, value }) => {
+            const calls = await Promise.all(swapCalldata.map(({ calldata, value: _value }) => {
+
+                const value = BigInt(_value)
 
                 return algebraRouter.estimateGas.multicall([
                     calldata
                 ], {
                     account,
-                    value
+                    value,
                 }).then(gasEstimate => ({
                     calldata,
                     value,
@@ -102,6 +104,7 @@ export function useSwapCallback(
     const { config: swapConfig } = usePrepareAlgebraRouterMulticall({
         args: bestCall && [bestCall.calldata],
         value: BigInt(bestCall?.value || 0),
+        enabled: Boolean(bestCall)
     })
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
@@ -124,6 +127,6 @@ export function useSwapCallback(
             isLoading
         }
 
-    }, [trade, isLoading, swapCalldata])
+    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig])
 
 }

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/integral-sdk";
 import { ColumnDef } from '@tanstack/react-table'
-import { CheckCircle2Icon } from "lucide-react";
+import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
 import { usePrepareAlgebraLimitOrderPluginWithdraw } from "@/generated";
 import { Address, useContractWrite } from "wagmi";
@@ -33,6 +33,7 @@ interface Ticks {
     tickUpper: number;
     tickCurrent: number;
     isClosed: boolean;
+    killed: boolean;
 }
 
 interface Amount {
@@ -47,6 +48,8 @@ interface Amounts {
 
 export interface LimitOrder {
     liquidity: string;
+    initialLiquidity: string;
+    killed: boolean;
     owner: Address;
     epoch: Epoch;
     zeroToOne: boolean;
@@ -61,7 +64,7 @@ const TokenAmount = ({ amount }: { amount: Amount }) => <div className="flex ite
     <CurrencyLogo currency={amount.token} size={35} />
     <div className="text-left">
         <div className="font-bold">{amount.token.symbol}</div>
-        <div>{amount.amount.toSignificant()}</div>
+        <div>{amount.amount.toSignificant(3)}</div>
     </div>
 </div>
 
@@ -73,8 +76,13 @@ const TokenRates = ({ rates }: { rates: Rates }) => <div className="flex flex-co
 
 const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
 
+    if (ticks.killed) return <div className="flex items-center gap-4 text-left">
+        <XCircleIcon className="text-red-500" />
+        <span>Cancelled</span>
+    </div>
+
     if (ticks.isClosed) return <div className="flex items-center gap-4 text-left">
-        <CheckCircle2Icon color={'green'} />
+        <CheckCircle2Icon className={'text-green-500'} />
         <span>Completed</span>
     </div>
 
@@ -91,6 +99,8 @@ const Action = (props: LimitOrder) => {
     const { selectedNetworkId } = useWeb3ModalState()
 
     if (selectedNetworkId !== DEFAULT_CHAIN_ID) return
+
+    if (props.killed) return
 
     if (props.epoch.filled && props.liquidity === "0") return
 
@@ -122,8 +132,8 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
         accessorKey: 'amounts.buy',
-        header: () => <HeaderItem>You buy</HeaderItem>,
-        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
+        header: () => <HeaderItem className="ml-2">You buy</HeaderItem>,
+        cell: ({ getValue }) => <div className="ml-4"><TokenAmount amount={getValue() as Amount} /></div>,
     },
     {
         accessorKey: 'amounts.sell',
@@ -142,6 +152,6 @@ export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     },
     {
         id: 'action',
-        cell: (props) => <Action {...props.row.original} />
+        cell: (props) => <div className="text-right"><Action {...props.row.original} /></div>
     }
 ]

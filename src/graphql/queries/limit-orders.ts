@@ -18,9 +18,11 @@ export const LIMIT_ORDER_FRAGMENT = gql`
         owner
         pool
         liquidity
+        initialLiquidity
         tickLower
         tickUpper
         zeroToOne
+        killed
 }
 `
 

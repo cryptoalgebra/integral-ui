@@ -178,7 +178,7 @@ const NoAccount = () => {
 }
 
 const LoadingState = () => <div className="flex flex-col w-full gap-4 p-4">
-    {[1, 2, 3, 4].map(v => <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-[#31333e] rounded-xl" />)}
+    {[1, 2, 3, 4].map(v => <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-card-light rounded-xl" />)}
 </div>
 
 

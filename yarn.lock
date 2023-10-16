@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/integral-sdk@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-0.8.0.tgz#91b443555190712407c33ff9b071762245756ad3"
-  integrity sha512-t5fR1/TXDBMXI8P0oVpEgkfXe+3UCdqqjdk1yxCATp6DE8TIOPpBwd5i2KiuxbYqplcTwpWBY7NuyOq8ZyQXvw==
+"@cryptoalgebra/integral-sdk@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-0.9.1.tgz#7a5550c7571903623ca17b1b4eb9300e65e1c2d3"
+  integrity sha512-T0HAqCnNl8SMQa/5Rc5GQD9CZ+odoorfbg2ieUYBsmHfNdsUZogvQ6UoXPP+JIGDqYPPefAMKO2FYGpgXv/+BQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -7361,6 +7361,11 @@ use-sync-external-store@1.2.0, use-sync-external-store@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
   integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
+
+usehooks-ts@^2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/usehooks-ts/-/usehooks-ts-2.9.1.tgz#953d3284851ffd097432379e271ce046a8180b37"
+  integrity sha512-2FAuSIGHlY+apM9FVlj8/oNhd+1y+Uwv5QNkMQz1oSfdHk4PXo1qoCw9I5M7j0vpH8CSWFJwXbVPeYDjLCx9PA==
 
 utf-8-validate@^5.0.2:
   version "5.0.10"

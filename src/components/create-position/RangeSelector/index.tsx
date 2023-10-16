@@ -3,20 +3,6 @@ import { Bound, Currency, Price, Token } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from 'react';
 import RangeSelectorPart from "../RangeSelectorPart";
 
-// export const StyledCurrentPriceWrapper = styled(Flex)`
-//   padding: 6px;
-//   border-radius: 6px;
-//   background-color: red;
-//   border: 1px solid red;
-// `;
-
-// export const StyledCurrentPrice = styled.div`
-//   background-color: green;
-//   color: white;
-//   border-radius: 6px;
-//   padding: 4px 6px;
-// `;
-
 export interface RangeSelectorProps {
   priceLower: Price<Token, Token> | undefined;
   priceUpper: Price<Token, Token> | undefined;
@@ -49,10 +35,6 @@ const RangeSelector = ({
   const tokenA = (currencyA ?? undefined)?.wrapped;
   const tokenB = (currencyB ?? undefined)?.wrapped;
 
-  // TODO
-  //   const initialTokenPrice = useInitialTokenPrice();
-  // const initialTokenPrice = 11;
-
   const isSorted = useMemo(() => {
     return tokenA && tokenB && tokenA.sortsBefore(tokenB);
   }, [tokenA, tokenB]);
@@ -65,42 +47,9 @@ const RangeSelector = ({
     return isSorted ? priceUpper : priceLower?.invert();
   }, [isSorted, priceUpper, priceLower]);
 
-  // const currentPrice = useMemo(() => {
-  //   if (!mintInfo.price) return;
-
-  //   let _price = mintInfo.invertPrice
-  //     ? parseFloat(mintInfo.price.invert().toSignificant(5))
-  //     : parseFloat(mintInfo.price.toSignificant(5));
-
-  //   if (Number(_price) <= 0.0001) {
-  //     return `< 0.0001 ${currencyB?.symbol}`;
-  //   } else {
-  //     return `${_price} ${currencyB?.symbol}`;
-  //   }
-  // }, [mintInfo.price, initialTokenPrice]);
 
   return (
     <>
-      {/* {currentPrice && (
-        <StyledCurrentPriceWrapper
-          alignItems="center"
-          justifyContent="space-between"
-          mb={8}>
-          <Heading className="mb-05 mxs_mt-05">
-            {initial
-              ? `Initial ${currencyA?.symbol} to ${currencyB?.symbol} price`
-              : `Current ${currencyA?.symbol} to ${currencyB?.symbol} price`}
-          </Heading>
-          <Skeleton
-            startColor="grayBorderBox"
-            endColor="bgBoxLighter"
-            h="28px"
-            w={currentPrice ? 'fit-content' : '40px'}
-            isLoaded={Boolean(currentPrice)}>
-            <StyledCurrentPrice>{currentPrice}</StyledCurrentPrice>
-          </Skeleton>
-        </StyledCurrentPriceWrapper>
-      )} */}
       <div className="flex gap-4">
         <RangeSelectorPart
           value={

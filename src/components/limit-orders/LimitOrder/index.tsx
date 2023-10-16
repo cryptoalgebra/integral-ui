@@ -39,7 +39,7 @@ const LimitOrder = () => {
 
         const _newPrice = invertPrice ? getTickToPrice(token1, token0, pool.tickCurrent) : getTickToPrice(token0, token1, pool.tickCurrent);
 
-        return _newPrice?.toSignificant(18);
+        return _newPrice?.toSignificant(_newPrice.baseCurrency.decimals / 2);
     }, [pool, token0, token1, invertPrice]);
 
     const [sellPrice, setSellPrice] = useState("");
@@ -59,8 +59,8 @@ const LimitOrder = () => {
             }
 
             const limitOrderPrice = invertPrice
-                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(18)
-                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(18);
+                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(token1.decimals / 2)
+                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(token0.decimals / 2);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);
@@ -111,7 +111,7 @@ const LimitOrder = () => {
                 return;
             }
 
-            const limitOrderPrice = invert ? newPrice.invert().toSignificant(18) : newPrice.toSignificant(18);
+            const limitOrderPrice = invert ? newPrice.invert().toSignificant((token1?.decimals || 6) / 2) : newPrice.toSignificant((token0?.decimals || 6) / 2);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);

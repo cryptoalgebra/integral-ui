@@ -46,7 +46,7 @@ export function useTransitionAwait(hash: Address | undefined, title: string, des
         if (isSuccess) {
             toast({
                 title: title,
-                description: description || 'Transaction approved',
+                description: description || 'Transaction confirmed',
                 action: <ViewTxOnExplorer hash={hash} />,
             })
         }

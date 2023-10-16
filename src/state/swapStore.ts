@@ -40,10 +40,10 @@ export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: '1',
     [SwapField.INPUT]: {
-        currencyId: '0x49a390a3dfd2d01389f799965f3af5961f87d228'
+        currencyId: ADDRESS_ZERO
     },
     [SwapField.OUTPUT]: {
-        currencyId: '0x0000000000000000000000000000000000000000'
+        currencyId: '0x49a390a3dfd2d01389f799965f3af5961f87d228'
     },
     [SwapField.LIMIT_ORDER_PRICE]: '',
     wasInverted: false,
@@ -168,12 +168,14 @@ export function useDerivedSwapInfo(): {
     const outputCurrency = useCurrency(outputCurrencyId);
 
     const isExactIn: boolean = independentField === SwapField.INPUT
-    const parsedAmount = tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined)
+    const parsedAmount = useMemo(() => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined), [typedValue, isExactIn, inputCurrency, outputCurrency])
 
     const bestTradeExactIn = useBestTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
     const bestTradeExactOut = useBestTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
-    const trade = (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined
+    const trade = useMemo(() => {
+        return (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined
+    }, [isExactIn, bestTradeExactIn, bestTradeExactOut])
 
     const [addressA, addressB] = [
         (inputCurrency?.isNative ? undefined : inputCurrency?.address || ''),
@@ -244,20 +246,16 @@ export function useDerivedSwapInfo(): {
     }
 }
 
-export function useLimitOrderInfo(poolAddress: Address | undefined, limitOrderTick: number | undefined) {
-
-    const { parsedAmount } = useDerivedSwapInfo()
-
-    const tokenForSale = parsedAmount?.currency
+export function useLimitOrderInfo(poolAddress: Address | undefined, amount: CurrencyAmount<Currency> | undefined, limitOrderTick: number | undefined) {
 
     const [, pool] = usePool(poolAddress)
 
     return useMemo(() => {
 
-        if (!tokenForSale || !pool || typeof limitOrderTick !== 'number') return undefined;
+        if (!amount || !pool || typeof limitOrderTick !== 'number') return undefined;
 
-        const amount0 = tokenForSale.equals(pool.token0) ? parsedAmount.quotient : ZERO
-        const amount1 = tokenForSale.equals(pool.token1) ? parsedAmount.quotient : ZERO
+        const amount0 = amount.currency.wrapped.equals(pool.token0) ? amount.quotient : ZERO
+        const amount1 = amount.currency.wrapped.equals(pool.token1) ? amount.quotient : ZERO
 
         if (amount0 !== undefined && amount1 !== undefined) {
             return Position.fromAmounts({
@@ -273,8 +271,7 @@ export function useLimitOrderInfo(poolAddress: Address | undefined, limitOrderTi
         }
     }, [
         limitOrderTick,
-        parsedAmount,
-        tokenForSale
+        amount,
     ]);
 
 }
