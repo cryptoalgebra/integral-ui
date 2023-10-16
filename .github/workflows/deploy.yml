@@ -3,7 +3,6 @@ name: Algebra Integral Deploy
 on:
   push:
     branches:
-      - master
 
 jobs:
   deploy:
