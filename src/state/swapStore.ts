@@ -43,7 +43,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO
     },
     [SwapField.OUTPUT]: {
-        currencyId: '0x49a390a3dfd2d01389f799965f3af5961f87d228'
+        currencyId: '0xf2a0bc44debd394076c67962bb4869fd43c78018'
     },
     [SwapField.LIMIT_ORDER_PRICE]: '',
     wasInverted: false,
