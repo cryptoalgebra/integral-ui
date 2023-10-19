@@ -1,7 +1,7 @@
-import { Currency, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, Route, TickMath, Token } from "@cryptoalgebra/integral-sdk"
+import { Currency, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, Route, Token } from "@cryptoalgebra/integral-sdk"
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
-import { useChainId } from "wagmi"
+import { Address, useChainId } from "wagmi"
 
 
 /**
@@ -19,7 +19,7 @@ function poolEquals(poolA: Pool, poolB: Pool): boolean {
 function computeAllRoutes(
     currencyIn: Currency,
     currencyOut: Currency,
-    pools: [Token, Token][],
+    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string } }[],
     chainId: number,
     currentPath: Pool[] = [],
     allPaths: Route<Currency, Currency>[] = [],
@@ -33,9 +33,11 @@ function computeAllRoutes(
 
     for (const pool of pools) {
 
-        const [tokenA, tokenB] = pool
+        const [tokenA, tokenB] = pool.tokens
 
-        const newPool = new Pool(tokenA, tokenB, INITIAL_POOL_FEE, TickMath.MAX_SQRT_RATIO, 0, TickMath.MAX_TICK - 1, DEFAULT_TICK_SPACING)
+        const { liquidity, price, tick } = pool.pool
+
+        const newPool = new Pool(tokenA, tokenB, INITIAL_POOL_FEE, price, liquidity, Number(tick), DEFAULT_TICK_SPACING)
 
         if (!newPool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(newPool, pathPool))) continue
 
@@ -72,8 +74,6 @@ export function useAllRoutes(
     const chainId = useChainId()
 
     const { pools, loading: poolsLoading } = useSwapPools(currencyIn, currencyOut)
-
-    // const [singleHopOnly] = useUserSingleHopOnly()
 
     const singleHopOnly = false
 

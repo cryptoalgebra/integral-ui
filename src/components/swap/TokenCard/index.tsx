@@ -27,7 +27,7 @@ const TokenCard = ({ handleValueChange, handleMaxValue, value, currency, fiatVal
     const { data: balance, isLoading } = useBalance({
         address: account,
         token: currency?.isNative ? undefined : currency?.wrapped.address as Address,
-        watch: true
+        watch: true,
     });
 
     const balanceString = useMemo(() => {

@@ -48,17 +48,16 @@ const getTokenTitle = (chartPair: SwapChartPairType, tokenA: Token, tokenB: Toke
 }
 
 const mainnetPoolsMapping: { [key: Address]: Address } = {
-    ['0x884df586548c07f6a0e846bc532a07bf837861b8']: '0x99ac8ca7087fa4a2a1fb6357269965a2014abc35',
-    ['0xb104f0535a35a69880dab51008756c31d47dbf0f']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
-    ['0xc420468eb0c9c08666a4aeffab8cfaf489bcd1c6']: '0xcbcdf9626bc03e24f779434178a73a0b4bad62ed',
-    ['0xb66ef0c01a734340524eae99cacd381f3b404daf']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640'
+    ['0x89406233d4290f405eabb6f320fd648276b8b5b7']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
+    ['0x9367e79bbc401cec2545b4671a80892a26ae1cd9']: '0x9a772018fbd77fcd2d25657e5c547baff3fd7d16',
+    ['0x9f032424a5a4b0effb7fe4912f3e325c105345bc']: '0x3416cf6c708da44db2624d63ea0aaef7113527c6'
 }
 
 const mainnetTokensMapping: { [key: Address]: Address } = {
+    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    ['0xf2a0bc44debd394076c67962bb4869fd43c78018']: '0xdac17f958d2ee523a2206206994597c13d831ec7'
+    ['0xbc892d5f23d3733cff8986d011ca8ff1249d16ca']: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 }
 
 const SwapChart = () => {

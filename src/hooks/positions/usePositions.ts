@@ -33,7 +33,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): { isLoading: boo
             functionName: 'positions',
             args: [[Number(x)]]
         })),
-        watch: true
+        cacheTime: 10_000
     })
 
     const { address: account } = useAccount()
@@ -83,7 +83,7 @@ export function usePositions() {
 
     const { data: balanceResult, isLoading: balanceLoading } = useAlgebraPositionManagerBalanceOf({
         args: account ? [account] : undefined,
-        watch: true,
+        cacheTime: 10_000
     })
 
     const tokenIdsArgs: [Address, number][] = useMemo(() => {
@@ -107,7 +107,7 @@ export function usePositions() {
             functionName: 'tokenOfOwnerByIndex',
             args
         })),
-        watch: true
+        cacheTime: 10_000
     })
 
     const tokenIds = useMemo(() => {

@@ -34,6 +34,7 @@ interface Ticks {
     tickCurrent: number;
     isClosed: boolean;
     killed: boolean;
+    isFilled: boolean;
 }
 
 interface Amount {
@@ -86,6 +87,10 @@ const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
         <span>Completed</span>
     </div>
 
+    if (!ticks.isFilled && (ticks.tickCurrent > ticks.tickUpper || ticks.tickCurrent < ticks.tickLower )) return  <div className="text-left">0%</div>
+
+    if (ticks.tickCurrent > 0 && ticks.tickLower < 0 || ticks.tickCurrent < 0 && ticks.tickLower > 0) return <div className="text-left">0%</div>
+ 
     if (ticks.tickCurrent < ticks.tickLower) return <div className="text-left">0%</div>
 
     const progress = 100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower)

@@ -105,11 +105,11 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen }: MarketDepthChartProp
         <div className="flex flex-col items-end w-full h-full pl-8 overflow-auto">
 
             {
-                beforeCurrent ? beforeCurrent.map((v: any) => <div className={`h-[30px] bg-red-500`} style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}>{v.price0}</div>) : null
+                beforeCurrent ? beforeCurrent.map((v: any, idx: number) => <div key={`before-price-${idx}`} className={`h-[30px] bg-red-500`} style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}>{v.price0}</div>) : null
             }
             {current && <div className="h-[40px] w-full bg-yellow-500">CURRENT</div>}
             {
-                afterCurrent ? afterCurrent.map((v: any) => <div className={`h-[30px] bg-blue-500`} style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}>{v.price0}</div>) : null
+                afterCurrent ? afterCurrent.map((v: any, idx: number) => <div key={`after-price-${idx}`} className={`h-[30px] bg-blue-500`} style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}>{v.price0}</div>) : null
             }
         </div>
 

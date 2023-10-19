@@ -57,14 +57,16 @@ const LimitOrdersList = () => {
                 tickUpper: Number(tickUpper)
             })
 
-            const { amount0, token0PriceLower } = positionLO
+            const { amount0: amount0LO, amount1: amount1LO, token0PriceLower } = positionLO
 
-            const { amount1 } = new Position({
+            const { amount0: amount0Max, amount1: amount1Max } = new Position({
                 pool: new Pool(pool.token0, pool.token1, pool.fee, zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO, pool.liquidity, zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK, pool.tickSpacing),
                 liquidity: Number(initialLiquidity),
                 tickLower: Number(tickLower),
                 tickUpper: Number(tickUpper)
             })
+
+            const amount0 = zeroToOne ? amount0LO : amount1LO
 
             const isClosed = Number(liquidity) === 0
 
@@ -81,7 +83,8 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                     tickCurrent: pool.tickCurrent,
                     isClosed,
-                    killed
+                    killed,
+                    isFilled: epoch.filled
                 },
                 rates: {
                     buy: {
@@ -96,11 +99,11 @@ const LimitOrdersList = () => {
                 amounts: {
                     buy: {
                         token: zeroToOne ? pool.token1 : pool.token0,
-                        amount: zeroToOne ? amount1 : amount0
+                        amount: zeroToOne ? amount1Max : amount0Max
                     },
                     sell: {
                         token: zeroToOne ? pool.token0 : pool.token1,
-                        amount: zeroToOne ? amount0 : amount1
+                        amount: zeroToOne ? amount0 : amount1LO
                     }
                 },
                 pool

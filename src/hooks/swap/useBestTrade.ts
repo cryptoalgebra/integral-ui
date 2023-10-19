@@ -34,8 +34,7 @@ export function useBestTradeExactIn(
             abi: algebraQuoterABI,
             functionName: 'quoteExactInput',
             args: quote
-        })),
-        cacheTime: 5_000
+        }))
     })
 
     const trade = useMemo(() => {
@@ -98,11 +97,9 @@ export function useBestTradeExactIn(
                 outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()),
             }),
         }
-    }, [amountIn, currencyOut, quotesResults, routes, routesLoading])
+    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading])
 
-    return useMemo(() => {
-        return trade
-    }, [trade])
+    return trade
 }
 
 /**
@@ -130,8 +127,7 @@ export function useBestTradeExactOut(
             abi: algebraQuoterABI,
             functionName: 'quoteExactOutput',
             args: quote
-        })),
-        cacheTime: 5_000
+        }))
     })
 
     const trade = useMemo(() => {
@@ -194,10 +190,8 @@ export function useBestTradeExactOut(
                 outputAmount: amountOut,
             }),
         }
-    }, [amountOut, currencyIn, quotesResults, routes, routesLoading])
+    }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading])
 
 
-    return useMemo(() => {
-        return trade
-    }, [trade])
+    return trade
 }

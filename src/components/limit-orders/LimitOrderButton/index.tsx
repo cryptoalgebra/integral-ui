@@ -36,15 +36,15 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
     const { currencies: { [SwapField.INPUT]: inputCurrency }, toggledTrade: trade, inputError } = useDerivedSwapInfo()
     const amount = trade && trade.inputAmount
 
-    const limitOrderTick = tryParseTick(token0, token1, sellPrice, tickSpacing)
+    const limitOrderTick = zeroToOne ? tryParseTick(token0, token1, sellPrice, tickSpacing) : tryParseTick(token1, token0, sellPrice, tickSpacing)
 
     const formattedTick = limitOrderTick ? wasInverted ? -limitOrderTick : limitOrderTick : undefined
 
     const limitOrder = useLimitOrderInfo(poolAddress, amount, formattedTick)
-
-    const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError
-
-    const needAllowance = useNeedAllowance(inputCurrency?.wrapped, amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
+    
+    const needAllowance = useNeedAllowance(inputCurrency?.isNative ? undefined : inputCurrency?.wrapped, amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
+    
+    const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance
 
     const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
 

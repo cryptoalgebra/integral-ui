@@ -59,7 +59,7 @@ const PoolPage = () => {
             })
         }))
 
-    }, [positions])
+    }, [positions, poolEntity])
 
     useEffect(() => {
 

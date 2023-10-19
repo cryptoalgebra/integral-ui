@@ -166,7 +166,7 @@ const LimitOrder = () => {
             disabled={blockCreation}
             limitOrderPlugin={limitOrderPlugin}
             token0={token0} 
-            token1={token1} 
+            token1={token1}
             poolAddress={poolAddress} 
             sellPrice={sellPrice} 
             tickSpacing={tickSpacing} 

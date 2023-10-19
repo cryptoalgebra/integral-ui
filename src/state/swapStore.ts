@@ -38,12 +38,12 @@ interface SwapState {
 
 export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
-    typedValue: '1',
+    typedValue: '',
     [SwapField.INPUT]: {
         currencyId: ADDRESS_ZERO
     },
     [SwapField.OUTPUT]: {
-        currencyId: '0xf2a0bc44debd394076c67962bb4869fd43c78018'
+        currencyId: '0xbC892D5f23d3733cFF8986D011Ca8fF1249D16Ca'
     },
     [SwapField.LIMIT_ORDER_PRICE]: '',
     wasInverted: false,
@@ -173,9 +173,7 @@ export function useDerivedSwapInfo(): {
     const bestTradeExactIn = useBestTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
     const bestTradeExactOut = useBestTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
-    const trade = useMemo(() => {
-        return (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined
-    }, [isExactIn, bestTradeExactIn, bestTradeExactOut])
+    const trade = (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined
 
     const [addressA, addressB] = [
         (inputCurrency?.isNative ? undefined : inputCurrency?.address || ''),

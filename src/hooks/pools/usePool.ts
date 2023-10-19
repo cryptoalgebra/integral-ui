@@ -3,6 +3,7 @@ import { InitialPoolFee } from "@cryptoalgebra/integral-sdk";
 import { Pool } from "@cryptoalgebra/integral-sdk";
 import { Address } from "wagmi";
 import { useCurrency } from "../common/useCurrency";
+import { useMemo } from "react";
 
 export const PoolState = {
   LOADING: 'LOADING',
@@ -16,7 +17,7 @@ export type PoolStateType = typeof PoolState[keyof typeof PoolState]
 export function usePool(address: Address | undefined): [PoolStateType, Pool | null] {
 
   const { data: tickSpacing, isLoading: isTickSpacingLoading, isError: isTickSpacingError } = useAlgebraPoolTickSpacing({
-    address
+    address,
   })
   const { data: globalState, isLoading: isGlobalStateLoading, isError: isGlobalStateError } = useAlgebraPoolGlobalState({
     address
@@ -37,21 +38,24 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
 
   const isPoolError = isTickSpacingError || isGlobalStateError || isLiquidityError || isToken0Error || isToken1Error || !address
 
-  if (isPoolError) return [PoolState.INVALID, null]
-
   const isPoolLoading = isTickSpacingLoading || isGlobalStateLoading || isLiquidityLoading || isLoadingToken0 || isLoadingToken1
   const isTokensLoading = !token0 || !token1
 
-  if (isPoolLoading || isTokensLoading) return [PoolState.LOADING, null]
+  return useMemo(() => {
 
-  if (!tickSpacing || !globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
+    if (isPoolError) return [PoolState.INVALID, null]
 
-  if (globalState[0] === 0n) return [PoolState.NOT_EXISTS, null]
+    if (isPoolLoading || isTokensLoading) return [PoolState.LOADING, null]
 
-  try {
-    return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2] as InitialPoolFee, globalState[0].toString(), Number(liquidity), globalState[1], tickSpacing)]
-  } catch (error) {
-    return [PoolState.NOT_EXISTS, null]
-  }
+    if (!tickSpacing || !globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
+
+    if (globalState[0] === 0n) return [PoolState.NOT_EXISTS, null]
+
+    try {
+      return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2] as InitialPoolFee, globalState[0].toString(), Number(liquidity), globalState[1], tickSpacing)]
+    } catch (error) {
+      return [PoolState.NOT_EXISTS, null]
+    }
+  }, [token0, token1, globalState, liquidity, tickSpacing, isPoolError, isPoolLoading, isTokensLoading])
 
 }
