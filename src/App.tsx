@@ -6,7 +6,7 @@ import { WagmiConfig } from 'wagmi'
 import Layout from "@/components/common/Layout"
 import { defineChain } from "viem"
 
-const projectId = 'f370559ba7976e89ed93819ecdc03c64'
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
 const goerliChain = defineChain({
   id: 5,
@@ -15,10 +15,10 @@ const goerliChain = defineChain({
   nativeCurrency: { name: 'Goerli Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://goerli.infura.io/v3/5c55489ae3414b8b9a1a328b577f89bb'],
+      http: [import.meta.env.VITE_INFURA_RPC],
     },
     public: {
-      http: ['https://goerli.infura.io/v3/5c55489ae3414b8b9a1a328b577f89bb'],
+      http: [import.meta.env.VITE_INFURA_RPC],
     },
   },
   blockExplorers: {
