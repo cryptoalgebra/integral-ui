@@ -46,13 +46,15 @@ const LimitOrdersList = () => {
             )
         }), {})
 
-        return limitOrders.limitOrders.map(({ liquidity, initialLiquidity, owner, tickLower, tickUpper, zeroToOne, epoch, pool: poolId, killed }) => {
+        return limitOrders.limitOrders.map(({ liquidity, initialLiquidity, killedLiquidity, owner, tickLower, tickUpper, zeroToOne, epoch, pool: poolId, killed }) => {
 
             const pool = pools[poolId]
 
+            const liquidityForPosition = epoch.filled ? BigInt(initialLiquidity) - BigInt(killedLiquidity) : liquidity
+
             const positionLO = new Position({
                 pool,
-                liquidity: Number(initialLiquidity),
+                liquidity: Number(liquidityForPosition),
                 tickLower: Number(tickLower),
                 tickUpper: Number(tickUpper)
             })
@@ -61,7 +63,7 @@ const LimitOrdersList = () => {
 
             const { amount0: amount0Max, amount1: amount1Max } = new Position({
                 pool: new Pool(pool.token0, pool.token1, pool.fee, zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO, pool.liquidity, zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK, pool.tickSpacing),
-                liquidity: Number(initialLiquidity),
+                liquidity: Number(liquidityForPosition),
                 tickLower: Number(tickLower),
                 tickUpper: Number(tickUpper)
             })

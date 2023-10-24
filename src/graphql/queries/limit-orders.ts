@@ -19,6 +19,7 @@ export const LIMIT_ORDER_FRAGMENT = gql`
         pool
         liquidity
         initialLiquidity
+        killedLiquidity
         tickLower
         tickUpper
         zeroToOne
