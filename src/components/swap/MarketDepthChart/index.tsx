@@ -27,7 +27,7 @@ interface MarketDepthChartProps {
 
 const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthChartProps) => {
 
-    const { toggledTrade: trade, tickAfterSwap, tickSpacing } = useDerivedSwapInfo();
+    const { tickAfterSwap, tickSpacing } = useDerivedSwapInfo();
 
     const { [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice } = useSwapState()
 

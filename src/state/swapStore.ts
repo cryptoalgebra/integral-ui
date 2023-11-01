@@ -5,7 +5,7 @@ import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestT
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Position, TickMath, Trade, TradeType, ZERO, computePoolAddress, tickToPrice, tryParsePrice } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Position, TickMath, Trade, TradeType, ZERO, computePoolAddress } from "@cryptoalgebra/integral-sdk"
 import JSBI from "jsbi"
 import { useCallback, useMemo } from "react"
 import { parseUnits } from "viem"
