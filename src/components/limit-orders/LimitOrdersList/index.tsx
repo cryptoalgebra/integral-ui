@@ -20,7 +20,8 @@ const LimitOrdersList = () => {
         client: limitOrderClient,
         variables: {
             account
-        }
+        },
+        pollInterval: 10_000
     })
 
     const { data: poolForLimitOrders } = useMultiplePoolsQuery({
@@ -86,7 +87,8 @@ const LimitOrdersList = () => {
                     tickCurrent: pool.tickCurrent,
                     isClosed,
                     killed,
-                    isFilled: epoch.filled
+                    isFilled: epoch.filled,
+                    zeroToOne
                 },
                 rates: {
                     buy: {

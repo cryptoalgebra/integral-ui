@@ -35,6 +35,7 @@ interface Ticks {
     isClosed: boolean;
     killed: boolean;
     isFilled: boolean;
+    zeroToOne: boolean;
 }
 
 interface Amount {
@@ -87,15 +88,16 @@ const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
         <span>Completed</span>
     </div>
 
-    if (!ticks.isFilled && (ticks.tickCurrent > ticks.tickUpper || ticks.tickCurrent < ticks.tickLower )) return  <div className="text-left">0%</div>
+    const progress = (100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower))
 
-    if (ticks.tickCurrent > 0 && ticks.tickLower < 0 || ticks.tickCurrent < 0 && ticks.tickLower > 0) return <div className="text-left">0%</div>
- 
-    if (ticks.tickCurrent < ticks.tickLower) return <div className="text-left">0%</div>
+    if (ticks.zeroToOne ? (progress < 0) : (progress > 0) ) return <div className="text-left">0%</div>
 
-    const progress = (100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower)).toFixed(1)
+    if (ticks.zeroToOne ? (progress >= 100) : (progress <= -100) ) return <div className="flex items-center gap-4 text-left">
+        <CheckCircle2Icon className={'text-green-500'} />
+        <span>Completed</span>
+    </div>
 
-    return <div className="text-left">{`${progress}%`}</div>
+    return <div className="text-left">{`${progress.toFixed(1)}%`}</div>
 
 }
 
