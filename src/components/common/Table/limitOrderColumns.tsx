@@ -93,7 +93,7 @@ const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
  
     if (ticks.tickCurrent < ticks.tickLower) return <div className="text-left">0%</div>
 
-    const progress = 100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower)
+    const progress = (100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower)).toFixed(1)
 
     return <div className="text-left">{`${progress}%`}</div>
 

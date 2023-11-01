@@ -129,7 +129,7 @@ const PoolPage = () => {
 
     }, [selectedPositionId, positionsData])
 
-    const noPositions = !positionsLoading && positionsData.length === 0
+    const noPositions = !positionsLoading && positionsData.length === 0 && poolEntity
 
     return <PageContainer>
 

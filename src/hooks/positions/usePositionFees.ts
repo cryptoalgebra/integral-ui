@@ -1,6 +1,7 @@
 import { MAX_UINT128 } from "@/constants/max-uint128"
 import { useAlgebraPositionManagerOwnerOf, usePrepareAlgebraPositionManagerCollect } from "@/generated"
 import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/integral-sdk"
+import { useMemo } from "react"
 import { Address } from "wagmi"
 
 interface PositionFeesResult {
@@ -34,15 +35,18 @@ export function usePositionFees(
 
     const amounts = amountsConfig?.result
 
-    if (pool && amounts) {
-        return {
-            amount0: CurrencyAmount.fromRawAmount(!asWETH ? unwrappedToken(pool.token0) : pool.token0, amounts[0].toString()),
-            amount1: CurrencyAmount.fromRawAmount(!asWETH ? unwrappedToken(pool.token1) : pool.token1, amounts[1].toString()),
+    return useMemo(() => {
+
+        if (pool && amounts) {
+            return {
+                amount0: CurrencyAmount.fromRawAmount(!asWETH ? unwrappedToken(pool.token0) : pool.token0, amounts[0].toString()),
+                amount1: CurrencyAmount.fromRawAmount(!asWETH ? unwrappedToken(pool.token1) : pool.token1, amounts[1].toString()),
+            }
+        } else {
+            return {
+                amount0: undefined,
+                amount1: undefined
+            }
         }
-    } else {
-        return {
-            amount0: undefined,
-            amount1: undefined
-        }
-    }
+    }, [pool, amounts])
 }

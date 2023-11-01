@@ -2,8 +2,8 @@ import { Currency, CurrencyAmount, Route, Trade, TradeType, encodeRouteToPath } 
 import { useMemo } from "react";
 import { useAllRoutes } from "./useAllRoutes";
 import { useContractReads } from "wagmi";
-import { ALGEBRA_QUOTER } from "@/constants/addresses";
-import { algebraQuoterABI } from "@/abis";
+import { ALGEBRA_QUOTER_V2 } from "@/constants/addresses";
+import { algebraQuoterV2ABI } from "@/abis";
 import { TradeState, TradeStateType } from "@/types/trade-state";
 
 
@@ -17,7 +17,7 @@ import { TradeState, TradeStateType } from "@/types/trade-state";
 export function useBestTradeExactIn(
     amountIn?: CurrencyAmount<Currency>,
     currencyOut?: Currency
-): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null; fee?: bigint[] | null } {
+): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null; fee?: bigint[] | null, priceAfterSwap?: bigint[] | null } {
 
     const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut)
 
@@ -30,8 +30,8 @@ export function useBestTradeExactIn(
 
     const { data: quotesResults, isLoading: isQuotesLoading } = useContractReads({
         contracts: quoteExactInInputs.map((quote: any) => ({
-            address: ALGEBRA_QUOTER,
-            abi: algebraQuoterABI,
+            address: ALGEBRA_QUOTER_V2,
+            abi: algebraQuoterV2ABI,
             functionName: 'quoteExactInput',
             args: quote
         }))
@@ -52,21 +52,23 @@ export function useBestTradeExactIn(
             }
         }
 
-        const { bestRoute, amountOut, fee } = (quotesResults || []).reduce(
-            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountOut: any | null; fee: bigint[] | null }, { result }: any, i) => {
+        const { bestRoute, amountOut, fee, priceAfterSwap } = (quotesResults || []).reduce(
+            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountOut: any | null; fee: bigint[] | null, priceAfterSwap: bigint[] | null }, { result }: any, i) => {
                 if (!result) return currentBest
 
                 if (currentBest.amountOut === null) {
                     return {
                         bestRoute: routes[i],
                         amountOut: result[0],
-                        fee: result[1]
+                        fee: result[5],
+                        priceAfterSwap: result[2]
                     }
                 } else if (currentBest.amountOut < result[0]) {
                     return {
                         bestRoute: routes[i],
                         amountOut: result[0],
-                        fee: result[1]
+                        fee: result[5],
+                        priceAfterSwap: result[2]
                     }
                 }
 
@@ -75,7 +77,8 @@ export function useBestTradeExactIn(
             {
                 bestRoute: null,
                 amountOut: null,
-                fee: null
+                fee: null,
+                priceAfterSwap: null
             }
         )
 
@@ -83,7 +86,8 @@ export function useBestTradeExactIn(
             return {
                 state: TradeState.NO_ROUTE_FOUND,
                 trade: null,
-                fee: null
+                fee: null,
+                priceAfterSwap: null
             }
         }
 
@@ -96,6 +100,7 @@ export function useBestTradeExactIn(
                 inputAmount: amountIn,
                 outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()),
             }),
+            priceAfterSwap
         }
     }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading])
 
@@ -110,7 +115,7 @@ export function useBestTradeExactIn(
 export function useBestTradeExactOut(
     currencyIn?: Currency,
     amountOut?: CurrencyAmount<Currency>
-): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null; fee?: bigint[] | null } {
+): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null; fee?: bigint[] | null, priceAfterSwap?: bigint[] | null } {
 
     const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency)
 
@@ -123,8 +128,8 @@ export function useBestTradeExactOut(
 
     const { data: quotesResults, isLoading: isQuotesLoading, isError: isQuotesErrored } = useContractReads({
         contracts: quoteExactOutInputs.map((quote: any) => ({
-            address: ALGEBRA_QUOTER,
-            abi: algebraQuoterABI,
+            address: ALGEBRA_QUOTER_V2,
+            abi: algebraQuoterV2ABI,
             functionName: 'quoteExactOutput',
             args: quote
         }))
@@ -145,21 +150,23 @@ export function useBestTradeExactOut(
             }
         }
 
-        const { bestRoute, amountIn, fee } = (quotesResults || []).reduce(
-            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountIn: any | null; fee: bigint[] | null }, { result }: any, i) => {
+        const { bestRoute, amountIn, fee, priceAfterSwap } = (quotesResults || []).reduce(
+            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountIn: any | null; fee: bigint[] | null, priceAfterSwap: bigint[] | null }, { result }: any, i) => {
                 if (!result) return currentBest
 
                 if (currentBest.amountIn === null) {
                     return {
                         bestRoute: routes[i],
                         amountIn: result[0],
-                        fee: result[1]
+                        fee: result[5],
+                        priceAfterSwap: result[2]
                     }
                 } else if (currentBest.amountIn > result[0]) {
                     return {
                         bestRoute: routes[i],
                         amountIn: result[0],
-                        fee: result[1]
+                        fee: result[5],
+                        priceAfterSwap: result[2]
                     }
                 }
 
@@ -168,7 +175,8 @@ export function useBestTradeExactOut(
             {
                 bestRoute: null,
                 amountIn: null,
-                fee: null
+                fee: null,
+                priceAfterSwap: null
             }
         )
 
@@ -176,7 +184,8 @@ export function useBestTradeExactOut(
             return {
                 state: TradeState.NO_ROUTE_FOUND,
                 trade: null,
-                fee: null
+                fee: null,
+                priceAfterSwap
             }
         }
 
@@ -189,6 +198,7 @@ export function useBestTradeExactOut(
                 inputAmount: CurrencyAmount.fromRawAmount(currencyIn, amountIn.toString()),
                 outputAmount: amountOut,
             }),
+            priceAfterSwap
         }
     }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading])
 

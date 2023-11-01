@@ -1,17 +1,37 @@
 import { MAX_UINT128 } from "@/constants/max-uint128";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
-import { Currency, CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk"
+import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { SwapField } from "@/types/swap-field";
+import { formatCurrency } from "@/utils/common/formatCurrency";
+import { CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token, tryParseTick } from "@cryptoalgebra/integral-sdk"
+import { ArrowRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "wagmi";
 
-interface MarketDepthChartProps {
-    currencyA: Currency | undefined;
-    currencyB: Currency | undefined;
-    poolAddress: Address | undefined;
-    isOpen: boolean;
+const NOT_SELECTED = Number.MAX_VALUE
+
+const isAfterCurrent = (index: number) => {
+    if (index === 0) {
+        return Object.is(index, 0)
+    }
+    return index > 0
 }
 
-const MarketDepthChart = ({ currencyA, currencyB, isOpen }: MarketDepthChartProps) => {
+interface MarketDepthChartProps {
+    currencyA: Token | undefined;
+    currencyB: Token | undefined;
+    poolAddress: Address | undefined;
+    isOpen: boolean;
+    close: () => void;
+}
+
+const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthChartProps) => {
+
+    const { toggledTrade: trade, tickAfterSwap, tickSpacing } = useDerivedSwapInfo();
+
+    const { [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice } = useSwapState()
+
+    const [hoveredIndex, setHoveredIndex] = useState<number>(NOT_SELECTED)
 
     const [processedData, setProcessedData] = useState<any>(null)
     const {
@@ -70,6 +90,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen }: MarketDepthChartProp
                         index: i,
                         isCurrent: active,
                         activeLiquidity: parseFloat(t.liquidityActive.toString()),
+                        tick: t.tickIdx,
                         price0: parseFloat(t.price0),
                         price1: parseFloat(t.price1),
                         tvlToken0: amount0,
@@ -96,34 +117,128 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen }: MarketDepthChartProp
 
         const maxLiquidity = slicedData.reduce((acc: any, v: any) => v.activeLiquidity > acc ? v.activeLiquidity : acc, 0)
 
-        return [slicedData.slice(0, currentIdx), slicedData[currentIdx], slicedData.slice(currentIdx), maxLiquidity]
+        return [slicedData.slice(0, currentIdx), slicedData[currentIdx], slicedData.slice(currentIdx + 1), maxLiquidity]
     }, [processedData])
 
-    return <div className={`h-full bg-card fixed border-l border-card-border right-0 top-0 duration-200`} style={{width: isOpen ? '250px' : '0px'}}>
-        <div>Market depth</div>
+    const invertPrice = currencyA && currencyB && !currencyA.sortsBefore(currencyB)
 
-        <div className="flex flex-col items-end w-full h-full pl-8 overflow-auto">
+    const tooltipY = useMemo(() => {
 
-            {
-                beforeCurrent ? beforeCurrent.map((v: any, idx: number) => <div key={`before-price-${idx}`} className={`h-[30px] bg-red-500`} style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}>{v.price0}</div>) : null
-            }
-            {current && <div className="h-[40px] w-full bg-yellow-500">CURRENT</div>}
-            {
-                afterCurrent ? afterCurrent.map((v: any, idx: number) => <div key={`after-price-${idx}`} className={`h-[30px] bg-blue-500`} style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}>{v.price0}</div>) : null
-            }
+        if (hoveredIndex === NOT_SELECTED) return -9999
+
+        const id = document.getElementById(isAfterCurrent(hoveredIndex) ? `before-current-${hoveredIndex}` : `after-current-${-hoveredIndex}`)
+
+        return id?.offsetTop
+
+    }, [hoveredIndex])
+
+    const tooltipData = useMemo(() => {
+
+        if (hoveredIndex === NOT_SELECTED || !beforeCurrent || !afterCurrent) return
+
+        const summary = isAfterCurrent(hoveredIndex) ? beforeCurrent.slice(hoveredIndex) : afterCurrent.slice(0, -hoveredIndex + 1)
+        
+        return summary.reduce((acc: any, v: any) => ({
+            price: acc.price + v.price0 / summary.length,
+            amount: acc.amount + v.tvlToken0,
+            total: acc.total + v.tvlToken1
+        }), {
+            price: 0,
+            amount: 0,
+            total: 0
+        })
+
+    }, [hoveredIndex, beforeCurrent, afterCurrent])
+
+
+    const limitOrderTick = limitOrderPrice && currencyA && currencyB && tryParseTick(currencyA, currencyB, limitOrderPrice, tickSpacing)
+
+    return <div className={`h-full bg-card fixed border-l border-card-border right-0 top-0 duration-200 z-[99]`} style={{ width: isOpen ? '380px' : '0px' }}>
+
+        <div className="flex w-full h-full">
+
+            <button
+                className="h-full z-[99] p-1 bg-card-dark border-x border-card-border hover:bg-card-hover"
+                onClick={close}
+            >
+                <ArrowRightIcon size={'20px'} />
+            </button>
+
+            <div className="relative flex flex-col w-full h-full">
+
+                <div className="flex justify-evenly text-sm py-2">
+                    <div className="w-full text-left pl-4">{`Price (${currencyB?.symbol})`}</div>
+                    <div className="w-full">{`Amount (${currencyA?.symbol})`}</div>
+                    <div className="w-full text-right pr-4">{`Total (${currencyB?.symbol})`}</div>
+                </div>
+
+                <div className={`absolute -left-[230px] z-[100]`} style={{ top: `${tooltipY}px` }}>
+                    <MarketDepthChartTooltip currencyA={currencyA} currencyB={currencyB} tooltipData={tooltipData} />
+                </div>
+
+                <div className="relative flex flex-col items-end w-full h-full overflow-y-auto pl-16 text-sm select-none">
+
+                    {
+                        beforeCurrent ? beforeCurrent.map((v: any, idx: number) => <div id={`before-current-${idx}`} className={`relative flex items-center h-[25px] py-1 w-full`} onMouseOver={() => setHoveredIndex(idx)} onMouseOut={() => setHoveredIndex(NOT_SELECTED)} >
+                            <div className={`absolute flex justify-evenly w-full`}>
+                                <div className="w-full text-left -ml-12 text-red-500 font-semibold">{formatCurrency.format(invertPrice ? v.price1 : v.price0)}</div>
+                                <div className="w-full">{formatCurrency.format(invertPrice ? v.tvlToken1 : v.tvlToken0)}</div>
+                                <div className="w-full text-right pr-4">{formatCurrency.format(invertPrice ? v.tvlToken0 : v.tvlToken1)}</div>
+                            </div>
+                            <div
+                                key={`before-price-${idx}`}
+                                className={`h-[20px] rounded-l-lg ml-auto ${idx >= hoveredIndex && hoveredIndex >= 0 && isAfterCurrent(hoveredIndex) && hoveredIndex !== NOT_SELECTED ? 'bg-blue-500/80' : (limitOrderTick ? v.tick === limitOrderTick : (v.tick <= (tickAfterSwap || -NOT_SELECTED))) ? 'bg-yellow-600' : 'bg-red-800/40'}`}
+                                style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}></div>
+                        </div>) : null
+                    }
+                    {current && <div className="relative flex items-center justify-between text-lg py-2 px-4 border-y border-card-border my-2 bg-card-dark" style={{ width: 'calc(100% + 4rem)' }}>
+                        <div>{formatCurrency.format(invertPrice ? current.price1 : current.price0)}</div>
+                        <div className="text-sm font-semibold">Current Price</div>
+                    </div>}
+                    {
+                        afterCurrent ? afterCurrent.map((v: any, idx: number) => <div id={`after-current-${idx}`} className={`relative flex items-center h-[25px] py-1 w-full`} onMouseOver={() => setHoveredIndex(-idx)} onMouseOut={() => setHoveredIndex(NOT_SELECTED)}>
+                            <div className="absolute flex justify-evenly w-full">
+                                <div className="w-full text-left -ml-12 text-green-500 font-semibold">{formatCurrency.format(invertPrice ? v.price1 : v.price0)}</div>
+                                <div className="w-full">{formatCurrency.format(invertPrice ? v.tvlToken1 : v.tvlToken0)}</div>
+                                <div className="w-full text-right pr-4">{formatCurrency.format(invertPrice ? v.tvlToken0 : v.tvlToken1)}</div>
+                            </div>
+                            <div
+                                key={`after-price-${idx}`}
+                                className={`h-[20px] ${-idx >= hoveredIndex && hoveredIndex !== NOT_SELECTED ? 'bg-blue-500/80' : (limitOrderTick ? ((invertPrice ? v.tick : -v.tick) === limitOrderTick) : (v.tick >= (tickAfterSwap || NOT_SELECTED))) ? 'bg-yellow-600' : 'bg-green-800/40'} rounded-l-lg ml-auto`}
+                                style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}></div>
+                        </div>) : null
+                    }
+                </div>
+
+            </div>
+
         </div>
 
-        {/* <div className="h-[500px]">
-        <LiquidityChart 
-            currencyA={currencyA} 
-            currencyB={currencyB} 
-            currentPrice={price ? parseFloat(price.toSignificant()) : undefined} 
-            priceLower={price || undefined} 
-            priceUpper={price || undefined} 
-            />
-            </div> */}
     </div>
+}
 
+const MarketDepthChartTooltip = ({
+    currencyA,
+    currencyB,
+    tooltipData
+}: any) => {
+
+    if (!tooltipData) return null
+
+    return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-card border border-card-border">
+        <div className="flex gap-4 justify-between">
+            <div>{`Average Price:`}</div>
+            <div>{formatCurrency.format(tooltipData.price)}</div>
+        </div>
+        <div className="flex gap-4 justify-between">
+            <div>{`Amount ${currencyA?.symbol}:`}</div>
+            <div>{formatCurrency.format(tooltipData.amount)}</div>
+        </div>
+        <div className="flex gap-4 justify-between">
+            <div>{`Total ${currencyB?.symbol}:`}</div>
+            <div>{formatCurrency.format(tooltipData.total)}</div>
+        </div>
+    </div>
 }
 
 export default MarketDepthChart

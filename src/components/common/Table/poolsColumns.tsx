@@ -7,6 +7,7 @@ import { TokenFieldsFragment } from "@/graphql/generated/graphql";
 import { DynamicFeePluginIcon, LimitOrderPluginIcon } from "../PluginIcons";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -34,7 +35,7 @@ const PoolPair = ({ pair, fee }: Pool) => {
             <CurrencyLogo currency={currencyB} size={30} className="-ml-2" />
         </div>
 
-        <div>{`${currencyA?.symbol} - ${currencyB?.symbol}`}</div>
+        {currencyA && currencyB ? <div>{`${currencyA?.symbol} - ${currencyB?.symbol}`}</div> : <Skeleton className="h-[20px] w-[90px] bg-card" /> }
 
         <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
 

@@ -94,7 +94,7 @@ const IntegralPoolsListItem = memo(({ pool, onPoolSelect }: { pool: PoolFieldsFr
             <CurrencyLogo currency={currencyA} size={25} />
             <CurrencyLogo currency={currencyB} size={25} style={{marginLeft: '-8px'}} />
         </div>
-        <div className="font-semibold">{`${pool.token0.symbol} / ${pool.token1.symbol}`}</div>
+        <div className="font-semibold">{currencyA && currencyB ? `${currencyA?.symbol} / ${currencyB?.symbol}` : ''}</div>
         <div className="ml-auto">
             {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
                 {dynamicFeePlugin && <DynamicFeePluginIcon />}

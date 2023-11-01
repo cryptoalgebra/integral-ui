@@ -10,6 +10,7 @@ import PositionRangeChart from "../PositionRangeChart";
 import TokenRatio from "@/components/create-position/TokenRatio";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import CollectFees from "../CollectFees";
+// import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal";
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined
@@ -68,6 +69,7 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
                 </div>
             </div>
         </div>
+
        <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} />
         <TokenRatio mintInfo={mintInfo} />
         {
@@ -75,8 +77,7 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
             <PositionRangeChart pool={pool} position={positionEntity} />
         }
         {/* <div className="flex gap-4 w-full whitespace-nowrap">
-            <Button className="w-full">Add Liquidity</Button>
-            <Button className="w-full">Remove Liquidity</Button>
+          <RemoveLiquidityModal positionId={selectedPosition.id}/>
         </div> */}
     </div>
 

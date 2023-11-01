@@ -27,6 +27,8 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
         false
     );
 
+    const zeroRewards = amount0?.equalTo('0') && amount1?.equalTo('0')
+
     const { calldata, value } = useMemo(() => {
         if (!account || !amount0 || !amount1)
             return { calldata: undefined, value: undefined };
@@ -49,14 +51,16 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
 
     const { isLoading } = useTransitionAwait(collectData?.hash, 'Collect fees')
 
+    const collectedFees = positionFeesUSD === '$0' && !zeroRewards ? '< $0.001' : positionFeesUSD
+
     return <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">
         <div className="text-left">
             <div className="font-bold text-xs">EARNED FEES</div>
             <div className="font-semibold text-2xl">
-                {positionFeesUSD ? <span className="text-cyan-300 drop-shadow-cyan">{positionFeesUSD}</span> : <Skeleton className="w-[100px] h-[30px]" />}
+                {collectedFees ? <span className="text-cyan-300 drop-shadow-cyan">{collectedFees}</span> : <Skeleton className="w-[100px] h-[30px]" />}
             </div>
         </div>
-        <Button size={'md'} disabled={!collect || isLoading} onClick={() => collect && collect()}>
+        <Button size={'md'} disabled={!collect || zeroRewards || isLoading} onClick={() => collect && collect()}>
             {isLoading ? <Loader /> : 'Collect fees'}
         </Button>
     </div>

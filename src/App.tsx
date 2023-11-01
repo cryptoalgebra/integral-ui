@@ -48,7 +48,7 @@ const goerliChain = defineChain({
 }) 
 
 const chains = [goerliChain]
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral' } })
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
   wagmiConfig, 

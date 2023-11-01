@@ -6,7 +6,7 @@ import { useSwapChart } from "@/hooks/swap/useSwapChart";
 import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { Token } from "@cryptoalgebra/integral-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Address } from "wagmi";
@@ -16,33 +16,34 @@ import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import MarketDepthChart from "../MarketDepthChart";
 
-const getTokenTitle = (chartPair: SwapChartPairType, tokenA: Token, tokenB: Token) => {
+const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
+
     switch (chartPair) {
         case SwapChartPair.AB:
             return [
                 <div className="flex">
-                    <CurrencyLogo currency={tokenA} size={30} />
-                    <CurrencyLogo currency={tokenB} size={30} style={{ marginLeft: '-8px' }} />
+                    <CurrencyLogo currency={currencyA} size={30} />
+                    <CurrencyLogo currency={currencyB} size={30} style={{ marginLeft: '-8px' }} />
                 </div>,
-                `${tokenA.symbol} / ${tokenB.symbol}`,
+                `${currencyA.symbol} / ${currencyB.symbol}`,
             ];
         case SwapChartPair.BA:
             return [
                 <div className="flex">
-                    <CurrencyLogo currency={tokenB} size={30} />
-                    <CurrencyLogo currency={tokenA} size={30} style={{ marginLeft: '-8px' }} />
+                    <CurrencyLogo currency={currencyB} size={30} />
+                    <CurrencyLogo currency={currencyA} size={30} style={{ marginLeft: '-8px' }} />
                 </div>,
-                `${tokenB.symbol} / ${tokenA.symbol}`,
+                `${currencyB.symbol} / ${currencyA.symbol}`,
             ];
         case SwapChartPair.A:
             return [
-                <CurrencyLogo currency={tokenA} size={30} />,
-                `${tokenA.symbol}`
+                <CurrencyLogo currency={currencyA} size={30} />,
+                `${currencyA.symbol}`
             ];
         case SwapChartPair.B:
             return [
-                <CurrencyLogo currency={tokenB} size={30} />,
-                `${tokenB.symbol}`
+                <CurrencyLogo currency={currencyB} size={30} />,
+                `${currencyB.symbol}`
             ];
     }
 }
@@ -86,6 +87,8 @@ const SwapChart = () => {
     const tokenAddress = chartPair === SwapChartPair.A && tokenA ? mainnetTokensMapping[tokenA.address.toLowerCase() as Address] : tokenB ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address] : '';
 
     const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
+    const [isPoolSwitcherOpen, setIsPoolSwitcherOpen] = useState(false)
+
 
     useEffect(() => {
         setChart(undefined);
@@ -243,7 +246,7 @@ const SwapChart = () => {
         return formatUSD.format(value)
     }, [formattedData, chartPair])
 
-    const displayValueCurrency = chartPair === SwapChartPair.AB ? tokenB?.symbol : chartPair === SwapChartPair.BA ? tokenA?.symbol : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B ? '' : ''
+    const displayValueCurrency = chartPair === SwapChartPair.AB ? currencies.OUTPUT?.symbol : chartPair === SwapChartPair.BA ? currencies.INPUT?.symbol : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B ? '' : ''
 
     const crosshairMoveHandler = useCallback((param: any) => {
         if (param.point) {
@@ -267,45 +270,56 @@ const SwapChart = () => {
     }, [currentValue])
 
     const [pairImage, pairTitle] = useMemo(() => {
-        if (!tokenA || !tokenB) return [
+        if (!currencies.INPUT || !currencies.OUTPUT) return [
             <Loader size={16} />,
             'Loading...'
         ];
 
-        return getTokenTitle(chartPair, tokenA, tokenB)
+        return getTokenTitle(chartPair, currencies.INPUT, currencies.OUTPUT)
 
-    }, [tokenA, tokenB, chartPair]);
+    }, [currencies, chartPair]);
 
     const pairSelectorList = useMemo(() => {
 
-        if (!tokenA || !tokenB) return
+        if (!currencies.INPUT || !currencies.OUTPUT) return
 
         return Object.keys(SwapChartPair).filter(v => v !== chartPair).map((pair: any) => ({
             pair,
-            title: getTokenTitle(pair, tokenA, tokenB)
+            title: getTokenTitle(pair, currencies.INPUT!, currencies.OUTPUT!)
         }))
-    }, [tokenA, tokenB, chartPair])
+    }, [currencies.INPUT, currencies.OUTPUT, chartPair])
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
-        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} />
+        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} />
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
-            <Popover>
-                <PopoverTrigger className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
+
+            <Popover open={isPoolSwitcherOpen}>
+                <PopoverTrigger
+                    onMouseDown={() => setIsPoolSwitcherOpen(v => !v)}
+                    className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
                     <div className="flex items-center gap-4 font-semibold">
                         <span className="flex">{pairImage}</span>
                         <span>{pairTitle}</span>
                     </div>
-                    <span>
-                        <ChevronDownIcon size={18} />
-                    </span>
+                    <div>
+                        <ChevronDownIcon size={20} className={`duration-300 ${isPoolSwitcherOpen ? 'rotate-180' : ''}`} />
+                    </div>
                 </PopoverTrigger>
 
-                <PopoverContent className="bg-card rounded-3xl border border-card-border">
+                <PopoverContent
+                    onPointerDownOutside={() => setTimeout(() => setIsPoolSwitcherOpen(false), 0)}
+                    className="bg-card rounded-3xl border border-card-border">
                     <div className="flex flex-col gap-2 text-white">
                         {
-                            pairSelectorList?.map((item) => <div key={`chart-pair-selector-item-${item.pair}`} className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover duration-200" onClick={() => setChartPair(item.pair)}>{item.title}</div>)
+                            pairSelectorList?.map((item) => <div
+                                key={`chart-pair-selector-item-${item.pair}`}
+                                className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover duration-200"
+                                onClick={() => {
+                                    setChartPair(item.pair)
+                                    setIsPoolSwitcherOpen(false)
+                                }}>{item.title}</div>)
                         }
                     </div>
                 </PopoverContent>
@@ -342,13 +356,12 @@ const SwapChart = () => {
                 <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 <HoverCard>
                     <HoverCardTrigger>
-                        <Button disabled variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
+                        <Button variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
                             <BarChartHorizontalIcon size={20} />
                         </Button>
                     </HoverCardTrigger>
                     <HoverCardContent>
                         <div className="font-bold">Market Depth</div>
-                        <div>Coming Soon</div>
                     </HoverCardContent>
                 </HoverCard>
             </div>

@@ -5,7 +5,8 @@ import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestT
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Position, Trade, TradeType, ZERO, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, Position, TickMath, Trade, TradeType, ZERO, computePoolAddress, tickToPrice, tryParsePrice } from "@cryptoalgebra/integral-sdk"
+import JSBI from "jsbi"
 import { useCallback, useMemo } from "react"
 import { parseUnits } from "viem"
 import { Address, useAccount, useBalance } from "wagmi"
@@ -148,6 +149,7 @@ export function useDerivedSwapInfo(): {
     inputError?: string
     tradeState: { trade: Trade<Currency, Currency, TradeType> | null; state: TradeStateType; fee?: bigint[] | null }
     toggledTrade: Trade<Currency, Currency, TradeType> | undefined
+    tickAfterSwap: number | null | undefined
     allowedSlippage: Percent
     poolFee: number | undefined,
     tick: number | undefined,
@@ -208,6 +210,8 @@ export function useDerivedSwapInfo(): {
 
     const toggledTrade = trade.trade ?? undefined
 
+    const tickAfterSwap = trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap))
+
     const allowedSlippage = useSwapSlippageTolerance(toggledTrade)
 
     const [balanceIn, amountIn] = [currencyBalances[SwapField.INPUT], toggledTrade?.maximumAmountIn(allowedSlippage)]
@@ -236,6 +240,7 @@ export function useDerivedSwapInfo(): {
         inputError,
         tradeState: trade,
         toggledTrade,
+        tickAfterSwap,
         allowedSlippage,
         poolFee: globalState && globalState[2],
         tick: globalState && globalState[1],

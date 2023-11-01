@@ -112,6 +112,7 @@ export function useDerivedBurnInfo(
     if (percent === 0) {
         error = error ?? `Enter a percent`;
     }
+
     return {
         position: positionSDK,
         liquidityPercentage,
