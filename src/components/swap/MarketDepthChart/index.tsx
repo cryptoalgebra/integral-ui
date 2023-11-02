@@ -4,7 +4,7 @@ import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token, tryParseTick } from "@cryptoalgebra/integral-sdk"
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "wagmi";
 
@@ -32,6 +32,8 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
     const { [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice } = useSwapState()
 
     const [hoveredIndex, setHoveredIndex] = useState<number>(NOT_SELECTED)
+
+    const [isTickOutside, setIsOutside] = useState(0)
 
     const [processedData, setProcessedData] = useState<any>(null)
     const {
@@ -137,7 +139,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
         if (hoveredIndex === NOT_SELECTED || !beforeCurrent || !afterCurrent) return
 
         const summary = isAfterCurrent(hoveredIndex) ? beforeCurrent.slice(hoveredIndex) : afterCurrent.slice(0, -hoveredIndex + 1)
-        
+
         return summary.reduce((acc: any, v: any) => ({
             price: acc.price + v.price0 / summary.length,
             amount: acc.amount + v.tvlToken0,
@@ -150,8 +152,25 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
 
     }, [hoveredIndex, beforeCurrent, afterCurrent])
 
-
     const limitOrderTick = limitOrderPrice && currencyA && currencyB && tryParseTick(currencyA, currencyB, limitOrderPrice, tickSpacing)
+
+    const [highestTick, lowestTick] = beforeCurrent && afterCurrent ? [beforeCurrent[0].tick, afterCurrent[afterCurrent.length - 1].tick] : []
+
+    useEffect(() => {
+
+        const tick = limitOrderTick || tickAfterSwap
+
+        if (!tick) return
+
+        if (tick > highestTick) {
+            setIsOutside(1)
+        } else if (tick < lowestTick) {
+            setIsOutside(-1)
+        } else {
+            setIsOutside(0)
+        }
+
+    }, [highestTick, lowestTick, limitOrderTick, tickAfterSwap])
 
     return <div className={`h-full bg-card fixed border-l border-card-border right-0 top-0 duration-200 z-[99]`} style={{ width: isOpen ? '380px' : '0px' }}>
 
@@ -177,7 +196,10 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
                 </div>
 
                 <div className="relative flex flex-col items-end w-full h-full overflow-y-auto pl-16 text-sm select-none">
-
+                    {isTickOutside === 1 && <div className="flex items-center gap-2 py-1 w-full bg-yellow-600 mb-2 pl-4" style={{ width: 'calc(100% + 4rem)' }}>
+                        <ArrowUpIcon size={18} />
+                        <span>Price is outside the scope</span>
+                    </div>}
                     {
                         beforeCurrent ? beforeCurrent.map((v: any, idx: number) => <div id={`before-current-${idx}`} className={`relative flex items-center h-[25px] py-1 w-full`} onMouseOver={() => setHoveredIndex(idx)} onMouseOut={() => setHoveredIndex(NOT_SELECTED)} >
                             <div className={`absolute flex justify-evenly w-full`}>
@@ -208,6 +230,10 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
                                 style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}></div>
                         </div>) : null
                     }
+                    {isTickOutside === -1 && <div className="flex items-center gap-2 py-1 w-full bg-yellow-600 mt-2 pl-4" style={{ width: 'calc(100% + 4rem)' }}>
+                        <ArrowDownIcon size={18} />
+                        <span>Price is outside the scope</span>
+                    </div>}
                 </div>
 
             </div>
