@@ -3,7 +3,7 @@ name: Algebra Integral Deploy
 on:
   push:
     branches:
-      -main
+      -master
 jobs:
   deploy:
     name: Build
