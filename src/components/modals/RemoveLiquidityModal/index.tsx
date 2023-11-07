@@ -30,6 +30,10 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const derivedInfo = useDerivedBurnInfo(position, false);
 
+    useEffect(() => {
+        console.log('derivedInfo 113', derivedInfo)
+    }, [derivedInfo])
+
     const {
         position: positionSDK,
         liquidityPercentage,
@@ -48,6 +52,18 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
             percent === 0
         )
             return { calldata: undefined, value: undefined };
+
+            console.log({
+                tokenId: String(positionId),
+                liquidityPercentage,
+                slippageTolerance: new Percent(1, 100),
+                deadline: Date.now() + txDeadline * 1000,
+                collectOptions: {
+                    expectedCurrencyOwed0: feeValue0,
+                    expectedCurrencyOwed1: feeValue1,
+                    recipient: account,
+                }
+            })
 
         return NonfungiblePositionManager.removeCallParameters(positionSDK, {
             tokenId: String(positionId),
@@ -145,5 +161,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
 
 }
+
+RemoveLiquidityModal.whyDidYouRender = true
 
 export default RemoveLiquidityModal;

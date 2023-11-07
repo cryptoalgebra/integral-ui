@@ -4,7 +4,7 @@ import { usePool } from "@/hooks/pools/usePool";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { PositionFromTokenId } from "@/hooks/positions/usePositions";
 import { Currency, CurrencyAmount, Percent, Position, computePoolAddress, unwrappedToken } from "@cryptoalgebra/integral-sdk";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Address, useAccount } from "wagmi";
 import { create } from "zustand";
 
@@ -69,35 +69,50 @@ export function useDerivedBurnInfo(
         [pool, position],
     );
 
-    const liquidityPercentage = new Percent(percent, 100);
 
-    const discountedAmount0 = positionSDK
-        ? liquidityPercentage.multiply(positionSDK.amount0.quotient).quotient
-        : undefined;
-    const discountedAmount1 = positionSDK
-        ? liquidityPercentage.multiply(positionSDK.amount1.quotient).quotient
-        : undefined;
+    const { liquidityPercentage, liquidityValue0, liquidityValue1 } = useMemo(() => {
 
-    const liquidityValue0 =
-        currency0 && discountedAmount0
-            ? CurrencyAmount.fromRawAmount(
-                asWETH ? currency0 : unwrappedToken(currency0),
-                discountedAmount0,
-            )
+        const liquidityPercentage = new Percent(percent, 100);
+
+        const discountedAmount0 = positionSDK
+            ? liquidityPercentage.multiply(positionSDK.amount0.quotient).quotient
             : undefined;
-    const liquidityValue1 =
-        currency1 && discountedAmount1
-            ? CurrencyAmount.fromRawAmount(
-                asWETH ? currency1 : unwrappedToken(currency1),
-                discountedAmount1,
-            )
+        const discountedAmount1 = positionSDK
+            ? liquidityPercentage.multiply(positionSDK.amount1.quotient).quotient
             : undefined;
+
+        const liquidityValue0 =
+            currency0 && discountedAmount0
+                ? CurrencyAmount.fromRawAmount(
+                    asWETH ? currency0 : unwrappedToken(currency0),
+                    discountedAmount0,
+                )
+                : undefined;
+        const liquidityValue1 =
+            currency1 && discountedAmount1
+                ? CurrencyAmount.fromRawAmount(
+                    asWETH ? currency1 : unwrappedToken(currency1),
+                    discountedAmount1,
+                )
+                : undefined;
+
+        return {
+            liquidityPercentage,
+            liquidityValue0,
+            liquidityValue1
+        }
+
+    }, [percent, positionSDK, currency0, currency1])
 
     const { amount0: feeValue0, amount1: feeValue1 } = usePositionFees(
         pool ?? undefined,
         Number(position?.tokenId),
         asWETH,
     );
+
+    useEffect(() => {
+        console.log('feeValue0, feeValue1', liquidityValue0)
+    }, [liquidityValue0])
 
     const outOfRange =
         pool && position
@@ -106,6 +121,7 @@ export function useDerivedBurnInfo(
             : false;
 
     let error: string | undefined;
+
     if (!account) {
         error = `Connect Wallet`;
     }
@@ -113,7 +129,7 @@ export function useDerivedBurnInfo(
         error = error ?? `Enter a percent`;
     }
 
-    return {
+    return useMemo(() => ({
         position: positionSDK,
         liquidityPercentage,
         liquidityValue0,
@@ -122,7 +138,17 @@ export function useDerivedBurnInfo(
         feeValue1,
         outOfRange,
         error,
-    };
+    }),
+        [
+            positionSDK,
+            liquidityPercentage,
+            liquidityValue0,
+            liquidityValue1,
+            feeValue0,
+            feeValue1,
+            outOfRange,
+            error
+        ])
 }
 
 export function useBurnActionHandlers(): {

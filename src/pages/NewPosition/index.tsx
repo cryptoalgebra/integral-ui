@@ -14,7 +14,6 @@ import { Bound, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk"
 import { useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Address } from "wagmi"
-import { formatPercent } from "@/utils/common/formatPercent"
 import { usePositionAPR } from "@/hooks/positions/usePositionAPR"
 import { getPoolAPR } from "@/utils/pool/getPoolAPR"
 
@@ -184,7 +183,7 @@ const NewPositionPage = () => {
                     <div className="flex justify-between bg-card-dark p-2 px-3 rounded-xl">
                         <div>
                             <div className="text-xs font-bold">ESTIMATED POSITION APR</div>
-                            <div className="text-lg font-bold text-green-300">{apr ? formatPercent.format(apr) : 0}</div>
+                            <div className="text-lg font-bold text-green-300">{apr ? `${apr.toFixed(2)}%` : 0}</div>
                         </div>
                         <div className="text-right">
                             <div className="text-xs font-bold">POOL APR</div>

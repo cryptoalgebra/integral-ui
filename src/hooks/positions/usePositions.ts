@@ -129,7 +129,13 @@ export function usePositions() {
 }
 
 export function usePosition(tokenId: string | number | undefined): { loading: boolean; position: PositionFromTokenId | undefined } {
-    const { isLoading, positions } = usePositionsFromTokenIds(tokenId ? [tokenId] : undefined)
+    
+    const tokenIdArr = useMemo(() => {
+        if (!tokenId) return
+        return [tokenId]
+    }, [tokenId])
+
+    const { isLoading, positions } = usePositionsFromTokenIds(tokenIdArr)
 
     return useMemo(() => {
         return {

@@ -79,7 +79,7 @@ export const MULTIPLE_POOLS = gql`
 
 export const POOL_FEE_DATA = gql`
     query PoolFeeData($poolId: String) {
-        poolDayDatas(where: { pool: $poolId }, orderBy: date, orderDirection: desc, first: 1) {
+        poolDayDatas(where: { pool: $poolId }, orderBy: date, orderDirection: desc) {
             ...PoolDayDataFields
         }
     }

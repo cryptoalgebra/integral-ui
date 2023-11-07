@@ -1,5 +1,6 @@
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
 import { useAlgebraPositionManagerTokenUri } from "@/generated";
+import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 interface PositionNFTProps {
@@ -16,6 +17,8 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
 
     const json = uri && JSON.parse(atob(uri.slice('data:application/json;base64,'.length)))
 
+    const openSeaLink = `https://testnets.opensea.io/assets/goerli/${ALGEBRA_POSITION_MANAGER}/${positionId}`
+
     useEffect(() => {
 
         if (!imgRef?.current || !json) return
@@ -24,20 +27,15 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
 
     }, [imgRef, json])
 
-    return <Dialog>
-        <DialogTrigger asChild>
-            <div className="inline-block relative w-[155px] h-[155px] overflow-hidden rounded-full pointer-events-none">
-                <img ref={imgRef} style={{ transform: 'scale(2)' }} className="mt-4" />
-            </div>
-        </DialogTrigger>
-        <DialogContent className="min-w-[500px] min-h-[250px] rounded-3xl p-0" style={{ borderRadius: '32px' }}>
-            <div className="relative flex w-full h-full">
-                <img ref={imgRef} className="rounded-3xl"></img>
-                <div className="absolute bottom-4 right-4 bg-card-light p-2 rounded-xl">View on OpenSea</div>
-            </div>
-        </DialogContent>
-    </Dialog>
-
+    return <div className="inline-block relative w-[160px] h-[160px] overflow-hidden rounded-full">
+        <img ref={imgRef} style={{ transform: 'scale(2)' }} className="mt-4 absolute" />
+        <div className="absolute w-full h-full flex items-center justify-center duration-200 bg-black/40 opacity-0 hover:opacity-100">
+            <a href={openSeaLink} target={'_blank'} rel={'noreferrer noopener'} className="inline-flex gap-2 p-2 hover:bg-gray-600/60 rounded-xl">
+                <span className="font-semibold">OpenSea</span>
+                <ExternalLinkIcon />
+            </a>
+        </div>
+    </div>
 }
 
 export default PositionNFT;

@@ -5,12 +5,11 @@ import PositionNFT from "../PositionNFT";
 import { FormattedPosition } from "@/types/formatted-position";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatPercent } from "@/utils/common/formatPercent";
 import PositionRangeChart from "../PositionRangeChart";
 import TokenRatio from "@/components/create-position/TokenRatio";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import CollectFees from "../CollectFees";
-// import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal";
+import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal";
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined
@@ -41,7 +40,7 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
     const [positionLiquidityUSD, positionFeesUSD, positionAPR] = selectedPosition ? [
         formatUSD.format(selectedPosition.liquidityUSD),
         formatUSD.format(selectedPosition.feesUSD),
-        formatPercent.format(selectedPosition.apr)
+        `${selectedPosition.apr.toFixed(2)}%`
     ] : []
 
     if (!selectedPosition || loading) return
@@ -76,9 +75,9 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
             pool && positionEntity &&
             <PositionRangeChart pool={pool} position={positionEntity} />
         }
-        {/* <div className="flex gap-4 w-full whitespace-nowrap">
+        <div className="flex gap-4 w-full whitespace-nowrap">
           <RemoveLiquidityModal positionId={selectedPosition.id}/>
-        </div> */}
+        </div>
     </div>
 
 }

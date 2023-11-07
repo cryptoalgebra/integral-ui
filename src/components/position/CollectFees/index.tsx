@@ -50,7 +50,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
     const { data: collectData, write: collect } = useContractWrite(collectConfig)
 
     const { isLoading } = useTransitionAwait(collectData?.hash, 'Collect fees')
-
+    
     const collectedFees = positionFeesUSD === '$0' && !zeroRewards ? '< $0.001' : positionFeesUSD
 
     return <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">

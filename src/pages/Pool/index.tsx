@@ -5,7 +5,7 @@ import PoolHeader from "@/components/pool/PoolHeader"
 import PositionCard from "@/components/position/PositionCard"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql"
+import { useNativePriceQuery, usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql"
 import { usePool } from "@/hooks/pools/usePool"
 import { usePositions } from "@/hooks/positions/usePositions"
 import { FormattedPosition } from "@/types/formatted-position"
@@ -41,6 +41,8 @@ const PoolPage = () => {
         }
     })
 
+    const { data: bundles } = useNativePriceQuery()
+
     const [positionsFees, setPositionsFees] = useState<any>()
     const [positionsAPRs, setPositionsAPRs] = useState<any>()
 
@@ -51,7 +53,8 @@ const PoolPage = () => {
         if (!positions || !poolEntity) return []
 
         return positions.filter(({ pool }) => pool.toLowerCase() === poolId.toLowerCase()).map(position => ({
-            positionId: position.tokenId, position: new Position({
+            positionId: position.tokenId, 
+            position: new Position({
                 pool: poolEntity,
                 liquidity: position.liquidity.toString(),
                 tickLower: Number(position.tickLower),
@@ -75,13 +78,14 @@ const PoolPage = () => {
     useEffect(() => {
 
         async function getPositionsAPRs() {
-            const aprs = await Promise.all(filteredPositions.map(({ position }) => getPositionAPR(poolId, position, poolInfo?.pool, poolFeeData?.poolDayDatas)))
+            const nativePrice = bundles?.bundles[0].maticPriceUSD
+            const aprs = await Promise.all(filteredPositions.map(({ position }) => getPositionAPR(poolId, position, poolInfo?.pool, poolFeeData?.poolDayDatas, nativePrice)))
             setPositionsAPRs(aprs)
         }
 
-        if (filteredPositions && poolInfo?.pool && poolFeeData?.poolDayDatas && poolId) getPositionsAPRs()
+        if (filteredPositions && poolInfo?.pool && poolFeeData?.poolDayDatas && bundles?.bundles && poolId) getPositionsAPRs()
 
-    }, [filteredPositions, poolInfo, poolId, poolFeeData])
+    }, [filteredPositions, poolInfo, poolId, poolFeeData, bundles])
 
     const formatLiquidityUSD = (position: Position) => {
         if (!poolInfo?.pool) return 0

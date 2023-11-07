@@ -75,8 +75,19 @@ const TokenRates = ({ rates }: { rates: Rates }) => <div className="flex flex-co
     <div>{`1 ${rates.sell.token.symbol} = ${rates.sell.rate.toSignificant()} ${rates.buy.token.symbol}`}</div>
 </div>
 
+const StatusBar = ({ progress, sellToken, buyToken }: { progress: number, sellToken: Token, buyToken: Token }) => <div className="relative flex h-[25px] bg-card-dark rounded-xl">
+    <div className="relative flex w-full h-full font-semibold text-sm">
+        <div className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#143e65] border border-[#36f] duration-300 ${Number(progress) === 100 ? 'rounded-2xl' : 'rounded-l-2xl'}`} style={{ width: `${progress}%` }}>
+            <CurrencyLogo currency={sellToken} size={22} className="absolute left-1" />
+        </div>
+        <div className={`flex items-center pr-1 pl-2 h-full bg-[#351d6b] border border-[#996cff] duration-300 ${Number(progress) === 100 ? 'rounded-2xl' : 'rounded-r-2xl'}`} style={{ width: `${100 - progress}%` }}>
+            <CurrencyLogo currency={buyToken} size={22} className="absolute right-1" />
+        </div>
+        <span className="absolute left-1/2 top-1/2 transform -translate-y-1/2 -translate-x-1/2">{`${Number(progress).toFixed()}%`}</span>
+    </div>
+</div>
 
-const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
+const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks, amounts: Amounts }) => {
 
     if (ticks.killed) return <div className="flex items-center gap-4 text-left">
         <XCircleIcon className="text-red-500" />
@@ -90,14 +101,14 @@ const LimitOrderStatus = ({ ticks }: { ticks: Ticks }) => {
 
     const progress = (100 * (ticks.tickCurrent - ticks.tickLower) / (ticks.tickUpper - ticks.tickLower))
 
-    if (ticks.zeroToOne ? (progress < 0) : (progress > 0) ) return <div className="text-left">0%</div>
+    if (ticks.zeroToOne ? (progress < 0) : (progress > 0)) return <StatusBar progress={0} sellToken={amounts.sell.token} buyToken={amounts.buy.token} />
 
-    if (ticks.zeroToOne ? (progress >= 100) : (progress <= -100) ) return <div className="flex items-center gap-4 text-left">
+    if (ticks.zeroToOne ? (progress >= 100) : (progress <= -100)) return <div className="flex items-center gap-4 text-left">
         <CheckCircle2Icon className={'text-green-500'} />
         <span>Completed</span>
     </div>
 
-    return <div className="text-left">{`${progress.toFixed(1)}%`}</div>
+    return <StatusBar progress={progress} sellToken={amounts.sell.token} buyToken={amounts.buy.token} />
 
 }
 
@@ -155,7 +166,7 @@ export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
         accessorKey: 'ticks',
         header: () => <HeaderItem>Status</HeaderItem>,
-        cell: ({ getValue }) => <LimitOrderStatus ticks={getValue() as Ticks} />
+        cell: ({ getValue, row }) => <LimitOrderStatus ticks={getValue() as Ticks} amounts={row.original.amounts} />
     },
     {
         id: 'action',

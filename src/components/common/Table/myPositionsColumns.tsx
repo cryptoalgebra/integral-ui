@@ -1,7 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { HeaderItem } from "./common";
 import { formatUSD } from "@/utils/common/formatUSD";
-import { formatPercent } from "@/utils/common/formatPercent";
 
 interface MyPosition {
     id: number;
@@ -40,6 +39,6 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
     {
         accessorKey: 'apr',
         header: ({column}) => <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>APR</HeaderItem>,
-        cell: ({ getValue }) => formatPercent.format((getValue() as number) / 10_000)
+        cell: ({ getValue }) => `${(getValue() as number)?.toFixed(2)}%`
     }
 ]
