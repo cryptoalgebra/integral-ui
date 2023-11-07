@@ -3,17 +3,17 @@ name: Algebra Integral Deploy
 on:
   push:
     branches:
-
+      -main
 jobs:
   deploy:
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org
@@ -30,4 +30,4 @@ jobs:
       - run: echo "${{ secrets.SHHKEYM }}" > "$HOME/.ssh/SHHKEYM"
       - run: chmod 600 "$HOME/.ssh/SHHKEYM"
       #deploy
-      - run: cd public && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . frontend@3.143.136.254:/var/www/integral-algebra-finance/
+      - run: cd public && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ secrets.DEPLOYMENT_PATH }}
