@@ -30,4 +30,4 @@ jobs:
       - run: echo "${{ secrets.SHHKEYM }}" > "$HOME/.ssh/SHHKEYM"
       - run: chmod 600 "$HOME/.ssh/SHHKEYM"
       #deploy
-      - run: cd public && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ secrets.DEPLOYMENT_PATH }}
+      - run: cd dist && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ secrets.DEPLOYMENT_PATH }}
