@@ -37,7 +37,7 @@ const LimitOrder = () => {
     const initialSellPrice = useMemo(() => {
         if (!pool) return "";
 
-        const _newPrice = invertPrice ? getTickToPrice(token1, token0, pool.tickCurrent) : getTickToPrice(token0, token1, pool.tickCurrent);
+        const _newPrice = invertPrice ? getTickToPrice(token1, token0, pool.tickCurrent - pool.tickSpacing) : getTickToPrice(token0, token1, pool.tickCurrent + pool.tickSpacing);
 
         return _newPrice?.toSignificant(_newPrice.baseCurrency.decimals / 2);
     }, [pool, token0, token1, invertPrice]);

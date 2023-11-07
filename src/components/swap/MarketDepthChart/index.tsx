@@ -172,15 +172,15 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
 
     }, [highestTick, lowestTick, limitOrderTick, tickAfterSwap])
 
-    return <div className={`h-full bg-card fixed border-l border-card-border right-0 top-0 duration-200 z-[99]`} style={{ width: isOpen ? '380px' : '0px' }}>
+    return <div className={`h-[100vh] lg:h-full bg-card fixed border-l border-card-border right-0 top-0 left-0 bottom-0 lg:left-[unset] overflow-x-hidden lg:overflow-x-visible duration-200 z-[99] ${isOpen ? 'w-[100vw] md:w-[380px]' : 'w-[0px]'}`}>
 
-        <div className="flex w-full h-full">
+        <div className="flex flex-col lg:flex-row w-full h-full">
 
             <button
                 className="h-full z-[99] p-1 bg-card-dark border-x border-card-border hover:bg-card-hover"
                 onClick={close}
             >
-                <ArrowRightIcon size={'20px'} />
+                <ArrowRightIcon size={'20px'} className="rotate-180 lg:rotate-0" />
             </button>
 
             <div className="relative flex flex-col w-full h-full">
@@ -191,7 +191,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
                     <div className="w-full text-right pr-4">{`Total (${currencyB?.symbol})`}</div>
                 </div>
 
-                <div className={`absolute -left-[230px] z-[100]`} style={{ top: `${tooltipY}px` }}>
+                <div className={`absolute lg:-left-[230px] z-[100]`} style={{ top: `${tooltipY}px` }}>
                     <MarketDepthChartTooltip currencyA={currencyA} currencyB={currencyB} tooltipData={tooltipData} />
                 </div>
 
