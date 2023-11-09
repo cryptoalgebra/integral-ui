@@ -55,7 +55,7 @@ const mainnetPoolsMapping: { [key: Address]: Address } = {
 }
 
 const mainnetTokensMapping: { [key: Address]: Address } = {
-    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    ['0x20b28b1e4665fff290650586ad76e977eab90c5d']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     ['0xbc892d5f23d3733cff8986d011ca8ff1249d16ca']: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'

@@ -12,7 +12,6 @@ import App from './App.tsx'
 import './index.css'
 
 import SwapPage from "@/pages/Swap";
-import { SwapPageView } from "@/pages/Swap/types";
 import Page404 from "@/pages/Page404";
 import PoolsPage from "@/pages/Pools";
 import PoolPage from "@/pages/Pool";
@@ -27,11 +26,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/swap',
-    element: <App> <SwapPage type={SwapPageView.SWAP} /> </App>,
-  },
-  {
-    path: '/limit-order',
-    element: <App> <SwapPage type={SwapPageView.LIMIT_ORDER} /> </App>
+    element: <App> <SwapPage /> </App>,
   },
   {
     path: '/pools',

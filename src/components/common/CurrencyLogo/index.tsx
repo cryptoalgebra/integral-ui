@@ -5,6 +5,7 @@ import EthLogo from '@/assets/tokens/ether.svg'
 import USDTLogo from '@/assets/tokens/usdt.png'
 import USDCLogo from '@/assets/tokens/usdc.svg'
 import WBTCLogo from '@/assets/tokens/wbtc.svg'
+import ZkTestLogo from '@/assets/tokens/zksync.svg'
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -16,7 +17,7 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: {
+    ['0x20b28b1e4665fff290650586ad76e977eab90c5d']: {
         symbol: 'ETH',
         logo: EthLogo
     },
@@ -28,9 +29,13 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: 'WBTC',
         logo: WBTCLogo
     },
-    ['0xbc892d5f23d3733cff8986d011ca8ff1249d16ca']: {
+    ['0x809689bce54aaf05d5729772657fd7f62af685d8']: {
         symbol: 'USDC',
         logo: USDCLogo
+    },
+    ['0x77d7ae70ba9b9f220795db6c9d04d24f4fb87f71']: {
+        symbol: 'ZKTEST',
+        logo: ZkTestLogo
     }
 }
 

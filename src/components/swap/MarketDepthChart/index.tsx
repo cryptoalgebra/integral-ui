@@ -1,9 +1,8 @@
 import { MAX_UINT128 } from "@/constants/max-uint128";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
-import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
-import { SwapField } from "@/types/swap-field";
+import { useDerivedSwapInfo} from "@/state/swapStore";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token, tryParseTick } from "@cryptoalgebra/integral-sdk"
+import { CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk"
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "wagmi";
@@ -27,9 +26,7 @@ interface MarketDepthChartProps {
 
 const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthChartProps) => {
 
-    const { tickAfterSwap, tickSpacing } = useDerivedSwapInfo();
-
-    const { [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice } = useSwapState()
+    const { tickAfterSwap } = useDerivedSwapInfo();
 
     const [hoveredIndex, setHoveredIndex] = useState<number>(NOT_SELECTED)
 
@@ -152,13 +149,11 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
 
     }, [hoveredIndex, beforeCurrent, afterCurrent])
 
-    const limitOrderTick = limitOrderPrice && currencyA && currencyB && tryParseTick(currencyA, currencyB, limitOrderPrice, tickSpacing)
-
     const [highestTick, lowestTick] = beforeCurrent && afterCurrent ? [beforeCurrent[0].tick, afterCurrent[afterCurrent.length - 1].tick] : []
 
     useEffect(() => {
 
-        const tick = limitOrderTick || tickAfterSwap
+        const tick = tickAfterSwap
 
         if (!tick) return
 
@@ -170,7 +165,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
             setIsOutside(0)
         }
 
-    }, [highestTick, lowestTick, limitOrderTick, tickAfterSwap])
+    }, [highestTick, lowestTick, tickAfterSwap])
 
     return <div className={`h-[100vh] lg:h-full bg-card fixed border-l border-card-border right-0 top-0 left-0 bottom-0 lg:left-[unset] overflow-x-hidden lg:overflow-x-visible duration-200 z-[99] ${isOpen ? 'w-[100vw] md:w-[380px]' : 'w-[0px]'}`}>
 
@@ -209,7 +204,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
                             </div>
                             <div
                                 key={`before-price-${idx}`}
-                                className={`h-[20px] rounded-l-lg ml-auto ${idx >= hoveredIndex && hoveredIndex >= 0 && isAfterCurrent(hoveredIndex) && hoveredIndex !== NOT_SELECTED ? 'bg-blue-500/80' : (limitOrderTick ? v.tick === limitOrderTick : (v.tick <= (tickAfterSwap || -NOT_SELECTED))) ? 'bg-yellow-600' : 'bg-red-800/40'}`}
+                                className={`h-[20px] rounded-l-lg ml-auto ${idx >= hoveredIndex && hoveredIndex >= 0 && isAfterCurrent(hoveredIndex) && hoveredIndex !== NOT_SELECTED ? 'bg-blue-500/80' : ((v.tick <= (tickAfterSwap || -NOT_SELECTED))) ? 'bg-yellow-600' : 'bg-red-800/40'}`}
                                 style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}></div>
                         </div>) : null
                     }
@@ -226,7 +221,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
                             </div>
                             <div
                                 key={`after-price-${idx}`}
-                                className={`h-[20px] ${-idx >= hoveredIndex && hoveredIndex !== NOT_SELECTED ? 'bg-blue-500/80' : (limitOrderTick ? ((invertPrice ? v.tick : -v.tick) === limitOrderTick) : (v.tick >= (tickAfterSwap || NOT_SELECTED))) ? 'bg-yellow-600' : 'bg-green-800/40'} rounded-l-lg ml-auto`}
+                                className={`h-[20px] ${-idx >= hoveredIndex && hoveredIndex !== NOT_SELECTED ? 'bg-blue-500/80' : ((v.tick >= (tickAfterSwap || NOT_SELECTED))) ? 'bg-yellow-600' : 'bg-green-800/40'} rounded-l-lg ml-auto`}
                                 style={{ width: `${v.activeLiquidity * 100 / maxLiquidity}%` }}></div>
                         </div>) : null
                     }

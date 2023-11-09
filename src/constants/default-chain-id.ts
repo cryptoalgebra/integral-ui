@@ -1,1 +1,1 @@
-export const DEFAULT_CHAIN_ID = 0x5
+export const DEFAULT_CHAIN_ID = 0x118

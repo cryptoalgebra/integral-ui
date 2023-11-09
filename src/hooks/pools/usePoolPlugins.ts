@@ -5,21 +5,16 @@
 import { Address } from "wagmi";
 
 const poolsPlugins: { [key: Address]: any } = {
-    ['0x89406233d4290f405eabb6f320fd648276b8b5b7']: {
-        dynamicFeePlugin: true,
-        farmingPlugin: false,
-        limitOrderPlugin: true
-    },
-    ['0x9367e79bbc401cec2545b4671a80892a26ae1cd9']: {
+    ['0x4e5b46c93f60bec4eab7a7d695d7b230172b5f25']: {
         dynamicFeePlugin: true,
         farmingPlugin: false,
         limitOrderPlugin: false
     },
-    ['0x9f032424a5a4b0effb7fe4912f3e325c105345bc']: {
-        dynamicFeePlugin: false,
+    ['0x7f76186ab74213ff71ff311723e5d015b3518ffe']: {
+        dynamicFeePlugin: true,
         farmingPlugin: false,
         limitOrderPlugin: false
-    }
+    },
 }
 
 export function usePoolPlugins(poolId: Address | undefined) {
