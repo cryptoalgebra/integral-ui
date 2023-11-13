@@ -28,13 +28,16 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
     }, [imgRef, json])
 
     return <div className="inline-block relative w-[160px] h-[160px] overflow-hidden rounded-full">
-        <img ref={imgRef} style={{ transform: 'scale(2)' }} className="mt-4 absolute" />
-        <div className="absolute w-full h-full flex items-center justify-center duration-200 bg-black/40 opacity-0 hover:opacity-100">
-            <a href={openSeaLink} target={'_blank'} rel={'noreferrer noopener'} className="inline-flex gap-2 p-2 hover:bg-gray-600/60 rounded-xl">
-                <span className="font-semibold">OpenSea</span>
-                <ExternalLinkIcon />
-            </a>
-        </div>
+        {json ? <img ref={imgRef} style={{ transform: 'scale(2)' }} className="mt-4 absolute" /> : <div className="w-full h-full bg-white/10"></div> }
+        {
+            json &&
+            <div className="absolute w-full h-full flex items-center justify-center duration-200 bg-black/40 opacity-0 hover:opacity-100">
+                <a href={openSeaLink} target={'_blank'} rel={'noreferrer noopener'} className="inline-flex gap-2 p-2 hover:bg-gray-600/60 rounded-xl">
+                    <span className="font-semibold">OpenSea</span>
+                    <ExternalLinkIcon />
+                </a>
+            </div>
+        }
     </div>
 }
 

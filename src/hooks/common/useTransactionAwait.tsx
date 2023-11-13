@@ -2,7 +2,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Address, useWaitForTransaction } from "wagmi";
 
 const ViewTxOnExplorer = ({hash}: { hash: Address | undefined }) => hash ? <ToastAction altText="View on explorer" asChild>
@@ -12,11 +12,11 @@ const ViewTxOnExplorer = ({hash}: { hash: Address | undefined }) => hash ? <Toas
     </Link>
 </ToastAction> : null
 
-export function useTransitionAwait(hash: Address | undefined, title: string, description?: string) {
-
-    // const { pendingTransactions, actions: { updatePendingTransaction } } = useUserState()
+export function useTransitionAwait(hash: Address | undefined, title: string, description?: string, redirectPath?: string) {
 
     const { toast } = useToast()
+
+    const navigate = useNavigate()
 
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash
@@ -49,6 +49,9 @@ export function useTransitionAwait(hash: Address | undefined, title: string, des
                 description: description || 'Transaction confirmed',
                 action: <ViewTxOnExplorer hash={hash} />,
             })
+            if (redirectPath) {
+                navigate(redirectPath)
+            }
         }
     }, [isSuccess])
 

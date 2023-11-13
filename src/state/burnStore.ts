@@ -4,7 +4,7 @@ import { usePool } from "@/hooks/pools/usePool";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { PositionFromTokenId } from "@/hooks/positions/usePositions";
 import { Currency, CurrencyAmount, Percent, Position, computePoolAddress, unwrappedToken } from "@cryptoalgebra/integral-sdk";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Address, useAccount } from "wagmi";
 import { create } from "zustand";
 
@@ -109,10 +109,6 @@ export function useDerivedBurnInfo(
         Number(position?.tokenId),
         asWETH,
     );
-
-    useEffect(() => {
-        console.log('feeValue0, feeValue1', liquidityValue0)
-    }, [liquidityValue0])
 
     const outOfRange =
         pool && position

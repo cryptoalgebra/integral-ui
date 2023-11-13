@@ -191,7 +191,7 @@ const NewPositionPage = () => {
                         </div>
                     </div>
 
-                    <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} />
+                    <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} poolAddress={poolAddress} />
 
                 </div>
 
