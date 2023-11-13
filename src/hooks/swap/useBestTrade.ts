@@ -157,14 +157,14 @@ export function useBestTradeExactOut(
                 if (currentBest.amountIn === null) {
                     return {
                         bestRoute: routes[i],
-                        amountIn: result[0],
+                        amountIn: result[1],
                         fee: result[5],
                         priceAfterSwap: result[2]
                     }
                 } else if (currentBest.amountIn > result[0]) {
                     return {
                         bestRoute: routes[i],
-                        amountIn: result[0],
+                        amountIn: result[1],
                         fee: result[5],
                         priceAfterSwap: result[2]
                     }

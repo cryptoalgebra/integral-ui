@@ -11,18 +11,19 @@ import { ApprovalState } from "@/types/approve-state";
 import { Percent, Currency, NonfungiblePositionManager, Field } from "@cryptoalgebra/integral-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useMemo } from "react";
-import { useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 
 interface AddLiquidityButtonProps {
   baseCurrency: Currency | undefined | null;
   quoteCurrency: Currency | undefined | null;
   mintInfo: IDerivedMintInfo;
+  poolAddress: Address | undefined
 }
 
 const ZERO_PERCENT = new Percent('0');
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo }: AddLiquidityButtonProps) => {
+export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress }: AddLiquidityButtonProps) => {
 
   const { address: account } = useAccount();
 
@@ -74,7 +75,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo }: Ad
 
   const { data: addLiquidityData, write: addLiquidity } = useContractWrite(addLiquidityConfig)
 
-  const { isLoading: isAddingLiquidityLoading } = useTransitionAwait(addLiquidityData?.hash, 'Add liquidity')
+  const { isLoading: isAddingLiquidityLoading } = useTransitionAwait(addLiquidityData?.hash, 'Add liquidity', '', `/pool/${poolAddress}`)
 
   const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID
 

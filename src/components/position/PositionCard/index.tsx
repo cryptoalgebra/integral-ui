@@ -69,8 +69,20 @@ const PositionCard = ({ selectedPosition }: PositionCardProps) => {
             </div>
         </div>
 
-       <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} />
+        <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} />
         <TokenRatio mintInfo={mintInfo} />
+
+        {
+            positionEntity &&
+            <div className="flex justify-between font-semibold">
+                <div>
+                    {`${positionEntity.amount0.toFixed(2)} ${positionEntity.amount0.currency.symbol}`}
+                </div>
+                <div>
+                    {`${positionEntity.amount1.toFixed(2)} ${positionEntity.amount1.currency.symbol}`}
+                </div>
+            </div>
+        }
         {
             pool && positionEntity &&
             <PositionRangeChart pool={pool} position={positionEntity} />
