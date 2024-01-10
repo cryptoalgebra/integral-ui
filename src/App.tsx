@@ -4,21 +4,40 @@ import './App.css'
 
 import { WagmiConfig } from 'wagmi'
 import Layout from "@/components/common/Layout"
-import { zkSyncTestnet } from 'viem/chains'
+import { defineChain } from 'viem'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const chains = [zkSyncTestnet]
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Velocore x Algebra Integral', description: 'Velocore x Algebra', url: 'https://velocore.algebra.finance', icons: [''] } })
+const beraChainTestnet = defineChain({
+  id: 2061,
+  name: 'Berachain Testnet',
+  network: 'berachain-testnet',
+  nativeCurrency: { name: 'BERA', symbol: 'BERA', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.berachain-internal.com'],
+    },
+    public: {
+      http: ['https://rpc.berachain-internal.com'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'beraExplorer',
+      url: 'https://scan.berachain-internal.com/',
+    },
+  },
+  testnet: true,
+})
+
+const chains = [beraChainTestnet]
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Berachain x Algebra Integral', description: 'Berachain x Algebra', url: 'https://berachain.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
   wagmiConfig, 
   projectId, 
   chains, 
-  chainImages: {
-    5: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
-  },
-  defaultChain: zkSyncTestnet,
+  defaultChain: beraChainTestnet,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

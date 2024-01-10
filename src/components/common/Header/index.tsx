@@ -1,6 +1,5 @@
 import Navigation from "@/components/common/Navigation"
-import VelocoreLogo from "@/assets/velocore-logo.svg"
-import VelocoreLogoMobile from "@/assets/velocore-logo-mobile.png"
+import BerachainLogo from "@/assets/berachain-logo.svg"
 import { NavLink } from "react-router-dom"
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
@@ -16,11 +15,9 @@ const Header = () => <header className="sticky top-4 z-10 grid grid-cols-3 justi
 const Algebra = () => <div className="flex items-center gap-2">
     <NavLink to={'/'}>
         <div className="flex items-center gap-2 py-1 pl-2 pr-3 bg-card rounded-3xl hover:bg-card-hover duration-200">
-            <div className="hidden md:block flex items-center justify-center w-[140px] h-[20px] rounded-full">
-                <img src={VelocoreLogo} width={140} height={25} />
-            </div>
-            <div className="block md:hidden flex items-center justify-center w-[32px] h-[32px] rounded-full">
-                <img src={VelocoreLogoMobile} width={25} height={25} />
+            <div className="flex items-center justify-center gap-2 w-[130px] h-[20px] rounded-full">
+                <img src={BerachainLogo} width={40} height={40} />
+                <div className="font-bold">Berachain</div>
             </div>
         </div>
     </NavLink>
@@ -35,7 +32,7 @@ const Account = () => {
     if (selectedNetworkId !== DEFAULT_CHAIN_ID) return <div className="flex justify-end">
         <Button onClick={() => open({
             view: 'Networks'
-        })} size={'sm'} variant={'destructive'} className="hidden md:block">Connect to zkSync</Button>
+        })} size={'sm'} variant={'destructive'} className="hidden md:block">Connect to Berachain</Button>
         <Button onClick={() => open({
             view: 'Networks'
         })} size={'icon'} variant={'icon'} className="md:hidden text-red-500">

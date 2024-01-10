@@ -77,7 +77,7 @@ const SwapButton = () => {
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
-    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>Connect to zkSync</Button>
+    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>Connect to Berachain</Button>
 
     if (routeNotFound && userHasSpecifiedInputOutput)
         return (

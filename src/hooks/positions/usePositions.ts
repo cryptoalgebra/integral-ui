@@ -2,7 +2,7 @@ import { algebraPositionManagerABI } from "@/abis"
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses"
 import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
 import { useAlgebraPositionManagerBalanceOf } from "@/generated"
-import { Token, computePoolAddressZkSync } from "@cryptoalgebra/integral-sdk"
+import { Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
 import { useMemo } from "react"
 import { Address, useAccount, useContractReads } from "wagmi"
 
@@ -44,7 +44,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): { isLoading: boo
                 const tokenId = tokenIds[i]
                 const result = call.result as any
 
-                const pool = computePoolAddressZkSync({
+                const pool = computePoolAddress({
                     tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
                     tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18)
                 }) as Address

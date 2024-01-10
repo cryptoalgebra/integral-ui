@@ -1,4 +1,4 @@
-import { Currency, Token, computePoolAddressZkSync } from "@cryptoalgebra/integral-sdk"
+import { Currency, Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
 import { useEffect, useMemo, useState } from "react"
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
 import { Address } from "wagmi"
@@ -28,7 +28,7 @@ export function useSwapPools(
 
         async function getPools() {
 
-            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => computePoolAddressZkSync({
+            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => computePoolAddress({
                 tokenA,
                 tokenB
             }) as Address)

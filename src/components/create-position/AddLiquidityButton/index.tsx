@@ -81,7 +81,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
   if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
-  if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({ view: 'Networks' })}>Connect to zkSync</Button>
+  if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({ view: 'Networks' })}>Connect to Berachain</Button>
 
   if ((approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING || approvalStateB === ApprovalState.NOT_APPROVED || approvalStateB === ApprovalState.PENDING)) return <div className="flex w-full gap-2">
     {(approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING) && <Button disabled={approvalStateA === ApprovalState.PENDING} className="w-full" onClick={() => approvalCallbackA && approvalCallbackA()}>{approvalStateA === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`}</Button>}

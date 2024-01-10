@@ -4,7 +4,7 @@ import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestT
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, TickMath, Trade, TradeType, computePoolAddressZkSync } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, TickMath, Trade, TradeType, computePoolAddress } from "@cryptoalgebra/integral-sdk"
 import JSBI from "jsbi"
 import { useCallback, useMemo } from "react"
 import { parseUnits } from "viem"
@@ -37,7 +37,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO
     },
     [SwapField.OUTPUT]: {
-        currencyId: '0x809689bce54aaf05d5729772657fd7f62af685d8'
+        currencyId: '0x1d0f659ff50d1830e449dd88e533cb11fb7a25e4'
     },
     wasInverted: false,
     lastFocusedField: SwapField.INPUT,
@@ -195,7 +195,7 @@ export function useDerivedSwapInfo(): {
         inputError = `Insufficient ${amountIn.currency.symbol} balance`
     }
 
-    const poolAddress = currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddressZkSync({
+    const poolAddress = currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
         tokenA: currencies[SwapField.INPUT]!.wrapped,
         tokenB: currencies[SwapField.OUTPUT]!.wrapped
     }).toLowerCase() as Address

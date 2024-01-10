@@ -3,7 +3,7 @@ import { Address, useToken } from "wagmi"
 import { Token } from "@cryptoalgebra/integral-sdk"
 import { ExtendedNative } from "@cryptoalgebra/integral-sdk"
 import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk"
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
+import { DEFAULT_CHAIN_ID, DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id"
 
 export function useAlgebraToken(address: Address | undefined) {
 
@@ -18,7 +18,7 @@ export function useAlgebraToken(address: Address | undefined) {
 
         if (!address) return
 
-        if (address === ADDRESS_ZERO) return ExtendedNative.onChain(DEFAULT_CHAIN_ID)
+        if (address === ADDRESS_ZERO) return ExtendedNative.onChain(DEFAULT_CHAIN_ID, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME)
 
         if (isLoading || !tokenData) return undefined
 
