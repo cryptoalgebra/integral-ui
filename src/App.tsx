@@ -9,22 +9,22 @@ import { defineChain } from 'viem'
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
 const beraChainTestnet = defineChain({
-  id: 2061,
+  id: 80085,
   name: 'Berachain Testnet',
   network: 'berachain-testnet',
   nativeCurrency: { name: 'BERA', symbol: 'BERA', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://rpc.berachain-internal.com'],
+      http: ['https://artio.rpc.berachain.com'],
     },
     public: {
-      http: ['https://rpc.berachain-internal.com'],
+      http: ['https://artio.rpc.berachain.com'],
     },
   },
   blockExplorers: {
     default: {
       name: 'beraExplorer',
-      url: 'https://scan.berachain-internal.com/',
+      url: 'https://artio.beratrail.io/',
     },
   },
   testnet: true,

@@ -1,7 +1,6 @@
 import { Currency } from "@cryptoalgebra/integral-sdk";
 import React from "react";
 import { Address } from "wagmi";
-import EthLogo from '@/assets/tokens/ether.svg'
 import BeraLogo from '@/assets/tokens/bera.png'
 import USDTLogo from '@/assets/tokens/usdt.png'
 import USDCLogo from '@/assets/tokens/usdc.svg'
@@ -30,7 +29,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: 'WBTC',
         logo: WBTCLogo
     },
-    ['0x1d0f659ff50d1830e449dd88e533cb11fb7a25e4']: {
+    ['0x6581e59a1c8da66ed0d313a0d4029dce2f746cc5']: {
         symbol: 'USDC',
         logo: USDCLogo
     },

@@ -33,16 +33,16 @@ const IntegralPools = () => {
 
             <Popover open={isOpen} >
                 <PopoverTrigger
-                    onMouseDown={() => setIsOpen(v => !v)}
-                    className="flex items-center gap-4 w-fit py-2 px-4 rounded-2xl border-card-border hover:bg-card-hover duration-200">
+                    // onMouseDown={() => setIsOpen(v => !v)}
+                    className="flex items-center gap-4 w-fit py-2 px-4 rounded-2xl border-card-border duration-200">
                     <div className="flex">
                         <CurrencyLogo currency={currencyA} size={25} />
                         <CurrencyLogo currency={currencyB} size={25} style={{ marginLeft: '-8px' }} />
                     </div>
                     <div className="text-md md:text-lg font-semibold">{title}</div>
-                    <div>
+                    {/* <div>
                         <ChevronDownIcon size={20} className={`duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                    </div>
+                    </div> */}
                 </PopoverTrigger>
 
                 <PopoverContent className="bg-card rounded-3xl border border-card-border" onPointerDownOutside={() => setTimeout(() => setIsOpen(false), 0)}>

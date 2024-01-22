@@ -1,7 +1,7 @@
 import PageContainer from "@/components/common/PageContainer"
 import PageTitle from "@/components/common/PageTitle"
-import { CreatePoolModal } from "@/components/modals/CreatePoolModal"
 import PoolsList from "@/components/pools/PoolsList"
+// import { CreatePoolModal } from "@/components/modals/CreatePoolModal"
 
 const PoolsPage = () => {
 
@@ -10,7 +10,7 @@ const PoolsPage = () => {
 
         <div className="w-full flex justify-between">
             <PageTitle title={'Pools'} showSettings={false} />
-            <CreatePoolModal/>
+            {/* <CreatePoolModal/> */}
         </div>
 
         <div className="w-full lg:gap-8 mt-8 lg:mt-16">
