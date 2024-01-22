@@ -7,7 +7,7 @@ import { useCurrency } from "@/hooks/common/useCurrency"
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins"
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore"
 import { SwapField } from "@/types/swap-field"
-import { ChevronDownIcon } from "lucide-react"
+// import { ChevronDownIcon } from "lucide-react"
 import { memo, useState } from "react"
 import { Address } from "wagmi"
 
