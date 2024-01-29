@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Address, useWaitForTransaction } from "wagmi";
 
 const ViewTxOnExplorer = ({hash}: { hash: Address | undefined }) => hash ? <ToastAction altText="View on explorer" asChild>
-    <Link to={`https://artio.beratrail.io/tx/${hash}`} target={'_blank'} className="border-none gap-2 hover:bg-transparent hover:text-blue-400">
+    <Link to={`https://testnet.bscscan.com/tx/${hash}`} target={'_blank'} className="border-none gap-2 hover:bg-transparent hover:text-blue-400">
         View on explorer
         <ExternalLinkIcon size={16} />
     </Link>

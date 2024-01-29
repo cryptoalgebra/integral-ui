@@ -4,40 +4,18 @@ import './App.css'
 
 import { WagmiConfig } from 'wagmi'
 import Layout from "@/components/common/Layout"
-import { defineChain } from 'viem'
+import { bscTestnet } from 'viem/chains'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const beraChainTestnet = defineChain({
-  id: 80085,
-  name: 'Berachain Testnet',
-  network: 'berachain-testnet',
-  nativeCurrency: { name: 'BERA', symbol: 'BERA', decimals: 18 },
-  rpcUrls: {
-    default: {
-      http: ['https://artio.rpc.berachain.com'],
-    },
-    public: {
-      http: ['https://artio.rpc.berachain.com'],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: 'beraExplorer',
-      url: 'https://artio.beratrail.io/',
-    },
-  },
-  testnet: true,
-})
-
-const chains = [beraChainTestnet]
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Berachain x Algebra Integral', description: 'Berachain x Algebra', url: 'https://berachain.algebra.finance', icons: [''] } })
+const chains = [bscTestnet]
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Thena x Algebra Integral', description: 'Thena x Algebra', url: 'https://thena.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
   wagmiConfig, 
   projectId, 
   chains, 
-  defaultChain: beraChainTestnet,
+  defaultChain: bscTestnet,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

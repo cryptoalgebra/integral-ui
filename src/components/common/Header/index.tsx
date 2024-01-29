@@ -1,5 +1,5 @@
 import Navigation from "@/components/common/Navigation"
-import BerachainLogo from "@/assets/berachain-logo.svg"
+import ThenaLogo from "@/assets/thena-logo.svg"
 import { NavLink } from "react-router-dom"
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
@@ -15,9 +15,8 @@ const Header = () => <header className="sticky top-4 z-10 grid grid-cols-3 justi
 const Algebra = () => <div className="flex items-center gap-2">
     <NavLink to={'/'}>
         <div className="flex items-center gap-2 py-1 pl-2 pr-3 bg-card rounded-3xl hover:bg-card-hover duration-200">
-            <div className="flex items-center justify-center gap-2 w-[130px] h-[20px] rounded-full">
-                <img src={BerachainLogo} width={40} height={40} />
-                <div className="font-bold">Berachain</div>
+            <div className="flex items-center justify-center gap-2 w-[100px] h-[20px] rounded-full">
+                <img src={ThenaLogo} width={100} />
             </div>
         </div>
     </NavLink>
@@ -32,7 +31,7 @@ const Account = () => {
     if (selectedNetworkId !== DEFAULT_CHAIN_ID) return <div className="flex justify-end">
         <Button onClick={() => open({
             view: 'Networks'
-        })} size={'sm'} variant={'destructive'} className="hidden md:block">Connect to Berachain</Button>
+        })} size={'sm'} variant={'destructive'} className="hidden md:block">Connect to BNB Testnet</Button>
         <Button onClick={() => open({
             view: 'Networks'
         })} size={'icon'} variant={'icon'} className="md:hidden text-red-500">

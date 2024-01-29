@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="163.793" height="33.465" viewBox="0 0 163.793 33.465">
+  <defs>
+    <linearGradient id="linear-gradient" x1="1.002" y1="0.379" x2="0.002" y2="0.62" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ed00c9"/>
+      <stop offset="1" stop-color="#bd00ed"/>
+    </linearGradient>
+  </defs>
+  <path id="logo" d="M1369.534,1477.882h-9.457v-8.019h9.457Zm-33.192,25.445h9.349v-20.755h-9.349Zm96.915-33.283-.125-.182h-7.964v8.019h13.441Zm-106.53,7.838h28.564v-8.019h-28.564Zm117.749,8.587-2.663-3.9h-16.645v20.755h9.457V1486.76l11.3,16.388.124.179h7.869v-33.464h-9.442Zm-49.01-8.587h23.88v-8.018h-23.88Zm-15.262,4.688-20.127,0v20.755h9.457V1490.6h10.67v12.722h9.442v-33.464H1380.2Zm99.235-12.094-.208-.613h-11.484l-2.6,7.72,3.909-1.652,13.637,4.3-13.637,4.3-5.469-2.313-7.125,21.118H1466.6l2.779-8.867h8.22l2.779,8.867h10.142Zm-74.515,20.128h10.245v-8.035h-19.7v20.757h23.88v-8.018h-14.422Z" transform="translate(-1326.727 -1469.863)" fill="url(#linear-gradient)"/>
+</svg>
