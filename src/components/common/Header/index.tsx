@@ -3,7 +3,7 @@ import AlgebraLogo from "@/assets/algebra-logo.svg"
 import AlgebraIntegral from "@/assets/algebra-itegral.svg"
 import { NavLink } from "react-router-dom"
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
+import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id"
 import { Button } from "@/components/ui/button"
 import { UnplugIcon, WalletIcon } from "lucide-react"
 
@@ -33,7 +33,7 @@ const Account = () => {
     if (selectedNetworkId !== DEFAULT_CHAIN_ID) return <div className="flex justify-end">
         <Button onClick={() => open({
             view: 'Networks'
-        })} size={'sm'} variant={'destructive'} className="hidden md:block">Connect to Goerli</Button>
+        })} size={'sm'} variant={'destructive'} className="hidden md:block">{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
         <Button onClick={() => open({
             view: 'Networks'
         })} size={'icon'} variant={'icon'} className="md:hidden text-red-500">

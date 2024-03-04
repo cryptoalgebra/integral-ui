@@ -1,6 +1,6 @@
 # Algebra Integral UI
 
-[Algebra Integral on Goerli](https://integral.algebra.finance)
+[Algebra Integral on Holesky](https://integral.algebra.finance)
 
 To launch the application locally:
 

@@ -17,7 +17,7 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
 
     const json = uri && JSON.parse(atob(uri.slice('data:application/json;base64,'.length)))
 
-    const openSeaLink = `https://testnets.opensea.io/assets/goerli/${ALGEBRA_POSITION_MANAGER}/${positionId}`
+    const openSeaLink = `https://testnets.opensea.io/assets/holesky/${ALGEBRA_POSITION_MANAGER}/${positionId}`
 
     useEffect(() => {
 

@@ -3,8 +3,6 @@ import React from "react";
 import { Address } from "wagmi";
 import EthLogo from '@/assets/tokens/ether.svg'
 import USDTLogo from '@/assets/tokens/usdt.png'
-import USDCLogo from '@/assets/tokens/usdc.svg'
-import WBTCLogo from '@/assets/tokens/wbtc.svg'
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -16,21 +14,13 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ['0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6']: {
+    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: {
         symbol: 'ETH',
         logo: EthLogo
     },
-    ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: {
+    ['0x7d98346b3b000c55904918e3d9e2fc3f94683b01']: {
         symbol: 'USDT',
         logo: USDTLogo
-    },
-    ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: {
-        symbol: 'WBTC',
-        logo: WBTCLogo
-    },
-    ['0xbc892d5f23d3733cff8986d011ca8ff1249d16ca']: {
-        symbol: 'USDC',
-        logo: USDCLogo
     }
 }
 

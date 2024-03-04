@@ -8,11 +8,11 @@ import { defineChain } from "viem"
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const goerliChain = defineChain({
-  id: 5,
-  network: 'goerli',
-  name: 'Goerli',
-  nativeCurrency: { name: 'Goerli Ether', symbol: 'ETH', decimals: 18 },
+const holeskyChain = defineChain({
+  id: 17000,
+  network: 'holesky',
+  name: 'Holesky',
+  nativeCurrency: { name: 'Holesky Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
       http: [import.meta.env.VITE_INFURA_RPC],
@@ -24,30 +24,23 @@ const goerliChain = defineChain({
   blockExplorers: {
     etherscan: {
       name: 'Etherscan',
-      url: 'https://goerli.etherscan.io',
+      url: 'https://holesky.etherscan.io',
     },
     default: {
       name: 'Etherscan',
-      url: 'https://goerli.etherscan.io',
+      url: 'https://holesky.etherscan.io',
     },
   },
   contracts: {
-    ensRegistry: {
-      address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
-    },
-    ensUniversalResolver: {
-      address: '0x56522D00C410a43BFfDF00a9A569489297385790',
-      blockCreated: 8765204,
-    },
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 6507670,
+      blockCreated: 77,
     },
   },
   testnet: true,
 }) 
 
-const chains = [goerliChain]
+const chains = [holeskyChain]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -55,9 +48,9 @@ createWeb3Modal({
   projectId, 
   chains, 
   chainImages: {
-    5: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+    17000: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
   },
-  defaultChain: goerliChain,
+  defaultChain: holeskyChain,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

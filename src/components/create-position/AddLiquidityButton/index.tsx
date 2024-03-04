@@ -1,7 +1,7 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
@@ -81,7 +81,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
   if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
-  if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({ view: 'Networks' })}>Connect to Goerli</Button>
+  if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({ view: 'Networks' })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
 
   if ((approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING || approvalStateB === ApprovalState.NOT_APPROVED || approvalStateB === ApprovalState.PENDING)) return <div className="flex w-full gap-2">
     {(approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING) && <Button disabled={approvalStateA === ApprovalState.PENDING} className="w-full" onClick={() => approvalCallbackA && approvalCallbackA()}>{approvalStateA === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`}</Button>}

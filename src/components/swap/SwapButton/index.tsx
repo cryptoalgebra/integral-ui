@@ -1,6 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
@@ -77,7 +77,7 @@ const SwapButton = () => {
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
-    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>Connect to Berachain</Button>
+    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
 
     if (routeNotFound && userHasSpecifiedInputOutput)
         return (
