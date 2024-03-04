@@ -43,13 +43,11 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
 
   return useMemo(() => {
 
-    if (isPoolError) return [PoolState.INVALID, null]
+    if ((isPoolLoading || isTokensLoading) && !isPoolError) return [PoolState.LOADING, null]
 
-    if (isPoolLoading || isTokensLoading) return [PoolState.LOADING, null]
+    if (!tickSpacing || !globalState || liquidity === undefined) return [PoolState.NOT_EXISTS, null]
 
-    if (!tickSpacing || !globalState || !liquidity) return [PoolState.NOT_EXISTS, null]
-
-    if (globalState[0] === 0n) return [PoolState.NOT_EXISTS, null]
+    if (globalState[0] === 0n || !token0 || !token1) return [PoolState.NOT_EXISTS, null]
 
     try {
       return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2] as InitialPoolFee, globalState[0].toString(), Number(liquidity), globalState[1], tickSpacing)]

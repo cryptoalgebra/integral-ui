@@ -4,7 +4,7 @@ import { Address } from "wagmi";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import CurrencyLogo from "../CurrencyLogo";
 import { TokenFieldsFragment } from "@/graphql/generated/graphql";
-import { DynamicFeePluginIcon, LimitOrderPluginIcon } from "../PluginIcons";
+import { DynamicFeePluginIcon } from "../PluginIcons";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,11 +45,10 @@ const PoolPair = ({ pair, fee }: Pool) => {
 
 const Plugins = ({ poolId }: { poolId: Address }) => {
 
-    const { limitOrderPlugin, dynamicFeePlugin } = usePoolPlugins(poolId)
+    const { dynamicFeePlugin } = usePoolPlugins(poolId)
 
     return <div className="flex gap-2">
         {dynamicFeePlugin && <DynamicFeePluginIcon />}
-        {limitOrderPlugin && <LimitOrderPluginIcon />}
     </div>
 }
 

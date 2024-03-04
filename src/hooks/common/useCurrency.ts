@@ -5,7 +5,7 @@ import {
     WNATIVE
 } from '@cryptoalgebra/integral-sdk';
 import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_ID, DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
 import { useAlgebraToken } from "./useAlgebraToken";
 
 export function useCurrency(
@@ -18,7 +18,7 @@ export function useCurrency(
 
     const token = useAlgebraToken(isETH || isWETH ? ADDRESS_ZERO : address)
 
-    const extendedEther = ExtendedNative.onChain(DEFAULT_CHAIN_ID);
+    const extendedEther = ExtendedNative.onChain(DEFAULT_CHAIN_ID, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME);
 
     return isETH || isWETH ? extendedEther : token;
 }

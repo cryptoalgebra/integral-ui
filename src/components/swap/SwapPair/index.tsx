@@ -1,7 +1,7 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { Currency, CurrencyAmount, getTickToPrice, maxAmountSpend, tryParseAmount } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, maxAmountSpend, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
@@ -9,20 +9,14 @@ import { computeFiatValuePriceImpact } from "@/utils/swap/computePriceImpact";
 
 const SwapPair = () => {
 
-    const { toggledTrade: trade, currencyBalances, parsedAmount, currencies, tick } = useDerivedSwapInfo();
+    const { toggledTrade: trade, currencyBalances, parsedAmount, currencies } = useDerivedSwapInfo();
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
 
-    const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, tick);
-
     const { 
         independentField, 
         typedValue, 
-        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice, 
-        wasInverted, 
-        limitOrderPriceFocused, 
-        lastFocusedField
     } = useSwapState();
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
@@ -60,41 +54,19 @@ const SwapPair = () => {
     // const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
     const showWrap: boolean = false
 
-    //TODO reuse this
-    const parsedLimitOrderOutput = useMemo(() => {
-        if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !pairPrice) return;
-
-        const independentPrice = independentField === SwapField.OUTPUT ? parsedAmount.divide(pairPrice.asFraction).toSignificant(parsedAmount.currency.decimals / 2) ?? 1 : +parsedAmount.toSignificant(parsedAmount.currency.decimals / 2) ?? 1;
-
-        if (wasInverted) return tryParseAmount(String((Number(independentPrice) / (+limitOrderPrice || 1)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
-
-        return tryParseAmount(String((+limitOrderPrice * Number(independentPrice)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
-    }, [limitOrderPrice, wasInverted, parsedAmount, quoteCurrency, trade, pairPrice, independentField]);
-
-    const parsedAmounts = useMemo(() => {
-        return showWrap
-            ? {
-                [SwapField.INPUT]: parsedAmount,
-                [SwapField.OUTPUT]: parsedAmount,
-            }
-            : {
-                [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : pairPrice && limitOrderPrice ? parsedAmount?.divide(pairPrice.asFraction) : trade?.inputAmount,
-                [SwapField.OUTPUT]:
-                    independentField === SwapField.OUTPUT
-                        ? limitOrderPrice
-                            ? quoteCurrency && parsedAmount
-                                ? !limitOrderPriceFocused && lastFocusedField === SwapField.LIMIT_ORDER_PRICE
-                                    ? parsedLimitOrderOutput
-                                    : parsedAmount
-                                : undefined
-                            : parsedAmount
-                        : limitOrderPrice
-                            ? quoteCurrency && parsedAmount
-                                ? parsedLimitOrderOutput
-                                : undefined
-                            : trade?.outputAmount,
-            };
-    }, [baseCurrency, independentField, parsedAmount, showWrap, trade, limitOrderPrice, quoteCurrency, pairPrice, limitOrderPriceFocused, lastFocusedField]);
+    const parsedAmounts = useMemo(
+        () =>
+            showWrap
+                ? {
+                    [SwapField.INPUT]: parsedAmount,
+                    [SwapField.OUTPUT]: parsedAmount,
+                }
+                : {
+                    [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : trade?.inputAmount,
+                    [SwapField.OUTPUT]: independentField === SwapField.OUTPUT ? parsedAmount : trade?.outputAmount,
+                },
+        [independentField, parsedAmount, showWrap, trade]
+    )
 
     const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[SwapField.INPUT]);
     const showMaxButton = Boolean(maxInputAmount?.greaterThan(0) && !parsedAmounts[SwapField.INPUT]?.equalTo(maxInputAmount));
@@ -110,7 +82,7 @@ const SwapPair = () => {
 
     const formattedAmounts = {
         [independentField]: typedValue,
-        [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toFixed((parsedAmounts[dependentField]?.currency.decimals || 6) / 2) ?? "",
+        [dependentField]: showWrap ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toFixed((parsedAmounts[dependentField]?.currency.decimals || 6) / 2) ?? "",
     };
 
     return <div className="flex flex-col gap-1 relative">

@@ -33,7 +33,7 @@ const SwapButton = () => {
         [independentField, parsedAmount, trade]
     );
 
-    const userHasSpecifiedInputOutput = Boolean(currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && independentField !== SwapField.LIMIT_ORDER_PRICE && parsedAmounts[independentField]?.greaterThan('0'));
+    const userHasSpecifiedInputOutput = Boolean(currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && parsedAmounts[independentField]?.greaterThan('0'));
 
     const isExpertMode = true
     const routeNotFound = !trade?.route;
@@ -77,7 +77,7 @@ const SwapButton = () => {
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
-    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>Connect to Goerli</Button>
+    if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>Connect to Berachain</Button>
 
     if (routeNotFound && userHasSpecifiedInputOutput)
         return (

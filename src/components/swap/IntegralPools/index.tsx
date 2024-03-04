@@ -1,6 +1,6 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo"
 import Loader from "@/components/common/Loader"
-import { DynamicFeePluginIcon, LimitOrderPluginIcon } from "@/components/common/PluginIcons"
+import { DynamicFeePluginIcon } from "@/components/common/PluginIcons"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { PoolFieldsFragment, usePoolsListQuery } from "@/graphql/generated/graphql"
 import { useCurrency } from "@/hooks/common/useCurrency"
@@ -19,7 +19,7 @@ const IntegralPools = () => {
 
     const title = currencyA && currencyB && `${currencyA.symbol} / ${currencyB.symbol}`
 
-    const { isLoading: isPluginsLoading, dynamicFeePlugin, limitOrderPlugin } = usePoolPlugins(poolAddress)
+    const { isLoading: isPluginsLoading, dynamicFeePlugin } = usePoolPlugins(poolAddress)
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -34,7 +34,7 @@ const IntegralPools = () => {
             <Popover open={isOpen} >
                 <PopoverTrigger
                     onMouseDown={() => setIsOpen(v => !v)}
-                    className="flex items-center gap-4 w-fit py-2 px-4 rounded-2xl border-card-border hover:bg-card-hover duration-200">
+                    className="flex items-center gap-4 w-fit py-2 px-4 rounded-2xl border-card-border duration-200">
                     <div className="flex">
                         <CurrencyLogo currency={currencyA} size={25} />
                         <CurrencyLogo currency={currencyB} size={25} style={{ marginLeft: '-8px' }} />
@@ -53,7 +53,6 @@ const IntegralPools = () => {
             <div>
                 {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
                     {dynamicFeePlugin && <DynamicFeePluginIcon />}
-                    {limitOrderPlugin && <LimitOrderPluginIcon />}
                 </div>}
             </div>
 
@@ -74,7 +73,7 @@ const IntegralPoolsList = memo(({ poolAddress, onPoolSelect }: { poolAddress: Ad
 
 const IntegralPoolsListItem = memo(({ pool, onPoolSelect }: { pool: PoolFieldsFragment, onPoolSelect: () => void }) => {
 
-    const { isLoading: isPluginsLoading, dynamicFeePlugin, limitOrderPlugin } = usePoolPlugins(pool.id as Address)
+    const { isLoading: isPluginsLoading, dynamicFeePlugin } = usePoolPlugins(pool.id as Address)
 
     const { actions: { selectCurrency, typeInput } } = useSwapState()
 
@@ -98,7 +97,6 @@ const IntegralPoolsListItem = memo(({ pool, onPoolSelect }: { pool: PoolFieldsFr
         <div className="ml-auto">
             {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
                 {dynamicFeePlugin && <DynamicFeePluginIcon />}
-                {limitOrderPlugin && <LimitOrderPluginIcon />}
             </div>}
         </div>
     </div>
