@@ -18,3 +18,29 @@ export const ETERNAL_FARMINGS = gql`
         }
     }
 `;
+
+export const DEPOSITS = gql`
+    query Deposits($owner: Bytes, $pool: Bytes) {
+        deposits(where: { owner: $owner, pool: $pool }) {
+            eternalFarming
+            id
+            liquidity
+            owner
+            pool
+            rangeLength
+        }
+    }
+`;
+
+export const DEPOSIT = gql`
+    query Deposit($id: ID!) {
+        deposit(id: $id) {
+            id
+            liquidity
+            owner
+            pool
+            rangeLength
+            eternalFarming
+        }
+    }
+`;
