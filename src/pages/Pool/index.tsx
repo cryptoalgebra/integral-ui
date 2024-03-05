@@ -7,14 +7,10 @@ import PositionCard from '@/components/position/PositionCard';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-    useDepositsQuery,
-    useEternalFarmingsQuery,
     useNativePriceQuery,
     usePoolFeeDataQuery,
     useSinglePoolQuery,
-    useSingleTokenQuery,
 } from '@/graphql/generated/graphql';
-import { useClients } from '@/hooks/graphql/useClients';
 import { usePool } from '@/hooks/pools/usePool';
 import { usePositions } from '@/hooks/positions/usePositions';
 import { FormattedPosition } from '@/types/formatted-position';
@@ -201,13 +197,19 @@ const PoolPage = () => {
                                     )
                                 }
                             />
-                            <h2 className="font-semibold text-xl text-left mt-12">
-                                Farmings
-                            </h2>
-                            <Farmings
-                                poolId={poolId && poolId}
-                                poolInfo={poolInfo && poolInfo}
-                            />
+                            {poolInfo ? (
+                                <div>
+                                    <h2 className="font-semibold text-xl text-left mt-12">
+                                        Farmings
+                                    </h2>
+                                    <Farmings
+                                        poolId={poolId}
+                                        poolInfo={poolInfo}
+                                    />
+                                </div>
+                            ) : (
+                                <LoadingState />
+                            )}
                         </>
                     )}
                 </div>

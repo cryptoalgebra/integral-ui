@@ -1,33 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import MyPositions from '../MyPositions';
 import {
     useEternalFarmingsQuery,
     useSingleTokenQuery,
     useDepositsQuery,
     SinglePoolQuery,
-    Deposit,
-    EternalFarming,
-    SingleTokenQuery,
 } from '@/graphql/generated/graphql';
 import { useClients } from '@/hooks/graphql/useClients';
 import { Address, useAccount } from 'wagmi';
-import { SelectPositionFarmModal } from '@/components/modals/SelectPositionFarmModal';
-import { isSameRewards } from '@/utils/farming/isSameRewards';
-import { Token } from 'graphql';
 import ActiveFarming from '../ActiveFarming';
 import FarmRewards from '../FarmRewards';
 import ClosedFarmings from '../ClosedFarmings';
+import { Farming } from '@/types/farming-info';
 
 interface FarmingsProps {
     poolId: Address;
     poolInfo: SinglePoolQuery;
-}
-
-export interface Farming {
-    farming: EternalFarming;
-    rewardToken: SingleTokenQuery['token'];
-    bonusRewardToken: SingleTokenQuery['token'];
-    pool: SinglePoolQuery;
 }
 
 const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
@@ -71,18 +58,20 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
 
         if (!activeFarming) {
             console.error('Active farming not found');
+            return;
         }
 
         setFarmingInfo({
-            farming: { ...activeFarming },
-            rewardToken: { ...rewardToken.token },
-            bonusRewardToken: { ...bonusRewardToken.token },
-            ...poolInfo,
+            farming: activeFarming,
+            rewardToken: rewardToken.token,
+            bonusRewardToken: bonusRewardToken.token,
+            pool: poolInfo.pool,
         });
     }, [farmings, rewardToken, bonusRewardToken, poolInfo]);
 
     useEffect(() => {
-        console.log(farmingInfo);
+        if (!farmingInfo) return;
+        console.log('Active Farming - ', farmingInfo);
     }, [farmingInfo]);
 
     // All positions for current pool
@@ -94,14 +83,14 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
         client: farmingClient,
     });
 
-    // useEffect(() => {
-    //     if (!deposits) return;
-    //     console.log(deposits);
-    // }, [deposits]);
+    useEffect(() => {
+        if (!deposits) return;
+        console.log('Deposits - ', deposits.deposits);
+    }, [deposits]);
 
     return (
         <div className="flex min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl mt-8">
-            {isLoading ? (
+            {isLoading || !deposits || !farmingInfo || !closedFarmings ? (
                 <div>Loading...</div>
             ) : (
                 <>

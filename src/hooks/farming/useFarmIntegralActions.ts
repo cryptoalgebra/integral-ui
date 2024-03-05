@@ -1,3 +1,10 @@
+import { useToast } from '@/components/ui/use-toast';
+import {
+    useAlgebraPositionManagerApproveForFarming,
+    useFarmingCenterEnterFarming,
+} from '@/generated';
+import { useAccount } from 'wagmi';
+
 interface FarmIntegralActionContainerChildrenProps {
     onApprove: () => void;
     onStake: () => void;
@@ -19,16 +26,11 @@ const useFarmIntegralActions = ({
     pool: string;
     nonce: string;
 }): FarmIntegralActionContainerChildrenProps => {
-    const { t } = useTranslation();
-    const { toastSuccess } = useToast();
+    // const toast = useToast();
     const { address: account } = useAccount();
-    const signer = useEthersSigner();
 
-    const gasPrice = useGasPrice();
-    const { loading, fetchWithCatchTxError } = useCatchTxError();
-
-    const algebraFarmingCenter = useAlgebraFarmingCenterContract();
-    const algebraPositionManager = useAlgebraPositionManagerContract();
+    const { data: hash, writeAsync: approveForFarming } =
+        useAlgebraPositionManagerApproveForFarming();
 
     const onApprove = useCallback(async () => {
         const calldata = algebraPositionManager.interface.encodeFunctionData(

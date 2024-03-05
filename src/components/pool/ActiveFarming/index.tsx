@@ -1,8 +1,8 @@
 import React from 'react';
 import { SelectPositionFarmModal } from '@/components/modals/SelectPositionFarmModal';
-import { Farming } from '../Farmings';
 import { isSameRewards } from '@/utils/farming/isSameRewards';
 import { Deposit } from '@/graphql/generated/graphql';
+import { Farming } from '@/types/farming-info';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -10,7 +10,7 @@ interface ActiveFarmingProps {
 }
 
 const ActiveFarming = ({ farming, deposits }: ActiveFarmingProps) => {
-    const isSameReward = farming ? isSameRewards(farming?.farming) : false;
+    const isSameReward = farming ? isSameRewards(farming.farming) : false;
 
     return (
         <div className="flex flex-col w-1/2 h-64 border border-white p-12">
@@ -20,26 +20,26 @@ const ActiveFarming = ({ farming, deposits }: ActiveFarmingProps) => {
                 {isSameReward ? (
                     <>
                         <p className="bg-black w-full rounded-md ">
-                            Token - {farming?.rewardToken?.name}
+                            Token - {farming.rewardToken.name}
                         </p>
                         <p className="bg-black w-full rounded-md ">
-                            Reward Pool - {farming?.farming?.reward / 10 ** 18}
+                            Reward Pool - {farming.farming.reward / 10 ** 18}
                         </p>
                     </>
                 ) : (
                     <>
                         <p className="bg-black w-full rounded-md ">
-                            Token - {farming?.rewardToken?.name}
+                            Token - {farming.rewardToken.name}
                         </p>
                         <p className="bg-black w-full rounded-md ">
-                            Reward - {farming?.farming?.reward / 10 ** 18}
+                            Reward - {farming.farming.reward / 10 ** 18}
                         </p>
                         <p className="bg-black w-full rounded-md ">
-                            Bonus Token - {farming?.bonusRewardToken?.name}
+                            Bonus Token - {farming.bonusRewardToken.name}
                         </p>
                         <p className="bg-black w-full rounded-md ">
                             Bonus Reward -{' '}
-                            {farming?.farming?.bonusReward / 10 ** 18}
+                            {farming.farming.bonusReward / 10 ** 18}
                         </p>
                     </>
                 )}

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Farming } from '../Farmings';
 import { EternalFarming } from '@/graphql/generated/graphql';
 
 interface ActiveFarmingProps {
@@ -7,7 +6,6 @@ interface ActiveFarmingProps {
 }
 
 const ClosedFarmings = ({ farmings }: ActiveFarmingProps) => {
-    console.log(farmings);
     return (
         <div className="flex flex-col w-1/2 h-64 border border-white p-12">
             Closed Farmings
