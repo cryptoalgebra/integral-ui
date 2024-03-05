@@ -1,20 +1,19 @@
 import PageContainer from '@/components/common/PageContainer';
+import Farmings from '@/components/pool/Farmings';
 import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
 import PoolHeader from '@/components/pool/PoolHeader';
 import PositionCard from '@/components/position/PositionCard';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FARMING_CENTER } from '@/constants/addresses';
 import {
-    useEternalFarmingQuery,
+    useDepositsQuery,
     useEternalFarmingsQuery,
     useNativePriceQuery,
     usePoolFeeDataQuery,
     useSinglePoolQuery,
     useSingleTokenQuery,
 } from '@/graphql/generated/graphql';
-import { ETERNAL_FARMINGS } from '@/graphql/queries/farmings';
 import { useClients } from '@/hooks/graphql/useClients';
 import { usePool } from '@/hooks/pools/usePool';
 import { usePositions } from '@/hooks/positions/usePositions';
@@ -26,7 +25,7 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { MoveRightIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Address, useAccount, useQuery } from 'wagmi';
+import { Address, useAccount } from 'wagmi';
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -174,50 +173,6 @@ const PoolPage = () => {
     const noPositions =
         !positionsLoading && positionsData.length === 0 && poolEntity;
 
-    /* FARMING FEATURE */
-    const [farmingData, setFarmingData] = useState(null);
-
-    const { farmingClient } = useClients();
-
-    const { data: farmings } = useEternalFarmingsQuery({
-        variables: {
-            pool: poolId,
-        },
-        client: farmingClient,
-    });
-
-    const { data: rewardToken } = useSingleTokenQuery({
-        variables: {
-            tokenId: farmings?.eternalFarmings?.[0]?.rewardToken,
-        },
-    });
-
-    const { data: bonusRewardToken } = useSingleTokenQuery({
-        variables: {
-            tokenId: farmings?.eternalFarmings?.[0]?.bonusRewardToken,
-        },
-    });
-
-    useEffect(() => {
-        if (!farmings) return;
-        if (farmings.eternalFarmings.length === 0) return;
-        if (!rewardToken || !bonusRewardToken) return;
-        if (!poolInfo) return;
-        const farming = farmings.eternalFarmings[0];
-        setFarmingData({
-            farming,
-            rewardToken: rewardToken,
-            bonusRewardToken: bonusRewardToken,
-            pool: poolInfo,
-        });
-    }, [farmings, rewardToken, bonusRewardToken, poolInfo]);
-
-    useEffect(() => {
-        console.log(farmingData);
-    }, [farmingData]);
-
-    /* FARMING FEATURE */
-
     return (
         <PageContainer>
             <PoolHeader pool={poolEntity} />
@@ -245,6 +200,13 @@ const PoolPage = () => {
                                         prev === positionId ? null : positionId
                                     )
                                 }
+                            />
+                            <h2 className="font-semibold text-xl text-left mt-12">
+                                Farmings
+                            </h2>
+                            <Farmings
+                                poolId={poolId && poolId}
+                                poolInfo={poolInfo && poolInfo}
                             />
                         </>
                     )}
