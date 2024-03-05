@@ -1,4 +1,4 @@
-export const farmingCenter = [
+export const farmingCenterABI = [
     {
         inputs: [
             {
@@ -389,4 +389,4 @@ export const farmingCenter = [
         stateMutability: 'view',
         type: 'function',
     },
-];
+] as const;
