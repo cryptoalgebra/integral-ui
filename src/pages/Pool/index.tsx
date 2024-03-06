@@ -1,5 +1,5 @@
 import PageContainer from '@/components/common/PageContainer';
-import Farmings from '@/components/pool/Farmings';
+import Farmings from '@/components/farming/Farmings';
 import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
 import PoolHeader from '@/components/pool/PoolHeader';
