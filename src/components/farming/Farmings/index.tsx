@@ -11,6 +11,7 @@ import ActiveFarming from '../ActiveFarming';
 import FarmRewards from '../FarmRewards';
 import ClosedFarmings from '../ClosedFarmings';
 import { Farming } from '@/types/farming-info';
+import { Loader } from 'lucide-react';
 
 interface FarmingsProps {
     poolId: Address;
@@ -40,12 +41,14 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
     );
 
     const { data: rewardToken } = useSingleTokenQuery({
+        skip: !activeFarming,
         variables: {
             tokenId: activeFarming?.rewardToken,
         },
     });
 
     const { data: bonusRewardToken } = useSingleTokenQuery({
+        skip: !activeFarming,
         variables: {
             tokenId: activeFarming?.bonusRewardToken,
         },
@@ -61,10 +64,11 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
             return;
         }
 
+        // ! disabled null check
         setFarmingInfo({
             farming: activeFarming,
-            rewardToken: rewardToken.token,
-            bonusRewardToken: bonusRewardToken.token,
+            rewardToken: rewardToken.token!,
+            bonusRewardToken: bonusRewardToken.token!,
             pool: poolInfo.pool,
         });
     }, [farmings, rewardToken, bonusRewardToken, poolInfo]);
@@ -89,17 +93,17 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
     }, [deposits]);
 
     return (
-        <div className="flex min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl mt-8">
+        <div className="flex items-center justify-center min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl mt-8">
             {isLoading || !deposits || !farmingInfo || !closedFarmings ? (
-                <div>Loading...</div>
+                <Loader />
             ) : (
                 <>
                     <ActiveFarming
                         deposits={deposits && deposits.deposits}
                         farming={farmingInfo}
                     />
-                    <FarmRewards />
-                    <ClosedFarmings farmings={closedFarmings} />
+                    {/* <FarmRewards />
+                    <ClosedFarmings farmings={closedFarmings} /> */}
                 </>
             )}
         </div>
