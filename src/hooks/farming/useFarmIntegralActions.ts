@@ -2,17 +2,24 @@ import { useCallback } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { FARMING_CENTER } from '@/constants/addresses';
 import {
+    farmingCenterABI,
     useAlgebraPositionManagerApproveForFarming,
     useFarmingCenterEnterFarming,
+    useFarmingCenterMulticall,
 } from '@/generated';
 import { useAccount } from 'wagmi';
+import { encodeFunctionData } from 'viem';
+import { waitForTransaction } from 'wagmi/actions';
+import { Deposit } from '@/graphql/generated/graphql';
+import { getRewardsCalldata } from '@/utils/farming/getRewardsCalldata';
+import { ViewTxOnExplorer } from '../common/useTransactionAwait';
 
 interface FarmIntegralActionContainerChildrenProps {
     onApprove: () => void;
     onStake: () => void;
     onUnstake?: () => void;
-    onHarvest?: () => void;
-    onHarvestAll?: (calldatas: string[]) => void;
+    onHarvest: () => void;
+    onHarvestAll: (deposits: Deposit[]) => void;
 }
 
 const useFarmIntegralActions = ({
@@ -35,6 +42,8 @@ const useFarmIntegralActions = ({
 
     const { writeAsync: enterFarming } = useFarmingCenterEnterFarming();
 
+    const { writeAsync: multicall } = useFarmingCenterMulticall();
+
     const onApprove = useCallback(async () => {
         try {
             console.log(`Approving for ID ${tokenId}`);
@@ -44,8 +53,17 @@ const useFarmIntegralActions = ({
             });
 
             toast({
-                title: 'Approved!',
-                description: `Position #${tokenId} was approved for farming!`,
+                title: `Approve Position #${tokenId.toString()}`,
+                description: `Transaction was sent`,
+                action: ViewTxOnExplorer({ hash }),
+            });
+
+            await waitForTransaction({ hash, confirmations: 1 });
+
+            toast({
+                title: `Approve Position #${tokenId.toString()}`,
+                description: `Transaction confirmed!`,
+                action: ViewTxOnExplorer({ hash }),
             });
         } catch (error) {
             console.error('Approval failed:', error);
@@ -55,7 +73,8 @@ const useFarmIntegralActions = ({
     const onStake = useCallback(async () => {
         try {
             console.log(`Staking ID ${tokenId}`);
-            const data = await enterFarming({
+
+            const { hash } = await enterFarming({
                 args: [
                     {
                         rewardToken,
@@ -66,10 +85,19 @@ const useFarmIntegralActions = ({
                     tokenId,
                 ],
             });
-            console.log(data);
+
             toast({
-                title: 'Staked!',
-                description: `Position #${tokenId} was staked for farming!`,
+                title: `Deposit Position #${tokenId.toString()}`,
+                description: `Transaction was sent`,
+                action: ViewTxOnExplorer({ hash }),
+            });
+
+            await waitForTransaction({ hash, confirmations: 1 });
+
+            toast({
+                title: `Deposit Position #${tokenId.toString()}`,
+                description: `Transaction confirmed!`,
+                action: ViewTxOnExplorer({ hash }),
             });
         } catch (error) {
             console.error('Approval failed:', error);
@@ -84,232 +112,111 @@ const useFarmIntegralActions = ({
         enterFarming,
     ]);
 
-    return { onApprove, onStake };
+    const onHarvest = useCallback(async () => {
+        try {
+            if (!account) {
+                console.error('Account not found');
+                return;
+            }
 
-    // const onApprove = useCallback(async () => {
-    //     // const resp = await fetchWithCatchTxError(() =>
-    //     //     signer.estimateGas(txn).then((estimate) => {
-    //     //         const newTxn = {
-    //     //             ...txn,
-    //     //             gasPrice,
-    //     //             gasLimit: calculateGasMargin(estimate),
-    //     //         };
-    //     //         return signer.sendTransaction(newTxn);
-    //     //     })
-    //     // );
-    //     // if (resp?.status) {
-    //     //     toastSuccess(
-    //     //         `${t('Approved')}!`,
-    //     //         <ToastDescriptionWithTx txHash={resp.transactionHash}>
-    //     //             {t('Position was approved for farming')}
-    //     //         </ToastDescriptionWithTx>
-    //     //     );
-    //     // }
-    // }, [
-    //     account,
-    //     fetchWithCatchTxError,
-    //     signer,
-    //     t,
-    //     algebraPositionManager,
-    //     algebraFarmingCenter,
-    //     toastSuccess,
-    //     tokenId,
-    // ]);
+            console.log(`Harvesting ID ${tokenId}`);
 
-    //     const onUnstake = useCallback(async () => {
-    //         const callDatas = [
-    //             algebraFarmingCenter.interface.encodeFunctionData('exitFarming', [
-    //                 { rewardToken, bonusRewardToken, pool, nonce },
-    //                 tokenId,
-    //             ]),
-    //             algebraFarmingCenter.interface.encodeFunctionData('claimReward', [
-    //                 rewardToken,
-    //                 account,
-    //                 MaxUint128,
-    //             ]),
-    //             algebraFarmingCenter.interface.encodeFunctionData('claimReward', [
-    //                 bonusRewardToken,
-    //                 account,
-    //                 MaxUint128,
-    //             ]),
-    //         ];
+            const calldata = getRewardsCalldata({
+                rewardToken,
+                bonusRewardToken,
+                pool,
+                nonce,
+                tokenId,
+                account,
+            });
 
-    //         const calldata = algebraFarmingCenter.interface.encodeFunctionData(
-    //             'multicall',
-    //             [callDatas]
-    //         );
+            const { hash } = await multicall({
+                args: [calldata],
+            });
 
-    //         const txn = {
-    //             to: algebraFarmingCenter.address,
-    //             data: calldata,
-    //         };
+            toast({
+                title: `Harvest Position #${tokenId.toString()}`,
+                description: `Transaction was sent`,
+                action: ViewTxOnExplorer({ hash }),
+            });
 
-    //         const resp = await fetchWithCatchTxError(() =>
-    //             signer.estimateGas(txn).then((estimate) => {
-    //                 const newTxn = {
-    //                     ...txn,
-    //                     gasPrice,
-    //                     gasLimit: calculateGasMargin(estimate),
-    //                 };
+            await waitForTransaction({ hash, confirmations: 1 });
 
-    //                 return signer.sendTransaction(newTxn);
-    //             })
-    //         );
-    //         if (resp?.status) {
-    //             toastSuccess(
-    //                 `${t('Unstaked')}!`,
-    //                 <ToastDescriptionWithTx txHash={resp.transactionHash}>
-    //                     {t('Your earnings have also been harvested to your wallet')}
-    //                 </ToastDescriptionWithTx>
-    //             );
-    //         }
-    //     }, [
-    //         account,
-    //         fetchWithCatchTxError,
-    //         algebraFarmingCenter,
-    //         signer,
-    //         t,
-    //         toastSuccess,
-    //         rewardToken,
-    //         tokenId,
-    //     ]);
+            toast({
+                title: `Harvest Position #${tokenId.toString()}`,
+                description: `Transaction confirmed!`,
+                action: ViewTxOnExplorer({ hash }),
+            });
 
-    //     const onHarvest = useCallback(async () => {
-    //         const collectRewards =
-    //             algebraFarmingCenter.interface.encodeFunctionData(
-    //                 'collectRewards',
-    //                 [{ rewardToken, bonusRewardToken, pool, nonce }, tokenId]
-    //             );
-    //         const claimReward1 = algebraFarmingCenter.interface.encodeFunctionData(
-    //             'claimReward',
-    //             [rewardToken, account, MaxUint128]
-    //         );
-    //         const claimReward2 = algebraFarmingCenter.interface.encodeFunctionData(
-    //             'claimReward',
-    //             [bonusRewardToken, account, MaxUint128]
-    //         );
+            console.log(`Harvest confirmed!`, hash);
+        } catch (error) {
+            console.error('Harvest failed:', error);
+        }
+    }, [
+        account,
+        tokenId,
+        rewardToken,
+        bonusRewardToken,
+        pool,
+        nonce,
+        multicall,
+    ]);
 
-    //         let calldata;
+    const onHarvestAll = useCallback(
+        async (deposits: Deposit[]) => {
+            try {
+                if (!account) {
+                    console.error('Account not found');
+                    return;
+                }
 
-    //         if (rewardToken.toLowerCase() !== bonusRewardToken.toLowerCase()) {
-    //             calldata = [collectRewards, claimReward1, claimReward2];
-    //         } else {
-    //             calldata = [collectRewards, claimReward1];
-    //         }
+                const calldatas: `0x${string}`[] = [];
 
-    //         const mcall = algebraFarmingCenter.interface.encodeFunctionData(
-    //             'multicall',
-    //             [calldata]
-    //         );
+                deposits.forEach((deposit) => {
+                    if (deposit.eternalFarming !== null) {
+                        const rewardsCalldata = getRewardsCalldata({
+                            rewardToken,
+                            bonusRewardToken,
+                            pool,
+                            nonce,
+                            tokenId: BigInt(deposit.id),
+                            account,
+                        });
 
-    //         const txn = {
-    //             to: algebraFarmingCenter.address,
-    //             data: mcall,
-    //         };
+                        const calldata = encodeFunctionData({
+                            abi: farmingCenterABI,
+                            functionName: 'multicall',
+                            args: [rewardsCalldata],
+                        });
+                        calldatas.push(calldata);
+                    }
+                });
 
-    //         const resp = await fetchWithCatchTxError(() =>
-    //             signer.estimateGas(txn).then((estimate) => {
-    //                 const newTxn = {
-    //                     ...txn,
-    //                     gasPrice,
-    //                     gasLimit: calculateGasMargin(estimate),
-    //                 };
+                const { hash } = await multicall({
+                    args: [calldatas],
+                });
 
-    //                 return signer.sendTransaction(newTxn);
-    //             })
-    //         );
+                toast({
+                    title: `Harvest All Positions`,
+                    description: `Transaction was sent`,
+                    action: ViewTxOnExplorer({ hash }),
+                });
 
-    //         if (resp?.status) {
-    //             toastSuccess(
-    //                 `${t('Harvested')}!`,
-    //                 <ToastDescriptionWithTx txHash={resp.transactionHash}>
-    //                     {t('Earnings have been sent to your wallet!')}
-    //                 </ToastDescriptionWithTx>
-    //             );
-    //             // mutate((key) => Array.isArray(key) && key[0] === 'mcv3-harvest', undefined)
-    //         }
-    //     }, [
-    //         account,
-    //         fetchWithCatchTxError,
-    //         algebraFarmingCenter,
-    //         signer,
-    //         t,
-    //         toastSuccess,
-    //         rewardToken,
-    //         tokenId,
-    //     ]);
+                await waitForTransaction({ hash, confirmations: 1 });
 
-    //     const onHarvestAll = useCallback(
-    //         async (calldatas: string[]) => {
-    //             const calldata = algebraFarmingCenter.interface.encodeFunctionData(
-    //                 'multicall',
-    //                 [calldatas]
-    //             );
+                toast({
+                    title: `Harvest All Positions`,
+                    description: `Transaction confirmed!`,
+                    action: ViewTxOnExplorer({ hash }),
+                });
+            } catch (error) {
+                console.error('Harvest failed:', error);
+            }
+        },
+        [account, rewardToken, bonusRewardToken, pool, nonce, multicall]
+    );
 
-    //             const txn = {
-    //                 to: algebraFarmingCenter.address,
-    //                 data: calldata,
-    //             };
-
-    //             const resp = await fetchWithCatchTxError(() =>
-    //                 signer.estimateGas(txn).then((estimate) => {
-    //                     const newTxn = {
-    //                         ...txn,
-    //                         gasPrice,
-    //                         gasLimit: calculateGasMargin(estimate),
-    //                     };
-
-    //                     return signer.sendTransaction(newTxn);
-    //                 })
-    //             );
-
-    //             if (resp?.status) {
-    //                 toastSuccess(
-    //                     `${t('Harvested')}!`,
-    //                     <ToastDescriptionWithTx txHash={resp.transactionHash}>
-    //                         {t('Earnings have been sent to your wallet!')}
-    //                     </ToastDescriptionWithTx>
-    //                 );
-    //                 // mutate((key) => Array.isArray(key) && key[0] === 'mcv3-harvest', undefined)
-    //             }
-    //         },
-    //         [
-    //             account,
-    //             fetchWithCatchTxError,
-    //             algebraFarmingCenter,
-    //             signer,
-    //             t,
-    //             toastSuccess,
-    //             rewardToken,
-    //             tokenId,
-    //         ]
-    //     );
-
-    //     return {
-    //         attemptingTxn: loading,
-    //         onApprove,
-    //         onStake,
-    //         onUnstake,
-    //         onHarvest,
-    //         onHarvestAll,
-    //     };
-    // };
-
-    // export function useFarmIntegralApprove(tokenId: string) {
-    //     const [approve, setApprove] = useState<boolean>();
-
-    //     const algebraPositionManager = useAlgebraPositionManagerContract();
-
-    //     useEffect(() => {
-    //         algebraPositionManager.callStatic
-    //             .farmingApprovals(tokenId)
-    //             .then((approval) => setApprove(approval !== ADDRESS_ZERO));
-    //     });
-
-    //     return {
-    //         approve,
-    //         isLoading: approve === undefined,
-    //     };
+    return { onApprove, onStake, onHarvest, onHarvestAll };
 };
 
 export default useFarmIntegralActions;
