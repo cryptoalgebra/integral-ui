@@ -31,16 +31,3 @@ export const DEPOSITS = gql`
         }
     }
 `;
-
-export const DEPOSIT = gql`
-    query Deposit($id: ID!) {
-        deposit(id: $id) {
-            id
-            liquidity
-            owner
-            pool
-            rangeLength
-            eternalFarming
-        }
-    }
-`;
