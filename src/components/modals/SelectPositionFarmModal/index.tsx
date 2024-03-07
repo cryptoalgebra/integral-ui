@@ -13,16 +13,19 @@ import useFarmIntegralActions from '@/hooks/farming/useFarmIntegralActions';
 import { useFarmIntegralApprove } from '@/hooks/farming/useFarmIntegralApprove';
 import { cn } from '@/lib/utils';
 import { Farming } from '@/types/farming-info';
+import { FormattedPosition } from '@/types/formatted-position';
 import { useState } from 'react';
 
 interface SelectPositionFarmModalProps {
     positions: Deposit[];
     farming: Farming;
+    positionsData: FormattedPosition[];
 }
 
 export function SelectPositionFarmModal({
     positions,
     farming,
+    positionsData,
 }: SelectPositionFarmModalProps) {
     const [selectedPosition, setSelectedPosition] = useState<Deposit>();
     const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
@@ -35,12 +38,11 @@ export function SelectPositionFarmModal({
         nonce: farming.farming.nonce,
     });
 
-    const { approved, isLoading } = useFarmIntegralApprove(tokenId);
-
     const handleApprove = async () => {
         if (approved) return;
         onApprove();
     };
+    const { approved, isLoading } = useFarmIntegralApprove(tokenId);
 
     const handleStake = async () => {
         if (!approved) return;
@@ -57,15 +59,20 @@ export function SelectPositionFarmModal({
                 style={{ borderRadius: '32px' }}
             >
                 <DialogHeader>
-                    <DialogTitle className="font-bold select-none">
+                    <DialogTitle className="font-bold select-none mt-2">
                         Select Position
                     </DialogTitle>
                 </DialogHeader>
 
-                <ul className="grid grid-cols-2 gap-4">
+                <ul className="grid grid-cols-2 gap-4 my-4">
                     {positions &&
                         positions.map((position) => {
                             if (position.eternalFarming !== null) return;
+                            const currentFormattedPosition = positionsData.find(
+                                (position) =>
+                                    Number(position.id) === Number(position.id)
+                            );
+                            if (!currentFormattedPosition) return;
                             return (
                                 <FarmingPositionCard
                                     key={position.id}
@@ -79,7 +86,11 @@ export function SelectPositionFarmModal({
                                         setSelectedPosition(position)
                                     }
                                     position={position}
-                                    status="In range"
+                                    status={
+                                        currentFormattedPosition.outOfRange
+                                            ? 'Out of range'
+                                            : 'In range'
+                                    }
                                 />
                             );
                         })}
