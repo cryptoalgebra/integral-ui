@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SelectPositionFarmModal } from '@/components/modals/SelectPositionFarmModal';
 import { isSameRewards } from '@/utils/farming/isSameRewards';
 import { Deposit } from '@/graphql/generated/graphql';
@@ -6,14 +6,53 @@ import { Farming } from '@/types/farming-info';
 import { Button } from '@/components/ui/button';
 import CardInfo from '@/components/common/CardInfo';
 import { formatUnits } from 'viem';
+import { getFarmingRewards } from '@/utils/farming/getFarmingRewards';
+import useFarmIntegralActions from '@/hooks/farming/useFarmIntegralActions';
+import { FormattedPosition } from '@/types/formatted-position';
+import CurrencyLogo from '@/components/common/CurrencyLogo';
+import { useCurrency } from '@/hooks/common/useCurrency';
 
 interface ActiveFarmingProps {
     farming: Farming;
     deposits: Deposit[];
+    positionsData: FormattedPosition[];
 }
 
-const ActiveFarming = ({ farming, deposits }: ActiveFarmingProps) => {
+const ActiveFarming = ({
+    farming,
+    deposits,
+    positionsData,
+}: ActiveFarmingProps) => {
     const isSameReward = isSameRewards(farming.farming);
+
+    const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
+    const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
+
+    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
+    const bonusRewardTokenCurrency = useCurrency(
+        farming.farming.bonusRewardToken
+    );
+
+    const formattedRewardEarned = Number(
+        formatUnits(rewardEarned, farming.rewardToken.decimals)
+    );
+
+    const formattedBonusRewardEarned = Number(
+        formatUnits(bonusRewardEarned, farming.bonusRewardToken.decimals)
+    );
+
+    const TVL = deposits.reduce((acc, deposit) => {
+        const currentFormattedPosition = positionsData.find(
+            (position) => Number(position.id) === Number(deposit.id)
+        );
+        if (deposit.eternalFarming !== null && currentFormattedPosition) {
+            return acc + currentFormattedPosition.liquidityUSD;
+        } else {
+            return acc;
+        }
+    }, 0);
+
+    const formattedTVL = TVL.toFixed(2);
 
     const rewardRatePerDay =
         Number(
@@ -38,6 +77,46 @@ const ActiveFarming = ({ farming, deposits }: ActiveFarmingProps) => {
           60 *
           24;
 
+    // collectRewards query to active farming for all positions
+    useEffect(() => {
+        const promises: Promise<{
+            reward: bigint;
+            bonusReward: bigint;
+        }>[] = [];
+        deposits.forEach((deposit) => {
+            if (deposit.eternalFarming !== null) {
+                promises.push(
+                    getFarmingRewards({
+                        rewardToken: farming.farming.rewardToken,
+                        bonusRewardToken: farming.farming.bonusRewardToken,
+                        pool: farming.farming.pool,
+                        nonce: farming.farming.nonce,
+                        tokenId: BigInt(deposit.id),
+                    })
+                );
+            }
+        });
+        if (promises.length === 0) return;
+        Promise.all(promises).then((rewards) => {
+            rewards.forEach((reward) => {
+                setRewardEarned((prev) => prev + reward.reward);
+                setBonusRewardEarned((prev) => prev + reward.bonusReward);
+            });
+        });
+    }, []);
+
+    const { onHarvestAll } = useFarmIntegralActions({
+        tokenId: BigInt(deposits[2].id),
+        rewardToken: farming.farming.rewardToken,
+        bonusRewardToken: farming.farming.bonusRewardToken,
+        pool: farming.farming.pool,
+        nonce: farming.farming.nonce,
+    });
+
+    const handleHarvestAll = async () => {
+        onHarvestAll(deposits);
+    };
+
     return (
         <div className="flex flex-col w-full p-8 gap-8">
             <div className="flex w-full gap-8">
@@ -46,38 +125,73 @@ const ActiveFarming = ({ farming, deposits }: ActiveFarmingProps) => {
                         <p className="text-green-300">45%</p>
                     </CardInfo>
                     <CardInfo className="w-full" title="TVL">
-                        <p className="text-purple-300">$100</p>
+                        <p className="text-purple-300">${formattedTVL}</p>
                     </CardInfo>
                 </div>
+
                 <CardInfo
-                    additional="6 USDC + 6 USDT"
+                    additional={
+                        !isSameReward
+                            ? `${formattedRewardEarned.toFixed(0)} ${
+                                  farming.rewardToken.symbol
+                              } + ${formattedBonusRewardEarned.toFixed(0)} ${
+                                  farming.bonusRewardToken.symbol
+                              }`
+                            : ''
+                    }
                     className="w-1/2"
                     title="EARNED"
                 >
-                    <p className="text-cyan-300">$12</p>
+                    <p className="text-cyan-300">
+                        ${formattedRewardEarned + formattedBonusRewardEarned}
+                    </p>
                 </CardInfo>
             </div>
 
             <CardInfo title="Rewards">
-                <div className="flex gap-12">
-                    <p>
-                        {rewardRatePerDay + ' ' + farming.rewardToken.symbol} /
-                        day
-                    </p>
-                    {bonusRewardRatePerDay !== 0 && (
+                <div className="flex gap-12 h-12">
+                    <div className="flex gap-4 items-center">
+                        <CurrencyLogo
+                            size={32}
+                            currency={rewardTokenCurrency}
+                        />
                         <p>
-                            {bonusRewardRatePerDay}{' '}
-                            {farming.bonusRewardToken.symbol} / day
+                            {rewardRatePerDay +
+                                ' ' +
+                                farming.rewardToken.symbol}{' '}
+                            / day
                         </p>
+                    </div>
+                    {bonusRewardRatePerDay !== 0 && (
+                        <div className="flex gap-4 items-center">
+                            <CurrencyLogo
+                                size={32}
+                                currency={bonusRewardTokenCurrency}
+                            />
+                            <p>
+                                {bonusRewardRatePerDay}{' '}
+                                {farming.bonusRewardToken.symbol} / day
+                            </p>
+                        </div>
                     )}
                 </div>
             </CardInfo>
 
             <div className="w-full flex gap-8">
-                <Button className="w-1/2">Collect Rewards</Button>
+                <Button
+                    disabled={
+                        formattedRewardEarned === 0 &&
+                        formattedBonusRewardEarned === 0
+                    }
+                    onClick={handleHarvestAll}
+                    className="w-1/2"
+                >
+                    Collect Rewards
+                </Button>
                 <SelectPositionFarmModal
                     positions={deposits}
                     farming={farming}
+                    positionsData={positionsData}
                 />
             </div>
         </div>

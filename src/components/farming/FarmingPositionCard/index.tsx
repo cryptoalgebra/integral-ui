@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 interface FarmingPositionCardProps {
     position: Deposit;
     status: string;
-    className: string;
-    onClick: () => void;
+    className?: string;
+    onClick?: () => void;
 }
 
 const FarmingPositionCard = ({
@@ -23,12 +23,37 @@ const FarmingPositionCard = ({
                 className
             )}
         >
-            <div className="w-12 h-12 rounded-full bg-green-300 flex items-center justify-center">
+            <div
+                className="w-12 h-12 rounded-full flex items-center justify-center"
+                style={{
+                    background:
+                        'linear-gradient(181.1deg, #686EFF 0.93%, #141520 99.07%)',
+                }}
+            >
                 {position.id}
             </div>
             <div className="flex flex-col">
                 <p>Position #{position.id}</p>
-                <p>{status}</p>
+                <div>
+                    <div
+                        className={cn(
+                            'flex gap-2 items-center',
+                            status === 'In range'
+                                ? 'text-green-300'
+                                : 'text-red-300'
+                        )}
+                    >
+                        <div
+                            className={cn(
+                                'w-2 h-2 rounded-full',
+                                status === 'In range'
+                                    ? 'bg-green-300'
+                                    : 'bg-red-300'
+                            )}
+                        ></div>
+                        <p className="text-sm">{status}</p>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -8,17 +8,17 @@ import {
 import { useClients } from '@/hooks/graphql/useClients';
 import { Address, useAccount } from 'wagmi';
 import ActiveFarming from '../ActiveFarming';
-import FarmRewards from '../FarmRewards';
-import ClosedFarmings from '../ClosedFarmings';
 import { Farming } from '@/types/farming-info';
 import { Loader } from 'lucide-react';
+import { FormattedPosition } from '@/types/formatted-position';
 
 interface FarmingsProps {
     poolId: Address;
     poolInfo: SinglePoolQuery;
+    positionsData: FormattedPosition[];
 }
 
-const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
+const Farmings = ({ poolId, poolInfo, positionsData }: FarmingsProps) => {
     const { address: account } = useAccount();
 
     const [farmingInfo, setFarmingInfo] = useState<Farming>();
@@ -89,7 +89,7 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
 
     useEffect(() => {
         if (!deposits) return;
-        console.log('Deposits - ', deposits.deposits);
+        console.log('Positions - ', deposits.deposits);
     }, [deposits]);
 
     return (
@@ -101,9 +101,9 @@ const Farmings = ({ poolId, poolInfo }: FarmingsProps) => {
                     <ActiveFarming
                         deposits={deposits && deposits.deposits}
                         farming={farmingInfo}
+                        positionsData={positionsData}
                     />
-                    {/* <FarmRewards />
-                    <ClosedFarmings farmings={closedFarmings} /> */}
+                    {/* <ClosedFarmings farmings={closedFarmings} /> */}
                 </>
             )}
         </div>

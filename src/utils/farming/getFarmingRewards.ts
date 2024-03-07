@@ -1,46 +1,40 @@
-import { MAX_UINT128 } from '@/constants/max-uint128';
-import { getAlgebraPositionManager } from '@/generated';
-import {
-    CurrencyAmount,
-    Pool,
-    unwrappedToken,
-} from '@cryptoalgebra/integral-sdk';
+import { getFarmingCenter } from '@/generated';
 
-export async function getFarmingRewards(pool: Pool, positionId: number) {
+export async function getFarmingRewards({
+    rewardToken,
+    bonusRewardToken,
+    pool,
+    nonce,
+    tokenId,
+}: {
+    rewardToken: `0x${string}`;
+    bonusRewardToken: `0x${string}`;
+    pool: `0x${string}`;
+    nonce: bigint;
+    tokenId: bigint;
+}): Promise<{ reward: bigint; bonusReward: bigint }> {
     try {
-        const algebraPositionManager = getAlgebraPositionManager({});
-
-        const owner = await algebraPositionManager.read.ownerOf([
-            BigInt(positionId),
-        ]);
-
+        const farmingCenter = getFarmingCenter({});
         const {
-            result: [fees0, fees1],
-        } = await algebraPositionManager.simulate.collect(
-            [
-                {
-                    tokenId: BigInt(positionId),
-                    recipient: owner,
-                    amount0Max: MAX_UINT128,
-                    amount1Max: MAX_UINT128,
-                },
-            ],
+            result: [reward, bonusReward],
+        } = await farmingCenter.simulate.collectRewards([
             {
-                account: owner,
-            }
-        );
-
-        return [
-            CurrencyAmount.fromRawAmount(
-                unwrappedToken(pool.token0),
-                fees0.toString()
-            ),
-            CurrencyAmount.fromRawAmount(
-                unwrappedToken(pool.token1),
-                fees1.toString()
-            ),
-        ];
-    } catch {
-        return [undefined, undefined];
+                rewardToken,
+                bonusRewardToken,
+                pool,
+                nonce,
+            },
+            tokenId,
+        ]);
+        return {
+            reward,
+            bonusReward,
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            reward: 0n,
+            bonusReward: 0n,
+        };
     }
 }

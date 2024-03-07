@@ -107,6 +107,7 @@ const PoolPage = () => {
             getPositionsAPRs();
     }, [filteredPositions, poolInfo, poolId, poolFeeData, bundles]);
 
+    // should be reusable
     const formatLiquidityUSD = (position: Position) => {
         if (!poolInfo?.pool) return 0;
 
@@ -205,6 +206,7 @@ const PoolPage = () => {
                                     <Farmings
                                         poolId={poolId}
                                         poolInfo={poolInfo}
+                                        positionsData={positionsData}
                                     />
                                 </div>
                             ) : (
