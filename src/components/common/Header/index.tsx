@@ -29,7 +29,7 @@ const Account = () => {
 
     const { selectedNetworkId } = useWeb3ModalState()
 
-    if (selectedNetworkId !== DEFAULT_CHAIN_ID) return <div className="flex justify-end">
+    if (Number(selectedNetworkId) !== DEFAULT_CHAIN_ID) return <div className="flex justify-end">
         <Button onClick={() => open({
             view: 'Networks'
         })} size={'sm'} variant={'destructive'} className="hidden md:block">Connect to Berachain</Button>

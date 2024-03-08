@@ -130,7 +130,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                 dataKey="activeLiquidity"
                 fill="#2172E5"
                 isAnimationActive={false}
-                shape={(props) => {
+                shape={(props: any) => {
                     const price = props[isSorted ? 'price0' : 'price1']
                     let percent = 0
                     if (price === +Number(leftPrice).toFixed(8) || price === +Number(rightPrice).toFixed(8)) {

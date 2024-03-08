@@ -77,7 +77,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
   const { isLoading: isAddingLiquidityLoading } = useTransitionAwait(addLiquidityData?.hash, 'Add liquidity', '', `/pool/${poolAddress}`)
 
-  const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID
+  const isWrongChain = Number(selectedNetworkId) !== DEFAULT_CHAIN_ID
 
   if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
