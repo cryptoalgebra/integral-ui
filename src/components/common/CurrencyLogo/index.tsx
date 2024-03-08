@@ -5,6 +5,7 @@ import BeraLogo from '@/assets/tokens/bera.png'
 import USDTLogo from '@/assets/tokens/usdt.png'
 import USDCLogo from '@/assets/tokens/usdc.svg'
 import WBTCLogo from '@/assets/tokens/wbtc.svg'
+import EtherLogo from '@/assets/tokens/ether.svg'
 import HoneyLogo from '@/assets/tokens/honey.png'
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,7 +26,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: 'USDT',
         logo: USDTLogo
     },
-    ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: {
+    ['0x9dad8a1f64692adeb74aca26129e0f16897ff4bb']: {
         symbol: 'WBTC',
         logo: WBTCLogo
     },
@@ -36,6 +37,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ['0x7eeca4205ff31f947edbd49195a7a88e6a91161b']: {
         symbol: 'HONEY',
         logo: HoneyLogo
+    },
+    ['0x8239fbb3e3d0c2cdfd7888d8af7701240ac4dca4']: {
+        symbol: 'WETH',
+        logo: EtherLogo
     }
 }
 
