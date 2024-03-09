@@ -6,6 +6,7 @@ import { useCallback, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { computeFiatValuePriceImpact } from "@/utils/swap/computePriceImpact";
+import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 
 const SwapPair = () => {
 
@@ -49,10 +50,9 @@ const SwapPair = () => {
         [onUserInput]
     );
 
-    // const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue);
+    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
-    // const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
-    const showWrap: boolean = false
+    const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
     const parsedAmounts = useMemo(
         () =>

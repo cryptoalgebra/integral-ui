@@ -1,6 +1,8 @@
 import Loader from "@/components/common/Loader";
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
-import { useDerivedSwapInfo } from "@/state/swapStore";
+import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
+import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { SwapField } from "@/types/swap-field";
 import { TradeState } from "@/types/trade-state";
 import { computeRealizedLPFeePercent, warningSeverity } from "@/utils/swap/prices";
 import { Currency, Percent, Trade, TradeType, unwrappedToken } from "@cryptoalgebra/integral-sdk";
@@ -9,7 +11,10 @@ import { Fragment, useMemo, useState } from "react";
 
 const SwapParams = () => {
 
-    const { tradeState, toggledTrade: trade, allowedSlippage, poolAddress } = useDerivedSwapInfo();
+    const { tradeState, toggledTrade: trade, allowedSlippage, poolAddress, currencies } = useDerivedSwapInfo();
+    const { typedValue } = useSwapState()
+
+    const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
     const [isExpanded, toggleExpanded] = useState(false);
 
@@ -38,6 +43,8 @@ const SwapParams = () => {
     }, [trade]);
 
     const LPFeeString = realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${realizedLPFee.currency.symbol}` : "-";
+
+    if (wrapType !== WrapType.NOT_APPLICABLE) return
 
     return trade ? (
         <div className="rounded text-white">

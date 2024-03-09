@@ -12,7 +12,7 @@ interface PositionFeesResult {
 export function usePositionFees(
     pool?: Pool,
     tokenId?: number,
-    asWETH = false
+    asWNative = false
 ): PositionFeesResult {
 
     const { data: owner } = useAlgebraPositionManagerOwnerOf({
@@ -39,8 +39,8 @@ export function usePositionFees(
 
         if (pool && amounts) {
             return {
-                amount0: CurrencyAmount.fromRawAmount(!asWETH ? unwrappedToken(pool.token0) : pool.token0, amounts[0].toString()),
-                amount1: CurrencyAmount.fromRawAmount(!asWETH ? unwrappedToken(pool.token1) : pool.token1, amounts[1].toString()),
+                amount0: CurrencyAmount.fromRawAmount(!asWNative ? unwrappedToken(pool.token0) : pool.token0, amounts[0].toString()),
+                amount1: CurrencyAmount.fromRawAmount(!asWNative ? unwrappedToken(pool.token1) : pool.token1, amounts[1].toString()),
             }
         } else {
             return {

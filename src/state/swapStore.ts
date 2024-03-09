@@ -195,7 +195,9 @@ export function useDerivedSwapInfo(): {
         inputError = `Insufficient ${amountIn.currency.symbol} balance`
     }
 
-    const poolAddress = currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
+    const isWrap = currencies.INPUT && currencies.OUTPUT && currencies.INPUT.wrapped.equals(currencies.OUTPUT.wrapped)
+
+    const poolAddress = isWrap ? undefined : currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
         tokenA: currencies[SwapField.INPUT]!.wrapped,
         tokenB: currencies[SwapField.OUTPUT]!.wrapped
     }).toLowerCase() as Address

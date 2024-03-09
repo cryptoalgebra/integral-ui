@@ -4,15 +4,15 @@ type ChainTokenList = {
     readonly [chainId: number]: Token[]
 }
 
-export const WMATIC_EXTENDED: { [chainId: number]: Token } = {
+export const WNATIVE_EXTENDED: { [chainId: number]: Token } = {
     ...WNATIVE
 }
 
-const WETH_ONLY: ChainTokenList = Object.fromEntries(
-    Object.entries(WMATIC_EXTENDED).map(([key, value]) => [key, [value]])
+const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(
+    Object.entries(WNATIVE_EXTENDED).map(([key, value]) => [key, [value]])
 )
 
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-    ...WETH_ONLY,
-    [ChainId.Goerli]: [...WETH_ONLY[ChainId.Goerli]]
+    ...WNATIVE_ONLY,
+    [ChainId.Goerli]: [...WNATIVE_ONLY[ChainId.Goerli]]
 }
