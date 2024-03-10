@@ -23,10 +23,15 @@ const ActiveFarming = ({
     deposits,
     positionsData,
 }: ActiveFarmingProps) => {
-    const isSameReward = isSameRewards(farming.farming);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
+
+    const isSameReward = isSameRewards(
+        farming.farming.rewardToken,
+        farming.farming.bonusRewardToken
+    );
 
     const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
     const bonusRewardTokenCurrency = useCurrency(
@@ -114,7 +119,10 @@ const ActiveFarming = ({
     });
 
     const handleHarvestAll = async () => {
-        onHarvestAll(deposits);
+        if (isLoading) return;
+        setIsLoading(true);
+        await onHarvestAll(deposits);
+        setIsLoading(false);
     };
 
     return (
@@ -180,13 +188,14 @@ const ActiveFarming = ({
             <div className="w-full flex gap-8">
                 <Button
                     disabled={
-                        formattedRewardEarned === 0 &&
-                        formattedBonusRewardEarned === 0
+                        (formattedRewardEarned === 0 &&
+                            formattedBonusRewardEarned === 0) ||
+                        isLoading
                     }
                     onClick={handleHarvestAll}
                     className="w-1/2"
                 >
-                    Collect Rewards
+                    {isLoading ? 'Harvesting...' : 'Collect Rewards'}
                 </Button>
                 <SelectPositionFarmModal
                     positions={deposits}

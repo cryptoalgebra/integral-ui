@@ -10,16 +10,21 @@ import {
 import { useAccount } from 'wagmi';
 import { encodeFunctionData } from 'viem';
 import { waitForTransaction } from 'wagmi/actions';
-import { Deposit } from '@/graphql/generated/graphql';
+import {
+    Deposit,
+    useDepositsQuery,
+    useEternalFarmingsQuery,
+} from '@/graphql/generated/graphql';
 import { getRewardsCalldata } from '@/utils/farming/getRewardsCalldata';
 import { ViewTxOnExplorer } from '../common/useTransactionAwait';
+import { farmingClient } from '@/graphql/clients';
 
 interface FarmIntegralActionContainerChildrenProps {
     onApprove: () => void;
-    onStake: () => void;
+    onStake: () => Promise<`0x${string}` | undefined>;
     onUnstake?: () => void;
     onHarvest: () => void;
-    onHarvestAll: (deposits: Deposit[]) => void;
+    onHarvestAll: (deposits: Deposit[]) => Promise<`0x${string}` | undefined>;
 }
 
 const useFarmIntegralActions = ({
@@ -43,6 +48,13 @@ const useFarmIntegralActions = ({
     const { writeAsync: enterFarming } = useFarmingCenterEnterFarming();
 
     const { writeAsync: multicall } = useFarmingCenterMulticall();
+
+    // const { refetch } = useEternalFarmingsQuery({
+    //     variables: {
+    //         pool,
+    //     },
+    //     client: farmingClient,
+    // });
 
     const onApprove = useCallback(async () => {
         try {
@@ -99,6 +111,8 @@ const useFarmIntegralActions = ({
                 description: `Transaction confirmed!`,
                 action: ViewTxOnExplorer({ hash }),
             });
+
+            return hash;
         } catch (error) {
             console.error('Approval failed:', error);
         }
@@ -209,6 +223,10 @@ const useFarmIntegralActions = ({
                     description: `Transaction confirmed!`,
                     action: ViewTxOnExplorer({ hash }),
                 });
+
+                // await refetch();
+
+                return hash;
             } catch (error) {
                 console.error('Harvest failed:', error);
             }

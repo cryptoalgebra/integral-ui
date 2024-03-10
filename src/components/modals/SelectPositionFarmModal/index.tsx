@@ -30,6 +30,8 @@ export function SelectPositionFarmModal({
     const [selectedPosition, setSelectedPosition] = useState<Deposit>();
     const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
 
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const { onApprove, onStake } = useFarmIntegralActions({
         tokenId,
         rewardToken: farming.farming.rewardToken,
@@ -38,15 +40,20 @@ export function SelectPositionFarmModal({
         nonce: farming.farming.nonce,
     });
 
+    const { approved, isLoading: isApproving } =
+        useFarmIntegralApprove(tokenId);
+
     const handleApprove = async () => {
         if (approved) return;
         onApprove();
     };
-    const { approved, isLoading } = useFarmIntegralApprove(tokenId);
 
     const handleStake = async () => {
         if (!approved) return;
-        onStake();
+        if (isLoading) return;
+        setIsLoading(true);
+        await onStake();
+        setIsLoading(false);
     };
 
     return (
@@ -96,7 +103,7 @@ export function SelectPositionFarmModal({
                         })}
                 </ul>
                 <div className="w-full flex gap-4">
-                    {isLoading ? (
+                    {isApproving ? (
                         <Button disabled className="w-full">
                             Checking Approval...
                         </Button>
@@ -114,11 +121,11 @@ export function SelectPositionFarmModal({
                                 )}
                             </Button>
                             <Button
-                                disabled={!approved}
+                                disabled={!approved || isLoading}
                                 className="w-1/2"
                                 onClick={handleStake}
                             >
-                                2. Deposit
+                                {isLoading ? <Loader /> : '2. Deposit'}
                             </Button>
                         </>
                     ) : (

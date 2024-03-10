@@ -1,6 +1,7 @@
 import { farmingCenterABI } from '@/generated';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
 import { encodeFunctionData } from 'viem';
+import { isSameRewards } from './isSameRewards';
 
 export function getRewardsCalldata({
     rewardToken,
@@ -45,7 +46,9 @@ export function getRewardsCalldata({
 
     let calldata;
 
-    if (rewardToken.toLowerCase() !== bonusRewardToken.toLowerCase()) {
+    const isSameReward = isSameRewards(rewardToken, bonusRewardToken);
+
+    if (isSameReward) {
         calldata = [
             collectRewardsCalldata,
             rewardClaimCalldata,

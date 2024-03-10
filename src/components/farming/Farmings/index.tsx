@@ -54,6 +54,15 @@ const Farmings = ({ poolId, poolInfo, positionsData }: FarmingsProps) => {
         },
     });
 
+    // All positions for current pool
+    const { data: deposits } = useDepositsQuery({
+        variables: {
+            owner: account,
+            pool: poolId,
+        },
+        client: farmingClient,
+    });
+
     useEffect(() => {
         if (!farmings?.eternalFarmings || farmings.eternalFarmings.length === 0)
             return;
@@ -77,15 +86,6 @@ const Farmings = ({ poolId, poolInfo, positionsData }: FarmingsProps) => {
         if (!farmingInfo) return;
         console.log('Active Farming - ', farmingInfo);
     }, [farmingInfo]);
-
-    // All positions for current pool
-    const { data: deposits } = useDepositsQuery({
-        variables: {
-            owner: account,
-            pool: poolId,
-        },
-        client: farmingClient,
-    });
 
     useEffect(() => {
         if (!deposits) return;

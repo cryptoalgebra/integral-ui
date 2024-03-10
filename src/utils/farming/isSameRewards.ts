@@ -1,5 +1,6 @@
-import { EternalFarming } from '@/graphql/generated/graphql';
-
-export const isSameRewards = (farming: EternalFarming) => {
-    return farming.rewardToken === farming.bonusRewardToken;
+export const isSameRewards = (
+    rewardToken: `0x${string}`,
+    bonusRewardToken: `0x${string}`
+): boolean => {
+    return rewardToken.toLowerCase() === bonusRewardToken.toLowerCase();
 };
