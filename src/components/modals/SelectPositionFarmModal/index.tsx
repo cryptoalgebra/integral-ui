@@ -9,12 +9,13 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Deposit } from '@/graphql/generated/graphql';
-import useFarmIntegralActions from '@/hooks/farming/useFarmIntegralActions';
-import { useFarmIntegralApprove } from '@/hooks/farming/useFarmIntegralApprove';
+import { useFarmApprove } from '@/hooks/farming/useFarmApprove';
+import { useFarmCheckApprove } from '@/hooks/farming/useFarmCheckApprove';
 import { cn } from '@/lib/utils';
 import { Farming } from '@/types/farming-info';
 import { FormattedPosition } from '@/types/formatted-position';
 import { useState } from 'react';
+import { useFarmStake } from '@/hooks/farming/useFarmStake';
 
 interface SelectPositionFarmModalProps {
     positions: Deposit[];
@@ -30,9 +31,9 @@ export function SelectPositionFarmModal({
     const [selectedPosition, setSelectedPosition] = useState<Deposit>();
     const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
 
-    const { onApprove, onStake } = useFarmIntegralActions({
+    const { isLoading: isStakeLoading, onStake } = useFarmStake({
         tokenId,
         rewardToken: farming.farming.rewardToken,
         bonusRewardToken: farming.farming.bonusRewardToken,
@@ -40,20 +41,22 @@ export function SelectPositionFarmModal({
         nonce: farming.farming.nonce,
     });
 
-    const { approved, isLoading: isApproving } =
-        useFarmIntegralApprove(tokenId);
+    const { approved, isLoading: isApproving } = useFarmCheckApprove(tokenId);
 
     const handleApprove = async () => {
-        if (approved) return;
+        if (approved || !onApprove) return;
         onApprove();
     };
 
     const handleStake = async () => {
-        if (!approved) return;
-        if (isLoading) return;
-        setIsLoading(true);
-        await onStake();
-        setIsLoading(false);
+        if (!approved || !onStake) return;
+        if (isStakeLoading || isApproveLoading) return;
+        onStake();
+    };
+
+    const handleSelectPosition = (position: Deposit) => {
+        if (isStakeLoading || isApproveLoading || isApproving) return;
+        setSelectedPosition(position);
     };
 
     return (
@@ -90,7 +93,7 @@ export function SelectPositionFarmModal({
                                             : ''
                                     )}
                                     onClick={() =>
-                                        setSelectedPosition(position)
+                                        handleSelectPosition(position)
                                     }
                                     position={position}
                                     status={
@@ -116,16 +119,18 @@ export function SelectPositionFarmModal({
                             >
                                 {approved ? (
                                     <span>1. Approved</span>
+                                ) : isApproveLoading ? (
+                                    <Loader />
                                 ) : (
                                     <span>1. Approve</span>
                                 )}
                             </Button>
                             <Button
-                                disabled={!approved || isLoading}
+                                disabled={!approved || isStakeLoading}
                                 className="w-1/2"
                                 onClick={handleStake}
                             >
-                                {isLoading ? <Loader /> : '2. Deposit'}
+                                {isStakeLoading ? <Loader /> : '2. Deposit'}
                             </Button>
                         </>
                     ) : (

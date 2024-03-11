@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectPositionFarmModal } from '@/components/modals/SelectPositionFarmModal';
 import { isSameRewards } from '@/utils/farming/isSameRewards';
 import { Deposit } from '@/graphql/generated/graphql';
@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import CardInfo from '@/components/common/CardInfo';
 import { formatUnits } from 'viem';
 import { getFarmingRewards } from '@/utils/farming/getFarmingRewards';
-import useFarmIntegralActions from '@/hooks/farming/useFarmIntegralActions';
 import { FormattedPosition } from '@/types/formatted-position';
 import CurrencyLogo from '@/components/common/CurrencyLogo';
 import { useCurrency } from '@/hooks/common/useCurrency';
+import { useAccount } from 'wagmi';
+import { useFarmHarvestAll } from '@/hooks/farming/useFarmHarvest';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -23,7 +24,7 @@ const ActiveFarming = ({
     deposits,
     positionsData,
 }: ActiveFarmingProps) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { address: account } = useAccount();
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
@@ -108,21 +109,22 @@ const ActiveFarming = ({
                 setBonusRewardEarned((prev) => prev + reward.bonusReward);
             });
         });
-    }, []);
+    }, [farming, deposits]);
 
-    const { onHarvestAll } = useFarmIntegralActions({
-        tokenId: BigInt(deposits[2].id),
-        rewardToken: farming.farming.rewardToken,
-        bonusRewardToken: farming.farming.bonusRewardToken,
-        pool: farming.farming.pool,
-        nonce: farming.farming.nonce,
-    });
+    const { isLoading, onHarvestAll } = useFarmHarvestAll(
+        {
+            rewardToken: farming.farming.rewardToken,
+            bonusRewardToken: farming.farming.bonusRewardToken,
+            pool: farming.farming.pool,
+            nonce: farming.farming.nonce,
+            account: account!,
+        },
+        deposits
+    );
 
     const handleHarvestAll = async () => {
-        if (isLoading) return;
-        setIsLoading(true);
-        await onHarvestAll(deposits);
-        setIsLoading(false);
+        if (isLoading || !onHarvestAll) return;
+        onHarvestAll();
     };
 
     return (
