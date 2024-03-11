@@ -89,8 +89,8 @@ export function SelectPositionFarmModal({
                     {availablePositions.length > 0 ? (
                         availablePositions.map((position) => {
                             const currentFormattedPosition = positionsData.find(
-                                (position) =>
-                                    Number(position.id) === Number(position.id)
+                                (fposition) =>
+                                    Number(fposition.id) === Number(position.id)
                             );
                             if (!currentFormattedPosition) return;
                             return (

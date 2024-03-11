@@ -3,7 +3,11 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import { INITIAL_POOL_FEE, Position } from '@cryptoalgebra/integral-sdk';
+import {
+    ADDRESS_ZERO,
+    INITIAL_POOL_FEE,
+    Position,
+} from '@cryptoalgebra/integral-sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';
@@ -15,7 +19,7 @@ import CollectFees from '../CollectFees';
 import RemoveLiquidityModal from '@/components/modals/RemoveLiquidityModal';
 import { Button } from '@/components/ui/button';
 import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
-import { Address, useAccount } from 'wagmi';
+import { useAccount } from 'wagmi';
 import Loader from '@/components/common/Loader';
 import { Farming } from '@/types/farming-info';
 import { useFarmHarvest } from '@/hooks/farming/useFarmHarvest';
@@ -38,7 +42,7 @@ const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
         bonusRewardToken: farming.farming.bonusRewardToken,
         pool: farming.farming.pool,
         nonce: farming.farming.nonce,
-        account: account as Address,
+        account: account ?? ADDRESS_ZERO,
     });
 
     const { onUnstake, isLoading: isUnstaking } = useFarmUnstake({
@@ -47,7 +51,7 @@ const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
         bonusRewardToken: farming.farming.bonusRewardToken,
         pool: farming.farming.pool,
         nonce: farming.farming.nonce,
-        account: account as Address,
+        account: account ?? ADDRESS_ZERO,
     });
 
     const handleUnstake = async () => {
