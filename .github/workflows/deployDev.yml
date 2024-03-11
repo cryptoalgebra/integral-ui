@@ -1,9 +1,16 @@
 name: Algebra Integral Dev Deploy
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+
 jobs:
   deploy:
     name: Build
@@ -11,6 +18,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+       - name: Set dev target path
+        if: ${{ inputs.target == 'dev' }}
+        run: |
+          echo "TARGET_PATH=${{ secrets.DEV_DEPLOYMENT_PATH }}" >> $GITHUB_ENV
 
       - name: Set up node
         uses: actions/setup-node@v3
@@ -30,4 +42,4 @@ jobs:
       - run: echo "${{ secrets.SHHKEYM }}" > "$HOME/.ssh/SHHKEYM"
       - run: chmod 600 "$HOME/.ssh/SHHKEYM"
       #deploy
-      - run: cd dist && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ secrets.DEV_DEPLOYMENT_PATH }}
+      - run: cd dist && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ env.TARGET_PATH }}
