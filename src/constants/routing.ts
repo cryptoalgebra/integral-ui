@@ -1,4 +1,5 @@
 import { WNATIVE, Token, ChainId } from "@cryptoalgebra/integral-sdk"
+import { STABLECOINS } from "./tokens"
 
 type ChainTokenList = {
     readonly [chainId: number]: Token[]
@@ -14,5 +15,6 @@ const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(
 
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     ...WNATIVE_ONLY,
-    [ChainId.Goerli]: [...WNATIVE_ONLY[ChainId.Goerli]]
+    [ChainId.Goerli]: [...WNATIVE_ONLY[ChainId.Goerli]],
+    [ChainId.Holesky]: [...WNATIVE_ONLY[ChainId.Holesky], STABLECOINS.USDT]
 }
