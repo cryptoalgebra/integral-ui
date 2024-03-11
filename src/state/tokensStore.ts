@@ -1,6 +1,7 @@
 import { Address } from "viem";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import deepMerge from 'lodash.merge'
 
 interface ImportedTokens {
     [chainId: number]: { 
@@ -37,4 +38,4 @@ export const useTokensState = create(persist<TokensState>((set, get) => ({
             })
         },
     }
-}), { name: 'tokens-storage', storage: createJSONStorage(() => localStorage) }))
+}), { name: 'tokens-storage', storage: createJSONStorage(() => localStorage), merge: (persistedState, currentState) => deepMerge(currentState, persistedState) }))
