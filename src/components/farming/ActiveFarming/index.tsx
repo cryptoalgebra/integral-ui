@@ -100,9 +100,6 @@ const ActiveFarming = ({
         onHarvestAll();
     };
 
-    const [refet, setRefet] = useState(false);
-
-    // collectRewards query to active farming for all positions
     useEffect(() => {
         const promises: Promise<{
             reward: bigint;
@@ -157,10 +154,7 @@ const ActiveFarming = ({
                     className="w-1/2"
                     title="EARNED"
                 >
-                    <p
-                        onClick={() => setRefet(!refet)}
-                        className="text-cyan-300"
-                    >
+                    <p className="text-cyan-300">
                         ${formattedRewardEarned + formattedBonusRewardEarned}
                     </p>
                 </CardInfo>

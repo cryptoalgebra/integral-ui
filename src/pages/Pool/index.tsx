@@ -11,6 +11,7 @@ import {
     usePoolFeeDataQuery,
     useSinglePoolQuery,
 } from '@/graphql/generated/graphql';
+import { useActiveFarming } from '@/hooks/farming/useActiveFarming';
 import { usePool } from '@/hooks/pools/usePool';
 import { usePositions } from '@/hooks/positions/usePositions';
 import { FormattedPosition } from '@/types/formatted-position';
@@ -170,6 +171,15 @@ const PoolPage = () => {
     const noPositions =
         !positionsLoading && positionsData.length === 0 && poolEntity;
 
+    const {
+        farmingInfo,
+        deposits,
+        isLoading: isFarmingLoading,
+    } = useActiveFarming({
+        poolId: poolId,
+        poolInfo: poolInfo,
+    });
+
     return (
         <PageContainer>
             <PoolHeader pool={poolEntity} />
@@ -198,14 +208,14 @@ const PoolPage = () => {
                                     )
                                 }
                             />
-                            {poolInfo ? (
+                            {farmingInfo && deposits && !isFarmingLoading ? (
                                 <div>
                                     <h2 className="font-semibold text-xl text-left mt-12">
                                         Farmings
                                     </h2>
                                     <Farmings
-                                        poolId={poolId}
-                                        poolInfo={poolInfo}
+                                        deposits={deposits && deposits.deposits}
+                                        farming={farmingInfo}
                                         positionsData={positionsData}
                                     />
                                 </div>
@@ -216,9 +226,14 @@ const PoolPage = () => {
                     )}
                 </div>
 
-                <div className="flex flex-col gap-8 w-full h-full">
-                    <PositionCard selectedPosition={selectedPosition} />
-                </div>
+                {farmingInfo && (
+                    <div className="flex flex-col gap-8 w-full h-full">
+                        <PositionCard
+                            farming={farmingInfo}
+                            selectedPosition={selectedPosition}
+                        />
+                    </div>
+                )}
             </div>
         </PageContainer>
     );

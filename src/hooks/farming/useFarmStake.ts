@@ -2,6 +2,8 @@ import { FARMING_CENTER } from '@/constants/addresses';
 import { farmingCenterABI } from '@/generated';
 import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { useTransitionAwait } from '../common/useTransactionAwait';
+import { encodeFunctionData } from 'viem';
+import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
 
 export function useFarmStake({
     tokenId,
@@ -45,38 +47,70 @@ export function useFarmStake({
     };
 }
 
-// export function useFarmUnstake(
-//     tokenId: bigint,
-//     rewardToken: Address,
-//     bonusRewardToken: Address,
-//     pool: Address,
-//     nonce: bigint
-// ) {
-//     const { config } = usePrepareContractWrite({
-//         address: FARMING_CENTER,
-//         abi: farmingCenterABI,
-//         functionName: 'enterFarming',
-//         args: [
-//             {
-//                 rewardToken,
-//                 bonusRewardToken,
-//                 pool,
-//                 nonce,
-//             },
-//             tokenId,
-//         ],
-//     });
+export function useFarmUnstake({
+    tokenId,
+    rewardToken,
+    bonusRewardToken,
+    pool,
+    nonce,
+    account,
+}: {
+    tokenId: bigint;
+    rewardToken: Address;
+    bonusRewardToken: Address;
+    pool: Address;
+    nonce: bigint;
+    account: Address;
+}) {
+    const exitFarmingCalldata = encodeFunctionData({
+        abi: farmingCenterABI,
+        functionName: 'exitFarming',
+        args: [
+            {
+                rewardToken,
+                bonusRewardToken,
+                pool,
+                nonce,
+            },
+            tokenId,
+        ],
+    });
 
-//     const { data: data, writeAsync: onStake } = useContractWrite(config);
+    const rewardClaimCalldata = encodeFunctionData({
+        abi: farmingCenterABI,
+        functionName: 'claimReward',
+        args: [rewardToken, account, BigInt(MaxUint128)],
+    });
 
-//     const { isLoading, isSuccess } = useTransitionAwait(
-//         data?.hash,
-//         `Stake Position #${tokenId}`
-//     );
+    const bonusRewardClaimCalldata = encodeFunctionData({
+        abi: farmingCenterABI,
+        functionName: 'claimReward',
+        args: [bonusRewardToken, account, BigInt(MaxUint128)],
+    });
 
-//     return {
-//         isLoading,
-//         isSuccess,
-//         onStake,
-//     };
-// }
+    const calldatas = [
+        exitFarmingCalldata,
+        rewardClaimCalldata,
+        bonusRewardClaimCalldata,
+    ];
+
+    const { config } = usePrepareContractWrite({
+        address: tokenId ? FARMING_CENTER : undefined,
+        abi: farmingCenterABI,
+        functionName: 'multicall',
+        args: [calldatas],
+    });
+
+    const { data: data, writeAsync: onUnstake } = useContractWrite(config);
+
+    const { isLoading, isSuccess } = useTransitionAwait(
+        data?.hash,
+        `Unstake Position #${tokenId}`
+    );
+
+    return {
+        isLoading,
+        isSuccess,
+        onUnstake,
+    };
+}
