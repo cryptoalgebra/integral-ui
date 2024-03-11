@@ -12,6 +12,7 @@ import CurrencyLogo from '@/components/common/CurrencyLogo';
 import { useCurrency } from '@/hooks/common/useCurrency';
 import { useAccount } from 'wagmi';
 import { useFarmHarvestAll } from '@/hooks/farming/useFarmHarvest';
+import Loader from '@/components/common/Loader';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -83,6 +84,24 @@ const ActiveFarming = ({
           60 *
           24;
 
+    const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
+        {
+            rewardToken: farming.farming.rewardToken,
+            bonusRewardToken: farming.farming.bonusRewardToken,
+            pool: farming.farming.pool,
+            nonce: farming.farming.nonce,
+            account: account!,
+        },
+        deposits
+    );
+
+    const handleHarvestAll = async () => {
+        if (isLoading || !onHarvestAll) return;
+        onHarvestAll();
+    };
+
+    const [refet, setRefet] = useState(false);
+
     // collectRewards query to active farming for all positions
     useEffect(() => {
         const promises: Promise<{
@@ -104,28 +123,14 @@ const ActiveFarming = ({
         });
         if (promises.length === 0) return;
         Promise.all(promises).then((rewards) => {
+            setRewardEarned(0n);
+            setBonusRewardEarned(0n);
             rewards.forEach((reward) => {
                 setRewardEarned((prev) => prev + reward.reward);
                 setBonusRewardEarned((prev) => prev + reward.bonusReward);
             });
         });
-    }, [farming, deposits]);
-
-    const { isLoading, onHarvestAll } = useFarmHarvestAll(
-        {
-            rewardToken: farming.farming.rewardToken,
-            bonusRewardToken: farming.farming.bonusRewardToken,
-            pool: farming.farming.pool,
-            nonce: farming.farming.nonce,
-            account: account!,
-        },
-        deposits
-    );
-
-    const handleHarvestAll = async () => {
-        if (isLoading || !onHarvestAll) return;
-        onHarvestAll();
-    };
+    }, [deposits, farming, isSuccess]);
 
     return (
         <div className="flex flex-col w-full p-8 gap-8">
@@ -152,7 +157,10 @@ const ActiveFarming = ({
                     className="w-1/2"
                     title="EARNED"
                 >
-                    <p className="text-cyan-300">
+                    <p
+                        onClick={() => setRefet(!refet)}
+                        className="text-cyan-300"
+                    >
                         ${formattedRewardEarned + formattedBonusRewardEarned}
                     </p>
                 </CardInfo>
@@ -197,9 +205,10 @@ const ActiveFarming = ({
                     onClick={handleHarvestAll}
                     className="w-1/2"
                 >
-                    {isLoading ? 'Harvesting...' : 'Collect Rewards'}
+                    {isLoading ? <Loader /> : 'Collect Rewards'}
                 </Button>
                 <SelectPositionFarmModal
+                    isHarvestLoading={isLoading}
                     positions={deposits}
                     farming={farming}
                     positionsData={positionsData}

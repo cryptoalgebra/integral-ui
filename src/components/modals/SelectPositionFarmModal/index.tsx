@@ -21,12 +21,14 @@ interface SelectPositionFarmModalProps {
     positions: Deposit[];
     farming: Farming;
     positionsData: FormattedPosition[];
+    isHarvestLoading: boolean;
 }
 
 export function SelectPositionFarmModal({
     positions,
     farming,
     positionsData,
+    isHarvestLoading,
 }: SelectPositionFarmModalProps) {
     const [selectedPosition, setSelectedPosition] = useState<Deposit>();
     const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
@@ -66,7 +68,12 @@ export function SelectPositionFarmModal({
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="whitespace-nowrap w-1/2">Deposit</Button>
+                <Button
+                    disabled={isHarvestLoading}
+                    className="whitespace-nowrap w-1/2"
+                >
+                    Deposit
+                </Button>
             </DialogTrigger>
             <DialogContent
                 className="min-w-[500px] rounded-3xl bg-card"
