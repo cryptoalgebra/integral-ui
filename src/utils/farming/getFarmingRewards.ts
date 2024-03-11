@@ -1,4 +1,5 @@
 import { getFarmingCenter } from '@/generated';
+import { Address } from 'viem';
 
 export async function getFarmingRewards({
     rewardToken,
@@ -7,9 +8,9 @@ export async function getFarmingRewards({
     nonce,
     tokenId,
 }: {
-    rewardToken: `0x${string}`;
-    bonusRewardToken: `0x${string}`;
-    pool: `0x${string}`;
+    rewardToken: Address;
+    bonusRewardToken: Address;
+    pool: Address;
     nonce: bigint;
     tokenId: bigint;
 }): Promise<{ reward: bigint; bonusReward: bigint }> {

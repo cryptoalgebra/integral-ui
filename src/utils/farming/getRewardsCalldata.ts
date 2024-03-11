@@ -1,6 +1,6 @@
 import { farmingCenterABI } from '@/generated';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
-import { encodeFunctionData } from 'viem';
+import { Address, encodeFunctionData } from 'viem';
 import { isSameRewards } from './isSameRewards';
 
 export function getRewardsCalldata({
@@ -11,13 +11,13 @@ export function getRewardsCalldata({
     tokenId,
     account,
 }: {
-    rewardToken: `0x${string}`;
-    bonusRewardToken: `0x${string}`;
-    pool: `0x${string}`;
+    rewardToken: Address;
+    bonusRewardToken: Address;
+    pool: Address;
     nonce: bigint;
     tokenId: bigint;
-    account: `0x${string}`;
-}): `0x${string}`[] {
+    account: Address;
+}): Address[] {
     const collectRewardsCalldata = encodeFunctionData({
         abi: farmingCenterABI,
         functionName: 'collectRewards',

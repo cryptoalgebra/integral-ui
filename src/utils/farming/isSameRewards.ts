@@ -1,6 +1,8 @@
+import { Address } from 'viem';
+
 export const isSameRewards = (
-    rewardToken: `0x${string}`,
-    bonusRewardToken: `0x${string}`
+    rewardToken: Address,
+    bonusRewardToken: Address
 ): boolean => {
     return rewardToken.toLowerCase() === bonusRewardToken.toLowerCase();
 };
