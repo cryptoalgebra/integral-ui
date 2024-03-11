@@ -1,4 +1,3 @@
-import React from 'react';
 import { Deposit } from '@/graphql/generated/graphql';
 import { cn } from '@/lib/utils';
 
