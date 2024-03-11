@@ -4,7 +4,7 @@ import { useCurrency } from '@/hooks/common/useCurrency'
 import useDebounce from '@/hooks/common/useDebounce'
 import { useFuse } from '@/hooks/common/useFuse'
 import { useAllTokens } from '@/hooks/tokens/useAllTokens'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 import { Address, isAddress } from 'viem'
 import { useAccount, useBalance } from 'wagmi'
@@ -139,8 +139,6 @@ export const TokenSelector = ({ onSelect, otherCurrency }: { onSelect: (currency
 
     const filteredTokens = useMemo(() => matchedTokens.length ? matchedTokens : tokens, [tokens, matchedTokens])
 
-    const listRef = useRef()
-
     const handleSearch = (matchedTokens: TokenFieldsFragment[], importToken: Token | undefined) => {
         if (matchedTokens.length) {
             setMatchedTokens(matchedTokens)
@@ -185,18 +183,17 @@ export const TokenSelector = ({ onSelect, otherCurrency }: { onSelect: (currency
                 itemCount={4}
                 itemSize={76}
                 width={'100%'}
-                ref={listRef}
             >
                 {LoadingRow}
             </FixedSizeList>
             : 
-            <FixedSizeList  
+            <FixedSizeList
+                width={'100%'}
                 height={304}
                 itemData={filteredTokens}
                 itemCount={filteredTokens.length}
                 itemKey={itemKey}
                 itemSize={76}
-                ref={listRef}
             >
                 {Row}
             </FixedSizeList>

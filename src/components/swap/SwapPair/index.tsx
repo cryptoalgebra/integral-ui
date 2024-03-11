@@ -50,7 +50,7 @@ const SwapPair = () => {
         [onUserInput]
     );
 
-    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+    const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
