@@ -185,7 +185,7 @@ export function useDerivedSwapInfo(): {
 
     const toggledTrade = trade.trade ?? undefined
 
-    const tickAfterSwap = trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap))
+    const tickAfterSwap = trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap[trade.priceAfterSwap.length - 1].toString()))
 
     const allowedSlippage = useSwapSlippageTolerance(toggledTrade)
 
