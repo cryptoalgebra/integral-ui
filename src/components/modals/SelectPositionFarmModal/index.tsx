@@ -59,6 +59,10 @@ export function SelectPositionFarmModal({
         setSelectedPosition(position);
     };
 
+    const availablePositions = positions.filter(
+        (position) => position.eternalFarming === null
+    );
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -75,9 +79,8 @@ export function SelectPositionFarmModal({
                 </DialogHeader>
 
                 <ul className="grid grid-cols-2 gap-4 my-4">
-                    {positions &&
-                        positions.map((position) => {
-                            if (position.eternalFarming !== null) return;
+                    {availablePositions.length > 0 ? (
+                        availablePositions.map((position) => {
                             const currentFormattedPosition = positionsData.find(
                                 (position) =>
                                     Number(position.id) === Number(position.id)
@@ -103,14 +106,19 @@ export function SelectPositionFarmModal({
                                     }
                                 />
                             );
-                        })}
+                        })
+                    ) : (
+                        <h3 className="mx-auto col-span-2">
+                            You don't have available positions for this pool
+                        </h3>
+                    )}
                 </ul>
                 <div className="w-full flex gap-4">
                     {isApproving ? (
                         <Button disabled className="w-full">
                             Checking Approval...
                         </Button>
-                    ) : selectedPosition ? (
+                    ) : selectedPosition && availablePositions.length > 0 ? (
                         <>
                             <Button
                                 disabled={approved}
