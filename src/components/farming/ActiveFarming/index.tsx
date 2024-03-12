@@ -130,83 +130,86 @@ const ActiveFarming = ({
     }, [deposits, farming, isSuccess]);
 
     return (
-        <div className="flex flex-col w-full p-8 gap-8">
-            <div className="flex w-full gap-8">
-                <div className="flex w-1/2 gap-8">
-                    <CardInfo className="w-full" title="APR">
-                        <p className="text-green-300">45%</p>
-                    </CardInfo>
-                    <CardInfo className="w-full" title="TVL">
-                        <p className="text-purple-300">${formattedTVL}</p>
+        <div className="flex items-center justify-center min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl mt-8">
+            <div className="flex flex-col w-full p-8 gap-8">
+                <div className="flex w-full gap-8">
+                    <div className="flex w-1/2 gap-8">
+                        <CardInfo className="w-full" title="APR">
+                            <p className="text-green-300">45%</p>
+                        </CardInfo>
+                        <CardInfo className="w-full" title="TVL">
+                            <p className="text-purple-300">${formattedTVL}</p>
+                        </CardInfo>
+                    </div>
+
+                    <CardInfo
+                        additional={
+                            !isSameReward
+                                ? `${formattedRewardEarned.toFixed(0)} ${
+                                      farming.rewardToken.symbol
+                                  } + ${formattedBonusRewardEarned.toFixed(
+                                      0
+                                  )} ${farming.bonusRewardToken.symbol}`
+                                : ''
+                        }
+                        className="w-1/2"
+                        title="EARNED"
+                    >
+                        <p className="text-cyan-300">
+                            $
+                            {formattedRewardEarned + formattedBonusRewardEarned}
+                        </p>
                     </CardInfo>
                 </div>
 
-                <CardInfo
-                    additional={
-                        !isSameReward
-                            ? `${formattedRewardEarned.toFixed(0)} ${
-                                  farming.rewardToken.symbol
-                              } + ${formattedBonusRewardEarned.toFixed(0)} ${
-                                  farming.bonusRewardToken.symbol
-                              }`
-                            : ''
-                    }
-                    className="w-1/2"
-                    title="EARNED"
-                >
-                    <p className="text-cyan-300">
-                        ${formattedRewardEarned + formattedBonusRewardEarned}
-                    </p>
-                </CardInfo>
-            </div>
-
-            <CardInfo title="Rewards">
-                <div className="flex gap-12 h-12">
-                    <div className="flex gap-4 items-center">
-                        <CurrencyLogo
-                            size={32}
-                            currency={rewardTokenCurrency}
-                        />
-                        <p>
-                            {rewardRatePerDay +
-                                ' ' +
-                                farming.rewardToken.symbol}{' '}
-                            / day
-                        </p>
-                    </div>
-                    {bonusRewardRatePerDay !== 0 && (
+                <CardInfo title="Rewards">
+                    <div className="flex gap-12 h-12">
                         <div className="flex gap-4 items-center">
                             <CurrencyLogo
                                 size={32}
-                                currency={bonusRewardTokenCurrency}
+                                currency={rewardTokenCurrency}
                             />
                             <p>
-                                {bonusRewardRatePerDay}{' '}
-                                {farming.bonusRewardToken.symbol} / day
+                                {rewardRatePerDay +
+                                    ' ' +
+                                    farming.rewardToken.symbol}{' '}
+                                / day
                             </p>
                         </div>
-                    )}
-                </div>
-            </CardInfo>
+                        {bonusRewardRatePerDay !== 0 && (
+                            <div className="flex gap-4 items-center">
+                                <CurrencyLogo
+                                    size={32}
+                                    currency={bonusRewardTokenCurrency}
+                                />
+                                <p>
+                                    {bonusRewardRatePerDay}{' '}
+                                    {farming.bonusRewardToken.symbol} / day
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </CardInfo>
 
-            <div className="w-full flex gap-8">
-                <Button
-                    disabled={
-                        (formattedRewardEarned === 0 &&
-                            formattedBonusRewardEarned === 0) ||
-                        isLoading
-                    }
-                    onClick={handleHarvestAll}
-                    className="w-1/2"
-                >
-                    {isLoading ? <Loader /> : 'Collect Rewards'}
-                </Button>
-                <SelectPositionFarmModal
-                    isHarvestLoading={isLoading}
-                    positions={deposits}
-                    farming={farming}
-                    positionsData={positionsData}
-                />
+                <div className="w-full flex gap-8">
+                    <Button
+                        disabled={
+                            (formattedRewardEarned === 0 &&
+                                formattedBonusRewardEarned === 0) ||
+                            isLoading
+                        }
+                        onClick={handleHarvestAll}
+                        className="w-1/2"
+                    >
+                        {isLoading ? <Loader /> : 'Collect Rewards'}
+                    </Button>
+                    <SelectPositionFarmModal
+                        isHarvestLoading={isLoading}
+                        positions={deposits}
+                        farming={farming}
+                        positionsData={positionsData}
+                    />
+                </div>
             </div>
         </div>
     );

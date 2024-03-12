@@ -1,4 +1,5 @@
 import PageContainer from '@/components/common/PageContainer';
+import ActiveFarming from '@/components/farming/ActiveFarming';
 import Farmings from '@/components/farming/Farmings';
 import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
@@ -223,15 +224,14 @@ const PoolPage = () => {
                                     <h2 className="font-semibold text-xl text-left mt-12">
                                         Farmings
                                     </h2>
-                                    <Farmings
+                                    <ActiveFarming
                                         deposits={deposits && deposits.deposits}
                                         farming={farmingInfo}
                                         positionsData={positionsData}
                                     />
                                 </div>
                             ) : (
-                                !isFarmingLoading &&
-                                !farmingInfo && <LoadingState />
+                                isFarmingLoading && <LoadingState />
                             )}
                         </>
                     )}

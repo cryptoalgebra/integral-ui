@@ -90,6 +90,6 @@ export function useActiveFarming({
     return {
         farmingInfo,
         deposits,
-        isLoading: isLoading || farmingInfo === undefined,
+        isLoading,
     };
 }
