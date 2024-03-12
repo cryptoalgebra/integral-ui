@@ -12,7 +12,7 @@ export function useFarmCheckApprove(tokenId: bigint) {
 
     useEffect(() => {
         setApproved(data !== ADDRESS_ZERO);
-    }, [tokenId, data]);
+    }, [tokenId]);
 
     return {
         approved,

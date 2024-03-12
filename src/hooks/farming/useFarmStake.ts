@@ -5,7 +5,7 @@ import { useTransitionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
 import { useEffect } from 'react';
-import { farmingClient } from '@/graphql/clients';
+import { refetchDepositsQuery } from '@/graphql/utils/refetchDepositsQuery';
 
 export function useFarmStake({
     tokenId,
@@ -44,12 +44,7 @@ export function useFarmStake({
 
     useEffect(() => {
         if (isSuccess) {
-            farmingClient.refetchQueries({
-                include: ['Deposits'],
-                onQueryUpdated: (query) => {
-                    query.refetch().then();
-                },
-            });
+            refetchDepositsQuery();
         }
     }, [isSuccess]);
 
@@ -108,7 +103,7 @@ export function useFarmUnstake({
     ];
 
     const { config } = usePrepareContractWrite({
-        address: tokenId ? FARMING_CENTER : undefined,
+        address: account && tokenId ? FARMING_CENTER : undefined,
         abi: farmingCenterABI,
         functionName: 'multicall',
         args: [calldatas],
@@ -123,12 +118,7 @@ export function useFarmUnstake({
 
     useEffect(() => {
         if (isSuccess) {
-            farmingClient.refetchQueries({
-                include: ['Deposits'],
-                onQueryUpdated: (query) => {
-                    query.refetch().then();
-                },
-            });
+            refetchDepositsQuery();
         }
     }, [isSuccess]);
 

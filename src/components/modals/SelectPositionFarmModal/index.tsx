@@ -68,11 +68,12 @@ export function SelectPositionFarmModal({
     };
 
     const availablePositions = positions.filter(
-        (position) => position.eternalFarming === null
+        (position) =>
+            position.eternalFarming === null && position.liquidity > 0n
     );
 
     useEffect(() => {
-        setSelectedPosition(null);
+        if (isSuccess) setSelectedPosition(null);
     }, [isSuccess]);
 
     return (

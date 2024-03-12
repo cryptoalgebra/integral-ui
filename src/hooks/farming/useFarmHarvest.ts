@@ -31,7 +31,7 @@ export function useFarmHarvest({
     });
 
     const { config } = usePrepareContractWrite({
-        address: account ? FARMING_CENTER : undefined,
+        address: account && tokenId ? FARMING_CENTER : undefined,
         abi: farmingCenterABI,
         functionName: 'multicall',
         args: [calldata],
