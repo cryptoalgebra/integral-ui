@@ -14,7 +14,7 @@ import { useFarmCheckApprove } from '@/hooks/farming/useFarmCheckApprove';
 import { cn } from '@/lib/utils';
 import { Farming } from '@/types/farming-info';
 import { FormattedPosition } from '@/types/formatted-position';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFarmStake } from '@/hooks/farming/useFarmStake';
 
 interface SelectPositionFarmModalProps {
@@ -30,12 +30,18 @@ export function SelectPositionFarmModal({
     positionsData,
     isHarvestLoading,
 }: SelectPositionFarmModalProps) {
-    const [selectedPosition, setSelectedPosition] = useState<Deposit>();
+    const [selectedPosition, setSelectedPosition] = useState<Deposit | null>(
+        null
+    );
     const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
 
     const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
 
-    const { isLoading: isStakeLoading, onStake } = useFarmStake({
+    const {
+        isLoading: isStakeLoading,
+        onStake,
+        isSuccess,
+    } = useFarmStake({
         tokenId,
         rewardToken: farming.farming.rewardToken,
         bonusRewardToken: farming.farming.bonusRewardToken,
@@ -64,6 +70,10 @@ export function SelectPositionFarmModal({
     const availablePositions = positions.filter(
         (position) => position.eternalFarming === null
     );
+
+    useEffect(() => {
+        setSelectedPosition(null);
+    }, [isSuccess]);
 
     return (
         <Dialog>
@@ -128,7 +138,7 @@ export function SelectPositionFarmModal({
                     ) : selectedPosition && availablePositions.length > 0 ? (
                         <>
                             <Button
-                                disabled={approved}
+                                disabled={approved || isApproveLoading}
                                 className="w-1/2"
                                 onClick={handleApprove}
                             >
