@@ -230,7 +230,8 @@ const PoolPage = () => {
                                     />
                                 </div>
                             ) : (
-                                <LoadingState />
+                                !isFarmingLoading &&
+                                !farmingInfo && <LoadingState />
                             )}
                         </>
                     )}

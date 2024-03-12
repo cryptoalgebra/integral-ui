@@ -87,5 +87,9 @@ export function useActiveFarming({
         console.log('Positions - ', deposits.deposits);
     }, [deposits]);
 
-    return { farmingInfo, deposits, isLoading };
+    return {
+        farmingInfo,
+        deposits,
+        isLoading: isLoading || farmingInfo === undefined,
+    };
 }
