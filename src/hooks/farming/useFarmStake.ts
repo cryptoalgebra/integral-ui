@@ -4,8 +4,6 @@ import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { useTransitionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
-import { useEffect } from 'react';
-import { refetchDepositsQuery } from '@/graphql/utils/refetchDepositsQuery';
 
 export function useFarmStake({
     tokenId,
@@ -41,12 +39,6 @@ export function useFarmStake({
         data?.hash,
         `Stake Position #${tokenId}`
     );
-
-    useEffect(() => {
-        if (isSuccess) {
-            refetchDepositsQuery();
-        }
-    }, [isSuccess]);
 
     return {
         isLoading,
@@ -115,12 +107,6 @@ export function useFarmUnstake({
         data?.hash,
         `Unstake Position #${tokenId}`
     );
-
-    useEffect(() => {
-        if (isSuccess) {
-            refetchDepositsQuery();
-        }
-    }, [isSuccess]);
 
     return {
         isLoading,

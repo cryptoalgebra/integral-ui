@@ -18,6 +18,7 @@ const MyPositions = ({
     return (
         <div className="flex flex-col min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl">
             <DataTable
+                defaultSortingID="liquidityUSD"
                 columns={myPositionsColumns}
                 data={positions}
                 action={selectPosition}

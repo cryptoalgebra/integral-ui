@@ -48,16 +48,14 @@ export function useActiveFarming({
         },
     });
 
-    const {
-        data: deposits,
-        // refetch,
-    } = useDepositsQuery({
+    const { data: deposits } = useDepositsQuery({
         variables: {
             owner: account,
             pool: poolId,
         },
         client: farmingClient,
         skip: !poolInfo,
+        pollInterval: 5000,
     });
 
     useEffect(() => {
@@ -88,16 +86,6 @@ export function useActiveFarming({
         if (!deposits) return;
         console.log('Positions - ', deposits.deposits);
     }, [deposits]);
-
-    // useEffect(() => {
-    //     if (!deposits) return;
-
-    //     const timeoutId = setInterval(() => {
-    //         console.log('refetching deps... ');
-    //         refetch();
-    //     }, 5000);
-
-    // }, []);
 
     return { farmingInfo, deposits, isLoading };
 }

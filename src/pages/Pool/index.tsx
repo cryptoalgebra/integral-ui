@@ -47,6 +47,15 @@ const PoolPage = () => {
 
     const { data: bundles } = useNativePriceQuery();
 
+    const {
+        farmingInfo,
+        deposits,
+        isLoading: isFarmingLoading,
+    } = useActiveFarming({
+        poolId: poolId,
+        poolInfo: poolInfo,
+    });
+
     const [positionsFees, setPositionsFees] = useState<any>();
     const [positionsAPRs, setPositionsAPRs] = useState<any>();
 
@@ -143,22 +152,32 @@ const PoolPage = () => {
     };
 
     const positionsData = useMemo(() => {
-        if (!filteredPositions || !poolEntity) return [];
+        if (!filteredPositions || !poolEntity || !deposits) return [];
 
-        return filteredPositions.map(
-            ({ positionId, position }, idx) =>
-                ({
-                    id: positionId,
-                    outOfRange:
-                        poolEntity.tickCurrent < position.tickLower ||
-                        poolEntity.tickCurrent > position.tickUpper,
-                    range: `${position.token0PriceLower.toFixed()} — ${position.token0PriceUpper.toFixed()}`,
-                    liquidityUSD: formatLiquidityUSD(position),
-                    feesUSD: formatFeesUSD(idx),
-                    apr: formatAPR(idx),
-                } as FormattedPosition)
-        );
-    }, [filteredPositions, poolEntity, poolInfo, positionsFees, positionsAPRs]);
+        return filteredPositions.map(({ positionId, position }, idx) => {
+            const currentPosition = deposits.deposits.find(
+                (deposit) => Number(deposit.id) === Number(positionId)
+            );
+            return {
+                id: positionId,
+                outOfRange:
+                    poolEntity.tickCurrent < position.tickLower ||
+                    poolEntity.tickCurrent > position.tickUpper,
+                range: `${position.token0PriceLower.toFixed()} — ${position.token0PriceUpper.toFixed()}`,
+                liquidityUSD: formatLiquidityUSD(position),
+                feesUSD: formatFeesUSD(idx),
+                apr: formatAPR(idx),
+                inFarming: currentPosition?.eternalFarming ? true : false,
+            } as FormattedPosition;
+        });
+    }, [
+        filteredPositions,
+        poolEntity,
+        poolInfo,
+        positionsFees,
+        positionsAPRs,
+        deposits,
+    ]);
 
     const selectedPosition = useMemo(() => {
         if (!positionsData || !selectedPositionId) return;
@@ -170,15 +189,6 @@ const PoolPage = () => {
 
     const noPositions =
         !positionsLoading && positionsData.length === 0 && poolEntity;
-
-    const {
-        farmingInfo,
-        deposits,
-        isLoading: isFarmingLoading,
-    } = useActiveFarming({
-        poolId: poolId,
-        poolInfo: poolInfo,
-    });
 
     return (
         <PageContainer>
