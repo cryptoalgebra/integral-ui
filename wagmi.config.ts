@@ -1,7 +1,7 @@
 import { ContractConfig, defineConfig } from '@wagmi/cli'
 import { actions, react } from '@wagmi/cli/plugins'
 import { ALGEBRA_FACTORY, ALGEBRA_POSITION_MANAGER, ALGEBRA_QUOTER, ALGEBRA_QUOTER_V2, ALGEBRA_ROUTER } from './src/constants/addresses'
-import { algebraFactoryABI, algebraPoolABI, algebraPositionManagerABI, algebraQuoterABI, algebraBasePluginABI, algebraRouterABI, algebraQuoterV2ABI } from './src/abis'
+import { algebraFactoryABI, algebraPoolABI, algebraPositionManagerABI, algebraQuoterABI, algebraBasePluginABI, algebraRouterABI, algebraQuoterV2ABI, wNativeABI } from './src/abis'
 
 const contracts: ContractConfig[] = [
   {
@@ -36,6 +36,10 @@ const contracts: ContractConfig[] = [
     address: ALGEBRA_ROUTER,
     abi: algebraRouterABI,
     name: 'AlgebraRouter'
+  },
+  {
+    abi: wNativeABI,
+    name: 'WrappedNative'
   }
 ]
 

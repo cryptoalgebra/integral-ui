@@ -17,3 +17,11 @@ export const SINGLE_TOKEN = gql`
         }
     }
 `
+
+export const ALL_TOKENS = gql`
+    query AllTokens {
+        tokens {
+            ...TokenFields
+        }
+    }
+`
