@@ -61,28 +61,44 @@ const ActiveFarming = ({
 
     const formattedTVL = TVL.toFixed(2);
 
-    const rewardRatePerDay =
-        Number(
-            formatUnits(
-                farming.farming.rewardRate,
-                farming.rewardToken.decimals
-            )
-        ) *
-        60 *
-        60 *
-        24;
+    const rewardRatePerDay = isSameReward
+        ? (
+              Number(
+                  formatUnits(
+                      farming.farming.rewardRate,
+                      farming.rewardToken.decimals
+                  )
+              ) *
+              60 *
+              60 *
+              24 *
+              2
+          ).toFixed(2)
+        : (
+              Number(
+                  formatUnits(
+                      farming.farming.rewardRate,
+                      farming.rewardToken.decimals
+                  )
+              ) *
+              60 *
+              60 *
+              24
+          ).toFixed(2);
 
     const bonusRewardRatePerDay = isSameReward
         ? 0
-        : Number(
-              formatUnits(
-                  farming.farming.bonusRewardRate,
-                  farming.bonusRewardToken.decimals
-              )
-          ) *
-          60 *
-          60 *
-          24;
+        : (
+              Number(
+                  formatUnits(
+                      farming.farming.bonusRewardRate,
+                      farming.bonusRewardToken.decimals
+                  )
+              ) *
+              60 *
+              60 *
+              24
+          ).toFixed(2);
 
     const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
         {
@@ -145,10 +161,10 @@ const ActiveFarming = ({
                     <CardInfo
                         additional={
                             !isSameReward
-                                ? `${formattedRewardEarned.toFixed(0)} ${
+                                ? `${formattedRewardEarned.toFixed(2)} ${
                                       farming.rewardToken.symbol
                                   } + ${formattedBonusRewardEarned.toFixed(
-                                      0
+                                      2
                                   )} ${farming.bonusRewardToken.symbol}`
                                 : ''
                         }
@@ -157,7 +173,10 @@ const ActiveFarming = ({
                     >
                         <p className="text-cyan-300">
                             $
-                            {formattedRewardEarned + formattedBonusRewardEarned}
+                            {(
+                                formattedRewardEarned +
+                                formattedBonusRewardEarned
+                            ).toFixed(4)}
                         </p>
                     </CardInfo>
                 </div>
