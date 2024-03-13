@@ -4,6 +4,7 @@ import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
+import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { ApprovalState } from "@/types/approve-state";
 import { SwapField } from "@/types/swap-field";
@@ -22,8 +23,12 @@ const SwapButton = () => {
 
     const { address: account } = useAccount()
 
-    const { independentField } = useSwapState();
+    const { independentField, typedValue } = useSwapState();
     const { tradeState, toggledTrade: trade, allowedSlippage, parsedAmount, currencies, inputError: swapInputError } = useDerivedSwapInfo();
+
+    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+
+    const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
     const parsedAmounts = useMemo(
         () => ({
@@ -78,6 +83,10 @@ const SwapButton = () => {
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>
 
     if (isWrongChain) return <Button variant={'destructive'} onClick={() => open({view: 'Networks'})}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
+
+    if (showWrap && wrapInputError) return <Button disabled>{wrapInputError}</Button>
+
+    if (showWrap) return <Button onClick={() => onWrap && onWrap()}>{isWrapLoading ? <Loader/> : wrapType === WrapType.WRAP ? 'Wrap' : 'Unwrap'}</Button>
 
     if (routeNotFound && userHasSpecifiedInputOutput)
         return (

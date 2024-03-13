@@ -21,7 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         onChange={e => {
           let value = e.target.value.replace(/,/g, ".")
-          value = value.indexOf(".") >= 0 ? value.slice(0, value.indexOf(".") + maxDecimals) : value
+          value = value.indexOf(".") >= 0 ? value.slice(0, value.indexOf(".") + maxDecimals + 1) : value
           if (value === "" || inputRegex.test(value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))) {
             onUserInput && onUserInput(value)
           }
