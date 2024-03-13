@@ -66,15 +66,17 @@ const DataTable = <TData, TValue>({
         },
     });
 
-    const farmingPositions = data.filter((pos) => pos.inFarming);
+    const farmingPositions = data.filter((pos: any) => pos.inFarming);
 
-    const zeroLiquidityPositions = data.filter((pos) => pos.liquidityUSD === 0);
+    const zeroLiquidityPositions = data.filter(
+        (pos: any) => pos.liquidityUSD === 0
+    );
 
     function renderFarmingPositions() {
         if (farmingPositions.length === 0) return null;
         let firstMatchFound = false;
 
-        return table.getRowModel().rows.map((row) => {
+        return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
             if (row.original.inFarming) {
                 const renderIndex = firstMatchFound ? null : (
@@ -131,7 +133,7 @@ const DataTable = <TData, TValue>({
         if (zeroLiquidityPositions.length === 0) return null;
         let firstMatchFound = false;
 
-        return table.getRowModel().rows.map((row) => {
+        return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
             if (row.original.liquidityUSD === 0) {
                 const renderIndex = firstMatchFound ? null : (
