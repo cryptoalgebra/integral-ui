@@ -1,6 +1,5 @@
 import PageContainer from '@/components/common/PageContainer';
 import ActiveFarming from '@/components/farming/ActiveFarming';
-import Farmings from '@/components/farming/Farmings';
 import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
 import PoolHeader from '@/components/pool/PoolHeader';
@@ -237,14 +236,12 @@ const PoolPage = () => {
                     )}
                 </div>
 
-                {farmingInfo && (
-                    <div className="flex flex-col gap-8 w-full h-full">
-                        <PositionCard
-                            farming={farmingInfo}
-                            selectedPosition={selectedPosition}
-                        />
-                    </div>
-                )}
+                <div className="flex flex-col gap-8 w-full h-full">
+                    <PositionCard
+                        farming={farmingInfo}
+                        selectedPosition={selectedPosition}
+                    />
+                </div>
             </div>
         </PageContainer>
     );

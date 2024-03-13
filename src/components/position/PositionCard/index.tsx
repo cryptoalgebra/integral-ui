@@ -26,7 +26,7 @@ import { useFarmHarvest } from '@/hooks/farming/useFarmHarvest';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
-    farming: Farming;
+    farming?: Farming | null;
 }
 
 const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
@@ -36,23 +36,27 @@ const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
 
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
 
-    const { onHarvest, isLoading: isHarvesting } = useFarmHarvest({
-        tokenId: positionInFarming ? BigInt(positionInFarming?.id) : 0n,
-        rewardToken: farming.farming.rewardToken,
-        bonusRewardToken: farming.farming.bonusRewardToken,
-        pool: farming.farming.pool,
-        nonce: farming.farming.nonce,
-        account: account ?? ADDRESS_ZERO,
-    });
+    const farmingArgs = {
+        tokenId:
+            positionInFarming && farming ? BigInt(positionInFarming?.id) : 0n,
+        rewardToken:
+            positionInFarming && farming
+                ? farming.farming.rewardToken
+                : ADDRESS_ZERO,
+        bonusRewardToken:
+            positionInFarming && farming
+                ? farming.farming.bonusRewardToken
+                : ADDRESS_ZERO,
+        pool:
+            positionInFarming && farming ? farming.farming.pool : ADDRESS_ZERO,
+        nonce: positionInFarming && farming ? farming.farming.nonce : 0n,
+        account:
+            account && positionInFarming && farming ? account : ADDRESS_ZERO,
+    };
 
-    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake({
-        tokenId: positionInFarming ? BigInt(positionInFarming?.id) : 0n,
-        rewardToken: farming.farming.rewardToken,
-        bonusRewardToken: farming.farming.bonusRewardToken,
-        pool: farming.farming.pool,
-        nonce: farming.farming.nonce,
-        account: account ?? ADDRESS_ZERO,
-    });
+    const { onHarvest, isLoading: isHarvesting } = useFarmHarvest(farmingArgs);
+
+    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
 
     const handleUnstake = async () => {
         if (!positionInFarming) return;
@@ -161,12 +165,18 @@ const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
             <div className="flex gap-4 w-full whitespace-nowrap">
                 <RemoveLiquidityModal positionId={selectedPosition.id} />
             </div>
-            {positionInFarming && (
+            {positionInFarming && farming && (
                 <div className="flex flex-col gap-6">
-                    <Button onClick={handleHarvest} disabled={isHarvesting}>
+                    <Button
+                        onClick={handleHarvest}
+                        disabled={isHarvesting || isUnstaking}
+                    >
                         {isHarvesting ? <Loader /> : 'Harvest rewards'}
                     </Button>
-                    <Button onClick={handleUnstake} disabled={isUnstaking}>
+                    <Button
+                        onClick={handleUnstake}
+                        disabled={isUnstaking || isHarvesting}
+                    >
                         {isUnstaking ? <Loader /> : 'Exit from farming'}
                     </Button>
                 </div>

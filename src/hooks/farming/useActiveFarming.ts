@@ -18,7 +18,7 @@ export function useActiveFarming({
 }) {
     const { address: account } = useAccount();
 
-    const [farmingInfo, setFarmingInfo] = useState<Farming>();
+    const [farmingInfo, setFarmingInfo] = useState<Farming | null>();
 
     const { farmingClient } = useClients();
 
@@ -59,14 +59,15 @@ export function useActiveFarming({
     });
 
     useEffect(() => {
-        if (!farmings?.eternalFarmings || farmings.eternalFarmings.length === 0)
-            return;
-        if (!rewardToken || !bonusRewardToken || !poolInfo) return;
-
+        if (!farmings?.eternalFarmings) return;
         if (!activeFarming) {
-            console.error('Active farming not found');
+            console.log('Active farming not found');
+            setFarmingInfo(null);
             return;
         }
+        if (!poolInfo) return;
+        if (!rewardToken) return;
+        if (!bonusRewardToken) return;
 
         // ! disabled null check
         setFarmingInfo({
@@ -75,7 +76,7 @@ export function useActiveFarming({
             bonusRewardToken: bonusRewardToken.token!,
             pool: poolInfo.pool,
         });
-    }, [farmings, rewardToken, bonusRewardToken, poolInfo]);
+    }, [farmings, rewardToken, bonusRewardToken, poolInfo, activeFarming]);
 
     useEffect(() => {
         if (!farmingInfo) return;
