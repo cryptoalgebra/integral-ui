@@ -13,6 +13,7 @@ import { useCurrency } from '@/hooks/common/useCurrency';
 import { useAccount } from 'wagmi';
 import { useFarmHarvestAll } from '@/hooks/farming/useFarmHarvest';
 import Loader from '@/components/common/Loader';
+import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -106,7 +107,7 @@ const ActiveFarming = ({
             bonusRewardToken: farming.farming.bonusRewardToken,
             pool: farming.farming.pool,
             nonce: farming.farming.nonce,
-            account: account!,
+            account: account ?? ADDRESS_ZERO,
         },
         deposits
     );

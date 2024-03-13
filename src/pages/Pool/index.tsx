@@ -204,7 +204,7 @@ const PoolPage = () => {
                 <div className="col-span-2">
                     {!account ? (
                         <NoAccount />
-                    ) : positionsLoading ? (
+                    ) : positionsLoading || isFarmingLoading ? (
                         <LoadingState />
                     ) : noPositions ? (
                         <NoPositions poolId={poolId} />
@@ -224,7 +224,7 @@ const PoolPage = () => {
                                     )
                                 }
                             />
-                            {farmingInfo && deposits && !isFarmingLoading ? (
+                            {farmingInfo && deposits && !isFarmingLoading && (
                                 <div>
                                     <h2 className="font-semibold text-xl text-left mt-12">
                                         Farmings
@@ -235,8 +235,6 @@ const PoolPage = () => {
                                         positionsData={positionsData}
                                     />
                                 </div>
-                            ) : (
-                                isFarmingLoading && <LoadingState />
                             )}
                         </>
                     )}

@@ -21,7 +21,7 @@ export function useFarmStake({
 }) {
     const { approved } = useFarmCheckApprove(tokenId);
 
-    const address = approved ? FARMING_CENTER : undefined;
+    const address = tokenId && approved ? FARMING_CENTER : undefined;
 
     const { config } = usePrepareContractWrite({
         address,
