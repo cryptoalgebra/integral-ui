@@ -73,7 +73,9 @@ export function SelectPositionFarmModal({
     );
 
     useEffect(() => {
-        if (isSuccess) setSelectedPosition(null);
+        if (isSuccess) {
+            setSelectedPosition(null);
+        }
     }, [isSuccess]);
 
     return (

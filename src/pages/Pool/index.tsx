@@ -1,5 +1,6 @@
 import PageContainer from '@/components/common/PageContainer';
 import ActiveFarming from '@/components/farming/ActiveFarming';
+import ClosedFarming from '@/components/farming/ClosedFarming';
 import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
 import PoolHeader from '@/components/pool/PoolHeader';
@@ -12,6 +13,7 @@ import {
     useSinglePoolQuery,
 } from '@/graphql/generated/graphql';
 import { useActiveFarming } from '@/hooks/farming/useActiveFarming';
+import { useClosedFarmings } from '@/hooks/farming/useClosedFarmings';
 import { usePool } from '@/hooks/pools/usePool';
 import { usePositions } from '@/hooks/positions/usePositions';
 import { FormattedPosition } from '@/types/formatted-position';
@@ -55,6 +57,12 @@ const PoolPage = () => {
         poolId: poolId,
         poolInfo: poolInfo,
     });
+
+    const { closedFarmings, isLoading: isClosedFarmingsLoading } =
+        useClosedFarmings({
+            poolId: poolId,
+            poolInfo: poolInfo,
+        });
 
     const [positionsFees, setPositionsFees] = useState<any>();
     const [positionsAPRs, setPositionsAPRs] = useState<any>();
@@ -231,6 +239,18 @@ const PoolPage = () => {
                                 </div>
                             ) : (
                                 isFarmingLoading && <LoadingState />
+                            )}
+                            {closedFarmings && (
+                                <div>
+                                    <h2 className="font-semibold text-xl text-left mt-12">
+                                        Closed Farmings
+                                    </h2>
+                                    {closedFarmings.map((farming) => {
+                                        return (
+                                            <ClosedFarming farming={farming} />
+                                        );
+                                    })}
+                                </div>
                             )}
                         </>
                     )}

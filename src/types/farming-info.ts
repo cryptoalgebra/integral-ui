@@ -7,6 +7,6 @@ import {
 export interface Farming {
     farming: EternalFarming;
     rewardToken: TokenFieldsFragment;
-    bonusRewardToken: TokenFieldsFragment;
+    bonusRewardToken: TokenFieldsFragment | null;
     pool: SinglePoolQuery['pool'];
 }

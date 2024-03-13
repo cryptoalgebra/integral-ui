@@ -42,7 +42,7 @@ export function useActiveFarming({
     });
 
     const { data: bonusRewardToken } = useSingleTokenQuery({
-        skip: !activeFarming,
+        skip: !activeFarming || !activeFarming?.bonusRewardToken,
         variables: {
             tokenId: activeFarming?.bonusRewardToken,
         },
@@ -63,17 +63,16 @@ export function useActiveFarming({
         if (!poolInfo) return;
         if (!rewardToken) return;
         if (!bonusRewardToken) return;
-        if (!activeFarming || !bonusRewardToken.token || !rewardToken.token) {
+        if (!activeFarming || !rewardToken.token) {
             console.log('Active farming not found');
             setFarmingInfo(null);
             return;
         }
 
-        // ! disabled null check
         setFarmingInfo({
             farming: activeFarming,
-            rewardToken: rewardToken.token!,
-            bonusRewardToken: bonusRewardToken.token!,
+            rewardToken: rewardToken.token,
+            bonusRewardToken: bonusRewardToken.token ?? null,
             pool: poolInfo.pool,
         });
     }, [farmings, rewardToken, bonusRewardToken, poolInfo, activeFarming]);

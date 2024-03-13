@@ -5,6 +5,8 @@ import {
 import { algebraPositionManagerABI } from '@/generated';
 import { useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { useTransitionAwait } from '../common/useTransactionAwait';
+import { useEffect } from 'react';
+import { useFarmCheckApprove } from './useFarmCheckApprove';
 
 export function useFarmApprove(tokenId: bigint) {
     const APPROVE = true;
@@ -22,6 +24,14 @@ export function useFarmApprove(tokenId: bigint) {
         data?.hash,
         `Approve Position #${tokenId}`
     );
+
+    const { handleCheckApprove } = useFarmCheckApprove(tokenId);
+
+    useEffect(() => {
+        if (isSuccess) {
+            handleCheckApprove();
+        }
+    }, [isSuccess]);
 
     return {
         isLoading,

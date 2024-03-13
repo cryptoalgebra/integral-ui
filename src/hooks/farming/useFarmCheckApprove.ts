@@ -5,17 +5,21 @@ import { useEffect, useState } from 'react';
 export function useFarmCheckApprove(tokenId: bigint) {
     const [approved, setApproved] = useState<boolean>();
 
-    const { data, isLoading: isApproveLoading } =
-        useAlgebraPositionManagerFarmingApprovals({
-            args: [tokenId],
-        });
+    const {
+        data,
+        isLoading: isApproveLoading,
+        refetch,
+    } = useAlgebraPositionManagerFarmingApprovals({
+        args: [tokenId],
+    });
 
     useEffect(() => {
         setApproved(data !== ADDRESS_ZERO);
-    }, [tokenId]);
+    }, [tokenId, data]);
 
     return {
         approved,
+        handleCheckApprove: refetch,
         isLoading: approved === undefined || isApproveLoading,
     };
 }

@@ -40,7 +40,7 @@ const ActiveFarming = ({
     );
 
     const formattedBonusRewardEarned = Number(
-        formatUnits(bonusRewardEarned, farming.bonusRewardToken.decimals)
+        formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
     );
 
     const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
@@ -92,7 +92,7 @@ const ActiveFarming = ({
               Number(
                   formatUnits(
                       farming.farming.bonusRewardRate,
-                      farming.bonusRewardToken.decimals
+                      farming.bonusRewardToken?.decimals
                   )
               ) *
               60 *
@@ -165,7 +165,7 @@ const ActiveFarming = ({
                                       farming.rewardToken.symbol
                                   } + ${formattedBonusRewardEarned.toFixed(
                                       2
-                                  )} ${farming.bonusRewardToken.symbol}`
+                                  )} ${farming.bonusRewardToken?.symbol}`
                                 : ''
                         }
                         className="w-1/2"
@@ -203,7 +203,7 @@ const ActiveFarming = ({
                                 />
                                 <p>
                                     {bonusRewardRatePerDay}{' '}
-                                    {farming.bonusRewardToken.symbol} / day
+                                    {farming.bonusRewardToken?.symbol} / day
                                 </p>
                             </div>
                         )}

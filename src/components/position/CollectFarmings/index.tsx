@@ -29,7 +29,7 @@ const CollectFarmings = ({
     );
 
     const formattedBonusRewardEarned = Number(
-        formatUnits(bonusRewardEarned, farming.bonusRewardToken.decimals)
+        formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
     );
 
     const farmingRewards = (
@@ -77,7 +77,7 @@ const CollectFarmings = ({
         <div className="flex flex-col gap-6">
             <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">
                 <div className="text-left">
-                    <div className="font-bold text-xs">EARNED FARMINGS</div>
+                    <div className="font-bold text-xs">EARNED REWARDS</div>
                     <div className="font-semibold text-2xl">
                         <span className="text-cyan-300 drop-shadow-cyan">
                             ${farmingRewards}
@@ -89,7 +89,7 @@ const CollectFarmings = ({
                     disabled={isHarvesting || isUnstaking}
                     onClick={handleHarvest}
                 >
-                    {isHarvesting ? <Loader /> : 'Collect farmings'}
+                    {isHarvesting ? <Loader /> : 'Collect'}
                 </Button>
             </div>
             <Button
