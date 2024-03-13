@@ -35,17 +35,17 @@ const ActiveFarming = ({
         farming.farming.bonusRewardToken
     );
 
-    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
-    const bonusRewardTokenCurrency = useCurrency(
-        farming.farming.bonusRewardToken
-    );
-
     const formattedRewardEarned = Number(
         formatUnits(rewardEarned, farming.rewardToken.decimals)
     );
 
     const formattedBonusRewardEarned = Number(
         formatUnits(bonusRewardEarned, farming.bonusRewardToken.decimals)
+    );
+
+    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
+    const bonusRewardTokenCurrency = useCurrency(
+        farming.farming.bonusRewardToken
     );
 
     const TVL = deposits.reduce((acc, deposit) => {

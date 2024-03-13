@@ -3,11 +3,7 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import {
-    ADDRESS_ZERO,
-    INITIAL_POOL_FEE,
-    Position,
-} from '@cryptoalgebra/integral-sdk';
+import { INITIAL_POOL_FEE, Position } from '@cryptoalgebra/integral-sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';
@@ -17,12 +13,8 @@ import TokenRatio from '@/components/create-position/TokenRatio';
 import { useDerivedMintInfo } from '@/state/mintStore';
 import CollectFees from '../CollectFees';
 import RemoveLiquidityModal from '@/components/modals/RemoveLiquidityModal';
-import { Button } from '@/components/ui/button';
-import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
-import { useAccount } from 'wagmi';
-import Loader from '@/components/common/Loader';
 import { Farming } from '@/types/farming-info';
-import { useFarmHarvest } from '@/hooks/farming/useFarmHarvest';
+import CollectFarmings from '../CollectFarmings';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -32,43 +24,7 @@ interface PositionCardProps {
 const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
     const { loading, position } = usePosition(selectedPosition?.id);
 
-    const { address: account } = useAccount();
-
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
-
-    const farmingArgs = {
-        tokenId:
-            positionInFarming && farming ? BigInt(positionInFarming?.id) : 0n,
-        rewardToken:
-            positionInFarming && farming
-                ? farming.farming.rewardToken
-                : ADDRESS_ZERO,
-        bonusRewardToken:
-            positionInFarming && farming
-                ? farming.farming.bonusRewardToken
-                : ADDRESS_ZERO,
-        pool:
-            positionInFarming && farming ? farming.farming.pool : ADDRESS_ZERO,
-        nonce: positionInFarming && farming ? farming.farming.nonce : 0n,
-        account:
-            account && positionInFarming && farming ? account : ADDRESS_ZERO,
-    };
-
-    const { onHarvest, isLoading: isHarvesting } = useFarmHarvest(farmingArgs);
-
-    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
-
-    const handleUnstake = async () => {
-        if (!positionInFarming) return;
-        if (!onUnstake) return;
-        onUnstake();
-    };
-
-    const handleHarvest = async () => {
-        if (!positionInFarming) return;
-        if (!onHarvest) return;
-        onHarvest();
-    };
 
     const [, pool] = usePool(position?.pool);
     const positionEntity =
@@ -165,21 +121,11 @@ const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
             <div className="flex gap-4 w-full whitespace-nowrap">
                 <RemoveLiquidityModal positionId={selectedPosition.id} />
             </div>
-            {positionInFarming && farming && (
-                <div className="flex flex-col gap-6">
-                    <Button
-                        onClick={handleHarvest}
-                        disabled={isHarvesting || isUnstaking}
-                    >
-                        {isHarvesting ? <Loader /> : 'Harvest rewards'}
-                    </Button>
-                    <Button
-                        onClick={handleUnstake}
-                        disabled={isUnstaking || isHarvesting}
-                    >
-                        {isUnstaking ? <Loader /> : 'Exit from farming'}
-                    </Button>
-                </div>
+            {farming && selectedPosition && positionInFarming && (
+                <CollectFarmings
+                    farming={farming}
+                    selectedPosition={positionInFarming}
+                />
             )}
         </div>
     );
