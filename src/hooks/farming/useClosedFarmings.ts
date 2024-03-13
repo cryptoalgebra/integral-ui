@@ -1,12 +1,10 @@
 import {
-    SinglePoolQuery,
     EternalFarming,
+    SinglePoolQuery,
     useEternalFarmingsQuery,
-    useDepositsQuery,
 } from '@/graphql/generated/graphql';
 import { useEffect, useState } from 'react';
 import { Address } from 'viem';
-import { useAccount } from 'wagmi';
 import { useClients } from '../graphql/useClients';
 
 export function useClosedFarmings({
@@ -16,29 +14,14 @@ export function useClosedFarmings({
     poolId: Address;
     poolInfo: SinglePoolQuery | undefined;
 }) {
-    const { address: account } = useAccount();
-
     const [closedFarmings, setClosedFarmings] = useState<
         EternalFarming[] | null
     >();
 
     const { farmingClient } = useClients();
 
-    const { data: farmings, loading: isLoading } = useEternalFarmingsQuery({
+    const { data: initialData, loading: isLoading } = useEternalFarmingsQuery({
         variables: {
-            pool: poolId,
-        },
-        client: farmingClient,
-        skip: !poolInfo,
-    });
-
-    const filteredFarmings = farmings?.eternalFarmings.filter(
-        (farming) => farming.isDeactivated
-    );
-
-    const { data: deposits } = useDepositsQuery({
-        variables: {
-            owner: account,
             pool: poolId,
         },
         client: farmingClient,
@@ -46,19 +29,21 @@ export function useClosedFarmings({
     });
 
     useEffect(() => {
-        if (!farmings?.eternalFarmings) return;
-        if (!poolInfo) return;
-        if (!filteredFarmings) {
-            console.log('Closed farmings not found');
-            setClosedFarmings(null);
-            return;
+        if (initialData && initialData.eternalFarmings) {
+            const filteredFarmings = initialData.eternalFarmings.filter(
+                (farming) => farming.isDeactivated
+            );
+            setClosedFarmings(filteredFarmings);
         }
-        setClosedFarmings(closedFarmings);
-    }, [deposits, farmings, poolInfo, closedFarmings]);
+    }, [initialData]);
+
+    useEffect(() => {
+        if (!closedFarmings) return;
+        console.log('closedFarmings', closedFarmings);
+    }, [closedFarmings]);
 
     return {
         closedFarmings,
-        deposits,
         isLoading,
     };
 }

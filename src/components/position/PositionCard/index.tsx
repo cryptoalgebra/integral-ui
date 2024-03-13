@@ -3,7 +3,11 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import { INITIAL_POOL_FEE, Position } from '@cryptoalgebra/integral-sdk';
+import {
+    ADDRESS_ZERO,
+    INITIAL_POOL_FEE,
+    Position,
+} from '@cryptoalgebra/integral-sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';
@@ -15,16 +19,54 @@ import CollectFees from '../CollectFees';
 import RemoveLiquidityModal from '@/components/modals/RemoveLiquidityModal';
 import { Farming } from '@/types/farming-info';
 import CollectFarmings from '../CollectFarmings';
+import { EternalFarming } from '@/graphql/generated/graphql';
+import { Button } from '@/components/ui/button';
+import { useAccount } from 'wagmi';
+import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
+import Loader from '@/components/common/Loader';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
     farming?: Farming | null;
+    closedFarmings?: EternalFarming[] | null;
 }
 
-const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
+const PositionCard = ({
+    selectedPosition,
+    farming,
+    closedFarmings,
+}: PositionCardProps) => {
+    const { address: account } = useAccount();
+
     const { loading, position } = usePosition(selectedPosition?.id);
 
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
+
+    const positionInEndedFarming = closedFarmings?.filter(
+        (closedFarming) =>
+            closedFarming.id === positionInFarming?.eternalFarming
+    )[0];
+
+    const farmingArgs = {
+        tokenId: positionInEndedFarming
+            ? BigInt(selectedPosition?.id ?? 0)
+            : 0n,
+        rewardToken: positionInEndedFarming
+            ? positionInEndedFarming.rewardToken
+            : ADDRESS_ZERO,
+        bonusRewardToken: positionInEndedFarming
+            ? positionInEndedFarming.bonusRewardToken
+            : ADDRESS_ZERO,
+        pool: positionInEndedFarming
+            ? positionInEndedFarming.pool
+            : ADDRESS_ZERO,
+        nonce: positionInEndedFarming
+            ? positionInEndedFarming.nonce
+            : ADDRESS_ZERO,
+        account: account ?? ADDRESS_ZERO,
+    };
+
+    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
 
     const [, pool] = usePool(position?.pool);
     const positionEntity =
@@ -126,6 +168,11 @@ const PositionCard = ({ selectedPosition, farming }: PositionCardProps) => {
                     farming={farming}
                     selectedPosition={positionInFarming}
                 />
+            )}
+            {positionInEndedFarming && (
+                <Button disabled={isUnstaking} onClick={onUnstake}>
+                    {isUnstaking ? <Loader /> : 'Exit from farming'}
+                </Button>
             )}
         </div>
     );

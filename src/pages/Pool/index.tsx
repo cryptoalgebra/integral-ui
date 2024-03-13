@@ -1,6 +1,5 @@
 import PageContainer from '@/components/common/PageContainer';
 import ActiveFarming from '@/components/farming/ActiveFarming';
-import ClosedFarming from '@/components/farming/ClosedFarming';
 import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
 import PoolHeader from '@/components/pool/PoolHeader';
@@ -239,18 +238,6 @@ const PoolPage = () => {
                             ) : (
                                 isFarmingLoading && <LoadingState />
                             )}
-                            {closedFarmings && (
-                                <div>
-                                    <h2 className="font-semibold text-xl text-left mt-12">
-                                        Closed Farmings
-                                    </h2>
-                                    {closedFarmings.map((farming) => {
-                                        return (
-                                            <ClosedFarming farming={farming} />
-                                        );
-                                    })}
-                                </div>
-                            )}
                         </>
                     )}
                 </div>
@@ -258,6 +245,7 @@ const PoolPage = () => {
                 <div className="flex flex-col gap-8 w-full h-full">
                     <PositionCard
                         farming={farmingInfo}
+                        closedFarmings={closedFarmings}
                         selectedPosition={selectedPosition}
                     />
                 </div>
