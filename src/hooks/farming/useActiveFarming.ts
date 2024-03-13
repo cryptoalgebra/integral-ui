@@ -60,14 +60,14 @@ export function useActiveFarming({
 
     useEffect(() => {
         if (!farmings?.eternalFarmings) return;
-        if (!activeFarming) {
+        if (!poolInfo) return;
+        if (!rewardToken) return;
+        if (!bonusRewardToken) return;
+        if (!activeFarming || !bonusRewardToken.token || !rewardToken.token) {
             console.log('Active farming not found');
             setFarmingInfo(null);
             return;
         }
-        if (!poolInfo) return;
-        if (!rewardToken) return;
-        if (!bonusRewardToken) return;
 
         // ! disabled null check
         setFarmingInfo({
