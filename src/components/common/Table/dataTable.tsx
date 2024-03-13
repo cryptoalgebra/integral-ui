@@ -113,7 +113,7 @@ const DataTable = <TData, TValue>({
                                 }
                             }}
                         >
-                            {row.getVisibleCells().map((cell) => (
+                            {row.getVisibleCells().map((cell: any) => (
                                 <TableCell key={cell.id} className="text-left">
                                     {flexRender(
                                         cell.column.columnDef.cell,
@@ -170,7 +170,7 @@ const DataTable = <TData, TValue>({
                                 }
                             }}
                         >
-                            {row.getVisibleCells().map((cell) => (
+                            {row.getVisibleCells().map((cell: any) => (
                                 <TableCell key={cell.id} className="text-left">
                                     {flexRender(
                                         cell.column.columnDef.cell,
