@@ -30,10 +30,10 @@ export function SelectPositionFarmModal({
     positionsData,
     isHarvestLoading,
 }: SelectPositionFarmModalProps) {
-    const [selectedPosition, setSelectedPosition] = useState<Deposit | null>(
-        null
-    );
+    const [selectedPosition, setSelectedPosition] = useState<Deposit | null>();
     const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
+
+    const { approved, isLoading: isApproving } = useFarmCheckApprove(tokenId);
 
     const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
 
@@ -48,8 +48,6 @@ export function SelectPositionFarmModal({
         pool: farming.farming.pool,
         nonce: farming.farming.nonce,
     });
-
-    const { approved, isLoading: isApproving } = useFarmCheckApprove(tokenId);
 
     const handleApprove = async () => {
         if (approved || !onApprove) return;

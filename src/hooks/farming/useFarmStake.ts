@@ -4,6 +4,7 @@ import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { useTransitionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
+import { useFarmCheckApprove } from './useFarmCheckApprove';
 
 export function useFarmStake({
     tokenId,
@@ -18,8 +19,12 @@ export function useFarmStake({
     pool: Address;
     nonce: bigint;
 }) {
+    const { approved } = useFarmCheckApprove(tokenId);
+
+    const address = approved ? FARMING_CENTER : undefined;
+
     const { config } = usePrepareContractWrite({
-        address: tokenId ? FARMING_CENTER : undefined,
+        address,
         abi: farmingCenterABI,
         functionName: 'enterFarming',
         args: [
