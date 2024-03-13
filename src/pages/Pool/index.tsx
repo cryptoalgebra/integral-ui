@@ -58,11 +58,10 @@ const PoolPage = () => {
         poolInfo: poolInfo,
     });
 
-    const { closedFarmings, isLoading: isClosedFarmingsLoading } =
-        useClosedFarmings({
-            poolId: poolId,
-            poolInfo: poolInfo,
-        });
+    const { closedFarmings } = useClosedFarmings({
+        poolId: poolId,
+        poolInfo: poolInfo,
+    });
 
     const [positionsFees, setPositionsFees] = useState<any>();
     const [positionsAPRs, setPositionsAPRs] = useState<any>();
