@@ -22,13 +22,14 @@ export function useActiveFarming({
 
     const { farmingClient } = useClients();
 
-    const { data: farmings, loading: isLoading } = useEternalFarmingsQuery({
-        variables: {
-            pool: poolId,
-        },
-        client: farmingClient,
-        skip: !poolInfo,
-    });
+    const { data: farmings, loading: isFarmingLoading } =
+        useEternalFarmingsQuery({
+            variables: {
+                pool: poolId,
+            },
+            client: farmingClient,
+            skip: !poolInfo,
+        });
 
     const activeFarming = farmings?.eternalFarmings.filter(
         (farming) => !farming.isDeactivated
@@ -48,7 +49,7 @@ export function useActiveFarming({
         },
     });
 
-    const { data: deposits } = useDepositsQuery({
+    const { data: deposits, loading: areDepositsLoading } = useDepositsQuery({
         variables: {
             owner: account,
             pool: poolId,
@@ -90,6 +91,7 @@ export function useActiveFarming({
     return {
         farmingInfo,
         deposits,
-        isLoading: isLoading || deposits === undefined,
+        isFarmingLoading,
+        areDepositsLoading,
     };
 }

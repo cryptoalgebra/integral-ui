@@ -48,14 +48,11 @@ const PoolPage = () => {
 
     const { data: bundles } = useNativePriceQuery();
 
-    const {
-        farmingInfo,
-        deposits,
-        isLoading: isFarmingLoading,
-    } = useActiveFarming({
-        poolId: poolId,
-        poolInfo: poolInfo,
-    });
+    const { farmingInfo, deposits, isFarmingLoading, areDepositsLoading } =
+        useActiveFarming({
+            poolId: poolId,
+            poolInfo: poolInfo,
+        });
 
     const { closedFarmings } = useClosedFarmings({
         poolId: poolId,
@@ -173,7 +170,7 @@ const PoolPage = () => {
                 liquidityUSD: formatLiquidityUSD(position),
                 feesUSD: formatFeesUSD(idx),
                 apr: formatAPR(idx),
-                inFarming: currentPosition?.eternalFarming ? true : false,
+                inFarming: Boolean(currentPosition?.eternalFarming),
             } as FormattedPosition;
         });
     }, [
@@ -194,7 +191,9 @@ const PoolPage = () => {
     }, [selectedPositionId, positionsData]);
 
     const noPositions =
-        !positionsLoading && positionsData.length === 0 && poolEntity;
+        (!positionsLoading || !isFarmingLoading || !areDepositsLoading) &&
+        positionsData.length === 0 &&
+        poolEntity;
 
     return (
         <PageContainer>
@@ -204,7 +203,9 @@ const PoolPage = () => {
                 <div className="col-span-2">
                     {!account ? (
                         <NoAccount />
-                    ) : positionsLoading || isFarmingLoading ? (
+                    ) : positionsLoading ||
+                      isFarmingLoading ||
+                      areDepositsLoading ? (
                         <LoadingState />
                     ) : noPositions ? (
                         <NoPositions poolId={poolId} />
@@ -224,18 +225,23 @@ const PoolPage = () => {
                                     )
                                 }
                             />
-                            {farmingInfo && deposits && !isFarmingLoading && (
-                                <div>
-                                    <h2 className="font-semibold text-xl text-left mt-12">
-                                        Farmings
-                                    </h2>
-                                    <ActiveFarming
-                                        deposits={deposits && deposits.deposits}
-                                        farming={farmingInfo}
-                                        positionsData={positionsData}
-                                    />
-                                </div>
-                            )}
+                            {farmingInfo &&
+                                deposits &&
+                                !isFarmingLoading &&
+                                !areDepositsLoading && (
+                                    <div>
+                                        <h2 className="font-semibold text-xl text-left mt-12">
+                                            Farmings
+                                        </h2>
+                                        <ActiveFarming
+                                            deposits={
+                                                deposits && deposits.deposits
+                                            }
+                                            farming={farmingInfo}
+                                            positionsData={positionsData}
+                                        />
+                                    </div>
+                                )}
                         </>
                     )}
                 </div>

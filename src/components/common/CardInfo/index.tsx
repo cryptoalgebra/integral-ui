@@ -26,7 +26,7 @@ const CardInfo: FC<CardInfoProps> = ({
                 <div className="flex items-center mr-auto text-2xl font-bold">
                     {children}
                 </div>
-                {additional && <p>{additional}</p>}
+                {additional && <p className="max-sm:hidden">{additional}</p>}
             </div>
         </div>
     );

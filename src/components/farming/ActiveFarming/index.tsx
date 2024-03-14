@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SelectPositionFarmModal } from '@/components/modals/SelectPositionFarmModal';
 import { isSameRewards } from '@/utils/farming/isSameRewards';
-import { Deposit } from '@/graphql/generated/graphql';
+import { Deposit, useNativePriceQuery } from '@/graphql/generated/graphql';
 import { Farming } from '@/types/farming-info';
 import { Button } from '@/components/ui/button';
 import CardInfo from '@/components/common/CardInfo';
@@ -31,6 +31,9 @@ const ActiveFarming = ({
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
 
+    const { data: nativePrice, loading: nativePriceLoading } =
+        useNativePriceQuery();
+
     const isSameReward = isSameRewards(
         farming.farming.rewardToken,
         farming.farming.bonusRewardToken
@@ -43,6 +46,16 @@ const ActiveFarming = ({
     const formattedBonusRewardEarned = Number(
         formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
     );
+
+    const rewardEarnedUSD =
+        formattedRewardEarned *
+        farming.rewardToken.derivedMatic *
+        nativePrice?.bundles[0].maticPriceUSD;
+
+    const bonusRewardEarnedUSD =
+        formattedBonusRewardEarned *
+        farming.bonusRewardToken?.derivedMatic *
+        nativePrice?.bundles[0].maticPriceUSD;
 
     const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
     const bonusRewardTokenCurrency = useCurrency(
@@ -62,44 +75,27 @@ const ActiveFarming = ({
 
     const formattedTVL = TVL.toFixed(2);
 
-    const rewardRatePerDay = isSameReward
-        ? (
-              Number(
-                  formatUnits(
-                      farming.farming.rewardRate,
-                      farming.rewardToken.decimals
-                  )
-              ) *
-              60 *
-              60 *
-              24 *
-              2
-          ).toFixed(2)
-        : (
-              Number(
-                  formatUnits(
-                      farming.farming.rewardRate,
-                      farming.rewardToken.decimals
-                  )
-              ) *
-              60 *
-              60 *
-              24
-          ).toFixed(2);
+    const rewardRatePerDay =
+        Number(
+            formatUnits(
+                farming.farming.rewardRate,
+                farming.rewardToken.decimals
+            )
+        ) *
+        60 *
+        60 *
+        24;
 
-    const bonusRewardRatePerDay = isSameReward
-        ? 0
-        : (
-              Number(
-                  formatUnits(
-                      farming.farming.bonusRewardRate,
-                      farming.bonusRewardToken?.decimals
-                  )
-              ) *
-              60 *
-              60 *
-              24
-          ).toFixed(2);
+    const bonusRewardRatePerDay =
+        Number(
+            formatUnits(
+                farming.farming.bonusRewardRate,
+                farming.bonusRewardToken?.decimals
+            )
+        ) *
+        60 *
+        60 *
+        24;
 
     const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
         {
@@ -148,13 +144,13 @@ const ActiveFarming = ({
 
     return (
         <div className="flex items-center justify-center min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl mt-8">
-            <div className="flex flex-col w-full p-8 gap-8">
-                <div className="flex w-full gap-8">
-                    <div className="flex w-1/2 gap-8">
-                        <CardInfo className="w-full" title="APR">
+            <div className="flex flex-col w-full max-sm:p-6 p-8 gap-8">
+                <div className="flex max-sm:flex-col w-full gap-8">
+                    <div className="flex max-xs:flex-col w-full gap-8">
+                        <CardInfo className="w-1/2 max-xs:w-full" title="APR">
                             <p className="text-green-300">45%</p>
                         </CardInfo>
-                        <CardInfo className="w-full" title="TVL">
+                        <CardInfo className="w-1/2 max-xs:w-full" title="TVL">
                             <p className="text-purple-300">${formattedTVL}</p>
                         </CardInfo>
                     </div>
@@ -169,45 +165,73 @@ const ActiveFarming = ({
                                   )} ${farming.bonusRewardToken?.symbol}`
                                 : ''
                         }
-                        className="w-1/2"
+                        className="w-full"
                         title="EARNED"
                     >
                         <p className="text-cyan-300">
                             $
-                            {(
-                                formattedRewardEarned +
-                                formattedBonusRewardEarned
-                            ).toFixed(4)}
+                            {!nativePriceLoading &&
+                                (
+                                    rewardEarnedUSD + bonusRewardEarnedUSD
+                                ).toFixed(4)}
                         </p>
                     </CardInfo>
                 </div>
 
                 <CardInfo title="Rewards">
-                    <div className="flex gap-12 h-12">
+                    <div className="flex gap-12 min-h-12">
                         <div className="flex gap-4 items-center">
-                            <CurrencyLogo
-                                size={32}
-                                currency={rewardTokenCurrency}
-                            />
-                            <p>
-                                {rewardRatePerDay +
-                                    ' ' +
-                                    farming.rewardToken.symbol}{' '}
-                                / day
-                            </p>
+                            {isSameReward ? (
+                                <>
+                                    <CurrencyLogo
+                                        size={32}
+                                        currency={rewardTokenCurrency}
+                                    />
+                                    <p>
+                                        {`${(
+                                            rewardRatePerDay +
+                                            bonusRewardRatePerDay
+                                        ).toFixed(2)} ${
+                                            farming.rewardToken.symbol
+                                        } / day`}
+                                    </p>
+                                </>
+                            ) : (
+                                <div className="flex w-full gap-4 max-md:flex-col">
+                                    <div className="flex w-fit h-fit gap-4 items-center">
+                                        <CurrencyLogo
+                                            className="h-fit"
+                                            size={32}
+                                            currency={rewardTokenCurrency}
+                                        />
+                                        <p>
+                                            {`${rewardRatePerDay.toFixed(2)} ${
+                                                farming.rewardToken.symbol
+                                            } / day`}
+                                        </p>
+                                    </div>
+                                    {bonusRewardRatePerDay > 0 && (
+                                        <div className="flex w-fit h-fit gap-4 items-center">
+                                            <CurrencyLogo
+                                                className="h-fit"
+                                                size={32}
+                                                currency={
+                                                    bonusRewardTokenCurrency
+                                                }
+                                            />
+                                            <p>
+                                                {`${bonusRewardRatePerDay.toFixed(
+                                                    2
+                                                )} ${
+                                                    farming.bonusRewardToken
+                                                        ?.symbol
+                                                } / day`}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                        {bonusRewardRatePerDay !== 0 && (
-                            <div className="flex gap-4 items-center">
-                                <CurrencyLogo
-                                    size={32}
-                                    currency={bonusRewardTokenCurrency}
-                                />
-                                <p>
-                                    {bonusRewardRatePerDay}{' '}
-                                    {farming.bonusRewardToken?.symbol} / day
-                                </p>
-                            </div>
-                        )}
                     </div>
                 </CardInfo>
 

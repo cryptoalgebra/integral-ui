@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi';
 import { getFarmingRewards } from '@/utils/farming/getFarmingRewards';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/common/Loader';
-import { Deposit } from '@/graphql/generated/graphql';
+import { Deposit, useNativePriceQuery } from '@/graphql/generated/graphql';
 
 interface CollectFarmingsProps {
     farming: Farming;
@@ -24,6 +24,8 @@ const CollectFarmings = ({
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
 
+    const { data: nativePrice } = useNativePriceQuery();
+
     const formattedRewardEarned = Number(
         formatUnits(rewardEarned, farming.rewardToken.decimals)
     );
@@ -32,9 +34,17 @@ const CollectFarmings = ({
         formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
     );
 
-    const farmingRewards = (
-        formattedRewardEarned + formattedBonusRewardEarned
-    ).toFixed(4);
+    const rewardEarnedUSD =
+        formattedRewardEarned *
+        farming.rewardToken.derivedMatic *
+        nativePrice?.bundles[0].maticPriceUSD;
+
+    const bonusRewardEarnedUSD =
+        formattedBonusRewardEarned *
+        farming.bonusRewardToken?.derivedMatic *
+        nativePrice?.bundles[0].maticPriceUSD;
+
+    const farmingRewards = (rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(4);
 
     const farmingArgs = {
         tokenId: BigInt(selectedPosition.id),

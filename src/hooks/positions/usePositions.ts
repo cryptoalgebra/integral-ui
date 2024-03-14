@@ -183,6 +183,6 @@ export function usePositionInFarming(tokenId: string | number | undefined) {
         (deposit) => Number(deposit.id) === Number(tokenId)
     );
 
-    if (!positionInFarming) return null;
-    else return positionInFarming;
+    if (!positionInFarming) return;
+    return positionInFarming;
 }

@@ -3,7 +3,7 @@ import {
     SinglePoolQuery,
     useEternalFarmingsQuery,
 } from '@/graphql/generated/graphql';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Address } from 'viem';
 import { useClients } from '../graphql/useClients';
 
@@ -28,7 +28,7 @@ export function useClosedFarmings({
         skip: !poolInfo,
     });
 
-    useEffect(() => {
+    useMemo(() => {
         if (initialData && initialData.eternalFarmings) {
             const filteredFarmings = initialData.eternalFarmings.filter(
                 (farming) => farming.isDeactivated
