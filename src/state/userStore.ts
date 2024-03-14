@@ -13,6 +13,7 @@ interface PendingTransactions {
     [hash: Address]: Transaction
 }
 
+
 interface UserState {
     txDeadline: number;
     slippage: Percent | "auto";
@@ -22,7 +23,7 @@ interface UserState {
         setSlippage: (slippage: Percent | "auto") => void;
         addPendingTransaction: (hash: Address) => void;
         updatePendingTransaction: (hash: Address, transaction: Transaction) => void;
-        deletePendingTransaction: (hash: Address) => void
+        deletePendingTransaction: (hash: Address) => void;
     }
 }
 
@@ -30,6 +31,7 @@ export const useUserState = create<UserState>((set, get) => ({
     txDeadline: 180,
     slippage: "auto",
     pendingTransactions: {},
+    importedTokens: {},
     actions: {
         setTxDeadline: (txDeadline) => set({
             txDeadline
@@ -59,7 +61,7 @@ export const useUserState = create<UserState>((set, get) => ({
             set({
                 pendingTransactions
             })
-        }
+        },
     }
 }))
 

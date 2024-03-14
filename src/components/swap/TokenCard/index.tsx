@@ -1,10 +1,12 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
+import TokenSelectorModal from "@/components/modals/TokenSelectorModal";
 import { Input } from "@/components/ui/input";
 import { SwapFieldType } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { Currency, Percent } from "@cryptoalgebra/integral-sdk";
-import { useCallback, useMemo } from "react";
+import { ChevronRight } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { Address, useAccount, useBalance } from "wagmi";
 
 interface TokenSwapCardProps {
@@ -20,7 +22,9 @@ interface TokenSwapCardProps {
     field: SwapFieldType;
 }
 
-const TokenCard = ({ handleValueChange, handleMaxValue, value, currency, fiatValue, showMaxButton }: TokenSwapCardProps) => {
+const TokenCard = ({ handleTokenSelection, handleValueChange, handleMaxValue, value, currency, otherCurrency, fiatValue, showMaxButton }: TokenSwapCardProps) => {
+
+    const [isOpen, setIsOpen] = useState(false)
 
     const { address: account } = useAccount()
 
@@ -43,12 +47,21 @@ const TokenCard = ({ handleValueChange, handleMaxValue, value, currency, fiatVal
     }, []);
 
 
-    return <div className="flex bg-card-dark p-3 rounded-2xl">
-        <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
-                <CurrencyLogo currency={currency} size={35} />
-                <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
-            </div>
+    const handleTokenSelect = (newCurrency: Currency) => {
+        setIsOpen(false)
+        handleTokenSelection(newCurrency)
+    }
+
+
+    return <div className="flex bg-card-dark px-4 py-6 rounded-2xl">
+        <div className="flex flex-col gap-2 min-w-fit">
+            <TokenSelectorModal onSelect={handleTokenSelect} isOpen={isOpen} setIsOpen={setIsOpen} otherCurrency={otherCurrency}>
+                <button className="flex items-center gap-4 px-3 py-1 w-fit bg-card rounded-xl hover:bg-card-hover" onClick={() => setIsOpen(true)}>
+                    <CurrencyLogo currency={currency} size={32} />
+                     <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
+                     <ChevronRight size={16}/>
+                </button>
+            </TokenSelectorModal>
             {currency && account && (
                 <div className={"flex text-sm whitespace-nowrap"}>
                     <div>

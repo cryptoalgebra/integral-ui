@@ -19,6 +19,7 @@ import {
     algebraQuoterV2ABI,
     algebraEternalFarmingABI,
     farmingCenterABI,
+    wNativeABI
 } from './src/abis';
 
 const contracts: ContractConfig[] = [
@@ -64,6 +65,10 @@ const contracts: ContractConfig[] = [
         address: FARMING_CENTER,
         abi: farmingCenterABI,
         name: 'FarmingCenter',
+    },
+    {
+        abi: wNativeABI,
+        name: 'WrappedNative'
     },
 ];
 

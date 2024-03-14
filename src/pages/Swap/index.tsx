@@ -3,7 +3,6 @@ import SwapButton from "@/components/swap/SwapButton";
 import SwapParams from "@/components/swap/SwapParams";
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
-import IntegralPools from "@/components/swap/IntegralPools";
 import AlgebraLogo from '@/assets/algebra-logo.svg'
 import AlgebraIntegral from '@/assets/algebra-itegral.svg'
 
@@ -17,7 +16,7 @@ const SwapPage = () => {
 
             <div className="flex flex-col gap-2">
 
-                <IntegralPools />
+                {/* <IntegralPools /> */}
 
                 <div className="flex flex-col gap-1 w-full bg-card border border-card-border p-2 rounded-3xl">
                     <SwapPair />

@@ -185,7 +185,7 @@ export function useDerivedSwapInfo(): {
 
     const toggledTrade = trade.trade ?? undefined
 
-    const tickAfterSwap = trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap))
+    const tickAfterSwap = trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap[trade.priceAfterSwap.length - 1].toString()))
 
     const allowedSlippage = useSwapSlippageTolerance(toggledTrade)
 
@@ -195,7 +195,9 @@ export function useDerivedSwapInfo(): {
         inputError = `Insufficient ${amountIn.currency.symbol} balance`
     }
 
-    const poolAddress = currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
+    const isWrap = currencies.INPUT && currencies.OUTPUT && currencies.INPUT.wrapped.equals(currencies.OUTPUT.wrapped)
+
+    const poolAddress = isWrap ? undefined : currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
         tokenA: currencies[SwapField.INPUT]!.wrapped,
         tokenB: currencies[SwapField.OUTPUT]!.wrapped
     }).toLowerCase() as Address

@@ -27,7 +27,7 @@ export const useBurnState = create<BurnState>((set) => ({
 
 export function useDerivedBurnInfo(
     position?: PositionFromTokenId,
-    asWETH = false,
+    asWNative = false,
 ): {
     position?: Position;
     liquidityPercentage?: Percent;
@@ -84,14 +84,14 @@ export function useDerivedBurnInfo(
         const liquidityValue0 =
             currency0 && discountedAmount0
                 ? CurrencyAmount.fromRawAmount(
-                    asWETH ? currency0 : unwrappedToken(currency0),
+                    asWNative ? currency0 : unwrappedToken(currency0),
                     discountedAmount0,
                 )
                 : undefined;
         const liquidityValue1 =
             currency1 && discountedAmount1
                 ? CurrencyAmount.fromRawAmount(
-                    asWETH ? currency1 : unwrappedToken(currency1),
+                    asWNative ? currency1 : unwrappedToken(currency1),
                     discountedAmount1,
                 )
                 : undefined;
@@ -107,7 +107,7 @@ export function useDerivedBurnInfo(
     const { amount0: feeValue0, amount1: feeValue1 } = usePositionFees(
         pool ?? undefined,
         Number(position?.tokenId),
-        asWETH,
+        asWNative,
     );
 
     const outOfRange =
