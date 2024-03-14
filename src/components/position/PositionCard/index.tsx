@@ -133,7 +133,7 @@ const PositionCard = ({
             <div className="flex gap-4 w-full whitespace-nowrap">
                 <RemoveLiquidityModal positionId={selectedPosition.id} />
             </div>
-            {positionInFarming && farming && (
+            {positionInFarming && farming && !positionInEndedFarming && (
                 <ActiveFarmingCard
                     farming={farming}
                     selectedPosition={positionInFarming}

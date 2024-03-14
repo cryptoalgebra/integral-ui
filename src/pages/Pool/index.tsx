@@ -232,7 +232,7 @@ const PoolPage = () => {
                                 !areDepositsLoading && (
                                     <div>
                                         <h2 className="font-semibold text-xl text-left mt-12">
-                                            Farmings
+                                            Farming
                                         </h2>
                                         <ActiveFarming
                                             deposits={
