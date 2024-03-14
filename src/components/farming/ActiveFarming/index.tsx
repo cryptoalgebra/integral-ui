@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SelectPositionFarmModal } from '@/components/modals/SelectPositionFarmModal';
 import { isSameRewards } from '@/utils/farming/isSameRewards';
-import { Deposit, useNativePriceQuery } from '@/graphql/generated/graphql';
+import { Deposit } from '@/graphql/generated/graphql';
 import { Farming } from '@/types/farming-info';
 import { Button } from '@/components/ui/button';
 import CardInfo from '@/components/common/CardInfo';
@@ -14,6 +14,7 @@ import { useAccount } from 'wagmi';
 import { useFarmHarvestAll } from '@/hooks/farming/useFarmHarvest';
 import Loader from '@/components/common/Loader';
 import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -31,9 +32,6 @@ const ActiveFarming = ({
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
 
-    const { data: nativePrice, loading: nativePriceLoading } =
-        useNativePriceQuery();
-
     const isSameReward = isSameRewards(
         farming.farming.rewardToken,
         farming.farming.bonusRewardToken
@@ -47,15 +45,15 @@ const ActiveFarming = ({
         formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
     );
 
-    const rewardEarnedUSD =
-        formattedRewardEarned *
-        farming.rewardToken.derivedMatic *
-        nativePrice?.bundles[0].maticPriceUSD;
+    const rewardEarnedUSD = useRewardEarnedUSD({
+        token: farming.rewardToken,
+        reward: rewardEarned,
+    });
 
-    const bonusRewardEarnedUSD =
-        formattedBonusRewardEarned *
-        farming.bonusRewardToken?.derivedMatic *
-        nativePrice?.bundles[0].maticPriceUSD;
+    const bonusRewardEarnedUSD = useRewardEarnedUSD({
+        token: farming.rewardToken,
+        reward: bonusRewardEarned,
+    });
 
     const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
     const bonusRewardTokenCurrency = useCurrency(
@@ -170,10 +168,9 @@ const ActiveFarming = ({
                     >
                         <p className="text-cyan-300">
                             $
-                            {!nativePriceLoading &&
-                                (
-                                    rewardEarnedUSD + bonusRewardEarnedUSD
-                                ).toFixed(4)}
+                            {(rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(
+                                4
+                            )}
                         </p>
                     </CardInfo>
                 </div>
@@ -238,8 +235,8 @@ const ActiveFarming = ({
                 <div className="w-full flex gap-8">
                     <Button
                         disabled={
-                            (formattedRewardEarned === 0 &&
-                                formattedBonusRewardEarned === 0) ||
+                            (rewardEarnedUSD === 0 &&
+                                bonusRewardEarnedUSD === 0) ||
                             isLoading
                         }
                         onClick={handleHarvestAll}

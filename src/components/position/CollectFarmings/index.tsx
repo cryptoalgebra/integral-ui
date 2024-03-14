@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Farming } from '@/types/farming-info';
-import { formatUnits } from 'viem';
 import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
 import { useFarmHarvest } from '@/hooks/farming/useFarmHarvest';
 import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
@@ -8,7 +7,8 @@ import { useAccount } from 'wagmi';
 import { getFarmingRewards } from '@/utils/farming/getFarmingRewards';
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/common/Loader';
-import { Deposit, useNativePriceQuery } from '@/graphql/generated/graphql';
+import { Deposit } from '@/graphql/generated/graphql';
+import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
 
 interface CollectFarmingsProps {
     farming: Farming;
@@ -24,25 +24,15 @@ const CollectFarmings = ({
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
 
-    const { data: nativePrice } = useNativePriceQuery();
+    const rewardEarnedUSD = useRewardEarnedUSD({
+        token: farming.rewardToken,
+        reward: rewardEarned,
+    });
 
-    const formattedRewardEarned = Number(
-        formatUnits(rewardEarned, farming.rewardToken.decimals)
-    );
-
-    const formattedBonusRewardEarned = Number(
-        formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
-    );
-
-    const rewardEarnedUSD =
-        formattedRewardEarned *
-        farming.rewardToken.derivedMatic *
-        nativePrice?.bundles[0].maticPriceUSD;
-
-    const bonusRewardEarnedUSD =
-        formattedBonusRewardEarned *
-        farming.bonusRewardToken?.derivedMatic *
-        nativePrice?.bundles[0].maticPriceUSD;
+    const bonusRewardEarnedUSD = useRewardEarnedUSD({
+        token: farming.rewardToken,
+        reward: bonusRewardEarned,
+    });
 
     const farmingRewards = (rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(4);
 
