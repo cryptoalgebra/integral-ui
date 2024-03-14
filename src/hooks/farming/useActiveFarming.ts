@@ -65,7 +65,7 @@ export function useActiveFarming({
         if (!rewardToken) return;
         if (!bonusRewardToken) return;
         if (!activeFarming || !rewardToken.token) {
-            console.log('Active farming not found');
+            console.debug('Active farming not found');
             setFarmingInfo(null);
             return;
         }
@@ -77,16 +77,6 @@ export function useActiveFarming({
             pool: poolInfo.pool,
         });
     }, [farmings, rewardToken, bonusRewardToken, poolInfo, activeFarming]);
-
-    useEffect(() => {
-        if (!farmingInfo) return;
-        console.log('Active Farming - ', farmingInfo);
-    }, [farmingInfo]);
-
-    useEffect(() => {
-        if (!deposits) return;
-        console.log('Positions - ', deposits.deposits);
-    }, [deposits]);
 
     return {
         farmingInfo,

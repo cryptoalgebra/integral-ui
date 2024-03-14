@@ -3,7 +3,7 @@ import {
     SinglePoolQuery,
     useEternalFarmingsQuery,
 } from '@/graphql/generated/graphql';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Address } from 'viem';
 import { useClients } from '../graphql/useClients';
 
@@ -36,11 +36,6 @@ export function useClosedFarmings({
             setClosedFarmings(filteredFarmings);
         }
     }, [initialData]);
-
-    useEffect(() => {
-        if (!closedFarmings) return;
-        console.log('closedFarmings', closedFarmings);
-    }, [closedFarmings]);
 
     return {
         closedFarmings,

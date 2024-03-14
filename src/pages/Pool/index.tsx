@@ -47,6 +47,7 @@ const PoolPage = () => {
     });
 
     const { data: bundles } = useNativePriceQuery();
+    const nativePrice = bundles?.bundles[0].maticPriceUSD;
 
     const { farmingInfo, deposits, isFarmingLoading, areDepositsLoading } =
         useActiveFarming({
@@ -95,7 +96,6 @@ const PoolPage = () => {
 
     useEffect(() => {
         async function getPositionsAPRs() {
-            const nativePrice = bundles?.bundles[0].maticPriceUSD;
             const aprs = await Promise.all(
                 filteredPositions.map(({ position }) =>
                     getPositionAPR(
@@ -120,16 +120,17 @@ const PoolPage = () => {
             getPositionsAPRs();
     }, [filteredPositions, poolInfo, poolId, poolFeeData, bundles]);
 
-    // should be reusable
     const formatLiquidityUSD = (position: Position) => {
         if (!poolInfo?.pool) return 0;
 
         const amount0USD =
             Number(position.amount0.toSignificant()) *
-            Number(poolInfo.pool.token1Price);
+            (Number(poolInfo.pool.token0.derivedMatic) *
+                (Number(nativePrice) || 0));
         const amount1USD =
             Number(position.amount1.toSignificant()) *
-            Number(poolInfo.pool.token0Price);
+            (Number(poolInfo.pool.token1.derivedMatic) *
+                (Number(nativePrice) || 0));
 
         return amount0USD + amount1USD;
     };
@@ -139,11 +140,11 @@ const PoolPage = () => {
 
         const fees0USD = positionsFees[idx][0]
             ? Number(positionsFees[idx][0].toSignificant()) *
-              Number(poolInfo.pool.token0Price)
+              (Number(poolInfo.pool.token0.derivedMatic) * Number(nativePrice))
             : 0;
         const fees1USD = positionsFees[idx][1]
             ? Number(positionsFees[idx][1].toSignificant()) *
-              Number(poolInfo.pool.token1Price)
+              (Number(poolInfo.pool.token1.derivedMatic) * Number(nativePrice))
             : 0;
 
         return fees0USD + fees1USD;

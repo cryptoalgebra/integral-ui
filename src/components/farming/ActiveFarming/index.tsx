@@ -156,11 +156,19 @@ const ActiveFarming = ({
                     <CardInfo
                         additional={
                             !isSameReward
-                                ? `${formattedRewardEarned.toFixed(2)} ${
-                                      farming.rewardToken.symbol
-                                  } + ${formattedBonusRewardEarned.toFixed(
-                                      2
-                                  )} ${farming.bonusRewardToken?.symbol}`
+                                ? `${
+                                      formattedRewardEarned.toFixed(2) ===
+                                      '0.00'
+                                          ? '<0.01'
+                                          : formattedRewardEarned.toFixed(2)
+                                  } ${farming.rewardToken.symbol} + ${
+                                      formattedBonusRewardEarned.toFixed(2) ===
+                                      '0.00'
+                                          ? '<0.01'
+                                          : formattedBonusRewardEarned.toFixed(
+                                                2
+                                            )
+                                  } ${farming.bonusRewardToken?.symbol}`
                                 : ''
                         }
                         className="w-full"
@@ -202,7 +210,14 @@ const ActiveFarming = ({
                                             currency={rewardTokenCurrency}
                                         />
                                         <p>
-                                            {`${rewardRatePerDay.toFixed(2)} ${
+                                            {`${
+                                                rewardRatePerDay.toFixed(2) ===
+                                                '0.00'
+                                                    ? '<0.01'
+                                                    : rewardRatePerDay.toFixed(
+                                                          2
+                                                      )
+                                            } ${
                                                 farming.rewardToken.symbol
                                             } / day`}
                                         </p>
@@ -217,9 +232,15 @@ const ActiveFarming = ({
                                                 }
                                             />
                                             <p>
-                                                {`${bonusRewardRatePerDay.toFixed(
-                                                    2
-                                                )} ${
+                                                {`${
+                                                    bonusRewardRatePerDay.toFixed(
+                                                        2
+                                                    ) === '0.00'
+                                                        ? '<0.01'
+                                                        : bonusRewardRatePerDay.toFixed(
+                                                              2
+                                                          )
+                                                } ${
                                                     farming.bonusRewardToken
                                                         ?.symbol
                                                 } / day`}
