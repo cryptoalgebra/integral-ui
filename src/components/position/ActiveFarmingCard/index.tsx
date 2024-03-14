@@ -10,15 +10,15 @@ import Loader from '@/components/common/Loader';
 import { Deposit } from '@/graphql/generated/graphql';
 import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
 
-interface CollectFarmingsProps {
+interface ActiveFarmingCardProps {
     farming: Farming;
     selectedPosition: Deposit;
 }
 
-const CollectFarmings = ({
+const ActiveFarmingCard = ({
     farming,
     selectedPosition,
-}: CollectFarmingsProps) => {
+}: ActiveFarmingCardProps) => {
     const { address: account } = useAccount();
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
@@ -102,4 +102,4 @@ const CollectFarmings = ({
     );
 };
 
-export default CollectFarmings;
+export default ActiveFarmingCard;

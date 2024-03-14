@@ -84,7 +84,9 @@ const DataTable = <TData, TValue>({
                         key={'in-farming-positions'}
                         className="hover:bg-transparent flex p-4 border-none"
                     >
-                        <td className="ml-4">On Farming</td>
+                        <td className="ml-4 whitespace-nowrap w-12">
+                            On Farming
+                        </td>
                     </TableRow>
                 );
                 firstMatchFound = true;
@@ -141,7 +143,7 @@ const DataTable = <TData, TValue>({
                         key={'closed-positions'}
                         className="hover:bg-transparent flex p-4 border-none"
                     >
-                        <td className="ml-4">Closed</td>
+                        <td className="ml-4 whitespace-nowrap w-12">Closed</td>
                     </TableRow>
                 );
                 firstMatchFound = true;

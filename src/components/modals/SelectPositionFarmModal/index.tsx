@@ -87,16 +87,16 @@ export function SelectPositionFarmModal({
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className="min-w-[500px] rounded-3xl bg-card"
+                className="max-w-[500px] rounded-3xl bg-card"
                 style={{ borderRadius: '32px' }}
             >
                 <DialogHeader>
-                    <DialogTitle className="font-bold select-none mt-2">
+                    <DialogTitle className="font-bold select-none mt-2 max-md:mx-auto">
                         Select Position
                     </DialogTitle>
                 </DialogHeader>
 
-                <ul className="grid grid-cols-2 gap-4 my-4">
+                <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 my-4 overflow-auto">
                     {availablePositions.length > 0 ? (
                         availablePositions.map((position) => {
                             const currentFormattedPosition = positionsData.find(
