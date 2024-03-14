@@ -1,10 +1,9 @@
-import { infoClient, blocksClient } from "@/graphql/clients";
+import { infoClient, blocksClient, farmingClient } from '@/graphql/clients';
 
 export function useClients() {
-
     return {
         infoClient,
-        blocksClient
-    }
-
+        blocksClient,
+        farmingClient,
+    };
 }
