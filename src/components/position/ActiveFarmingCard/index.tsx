@@ -30,7 +30,7 @@ const ActiveFarmingCard = ({
     });
 
     const bonusRewardEarnedUSD = useRewardEarnedUSD({
-        token: farming.rewardToken,
+        token: farming.bonusRewardToken,
         reward: bonusRewardEarned,
     });
 
