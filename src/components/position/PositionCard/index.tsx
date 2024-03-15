@@ -132,12 +132,12 @@ const PositionCard = ({
             {pool && positionEntity && (
                 <PositionRangeChart pool={pool} position={positionEntity} />
             )}
-            {selectedPosition.liquidityUSD > 0 && (
+            {positionEntity && Number(positionEntity.liquidity) > 0 && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
                     <RemoveLiquidityModal positionId={selectedPosition.id} />
                 </div>
             )}
-            {selectedPosition.liquidityUSD === 0 && positionEntity && (
+            {positionEntity && Number(positionEntity.liquidity) === 0 && (
                 <>
                     <EnterAmounts
                         currencyA={positionEntity.amount0.currency}
@@ -145,8 +145,10 @@ const PositionCard = ({
                         mintInfo={mintInfo}
                     />
                     <IncreaseLiquidityButton
+                        baseCurrency={positionEntity.amount0.currency}
+                        quoteCurrency={positionEntity.amount1.currency}
                         mintInfo={mintInfo}
-                        tokenId={selectedPosition.id}
+                        tokenId={Number(selectedPosition.id)}
                     />
                 </>
             )}
