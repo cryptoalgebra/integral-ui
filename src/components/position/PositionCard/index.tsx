@@ -17,8 +17,8 @@ import { Farming } from '@/types/farming-info';
 import { EternalFarming } from '@/graphql/generated/graphql';
 import ActiveFarmingCard from '../ActiveFarmingCard';
 import ClosedFarmingCard from '../ClosedFarmingCard';
-import AddLiquidityButton from '@/components/create-position/AddLiquidityButton';
 import EnterAmounts from '@/components/create-position/EnterAmounts';
+import IncreaseLiquidityButton from '../IncreaseLiquidityButton';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -70,8 +70,6 @@ const PositionCard = ({
             : [];
 
     if (!selectedPosition || loading) return;
-
-    console.log(mintInfo);
 
     return (
         <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl p-4 animate-fade-in">
@@ -146,11 +144,9 @@ const PositionCard = ({
                         currencyB={positionEntity.amount1.currency}
                         mintInfo={mintInfo}
                     />
-                    <AddLiquidityButton
-                        baseCurrency={positionEntity.amount0.currency}
-                        quoteCurrency={positionEntity.amount1.currency}
+                    <IncreaseLiquidityButton
                         mintInfo={mintInfo}
-                        poolAddress={position?.pool}
+                        tokenId={selectedPosition.id}
                     />
                 </>
             )}
