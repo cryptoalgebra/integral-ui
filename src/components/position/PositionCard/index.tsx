@@ -17,8 +17,7 @@ import { Farming } from '@/types/farming-info';
 import { EternalFarming } from '@/graphql/generated/graphql';
 import ActiveFarmingCard from '../ActiveFarmingCard';
 import ClosedFarmingCard from '../ClosedFarmingCard';
-import EnterAmounts from '@/components/create-position/EnterAmounts';
-import IncreaseLiquidityButton from '../IncreaseLiquidityButton';
+import { IncreaseLiquidityModal } from '@/components/modals/IncreaseLiquidityModal';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -132,25 +131,21 @@ const PositionCard = ({
             {pool && positionEntity && (
                 <PositionRangeChart pool={pool} position={positionEntity} />
             )}
-            {positionEntity && Number(positionEntity.liquidity) > 0 && (
+
+            {positionEntity && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
-                    <RemoveLiquidityModal positionId={selectedPosition.id} />
-                </div>
-            )}
-            {positionEntity && Number(positionEntity.liquidity) === 0 && (
-                <>
-                    <EnterAmounts
+                    <IncreaseLiquidityModal
+                        tokenId={Number(selectedPosition.id)}
                         currencyA={positionEntity.amount0.currency}
                         currencyB={positionEntity.amount1.currency}
                         mintInfo={mintInfo}
                     />
-                    <IncreaseLiquidityButton
-                        baseCurrency={positionEntity.amount0.currency}
-                        quoteCurrency={positionEntity.amount1.currency}
-                        mintInfo={mintInfo}
-                        tokenId={Number(selectedPosition.id)}
-                    />
-                </>
+                </div>
+            )}
+            {positionEntity && Number(positionEntity.liquidity) > 0 && (
+                <div className="flex gap-4 w-full whitespace-nowrap">
+                    <RemoveLiquidityModal positionId={selectedPosition.id} />
+                </div>
             )}
             {positionInFarming && farming && !positionInEndedFarming && (
                 <ActiveFarmingCard

@@ -25,7 +25,7 @@ interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
     quoteCurrency: Currency | undefined | null;
     mintInfo: IDerivedMintInfo;
-    tokenId: number;
+    tokenId?: number;
 }
 
 const ZERO_PERCENT = new Percent('0');
@@ -96,7 +96,7 @@ export const IncreaseLiquidityButton = ({
     const { config: increaseLiquidityConfig } =
         usePrepareAlgebraPositionManagerMulticall({
             args: calldata && [calldata as `0x${string}`[]],
-            enabled: Boolean(calldata && isReady && tokenId > 0),
+            enabled: Boolean(calldata && isReady && tokenId),
             value: BigInt(value || 0),
         });
 
