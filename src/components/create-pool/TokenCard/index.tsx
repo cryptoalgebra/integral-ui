@@ -36,7 +36,7 @@ const TokenCard = ({
     };
 
     return (
-        <div className="flex w-full items-center h-[100px] border border-border bg-card-dark rounded-3xl bg-dark">
+        <div className="flex w-full items-center h-[100px] border border-border bg-card-dark rounded-3xl bg-dark p-2">
             <TokenSelectorModal
                 onSelect={handleTokenSelect}
                 isOpen={isOpen}
@@ -45,13 +45,13 @@ const TokenCard = ({
             >
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="flex w-1/2 p-4 ml-4 rounded-2xl h-3/4 bg-card hover:bg-card-light items-center gap-4 cursor-pointer transition-all ease-in-out duration-200"
+                    className="flex w-1/2 rounded-2xl p-4 h-full bg-card hover:bg-card-light items-center gap-4 cursor-pointer transition-all ease-in-out duration-200"
                 >
                     <CurrencyLogo currency={currency} size={32} />
-                    <span className="font-bold text-xl">
+                    <span className="font-bold text-2xl">
                         {currency ? currency.symbol : 'Select a token'}
                     </span>
-                    <ChevronRight size={16} />
+                    <ChevronRight className="ml-auto" size={20} />
                 </button>
             </TokenSelectorModal>
 
@@ -60,7 +60,7 @@ const TokenCard = ({
                 value={value}
                 disabled={disabled}
                 onUserInput={(v) => handleInput(v)}
-                className={`text-right border-none text-xl font-bold w-2/3 pr-8 disabled:cursor-default disabled:text-white`}
+                className={`text-right border-none text-2xl px-4 font-bold w-2/3 disabled:cursor-default disabled:text-white`}
                 placeholder={'0.00'}
                 maxDecimals={currency?.decimals}
             />
