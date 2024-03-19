@@ -6,7 +6,7 @@ import {
     useSwapActionHandlers,
     useSwapState,
 } from '@/state/swapStore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { SwapField } from '@/types/swap-field';
 import {
     Currency,
@@ -92,19 +92,29 @@ const CreatePoolForm = () => {
 
     const { onStartPriceInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
-    const sqrtRatioX96 = mintInfo.price
-        ? encodeSqrtRatioX96(
-              mintInfo.price.numerator,
-              mintInfo.price.denominator
-          )
-        : undefined;
-
     const [sortedToken0, sortedToken1] =
         currencyA && currencyB && !isSameTokens
             ? currencyA.wrapped.sortsBefore(currencyB.wrapped)
                 ? [token0, token1]
                 : [token1, token0]
             : [undefined, undefined];
+
+    const sqrtRatioX96 = useMemo(() => {
+        if (!mintInfo.price) {
+            return undefined;
+        }
+        if (sortedToken0 === token0) {
+            return encodeSqrtRatioX96(
+                mintInfo.price.numerator,
+                mintInfo.price.denominator
+            );
+        } else if (sortedToken0 === token1) {
+            return encodeSqrtRatioX96(
+                mintInfo.price.denominator,
+                mintInfo.price.numerator
+            );
+        }
+    }, [sortedToken0, mintInfo.price, token0, token1]);
 
     const { config: createPoolConfig } =
         usePrepareAlgebraPositionManagerCreateAndInitializePoolIfNecessary({
@@ -173,6 +183,10 @@ const CreatePoolForm = () => {
         const filteredSuggstdPrice = Number(suggstdPrice.toFixed(4));
         setSuggestedPrice(filteredSuggstdPrice);
     }, [singleToken0, singleToken1, onSwitchTokens]);
+
+    useEffect(() => {
+        console.log(sqrtRatioX96);
+    }, [sqrtRatioX96]);
 
     return (
         <div className="flex flex-col gap-4">
