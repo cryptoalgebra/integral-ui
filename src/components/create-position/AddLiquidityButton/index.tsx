@@ -52,7 +52,11 @@ export const AddLiquidityButton = ({
         : undefined;
 
     const { calldata, value } = useMemo(() => {
-        if (!mintInfo.position || !account)
+        if (
+            !mintInfo.position ||
+            !account ||
+            mintInfo.position.amount0.numerator.toString() === '0'
+        )
             return { calldata: undefined, value: undefined };
 
         return NonfungiblePositionManager.addCallParameters(mintInfo.position, {
