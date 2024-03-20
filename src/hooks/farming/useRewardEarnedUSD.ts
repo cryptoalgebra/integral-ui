@@ -15,6 +15,8 @@ export function useRewardEarnedUSD({
     const { data: nativePrice } = useNativePriceQuery();
 
     return useMemo(() => {
+        if (!token) return 0;
+
         const formattedRewardEarned = Number(
             formatUnits(reward, token?.decimals)
         );

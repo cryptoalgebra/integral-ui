@@ -55,6 +55,8 @@ const ActiveFarming = ({
         reward: bonusRewardEarned,
     });
 
+    const farmingRewards = (rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(4);
+
     const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
     const bonusRewardTokenCurrency = useCurrency(
         farming.farming.bonusRewardToken
@@ -174,12 +176,7 @@ const ActiveFarming = ({
                         className="w-full"
                         title="EARNED"
                     >
-                        <p className="text-cyan-300">
-                            $
-                            {(rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(
-                                4
-                            )}
-                        </p>
+                        <p className="text-cyan-300">${farmingRewards}</p>
                     </CardInfo>
                 </div>
 
