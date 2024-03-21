@@ -24,8 +24,11 @@ const CreatePoolForm = () => {
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
 
+    const isSameTokens =
+        currencyA?.wrapped.address === currencyB?.wrapped.address;
+
     const poolAddress =
-        currencyA && currencyB
+        currencyA && currencyB && !isSameTokens
             ? (computePoolAddress({
                   tokenA: currencyA.wrapped,
                   tokenB: currencyB.wrapped,
@@ -96,7 +99,9 @@ const CreatePoolForm = () => {
 
             <Button
                 className="mt-2"
-                disabled={isLoading || isPoolExists || !typedValue}
+                disabled={
+                    isLoading || isPoolExists || !typedValue || isSameTokens
+                }
                 onClick={() => createPool && createPool()}
             >
                 {isLoading ? (

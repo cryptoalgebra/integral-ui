@@ -19,6 +19,7 @@ interface TokenSwapCardProps {
     priceImpact?: Percent;
     showMaxButton?: boolean;
     showBalance?: boolean;
+    showNativeToken?: boolean;
     disabled?: boolean;
 }
 
@@ -32,6 +33,7 @@ const TokenCard = ({
     fiatValue,
     showMaxButton,
     showBalance,
+    showNativeToken,
     disabled,
 }: TokenSwapCardProps) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -66,6 +68,7 @@ const TokenCard = ({
         <div className="flex bg-card-dark px-4 py-6 rounded-2xl w-full">
             <div className="flex flex-col gap-2 min-w-fit">
                 <TokenSelectorModal
+                    showNativeToken={showNativeToken}
                     onSelect={handleTokenSelect}
                     isOpen={isOpen}
                     setIsOpen={setIsOpen}
