@@ -7,20 +7,26 @@ import {
     Token,
 } from '@cryptoalgebra/integral-sdk';
 
-import { ZERO } from "@cryptoalgebra/integral-sdk";
-import { InitialPoolFee } from "@cryptoalgebra/integral-sdk";
+import { ZERO } from '@cryptoalgebra/integral-sdk';
+import { InitialPoolFee } from '@cryptoalgebra/integral-sdk';
 
-import { Bound, Field, Rounding } from '@cryptoalgebra/integral-sdk'
-import { tryParseAmount, tryParseTick } from "@cryptoalgebra/integral-sdk";
-import { tickToPrice, priceToClosestTick, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/integral-sdk";
+import { Bound, Field, Rounding } from '@cryptoalgebra/integral-sdk';
+import { tryParseAmount, tryParseTick } from '@cryptoalgebra/integral-sdk';
+import {
+    tickToPrice,
+    priceToClosestTick,
+    nearestUsableTick,
+    encodeSqrtRatioX96,
+    TickMath,
+} from '@cryptoalgebra/integral-sdk';
 
-import { getTickToPrice } from "@cryptoalgebra/integral-sdk";
+import { getTickToPrice } from '@cryptoalgebra/integral-sdk';
 
 import { useCallback, useMemo } from 'react';
 import { Address, useAccount, useBalance } from 'wagmi';
 import { create } from 'zustand';
-import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
-import { PresetsType } from "@/types/presets";
+import { PoolState, PoolStateType, usePool } from '@/hooks/pools/usePool';
+import { PresetsType } from '@/types/presets';
 
 export type FullRange = true;
 
@@ -55,7 +61,11 @@ interface MintState {
         typeStartPriceInput: (typedValue: string) => void;
         typeLeftRangeInput: (typedValue: string) => void;
         typeRightRangeInput: (typedValue: string) => void;
-        typeInput: (field: Field, typedValue: string, noLiquidity: boolean) => void;
+        typeInput: (
+            field: Field,
+            typedValue: string,
+            noLiquidity: boolean
+        ) => void;
         updateSelectedPreset: (preset: PresetsType | null) => void;
         setAddLiquidityTxHash: (txHash: string) => void;
         setInitialTokenPrice: (typedValue: string) => void;
@@ -210,7 +220,9 @@ export function useDerivedMintInfo(
     } = useMintState();
 
     const dependentField =
-        independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
+        independentField === Field.CURRENCY_A
+            ? Field.CURRENCY_B
+            : Field.CURRENCY_A;
 
     // currencies
     const currencies: { [field in Field]?: Currency } = useMemo(
@@ -238,29 +250,35 @@ export function useDerivedMintInfo(
     );
 
     const [addressA, addressB] = [
-        (currencyA?.isNative ? undefined : token0?.address || ''),
-        (currencyB?.isNative ? undefined : token1?.address || '')
-    ] as Address[]
+        currencyA?.isNative ? undefined : token0?.address || '',
+        currencyB?.isNative ? undefined : token1?.address || '',
+    ] as Address[];
 
-    const { data: token0Balance } = useBalance({ address: account, token: addressA, watch: true });
-    const { data: token1Balance } = useBalance({ address: account, token: addressB, watch: true });
+    const { data: token0Balance } = useBalance({
+        address: account,
+        token: addressA,
+        watch: true,
+    });
+    const { data: token1Balance } = useBalance({
+        address: account,
+        token: addressB,
+        watch: true,
+    });
 
     const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
         [Field.CURRENCY_A]:
-            currencyA &&
-                token0Balance
+            currencyA && token0Balance
                 ? CurrencyAmount.fromRawAmount(
-                    currencyA,
-                    token0Balance.value.toString()
-                )
+                      currencyA,
+                      token0Balance.value.toString()
+                  )
                 : undefined,
         [Field.CURRENCY_B]:
-            currencyB &&
-                token1Balance
+            currencyB && token1Balance
                 ? CurrencyAmount.fromRawAmount(
-                    currencyB,
-                    token1Balance.value.toString()
-                )
+                      currencyB,
+                      token1Balance.value.toString()
+                  )
                 : undefined,
     };
 
@@ -273,7 +291,9 @@ export function useDerivedMintInfo(
     const tickSpacing = pool ? pool.tickSpacing : 60;
 
     // note to parse inputs in reverse
-    const invertPrice = Boolean(baseToken && token0 && !baseToken.equals(token0));
+    const invertPrice = Boolean(
+        baseToken && token0 && !baseToken.equals(token0)
+    );
 
     // always returns the price with 0 as base token
     const price: Price<Token, Token> | undefined = useMemo(() => {
@@ -284,15 +304,18 @@ export function useDerivedMintInfo(
                 invertPrice ? token0 : token1
             );
             if (parsedQuoteAmount && token0 && token1) {
-                const baseAmount = tryParseAmount('1', invertPrice ? token1 : token0);
+                const baseAmount = tryParseAmount(
+                    '1',
+                    invertPrice ? token1 : token0
+                );
                 const price =
                     baseAmount && parsedQuoteAmount
                         ? new Price(
-                            baseAmount.currency,
-                            parsedQuoteAmount.currency,
-                            baseAmount.quotient,
-                            parsedQuoteAmount.quotient
-                        )
+                              baseAmount.currency,
+                              parsedQuoteAmount.currency,
+                              baseAmount.quotient,
+                              parsedQuoteAmount.quotient
+                          )
                         : undefined;
                 return (invertPrice ? price?.invert() : price) ?? undefined;
             }
@@ -311,7 +334,12 @@ export function useDerivedMintInfo(
         const invalid =
             price &&
             sqrtRatioX96 &&
-            !(BigInt(sqrtRatioX96.toString()) >= BigInt(TickMath.MIN_SQRT_RATIO.toString()) && BigInt(sqrtRatioX96.toString()) < BigInt(TickMath.MAX_SQRT_RATIO.toString()));
+            !(
+                BigInt(sqrtRatioX96.toString()) >=
+                    BigInt(TickMath.MIN_SQRT_RATIO.toString()) &&
+                BigInt(sqrtRatioX96.toString()) <
+                    BigInt(TickMath.MAX_SQRT_RATIO.toString())
+            );
         return invalid;
     }, [price]);
 
@@ -356,28 +384,50 @@ export function useDerivedMintInfo(
     // parse typed range values and determine closest ticks
     // lower should always be a smaller tick
     const ticks: {
-        [key: string]: number | undefined
+        [key: string]: number | undefined;
     } = useMemo(() => {
         return {
             [Bound.LOWER]:
                 typeof existingPosition?.tickLower === 'number'
                     ? existingPosition.tickLower
-                    : (invertPrice && typeof rightRangeTypedValue === 'boolean') ||
-                        (!invertPrice && typeof leftRangeTypedValue === 'boolean')
-                        ? tickSpaceLimits[Bound.LOWER]
-                        : invertPrice
-                            ? tryParseTick(token1, token0, rightRangeTypedValue.toString(), tickSpacing)
-                            : tryParseTick(token0, token1, leftRangeTypedValue.toString(), tickSpacing),
+                    : (invertPrice &&
+                          typeof rightRangeTypedValue === 'boolean') ||
+                      (!invertPrice && typeof leftRangeTypedValue === 'boolean')
+                    ? tickSpaceLimits[Bound.LOWER]
+                    : invertPrice
+                    ? tryParseTick(
+                          token1,
+                          token0,
+                          rightRangeTypedValue.toString(),
+                          tickSpacing
+                      )
+                    : tryParseTick(
+                          token0,
+                          token1,
+                          leftRangeTypedValue.toString(),
+                          tickSpacing
+                      ),
             [Bound.UPPER]:
                 typeof existingPosition?.tickUpper === 'number'
                     ? existingPosition.tickUpper
-                    : (!invertPrice && typeof rightRangeTypedValue === 'boolean') ||
-                        (invertPrice && typeof leftRangeTypedValue === 'boolean')
-                        ? tickSpaceLimits[Bound.UPPER]
-                        : invertPrice
-                            ? tryParseTick(token1, token0, leftRangeTypedValue.toString(), tickSpacing)
-                            : tryParseTick(token0, token1, rightRangeTypedValue.toString(), tickSpacing)
-        }
+                    : (!invertPrice &&
+                          typeof rightRangeTypedValue === 'boolean') ||
+                      (invertPrice && typeof leftRangeTypedValue === 'boolean')
+                    ? tickSpaceLimits[Bound.UPPER]
+                    : invertPrice
+                    ? tryParseTick(
+                          token1,
+                          token0,
+                          leftRangeTypedValue.toString(),
+                          tickSpacing
+                      )
+                    : tryParseTick(
+                          token0,
+                          token1,
+                          rightRangeTypedValue.toString(),
+                          tickSpacing
+                      ),
+        };
     }, [
         existingPosition,
         feeAmount,
@@ -387,8 +437,8 @@ export function useDerivedMintInfo(
         token0,
         token1,
         tickSpaceLimits,
-        tickSpacing
-    ])
+        tickSpacing,
+    ]);
 
     const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = ticks || {};
 
@@ -404,8 +454,8 @@ export function useDerivedMintInfo(
     // mark invalid range
     const invalidRange = Boolean(
         typeof tickLower === 'number' &&
-        typeof tickUpper === 'number' &&
-        tickLower >= tickUpper
+            typeof tickUpper === 'number' &&
+            tickLower >= tickUpper
     );
 
     // always returns the price with 0 as base token
@@ -421,74 +471,78 @@ export function useDerivedMintInfo(
     // liquidity range warning
     const outOfRange = Boolean(
         !invalidRange &&
-        price &&
-        lowerPrice &&
-        upperPrice &&
-        (price.lessThan(lowerPrice) || price.greaterThan(upperPrice))
+            price &&
+            lowerPrice &&
+            upperPrice &&
+            (price.lessThan(lowerPrice) || price.greaterThan(upperPrice))
     );
 
     const independentAmount: CurrencyAmount<Currency> | undefined =
         tryParseAmount(typedValue, currencies[independentField]);
 
-    const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
-        // we wrap the currencies just to get the price in terms of the other token
-        const wrappedIndependentAmount = independentAmount?.wrapped;
-        const dependentCurrency =
-            dependentField === Field.CURRENCY_B ? currencyB : currencyA;
-        if (
-            independentAmount &&
-            wrappedIndependentAmount &&
-            typeof tickLower === 'number' &&
-            typeof tickUpper === 'number' &&
-            poolForPosition
-        ) {
-            // if price is out of range or invalid range - return 0 (single deposit will be independent)
-            if (outOfRange || invalidRange) {
-                return undefined;
+    const dependentAmount: CurrencyAmount<Currency> | undefined =
+        useMemo(() => {
+            // we wrap the currencies just to get the price in terms of the other token
+            const wrappedIndependentAmount = independentAmount?.wrapped;
+            const dependentCurrency =
+                dependentField === Field.CURRENCY_B ? currencyB : currencyA;
+            if (
+                independentAmount &&
+                wrappedIndependentAmount &&
+                typeof tickLower === 'number' &&
+                typeof tickUpper === 'number' &&
+                poolForPosition
+            ) {
+                // if price is out of range or invalid range - return 0 (single deposit will be independent)
+                if (outOfRange || invalidRange) {
+                    return undefined;
+                }
+
+                const position: Position | undefined =
+                    wrappedIndependentAmount.currency.equals(
+                        poolForPosition.token0
+                    )
+                        ? Position.fromAmount0({
+                              pool: poolForPosition,
+                              tickLower,
+                              tickUpper,
+                              amount0: independentAmount.quotient,
+                              useFullPrecision: true, // we want full precision for the theoretical position
+                          })
+                        : Position.fromAmount1({
+                              pool: poolForPosition,
+                              tickLower,
+                              tickUpper,
+                              amount1: independentAmount.quotient,
+                          });
+
+                const dependentTokenAmount =
+                    wrappedIndependentAmount.currency.equals(
+                        poolForPosition.token0
+                    )
+                        ? position.amount1
+                        : position.amount0;
+                return (
+                    dependentCurrency &&
+                    CurrencyAmount.fromRawAmount(
+                        dependentCurrency,
+                        dependentTokenAmount.quotient
+                    )
+                );
             }
 
-            const position: Position | undefined =
-                wrappedIndependentAmount.currency.equals(poolForPosition.token0)
-                    ? Position.fromAmount0({
-                        pool: poolForPosition,
-                        tickLower,
-                        tickUpper,
-                        amount0: independentAmount.quotient,
-                        useFullPrecision: true, // we want full precision for the theoretical position
-                    })
-                    : Position.fromAmount1({
-                        pool: poolForPosition,
-                        tickLower,
-                        tickUpper,
-                        amount1: independentAmount.quotient,
-                    });
-
-            const dependentTokenAmount = wrappedIndependentAmount.currency.equals(
-                poolForPosition.token0
-            )
-                ? position.amount1
-                : position.amount0;
-            return (
-                dependentCurrency &&
-                CurrencyAmount.fromRawAmount(
-                    dependentCurrency,
-                    dependentTokenAmount.quotient
-                )
-            );
-        }
-
-        return undefined;
-    }, [
-        independentAmount,
-        outOfRange,
-        dependentField,
-        currencyB,
-        currencyA,
-        tickLower,
-        tickUpper,
-        poolForPosition,
-        invalidRange,
-    ]);
+            return undefined;
+        }, [
+            independentAmount,
+            outOfRange,
+            dependentField,
+            currencyB,
+            currencyA,
+            tickLower,
+            tickUpper,
+            poolForPosition,
+            invalidRange,
+        ]);
 
     const parsedAmounts: {
         [field in Field]: CurrencyAmount<Currency> | undefined;
@@ -508,13 +562,13 @@ export function useDerivedMintInfo(
     // single deposit only if price is out of range
     const deposit0Disabled = Boolean(
         typeof tickUpper === 'number' &&
-        poolForPosition &&
-        poolForPosition.tickCurrent >= tickUpper
+            poolForPosition &&
+            poolForPosition.tickCurrent >= tickUpper
     );
     const deposit1Disabled = Boolean(
         typeof tickLower === 'number' &&
-        poolForPosition &&
-        poolForPosition.tickCurrent <= tickLower
+            poolForPosition &&
+            poolForPosition.tickCurrent <= tickLower
     );
 
     // sorted for token order
@@ -525,10 +579,10 @@ export function useDerivedMintInfo(
                 poolForPosition &&
                 tokenA &&
                 poolForPosition.token0.equals(tokenA)) ||
-            (deposit1Disabled &&
-                poolForPosition &&
-                tokenA &&
-                poolForPosition.token1.equals(tokenA))
+                (deposit1Disabled &&
+                    poolForPosition &&
+                    tokenA &&
+                    poolForPosition.token1.equals(tokenA))
         );
     const depositBDisabled =
         invalidRange ||
@@ -537,15 +591,14 @@ export function useDerivedMintInfo(
                 poolForPosition &&
                 tokenB &&
                 poolForPosition.token0.equals(tokenB)) ||
-            (deposit1Disabled &&
-                poolForPosition &&
-                tokenB &&
-                poolForPosition.token1.equals(tokenB))
+                (deposit1Disabled &&
+                    poolForPosition &&
+                    tokenB &&
+                    poolForPosition.token1.equals(tokenB))
         );
 
     // create position entity based on users selection
     const position: Position | undefined = useMemo(() => {
-
         if (
             !poolForPosition ||
             !tokenA ||
@@ -557,25 +610,23 @@ export function useDerivedMintInfo(
             return undefined;
         }
 
-
         // mark as 0 if disabled because out of range
         const amount0 = !deposit0Disabled
             ? parsedAmounts?.[
-                tokenA.equals(poolForPosition.token0)
-                    ? Field.CURRENCY_A
-                    : Field.CURRENCY_B
-            ]?.quotient
+                  tokenA.equals(poolForPosition.token0)
+                      ? Field.CURRENCY_A
+                      : Field.CURRENCY_B
+              ]?.quotient
             : ZERO;
         const amount1 = !deposit1Disabled
             ? parsedAmounts?.[
-                tokenA.equals(poolForPosition.token0)
-                    ? Field.CURRENCY_B
-                    : Field.CURRENCY_A
-            ]?.quotient
+                  tokenA.equals(poolForPosition.token0)
+                      ? Field.CURRENCY_B
+                      : Field.CURRENCY_A
+              ]?.quotient
             : ZERO;
 
         if (amount0 !== undefined && amount1 !== undefined) {
-
             return Position.fromAmounts({
                 pool: poolForPosition,
                 tickLower,
@@ -634,8 +685,9 @@ export function useDerivedMintInfo(
         currencyAAmount &&
         currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)
     ) {
-        errorMessage = `Insufficient ${currencies[Field.CURRENCY_A]?.symbol
-            } balance`;
+        errorMessage = `Insufficient ${
+            currencies[Field.CURRENCY_A]?.symbol
+        } balance`;
         errorCode = errorCode ?? 4;
     }
 
@@ -643,8 +695,9 @@ export function useDerivedMintInfo(
         currencyBAmount &&
         currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)
     ) {
-        errorMessage = `Insufficient ${currencies[Field.CURRENCY_B]?.symbol
-            } balance`;
+        errorMessage = `Insufficient ${
+            currencies[Field.CURRENCY_B]?.symbol
+        } balance`;
         errorCode = errorCode ?? 5;
     }
 
@@ -653,7 +706,7 @@ export function useDerivedMintInfo(
     return {
         dependentField,
         currencies,
-        pool,
+        pool: poolForPosition,
         poolState,
         currencyBalances,
         parsedAmounts,
@@ -684,10 +737,11 @@ export function useRangeHopCallbacks(
     tickSpacing: number,
     tickLower: number | undefined,
     tickUpper: number | undefined,
-    pool?: Pool | undefined | null,
+    pool?: Pool | undefined | null
 ) {
-
-    const { actions: { setFullRange } } = useMintState()
+    const {
+        actions: { setFullRange },
+    } = useMintState();
 
     const baseToken = useMemo(() => baseCurrency?.wrapped, [baseCurrency]);
     const quoteToken = useMemo(() => quoteCurrency?.wrapped, [quoteCurrency]);
@@ -703,7 +757,7 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    tickLower - tickSpacing * rate,
+                    tickLower - tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
@@ -719,13 +773,13 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    pool.tickCurrent - tickSpacing * rate,
+                    pool.tickCurrent - tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
             return '';
         },
-        [baseToken, quoteToken, tickLower, tickSpacing, pool],
+        [baseToken, quoteToken, tickLower, tickSpacing, pool]
     );
 
     const getIncrementLower = useCallback(
@@ -739,7 +793,7 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    tickLower + tickSpacing * rate,
+                    tickLower + tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
@@ -754,13 +808,13 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    pool.tickCurrent + tickSpacing * rate,
+                    pool.tickCurrent + tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
             return '';
         },
-        [baseToken, quoteToken, tickLower, tickSpacing, pool],
+        [baseToken, quoteToken, tickLower, tickSpacing, pool]
     );
 
     const getDecrementUpper = useCallback(
@@ -774,7 +828,7 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    tickUpper - tickSpacing * rate,
+                    tickUpper - tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
@@ -789,13 +843,13 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    pool.tickCurrent - tickSpacing * rate,
+                    pool.tickCurrent - tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
             return '';
         },
-        [baseToken, quoteToken, tickUpper, tickSpacing, pool],
+        [baseToken, quoteToken, tickUpper, tickSpacing, pool]
     );
 
     const getIncrementUpper = useCallback(
@@ -809,7 +863,7 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    tickUpper + tickSpacing * rate,
+                    tickUpper + tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
@@ -824,13 +878,13 @@ export function useRangeHopCallbacks(
                 const newPrice = tickToPrice(
                     baseToken,
                     quoteToken,
-                    pool.tickCurrent + tickSpacing * rate,
+                    pool.tickCurrent + tickSpacing * rate
                 );
                 return newPrice.toSignificant(5, undefined, Rounding.ROUND_UP);
             }
             return '';
         },
-        [baseToken, quoteToken, tickUpper, tickSpacing, pool],
+        [baseToken, quoteToken, tickUpper, tickSpacing, pool]
     );
 
     const getSetRange = useCallback(
@@ -840,22 +894,30 @@ export function useRangeHopCallbacks(
                 const newPriceLower = tickToPrice(
                     baseToken,
                     quoteToken,
-                    Math.max(TickMath.MIN_TICK, pool.tickCurrent - numTicks),
+                    Math.max(TickMath.MIN_TICK, pool.tickCurrent - numTicks)
                 );
                 const newPriceUpper = tickToPrice(
                     baseToken,
                     quoteToken,
-                    Math.min(TickMath.MAX_TICK, pool.tickCurrent + numTicks),
+                    Math.min(TickMath.MAX_TICK, pool.tickCurrent + numTicks)
                 );
 
                 return [
-                    newPriceLower.toSignificant(5, undefined, Rounding.ROUND_UP),
-                    newPriceUpper.toSignificant(5, undefined, Rounding.ROUND_UP),
+                    newPriceLower.toSignificant(
+                        5,
+                        undefined,
+                        Rounding.ROUND_UP
+                    ),
+                    newPriceUpper.toSignificant(
+                        5,
+                        undefined,
+                        Rounding.ROUND_UP
+                    ),
                 ];
             }
             return ['', ''];
         },
-        [baseToken, quoteToken, tickSpacing, pool],
+        [baseToken, quoteToken, tickSpacing, pool]
     );
 
     const getSetFullRange = useCallback(() => setFullRange(), []);
