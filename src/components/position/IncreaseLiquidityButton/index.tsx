@@ -63,7 +63,7 @@ export const IncreaseLiquidityButton = ({
             deadline: Date.now() + txDeadline,
             useNative,
         });
-    }, [mintInfo, account]);
+    }, [mintInfo, account, tokenId, txDeadline, useNative]);
 
     const {
         approvalState: approvalStateA,
@@ -79,6 +79,14 @@ export const IncreaseLiquidityButton = ({
         mintInfo.parsedAmounts[Field.CURRENCY_B],
         ALGEBRA_POSITION_MANAGER
     );
+
+    const showApproveA =
+        approvalStateA === ApprovalState.NOT_APPROVED ||
+        approvalStateA === ApprovalState.PENDING;
+
+    const showApproveB =
+        approvalStateB === ApprovalState.NOT_APPROVED ||
+        approvalStateB === ApprovalState.PENDING;
 
     const isReady = useMemo(() => {
         return Boolean(
@@ -119,14 +127,6 @@ export const IncreaseLiquidityButton = ({
                 onClick={() => open({ view: 'Networks' })}
             >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
         );
-
-    const showApproveA =
-        approvalStateA === ApprovalState.NOT_APPROVED ||
-        approvalStateA === ApprovalState.PENDING;
-
-    const showApproveB =
-        approvalStateB === ApprovalState.NOT_APPROVED ||
-        approvalStateB === ApprovalState.PENDING;
 
     if (showApproveA || showApproveB)
         return (
