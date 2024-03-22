@@ -17,6 +17,7 @@ import { Farming } from '@/types/farming-info';
 import { EternalFarming } from '@/graphql/generated/graphql';
 import ActiveFarmingCard from '../ActiveFarmingCard';
 import ClosedFarmingCard from '../ClosedFarmingCard';
+import { IncreaseLiquidityModal } from '@/components/modals/IncreaseLiquidityModal';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -130,9 +131,22 @@ const PositionCard = ({
             {pool && positionEntity && (
                 <PositionRangeChart pool={pool} position={positionEntity} />
             )}
-            <div className="flex gap-4 w-full whitespace-nowrap">
-                <RemoveLiquidityModal positionId={selectedPosition.id} />
-            </div>
+
+            {positionEntity && (
+                <div className="flex gap-4 w-full whitespace-nowrap">
+                    <IncreaseLiquidityModal
+                        tokenId={Number(selectedPosition.id)}
+                        currencyA={positionEntity.amount0.currency}
+                        currencyB={positionEntity.amount1.currency}
+                        mintInfo={mintInfo}
+                    />
+                </div>
+            )}
+            {positionEntity && Number(positionEntity.liquidity) > 0 && (
+                <div className="flex gap-4 w-full whitespace-nowrap">
+                    <RemoveLiquidityModal positionId={selectedPosition.id} />
+                </div>
+            )}
             {positionInFarming && farming && !positionInEndedFarming && (
                 <ActiveFarmingCard
                     farming={farming}

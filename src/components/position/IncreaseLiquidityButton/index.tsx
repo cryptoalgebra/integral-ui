@@ -12,33 +12,33 @@ import { IDerivedMintInfo } from '@/state/mintStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import {
-    Percent,
     Currency,
-    NonfungiblePositionManager,
     Field,
+    NonfungiblePositionManager,
+    Percent,
     ZERO,
 } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';
-import { Address, useAccount, useContractWrite } from 'wagmi';
+import { useAccount, useContractWrite } from 'wagmi';
 
-interface AddLiquidityButtonProps {
+interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
     quoteCurrency: Currency | undefined | null;
     mintInfo: IDerivedMintInfo;
-    poolAddress: Address | undefined;
+    tokenId?: number;
 }
 
 const ZERO_PERCENT = new Percent('0');
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddLiquidityButton = ({
+export const IncreaseLiquidityButton = ({
+    mintInfo,
+    tokenId,
     baseCurrency,
     quoteCurrency,
-    mintInfo,
-    poolAddress,
-}: AddLiquidityButtonProps) => {
+}: IncreaseLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useWeb3Modal();
@@ -62,15 +62,14 @@ export const AddLiquidityButton = ({
             return { calldata: undefined, value: undefined };
 
         return NonfungiblePositionManager.addCallParameters(mintInfo.position, {
+            tokenId: tokenId || 0,
             slippageTolerance: mintInfo.outOfRange
                 ? ZERO_PERCENT
                 : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE,
-            recipient: account,
             deadline: Date.now() + txDeadline,
             useNative,
-            createPool: mintInfo.noLiquidity,
         });
-    }, [mintInfo, account, txDeadline, useNative]);
+    }, [mintInfo, account, tokenId, txDeadline, useNative]);
 
     const {
         approvalState: approvalStateA,
@@ -108,21 +107,19 @@ export const AddLiquidityButton = ({
         );
     }, [mintInfo, approvalStateA, approvalStateB]);
 
-    const { config: addLiquidityConfig } =
+    const { config: increaseLiquidityConfig } =
         usePrepareAlgebraPositionManagerMulticall({
             args: calldata && [calldata as `0x${string}`[]],
-            enabled: Boolean(calldata && isReady),
+            enabled: Boolean(calldata && isReady && tokenId),
             value: BigInt(value || 0),
         });
 
-    const { data: addLiquidityData, write: addLiquidity } =
-        useContractWrite(addLiquidityConfig);
+    const { data: increaseLiquidityData, write: increaseLiquidity } =
+        useContractWrite(increaseLiquidityConfig);
 
-    const { isLoading: isAddingLiquidityLoading } = useTransitionAwait(
-        addLiquidityData?.hash,
-        'Add liquidity',
-        '',
-        `/pool/${poolAddress}`
+    const { isLoading: isIncreaseLiquidityLoading } = useTransitionAwait(
+        increaseLiquidityData?.hash,
+        `Add Liquidity to #${tokenId}`
     );
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
@@ -174,12 +171,12 @@ export const AddLiquidityButton = ({
 
     return (
         <Button
-            disabled={!isReady}
-            onClick={() => addLiquidity && addLiquidity()}
+            disabled={!isReady || isIncreaseLiquidityLoading}
+            onClick={() => increaseLiquidity && increaseLiquidity()}
         >
-            {isAddingLiquidityLoading ? <Loader /> : 'Create Position'}
+            {isIncreaseLiquidityLoading ? <Loader /> : 'Add Liquidity'}
         </Button>
     );
 };
 
-export default AddLiquidityButton;
+export default IncreaseLiquidityButton;
