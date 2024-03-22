@@ -25,8 +25,8 @@ const PoolsList = () => {
                 fee: Number(fee) / 10_000,
                 tvlUSD: Number(totalValueLockedUSD),
                 volume24USD: Number(volumeUSD),
-                maxApr: poolsMaxApr[id].toFixed(2),
-                avgApr: poolsAvgApr[id].toFixed(2),
+                maxApr: poolsMaxApr[id] ? poolsMaxApr[id].toFixed(2) : 0,
+                avgApr: poolsMaxApr[id] ? poolsAvgApr[id].toFixed(2) : 0,
             })
         );
     }, [pools, poolsMaxApr, poolsAvgApr]);
