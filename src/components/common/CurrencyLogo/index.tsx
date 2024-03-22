@@ -32,7 +32,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
 
-    if (!currency) return <Skeleton className={cn(`flex rounded-full bg-card`, className)} style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }} />
+    if (!currency) return <Skeleton className={cn(`flex rounded-full bg-card-dark`, className)} style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }} />
 
     const address = currency.wrapped.address.toLowerCase() as Address;
 

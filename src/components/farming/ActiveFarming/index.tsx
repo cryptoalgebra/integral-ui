@@ -15,6 +15,7 @@ import { useFarmHarvestAll } from '@/hooks/farming/useFarmHarvest';
 import Loader from '@/components/common/Loader';
 import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
 import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
+import { useFarmingAPR } from '@/hooks/farming/useFarmingAPR';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -31,6 +32,8 @@ const ActiveFarming = ({
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
+
+    const APR = useFarmingAPR({ farmingId: farming.farming.id });
 
     const isSameReward = isSameRewards(
         farming.farming.rewardToken,
@@ -54,6 +57,8 @@ const ActiveFarming = ({
         token: farming.bonusRewardToken,
         reward: bonusRewardEarned,
     });
+
+    const farmingRewards = (rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(4);
 
     const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
     const bonusRewardTokenCurrency = useCurrency(
@@ -146,7 +151,7 @@ const ActiveFarming = ({
                 <div className="flex max-sm:flex-col w-full gap-8">
                     <div className="flex max-xs:flex-col w-full gap-8">
                         <CardInfo className="w-1/2 max-xs:w-full" title="APR">
-                            <p className="text-green-300">45%</p>
+                            <p className="text-green-300">{APR}%</p>
                         </CardInfo>
                         <CardInfo className="w-1/2 max-xs:w-full" title="TVL">
                             <p className="text-purple-300">${formattedTVL}</p>
@@ -174,12 +179,7 @@ const ActiveFarming = ({
                         className="w-full"
                         title="EARNED"
                     >
-                        <p className="text-cyan-300">
-                            $
-                            {(rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(
-                                4
-                            )}
-                        </p>
+                        <p className="text-cyan-300">${farmingRewards}</p>
                     </CardInfo>
                 </div>
 

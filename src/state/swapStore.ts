@@ -1,3 +1,4 @@
+import { STABLECOINS } from "@/constants/tokens"
 import { useAlgebraPoolGlobalState, useAlgebraPoolTickSpacing } from "@/generated"
 import { useCurrency } from "@/hooks/common/useCurrency"
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade"
@@ -37,7 +38,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO
     },
     [SwapField.OUTPUT]: {
-        currencyId: '0x7d98346b3b000c55904918e3d9e2fc3f94683b01'
+        currencyId: STABLECOINS.USDT.address as Account
     },
     wasInverted: false,
     lastFocusedField: SwapField.INPUT,
@@ -46,7 +47,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
 
             const otherField = field === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT
 
-            if (currencyId === get()[otherField].currencyId) {
+            if (currencyId && currencyId === get()[otherField].currencyId) {
                 set({
                     independentField: get().independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT,
                     lastFocusedField: get().independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT,

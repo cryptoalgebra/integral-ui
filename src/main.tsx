@@ -16,6 +16,7 @@ import Page404 from '@/pages/Page404';
 import PoolsPage from '@/pages/Pools';
 import PoolPage from '@/pages/Pool';
 import NewPositionPage from '@/pages/NewPosition';
+import CreatePoolPage from '@/pages/CreatePool/index.tsx';
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 const router = createBrowserRouter([
@@ -28,8 +29,7 @@ const router = createBrowserRouter([
         path: '/swap',
         element: (
             <App>
-                {' '}
-                <SwapPage />{' '}
+                <SwapPage />
             </App>
         ),
     },
@@ -37,8 +37,15 @@ const router = createBrowserRouter([
         path: '/pools',
         element: (
             <App>
-                {' '}
-                <PoolsPage />{' '}
+                <PoolsPage />
+            </App>
+        ),
+    },
+    {
+        path: '/pools/create',
+        element: (
+            <App>
+                <CreatePoolPage />
             </App>
         ),
     },
@@ -46,8 +53,7 @@ const router = createBrowserRouter([
         path: '/pool/:pool',
         element: (
             <App>
-                {' '}
-                <PoolPage />{' '}
+                <PoolPage />
             </App>
         ),
     },
@@ -55,8 +61,7 @@ const router = createBrowserRouter([
         path: '/pool/:pool/new-position',
         element: (
             <App>
-                {' '}
-                <NewPositionPage />{' '}
+                <NewPositionPage />
             </App>
         ),
     },
