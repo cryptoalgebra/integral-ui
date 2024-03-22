@@ -1,55 +1,63 @@
-import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
-import { TokenFieldsFragment, useAllTokensQuery } from "@/graphql/generated/graphql";
-import { useTokensState } from "@/state/tokensStore";
-import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
-import { useMemo } from "react";
-import { Address } from "viem";
-import { useChainId } from "wagmi";
+import {
+    DEFAULT_NATIVE_NAME,
+    DEFAULT_NATIVE_SYMBOL,
+} from '@/constants/default-chain-id';
+import {
+    TokenFieldsFragment,
+    useAllTokensQuery,
+} from '@/graphql/generated/graphql';
+import { useTokensState } from '@/state/tokensStore';
+import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { useMemo } from 'react';
+import { Address } from 'viem';
+import { useChainId } from 'wagmi';
 
-export function useAllTokens () {
+export function useAllTokens(showNativeToken: boolean = true) {
+    const chainId = useChainId();
 
-    const chainId = useChainId()
+    const { data: allTokens, loading } = useAllTokensQuery();
 
-    const {data: allTokens, loading } = useAllTokensQuery()
-    
-    const { importedTokens } = useTokensState()
+    const { importedTokens } = useTokensState();
 
-    const tokensBlackList: Address[] = useMemo(() => [], [])
+    const tokensBlackList: Address[] = useMemo(() => [], []);
 
     const mergedTokens = useMemo(() => {
+        if (!allTokens) return [];
 
-        if (!allTokens) return []
+        const tokens = new Map<Address, TokenFieldsFragment>();
 
-       const tokens = new Map<Address, TokenFieldsFragment>()
+        if (showNativeToken)
+            tokens.set(ADDRESS_ZERO, {
+                id: ADDRESS_ZERO,
+                symbol: DEFAULT_NATIVE_SYMBOL,
+                name: DEFAULT_NATIVE_NAME,
+                decimals: 18,
+                derivedMatic: 1,
+            });
 
-       tokens.set(ADDRESS_ZERO, {
-            id: ADDRESS_ZERO,
-            symbol: DEFAULT_NATIVE_SYMBOL,
-            name: DEFAULT_NATIVE_NAME,
-            decimals: 18,
-            derivedMatic: 1
-       })
+        for (const token of allTokens.tokens.filter(
+            (token) => !tokensBlackList.includes(token.id as Address)
+        )) {
+            tokens.set(token.id.toLowerCase() as Address, { ...token });
+        }
 
-       for (const token of allTokens.tokens.filter(token => !tokensBlackList.includes(token.id as Address))) {
-        tokens.set(token.id.toLowerCase() as Address, { ...token })
-       }
-        
-        const _importedTokens = Object.values(importedTokens[chainId] || [])
+        const _importedTokens = Object.values(importedTokens[chainId] || []);
 
         for (const token of _importedTokens) {
             tokens.set(token.id.toLowerCase() as Address, {
                 ...token,
-                derivedMatic: 0
-            })
+                derivedMatic: 0,
+            });
         }
 
-        return [...tokens].map(([,token]) => ({...token}))
+        return [...tokens].map(([, token]) => ({ ...token }));
+    }, [allTokens, importedTokens, tokensBlackList, chainId, showNativeToken]);
 
-    }, [allTokens, importedTokens, tokensBlackList, chainId])
-
-    return useMemo(()=> ({
-        tokens: mergedTokens,
-        isLoading: loading || Boolean(allTokens && !mergedTokens.length) 
-    }), [mergedTokens, allTokens, loading])
-
+    return useMemo(
+        () => ({
+            tokens: mergedTokens,
+            isLoading: loading || Boolean(allTokens && !mergedTokens.length),
+        }),
+        [mergedTokens, allTokens, loading]
+    );
 }
