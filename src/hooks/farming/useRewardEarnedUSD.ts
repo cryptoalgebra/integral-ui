@@ -15,14 +15,16 @@ export function useRewardEarnedUSD({
     const { data: nativePrice } = useNativePriceQuery();
 
     return useMemo(() => {
+        if (!token || !nativePrice) return 0;
+
         const formattedRewardEarned = Number(
-            formatUnits(reward, token?.decimals)
+            formatUnits(reward, token.decimals)
         );
 
         const rewardUSD =
-            token?.derivedMatic *
+            token.derivedMatic *
             formattedRewardEarned *
-            nativePrice?.bundles[0].maticPriceUSD;
+            nativePrice.bundles[0].maticPriceUSD;
 
         return rewardUSD;
     }, [nativePrice, token, reward]);
