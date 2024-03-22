@@ -16,8 +16,10 @@ import {
     Field,
     NonfungiblePositionManager,
     Percent,
+    ZERO,
 } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
+import JSBI from 'jsbi';
 import { useMemo } from 'react';
 import { useAccount, useContractWrite } from 'wagmi';
 
@@ -52,7 +54,11 @@ export const IncreaseLiquidityButton = ({
         : undefined;
 
     const { calldata, value } = useMemo(() => {
-        if (!mintInfo.position || !account)
+        if (
+            !account || 
+            !mintInfo.position || 
+            JSBI.EQ(mintInfo.position.liquidity, ZERO)
+        )
             return { calldata: undefined, value: undefined };
 
         return NonfungiblePositionManager.addCallParameters(mintInfo.position, {
