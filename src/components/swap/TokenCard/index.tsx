@@ -32,7 +32,7 @@ const TokenCard = ({
     otherCurrency,
     fiatValue,
     showMaxButton,
-    showBalance,
+    showBalance = true,
     showNativeToken,
     disabled,
 }: TokenSwapCardProps) => {
@@ -65,7 +65,7 @@ const TokenCard = ({
     };
 
     return (
-        <div className="flex bg-card-dark px-4 py-6 rounded-2xl w-full">
+        <div className="flex w-full px-4 py-6 bg-card-dark rounded-2xl">
             <div className="flex flex-col gap-2 min-w-fit">
                 <TokenSelectorModal
                     showNativeToken={showNativeToken}

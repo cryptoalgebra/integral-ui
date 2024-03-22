@@ -49,7 +49,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
     }, [singleToken0, singleToken1]);
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 bg-card-dark py-2 px-3 rounded-lg">
             <div className="flex items-center gap-4 ml-2 justify-between">
                 <div className="flex">
                     <CurrencyLogo currency={currencyA} size={30} />

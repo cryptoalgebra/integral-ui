@@ -16,11 +16,11 @@ const CreatePoolPage = () => {
                     </Button>
                 </Link>
             </div>
-            <div className="mr-auto">
-                <div className="w-[500px] max-lg:w-full p-4 bg-card border-border border rounded-3xl mt-16 ">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
+                <div className='col-span-1 flex flex-col gap-2'>
                     <CreatePoolForm />
+                    <PoweredByAlgebra className="mt-2" />
                 </div>
-                <PoweredByAlgebra className="mt-2" />
             </div>
         </PageContainer>
     );

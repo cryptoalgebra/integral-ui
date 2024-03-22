@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { useDerivedSwapInfo, useSwapState } from '@/state/swapStore';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { SwapField } from '@/types/swap-field';
 import {
+    ADDRESS_ZERO,
     INITIAL_POOL_FEE,
     NonfungiblePositionManager,
     computePoolAddress,
@@ -15,20 +16,22 @@ import Loader from '@/components/common/Loader';
 import { PoolState, usePool } from '@/hooks/pools/usePool';
 import Summary from '../Summary';
 import SelectPair from '../SelectPair';
+import { STABLECOINS } from '@/constants/tokens';
 
 const CreatePoolForm = () => {
     const { currencies } = useDerivedSwapInfo();
 
-    const { typedValue } = useSwapState();
+    const { typedValue, actions: { selectCurrency, typeInput } } = useSwapState();
 
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
 
-    const isSameTokens =
-        currencyA?.wrapped.address === currencyB?.wrapped.address;
+    const areCurrenciesSelected = currencyA && currencyB
+
+    const isSameToken = areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped)
 
     const poolAddress =
-        currencyA && currencyB && !isSameTokens
+        areCurrenciesSelected && !isSameToken
             ? (computePoolAddress({
                   tokenA: currencyA.wrapped,
                   tokenB: currencyB.wrapped,
@@ -77,9 +80,23 @@ const CreatePoolForm = () => {
         '/pools'
     );
 
+    useEffect(() => {
+        selectCurrency(SwapField.INPUT, undefined)
+        selectCurrency(SwapField.OUTPUT, undefined)
+        typeInput(SwapField.INPUT, '')
+        typeInput(SwapField.OUTPUT, '')
+
+        return () => {
+            selectCurrency(SwapField.INPUT, ADDRESS_ZERO)
+            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address as Account)
+            typeInput(SwapField.INPUT, '')
+            typeInput(SwapField.OUTPUT, '')
+        }
+    }, [])
+
     return (
-        <div className="flex flex-col gap-4">
-            <h2 className="font-semibold text-2xl text-left ml-2 mt-2">
+        <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-3xl">
+            <h2 className="font-semibold text-xl text-left ml-2 mt-2">
                 Select Pair
             </h2>
             <SelectPair
@@ -88,24 +105,27 @@ const CreatePoolForm = () => {
                 currencyB={currencyB}
             />
 
-            {!isPoolExists && (
-                <div className="flex flex-col gap-4">
-                    <h2 className="font-semibold text-2xl text-left ml-2 ">
-                        Summary
-                    </h2>
-                    <Summary currencyA={currencyA} currencyB={currencyB} />
-                </div>
+            {areCurrenciesSelected && !isSameToken &&  !isPoolExists && (
+                <Summary currencyA={currencyA} currencyB={currencyB} />
             )}
 
             <Button
                 className="mt-2"
                 disabled={
-                    isLoading || isPoolExists || !typedValue || isSameTokens
+                    isLoading || 
+                    isPoolExists || 
+                    !typedValue || 
+                    !areCurrenciesSelected ||
+                    isSameToken
                 }
                 onClick={() => createPool && createPool()}
             >
                 {isLoading ? (
                     <Loader />
+                ) : isSameToken ? (
+                    'Select another pair'
+                ) : !areCurrenciesSelected ? (
+                    'Select currencies'
                 ) : isPoolExists ? (
                     'Pool already exists'
                 ) : !typedValue ? (

@@ -43,10 +43,9 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
     );
 
     return (
-        <div className="flex flex-col gap-2 items-center">
+        <div className="relative flex flex-col gap-2 items-center">
             <TokenCard
                 showBalance={false}
-                showNativeToken={false}
                 value={typedValue}
                 handleTokenSelection={handleInputSelect}
                 currency={currencyA}
@@ -54,14 +53,16 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
                 handleValueChange={handleTypeInput}
             />
 
-            <ChevronsUpDownIcon
+            <button
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover duration-200"
                 onClick={onSwitchTokens}
-                className="cursor-pointer w-12"
-            />
+            >
+                <ChevronsUpDownIcon size={16} />
+            </button>
 
             <TokenCard
                 disabled
-                showNativeToken={false}
+                showBalance={false}
                 value={'1'}
                 currency={currencyB}
                 otherCurrency={currencyA}
