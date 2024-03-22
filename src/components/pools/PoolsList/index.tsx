@@ -10,12 +10,14 @@ import { POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from '@/constants/api';
 import useSWR from 'swr';
 
 const PoolsList = () => {
-    const { data: pools, loading } = usePoolsListQuery();
+    const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery();
 
-    const { data: poolsVolume } = usePoolsVolumeDataQuery();
+    const { data: poolsVolume, loading: isPoolsVolumeLoading } = usePoolsVolumeDataQuery();
 
-    const { data: poolsMaxApr } = useSWR(POOL_MAX_APR_API, fetcher);
-    const { data: poolsAvgApr } = useSWR(POOL_AVG_APR_API, fetcher);
+    const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
+    const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
+
+    const isLoading = isPoolsListLoading || isPoolsVolumeLoading || isPoolsMaxAprLoading || isPoolsAvgAprLoading
 
     const formattedPools = useMemo(() => {
         if (
@@ -55,7 +57,7 @@ const PoolsList = () => {
                 defaultSortingID={'tvlUSD'}
                 link={'pool'}
                 showPagination={false}
-                loading={loading}
+                loading={isLoading}
             />
         </div>
     );
