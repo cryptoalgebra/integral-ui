@@ -28,15 +28,12 @@ export function usePoolPlugins(poolId: Address | undefined) {
             address: skipFetch ? undefined : plugin,
         });
 
-    const { data: hasLimitOrderPlugin, isLoading: limitLoading } =
-        useAlgebraBasePluginLimitOrderPlugin({
-            address: skipFetch ? undefined : plugin,
-        });
+    // const { data: hasLimitOrderPlugin, isLoading: limitLoading } =
+    //     useAlgebraBasePluginLimitOrderPlugin({
+    //         address: skipFetch ? undefined : plugin,
+    //     });
 
-    console.log('hasLimitOrderPlugin', poolId, hasLimitOrderPlugin);
-
-    const isLoading =
-        globalStateLoading || pluginLoading || farmingLoading || limitLoading;
+    const isLoading = globalStateLoading || pluginLoading || farmingLoading;
 
     const hasDynamicFee = globalState && Number(globalState[3]) >> 7 === 1;
 
@@ -46,12 +43,11 @@ export function usePoolPlugins(poolId: Address | undefined) {
         setPluginsForPool(poolId, {
             dynamicFeePlugin: Boolean(hasDynamicFee),
             farmingPlugin: hasFarmingPlugin !== ADDRESS_ZERO,
-            limitOrderPlugin: Boolean(hasLimitOrderPlugin),
+            limitOrderPlugin: false,
         });
     }, [poolId, isLoading, pluginsForPools]);
 
     if (poolId && pluginsForPools[poolId]) {
-        console.log('poolId AA', poolId, poolId && pluginsForPools[poolId]);
         return {
             ...pluginsForPools[poolId],
             isLoading: false,
@@ -61,7 +57,7 @@ export function usePoolPlugins(poolId: Address | undefined) {
     return {
         dynamicFeePlugin: Boolean(hasDynamicFee),
         farmingPlugin: hasFarmingPlugin !== ADDRESS_ZERO,
-        limitOrderPlugin: Boolean(hasLimitOrderPlugin),
+        limitOrderPlugin: false,
         isLoading,
     };
 }
