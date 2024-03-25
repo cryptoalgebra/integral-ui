@@ -12,12 +12,23 @@ import useSWR from 'swr';
 const PoolsList = () => {
     const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery();
 
-    const { data: poolsVolume, loading: isPoolsVolumeLoading } = usePoolsVolumeDataQuery();
+    const { data: poolsVolume, loading: isPoolsVolumeLoading } =
+        usePoolsVolumeDataQuery();
 
-    const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
-    const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
+    const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(
+        POOL_MAX_APR_API,
+        fetcher
+    );
+    const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(
+        POOL_AVG_APR_API,
+        fetcher
+    );
 
-    const isLoading = isPoolsListLoading || isPoolsVolumeLoading || isPoolsMaxAprLoading || isPoolsAvgAprLoading
+    const isLoading =
+        isPoolsListLoading ||
+        isPoolsVolumeLoading ||
+        isPoolsMaxAprLoading ||
+        isPoolsAvgAprLoading;
 
     const formattedPools = useMemo(() => {
         if (
@@ -33,6 +44,12 @@ const PoolsList = () => {
                 const currentPool = poolsVolume.poolDayDatas.find(
                     (currPool) => currPool.pool.id === id
                 );
+                const lastDate = currentPool ? currentPool.date * 1000 : 0;
+                const currentDate = new Date().getTime();
+
+                const timeDifference = currentDate - lastDate;
+                const msIn24Hours = 24 * 60 * 60 * 1000;
+
                 return {
                     id: id as Address,
                     pair: {
@@ -41,7 +58,10 @@ const PoolsList = () => {
                     },
                     fee: Number(fee) / 10_000,
                     tvlUSD: Number(totalValueLockedUSD),
-                    volume24USD: Number(currentPool?.volumeUSD),
+                    volume24USD:
+                        timeDifference <= msIn24Hours && currentPool
+                            ? currentPool.volumeUSD
+                            : 0,
                     maxApr: poolsMaxApr[id] ? poolsMaxApr[id].toFixed(2) : 0,
                     avgApr: poolsAvgApr[id] ? poolsAvgApr[id].toFixed(2) : 0,
                 };
