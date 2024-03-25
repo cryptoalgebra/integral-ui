@@ -2,7 +2,6 @@ import {
     useAlgebraPoolGlobalState,
     useAlgebraPoolPlugin,
     useAlgebraBasePluginIncentive,
-    useAlgebraBasePluginLimitOrderPlugin,
 } from '@/generated';
 import { usePoolsStore } from '@/state/poolsStore';
 import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
