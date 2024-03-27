@@ -18,7 +18,8 @@ import PoolPage from '@/pages/Pool';
 import NewPositionPage from '@/pages/NewPosition';
 import CreatePoolPage from '@/pages/CreatePool/index.tsx';
 
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
+import { infoClient } from './graphql/clients/index.tsx';
 const router = createBrowserRouter([
     {
         path: '/',
@@ -67,14 +68,9 @@ const router = createBrowserRouter([
     },
 ]);
 
-const client = new ApolloClient({
-    uri: import.meta.env.VITE_INFO_GRAPH,
-    cache: new InMemoryCache(),
-});
-
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <ApolloProvider client={client}>
+        <ApolloProvider client={infoClient}>
             <RouterProvider router={router} />
         </ApolloProvider>
     </React.StrictMode>

@@ -84,3 +84,15 @@ export const POOL_FEE_DATA = gql`
         }
     }
 `
+
+export const POOLS_VOLUME_DATA = gql`
+    query PoolsVolumeData {
+        poolDayDatas(orderBy: date, orderDirection: desc) {
+            date
+            volumeUSD
+            pool {
+                id
+            }
+        }
+    }
+`;

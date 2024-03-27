@@ -20,7 +20,7 @@ import {
 } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAccount, useContractWrite } from 'wagmi';
 
 interface IncreaseLiquidityButtonProps {
@@ -28,6 +28,7 @@ interface IncreaseLiquidityButtonProps {
     quoteCurrency: Currency | undefined | null;
     mintInfo: IDerivedMintInfo;
     tokenId?: number;
+    handleCloseModal?: () => void;
 }
 
 const ZERO_PERCENT = new Percent('0');
@@ -38,6 +39,7 @@ export const IncreaseLiquidityButton = ({
     tokenId,
     baseCurrency,
     quoteCurrency,
+    handleCloseModal,
 }: IncreaseLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
@@ -55,8 +57,8 @@ export const IncreaseLiquidityButton = ({
 
     const { calldata, value } = useMemo(() => {
         if (
-            !account || 
-            !mintInfo.position || 
+            !account ||
+            !mintInfo.position ||
             JSBI.EQ(mintInfo.position.liquidity, ZERO)
         )
             return { calldata: undefined, value: undefined };
@@ -117,10 +119,15 @@ export const IncreaseLiquidityButton = ({
     const { data: increaseLiquidityData, write: increaseLiquidity } =
         useContractWrite(increaseLiquidityConfig);
 
-    const { isLoading: isIncreaseLiquidityLoading } = useTransitionAwait(
-        increaseLiquidityData?.hash,
-        `Add Liquidity to #${tokenId}`
-    );
+    const { isLoading: isIncreaseLiquidityLoading, isSuccess } =
+        useTransitionAwait(
+            increaseLiquidityData?.hash,
+            `Add Liquidity to #${tokenId}`
+        );
+
+    useEffect(() => {
+        if (isSuccess) handleCloseModal?.();
+    }, [isSuccess]);
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
 
@@ -133,6 +140,9 @@ export const IncreaseLiquidityButton = ({
                 onClick={() => open({ view: 'Networks' })}
             >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
         );
+
+    if (mintInfo.errorMessage)
+        return <Button disabled>{mintInfo.errorMessage}</Button>;
 
     if (showApproveA || showApproveB)
         return (
@@ -165,9 +175,6 @@ export const IncreaseLiquidityButton = ({
                 )}
             </div>
         );
-
-    if (mintInfo.errorMessage)
-        return <Button disabled>{mintInfo.errorMessage}</Button>;
 
     return (
         <Button

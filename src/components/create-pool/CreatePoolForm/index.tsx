@@ -21,14 +21,18 @@ import { STABLECOINS } from '@/constants/tokens';
 const CreatePoolForm = () => {
     const { currencies } = useDerivedSwapInfo();
 
-    const { typedValue, actions: { selectCurrency, typeInput } } = useSwapState();
+    const {
+        typedValue,
+        actions: { selectCurrency, typeInput },
+    } = useSwapState();
 
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
 
-    const areCurrenciesSelected = currencyA && currencyB
+    const areCurrenciesSelected = currencyA && currencyB;
 
-    const isSameToken = areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped)
+    const isSameToken =
+        areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped);
 
     const poolAddress =
         areCurrenciesSelected && !isSameToken
@@ -81,18 +85,18 @@ const CreatePoolForm = () => {
     );
 
     useEffect(() => {
-        selectCurrency(SwapField.INPUT, undefined)
-        selectCurrency(SwapField.OUTPUT, undefined)
-        typeInput(SwapField.INPUT, '')
-        typeInput(SwapField.OUTPUT, '')
+        selectCurrency(SwapField.INPUT, undefined);
+        selectCurrency(SwapField.OUTPUT, undefined);
+        typeInput(SwapField.INPUT, '');
+        typeInput(SwapField.OUTPUT, '');
 
         return () => {
-            selectCurrency(SwapField.INPUT, ADDRESS_ZERO)
-            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address as Account)
-            typeInput(SwapField.INPUT, '')
-            typeInput(SwapField.OUTPUT, '')
-        }
-    }, [])
+            selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
+            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address);
+            typeInput(SwapField.INPUT, '');
+            typeInput(SwapField.OUTPUT, '');
+        };
+    }, []);
 
     return (
         <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-3xl">
@@ -105,16 +109,16 @@ const CreatePoolForm = () => {
                 currencyB={currencyB}
             />
 
-            {areCurrenciesSelected && !isSameToken &&  !isPoolExists && (
+            {areCurrenciesSelected && !isSameToken && !isPoolExists && (
                 <Summary currencyA={currencyA} currencyB={currencyB} />
             )}
 
             <Button
                 className="mt-2"
                 disabled={
-                    isLoading || 
-                    isPoolExists || 
-                    !typedValue || 
+                    isLoading ||
+                    isPoolExists ||
+                    !typedValue ||
                     !areCurrenciesSelected ||
                     isSameToken
                 }

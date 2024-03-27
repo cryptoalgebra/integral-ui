@@ -22,6 +22,7 @@ interface AmountsSectionProps {
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
     manageLiquidity: ManageLiquidity;
+    handleCloseModal?: () => void;
 }
 
 type NewPositionPageParams = Record<'pool', Address>;
@@ -32,6 +33,7 @@ const AmountsSection = ({
     currencyB,
     mintInfo,
     manageLiquidity,
+    handleCloseModal,
 }: AmountsSectionProps) => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
@@ -82,6 +84,7 @@ const AmountsSection = ({
                     baseCurrency={currencyA}
                     quoteCurrency={currencyB}
                     mintInfo={mintInfo}
+                    handleCloseModal={handleCloseModal}
                 />
             )}
             {manageLiquidity === ManageLiquidity.ADD && (

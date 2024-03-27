@@ -19,7 +19,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface DataTableProps<TData, TValue> {
@@ -72,7 +72,7 @@ const DataTable = <TData, TValue>({
         (pos: any) => pos.liquidityUSD === 0
     );
 
-    function renderFarmingPositions() {
+    const renderFarmingPositions = useCallback(() => {
         if (farmingPositions.length === 0) return null;
         let firstMatchFound = false;
 
@@ -129,9 +129,9 @@ const DataTable = <TData, TValue>({
             }
             return null;
         });
-    }
+    }, [farmingPositions]);
 
-    function renderZeroLiquidityPositions() {
+    const renderZeroLiquidityPositions = useCallback(() => {
         if (zeroLiquidityPositions.length === 0) return null;
         let firstMatchFound = false;
 
@@ -186,22 +186,12 @@ const DataTable = <TData, TValue>({
             }
             return null;
         });
-    }
+    }, [zeroLiquidityPositions]);
 
     if (loading) return <LoadingState />;
 
     return (
         <>
-            {/* {searchID && <div className="flex items-center p-4">
-        <Input
-          placeholder="Search"
-          value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn(searchID)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>} */}
             <Table>
                 <TableHeader className="[&_tr]:border-b-0">
                     {table.getHeaderGroups().map((headerGroup) => (

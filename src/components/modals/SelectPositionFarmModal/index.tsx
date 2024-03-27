@@ -14,7 +14,7 @@ import { useFarmCheckApprove } from '@/hooks/farming/useFarmCheckApprove';
 import { cn } from '@/lib/utils';
 import { Farming } from '@/types/farming-info';
 import { FormattedPosition } from '@/types/formatted-position';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFarmStake } from '@/hooks/farming/useFarmStake';
 
 interface SelectPositionFarmModalProps {
@@ -37,11 +37,7 @@ export function SelectPositionFarmModal({
 
     const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
 
-    const {
-        isLoading: isStakeLoading,
-        onStake,
-        isSuccess,
-    } = useFarmStake({
+    const { isLoading: isStakeLoading, onStake } = useFarmStake({
         tokenId,
         rewardToken: farming.farming.rewardToken,
         bonusRewardToken: farming.farming.bonusRewardToken,
@@ -69,12 +65,6 @@ export function SelectPositionFarmModal({
         (position) =>
             position.eternalFarming === null && position.liquidity > 0n
     );
-
-    useEffect(() => {
-        if (isSuccess) {
-            setSelectedPosition(null);
-        }
-    }, [isSuccess]);
 
     return (
         <Dialog>
