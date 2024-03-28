@@ -1,10 +1,8 @@
-import { Currency, CurrencyAmount, Route, Trade, TradeType, encodeRouteToPath } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, Route, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useAllRoutes } from "./useAllRoutes";
-import { useContractReads } from "wagmi";
-import { ALGEBRA_QUOTER_V2 } from "@/constants/addresses";
-import { algebraQuoterV2ABI } from "@/abis";
 import { TradeState, TradeStateType } from "@/types/trade-state";
+import { useQuotesResults } from "./useQuotesResults";
 
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
@@ -21,27 +19,22 @@ export function useBestTradeExactIn(
 
     const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut)
 
-    const quoteExactInInputs = useMemo(() => {
-        return routes.map((route) => [
-            encodeRouteToPath(route, false),
-            amountIn ? `0x${amountIn.quotient.toString(16)}` : undefined,
-        ])
-    }, [amountIn, routes])
-
-    const { data: quotesResults, isLoading: isQuotesLoading } = useContractReads({
-        contracts: quoteExactInInputs.map((quote: any) => ({
-            address: ALGEBRA_QUOTER_V2,
-            abi: algebraQuoterV2ABI,
-            functionName: 'quoteExactInput',
-            args: quote
-        }))
-    })
+    const {
+        data: quotesResults,
+        isLoading: isQuotesLoading,
+        refetch,
+    } = useQuotesResults({
+        exactInput: true,
+        amountIn,
+        currencyOut,
+    });
 
     const trade = useMemo(() => {
         if (!amountIn || !currencyOut) {
             return {
                 state: TradeState.INVALID,
                 trade: null,
+                refetch
             }
         }
 
@@ -100,9 +93,10 @@ export function useBestTradeExactIn(
                 inputAmount: amountIn,
                 outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()),
             }),
-            priceAfterSwap
+            priceAfterSwap,
+            refetch
         }
-    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading])
+    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch])
 
     return trade
 }
@@ -119,28 +113,23 @@ export function useBestTradeExactOut(
 
     const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency)
 
-    const quoteExactOutInputs = useMemo(() => {
-        return routes.map((route) => [
-            encodeRouteToPath(route, true),
-            amountOut ? `0x${amountOut.quotient.toString(16)}` : undefined,
-        ])
-    }, [amountOut, routes])
-
-    const { data: quotesResults, isLoading: isQuotesLoading, isError: isQuotesErrored } = useContractReads({
-        contracts: quoteExactOutInputs.map((quote: any) => ({
-            address: ALGEBRA_QUOTER_V2,
-            abi: algebraQuoterV2ABI,
-            functionName: 'quoteExactOutput',
-            args: quote
-        }))
-    })
+    const {
+        data: quotesResults,
+        isLoading: isQuotesLoading,
+        refetch,
+    } = useQuotesResults({
+        exactInput: false,
+        currencyIn,
+        amountOut,
+    });
 
     const trade = useMemo(() => {
-        if (!amountOut || !currencyIn || isQuotesErrored) {
+        if (!amountOut || !currencyIn) {
             return {
                 state: TradeState.INVALID,
                 trade: null,
-            }
+                refetch,
+            };
         }
 
         if (routesLoading || isQuotesLoading) {
@@ -198,9 +187,10 @@ export function useBestTradeExactOut(
                 inputAmount: CurrencyAmount.fromRawAmount(currencyIn, amountIn.toString()),
                 outputAmount: amountOut,
             }),
-            priceAfterSwap
+            priceAfterSwap,
+            refetch
         }
-    }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading])
+    }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading, refetch])
 
 
     return trade

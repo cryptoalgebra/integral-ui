@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
+import { useQuotesResults } from "@/hooks/swap/useQuotesResults";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
@@ -12,7 +13,7 @@ import { TradeState } from "@/types/trade-state";
 import { computeFiatValuePriceImpact } from "@/utils/swap/computePriceImpact";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useAccount } from "wagmi";
 
 const SwapButton = () => {
@@ -29,6 +30,16 @@ const SwapButton = () => {
     const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
+
+    const parsedAmountA =
+        independentField === SwapField.INPUT
+            ? parsedAmount
+            : trade?.inputAmount;
+
+    const parsedAmountB =
+        independentField === SwapField.OUTPUT
+            ? parsedAmount
+            : trade?.outputAmount;
 
     const parsedAmounts = useMemo(
         () => ({
@@ -61,18 +72,33 @@ const SwapButton = () => {
         (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) &&
         !(priceImpactSeverity > 3 && !isExpertMode);
 
-    const { callback: swapCallback, error: swapCallbackError, isLoading: isSwapLoading } = useSwapCallback(trade, allowedSlippage);
+    const { refetch: refetchQuotesA } = useQuotesResults({
+        exactInput: true,
+        amountIn: parsedAmountA,
+        currencyOut: currencies[SwapField.OUTPUT],
+    });
 
-    const handleSwap = useCallback(() => {
-        if (!swapCallback) {
-            return;
-        }
-        // if (priceImpact && !confirmPriceImpactWithoutFee(priceImpact)) {
-        //     return;
-        // }
+    const { refetch: refetchQuotesB } = useQuotesResults({
+        exactInput: true,
+        amountOut: parsedAmountB,
+        currencyIn: currencies[SwapField.INPUT],
+    });
+    
+    const { callback: swapCallback, error: swapCallbackError, isLoading: isSwapLoading, isSuccess: isSwapSuccess } = useSwapCallback(trade, allowedSlippage);
+
+    const handleSwap = useCallback(async () => {
+        if (!swapCallback) return;
+        await refetchQuotesA();
+        await refetchQuotesB();
 
         swapCallback().catch((error) => new Error(`Swap Failed ${error}`));
-    }, [swapCallback, priceImpact, account, trade]);
+    }, [swapCallback, refetchQuotesA, refetchQuotesB]);
+
+    useEffect(() => {
+        if (!isSwapSuccess) return;
+        refetchQuotesA();
+        refetchQuotesB();
+    }, [isSwapSuccess]);
 
     const isValid = !swapInputError;
 
