@@ -9,7 +9,7 @@ export const DynamicFeePluginIcon = () => <HoverCard>
     </HoverCardTrigger>
     <HoverCardContent className="flex flex-col gap-2 bg-card rounded-3xl border border-card-border text-white w-fit">
         <div className="flex items-center gap-2">
-            <DynamicFeePluginIcon />
+            <ZapIcon size={16} fill={'#d84eff'} stroke={'#d84eff'} />
             <span className="font-bold">Dynamic Fees</span>
         </div>
         <div className="text-left">This pool uses <b>Dynamic Fees</b> plugin</div>
@@ -29,7 +29,7 @@ export const FarmingPluginIcon = () => (
         </HoverCardTrigger>
         <HoverCardContent className="flex flex-col gap-2 bg-card rounded-3xl border border-card-border text-white w-fit">
             <div className="flex items-center gap-2">
-                <FarmingPluginIcon />
+                <Tractor size={16} stroke={'#d84eff'} />
                 <span className="font-bold">Built-in Farming</span>
             </div>
             <div className="text-left">
