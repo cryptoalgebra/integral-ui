@@ -3,7 +3,12 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import { INITIAL_POOL_FEE, Position } from '@cryptoalgebra/integral-sdk';
+import {
+    ADDRESS_ZERO,
+    INITIAL_POOL_FEE,
+    Position,
+    WNATIVE,
+} from '@cryptoalgebra/integral-sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';
@@ -18,6 +23,8 @@ import { EternalFarming } from '@/graphql/generated/graphql';
 import ActiveFarmingCard from '../ActiveFarmingCard';
 import ClosedFarmingCard from '../ClosedFarmingCard';
 import { IncreaseLiquidityModal } from '@/components/modals/IncreaseLiquidityModal';
+import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
+import { useAlgebraToken } from '@/hooks/common/useAlgebraToken';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -58,6 +65,20 @@ const PositionCard = ({
         positionEntity?.amount0.currency,
         positionEntity || undefined
     );
+
+    const token0 = position?.token0;
+    const token1 = position?.token1;
+
+    const isWNative0 =
+        token0?.toLowerCase() ===
+        WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase();
+
+    const isWNative1 =
+        token1?.toLowerCase() ===
+        WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase();
+
+    const currencyA = useAlgebraToken(isWNative0 ? ADDRESS_ZERO : token0);
+    const currencyB = useAlgebraToken(isWNative1 ? ADDRESS_ZERO : token1);
 
     const [positionLiquidityUSD, positionFeesUSD, positionAPR] =
         selectedPosition
@@ -136,8 +157,8 @@ const PositionCard = ({
                 <div className="flex gap-4 w-full whitespace-nowrap">
                     <IncreaseLiquidityModal
                         tokenId={Number(selectedPosition.id)}
-                        currencyA={positionEntity.amount0.currency}
-                        currencyB={positionEntity.amount1.currency}
+                        currencyA={currencyA}
+                        currencyB={currencyB}
                         mintInfo={mintInfo}
                     />
                 </div>

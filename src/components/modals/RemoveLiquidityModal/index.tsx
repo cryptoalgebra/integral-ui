@@ -79,7 +79,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig)
 
-    const { isLoading: isRemoveLoading } = useTransitionAwait(removeLiquidityData?.hash, 'Remove liquidity')
+    const { isLoading: isRemoveLoading, isSuccess } = useTransitionAwait(removeLiquidityData?.hash, 'Remove liquidity')
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity
 
@@ -87,7 +87,17 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         onPercentSelect(sliderValue[0])
     }, [sliderValue])
 
-    return <Dialog>
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleCloseModal = () => {
+        setIsOpen(false);
+    };
+
+    useEffect(() => {
+        if (isSuccess) handleCloseModal?.();
+    }, [isSuccess]);
+
+    return <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
             <Button variant={'outline'} className="w-full" >Remove Liquidity</Button>
         </DialogTrigger>
