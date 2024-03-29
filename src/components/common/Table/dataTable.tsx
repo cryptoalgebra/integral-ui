@@ -8,6 +8,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
+import { usePositionFilterStore } from '@/state/positionFilterStore';
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -19,7 +21,8 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import React, { useCallback, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface DataTableProps<TData, TValue> {
@@ -49,13 +52,21 @@ const DataTable = <TData, TValue>({
     );
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+    const [expandActive, setExpandActive] = useState(true);
+    const [expandOnFarming, setExpandOnFarming] = useState(true);
+    const [expandClosed, setExpandClosed] = useState(true);
+
+    const { filterStatus } = usePositionFilterStore();
+
     const navigate = useNavigate();
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        getPaginationRowModel: showPagination
+            ? getPaginationRowModel()
+            : undefined,
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
@@ -64,7 +75,12 @@ const DataTable = <TData, TValue>({
             sorting,
             columnFilters,
         },
+        autoResetPageIndex: true,
     });
+
+    const activePositions = data.filter(
+        (pos: any) => !pos.inFarming && pos.liquidityUSD > 0
+    );
 
     const farmingPositions = data.filter((pos: any) => pos.inFarming);
 
@@ -73,118 +89,78 @@ const DataTable = <TData, TValue>({
     );
 
     const renderFarmingPositions = useCallback(() => {
-        if (farmingPositions.length === 0) return null;
-        let firstMatchFound = false;
-
         return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
-            if (row.original.inFarming) {
-                const renderIndex = firstMatchFound ? null : (
+            if (row.original.liquidityUSD > 0 && row.original.inFarming)
+                return (
                     <TableRow
-                        key={'in-farming-positions'}
-                        className="hover:bg-transparent flex p-4 border-none"
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                        className={`border-card-border/40 ${
+                            isSelected ? 'bg-muted-primary/60' : 'bg-card-dark'
+                        } ${(action || link) && 'cursor-pointer'} ${
+                            action || link
+                                ? isSelected
+                                    ? 'hover:bg-muted-primary'
+                                    : 'hover:bg-card-hover'
+                                : 'hover:bg-card-dark'
+                        }`}
+                        onClick={() => {
+                            if (action) {
+                                action(row.original.id);
+                            } else if (link) {
+                                navigate(`/${link}/${row.original.id}`);
+                            }
+                        }}
                     >
-                        <td className="ml-4 whitespace-nowrap w-12">
-                            On Farming
-                        </td>
+                        {row.getVisibleCells().map((cell: any) => (
+                            <TableCell key={cell.id} className="text-left">
+                                {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                )}
+                            </TableCell>
+                        ))}
                     </TableRow>
                 );
-                firstMatchFound = true;
-                return (
-                    <React.Fragment key={row.id}>
-                        {renderIndex}
-                        <TableRow
-                            key={row.id}
-                            data-state={row.getIsSelected() && 'selected'}
-                            className={`border-card-border/40 ${
-                                isSelected
-                                    ? 'bg-muted-primary/60'
-                                    : 'bg-card-dark'
-                            } ${(action || link) && 'cursor-pointer'} ${
-                                action || link
-                                    ? isSelected
-                                        ? 'hover:bg-muted-primary'
-                                        : 'hover:bg-card-hover'
-                                    : 'hover:bg-card-dark'
-                            }`}
-                            onClick={() => {
-                                if (action) {
-                                    action(row.original.id);
-                                } else if (link) {
-                                    navigate(`/${link}/${row.original.id}`);
-                                }
-                            }}
-                        >
-                            {row.getVisibleCells().map((cell: any) => (
-                                <TableCell key={cell.id} className="text-left">
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </React.Fragment>
-                );
-            }
-            return null;
         });
     }, [farmingPositions]);
 
     const renderZeroLiquidityPositions = useCallback(() => {
-        if (zeroLiquidityPositions.length === 0) return null;
-        let firstMatchFound = false;
-
         return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
-            if (row.original.liquidityUSD === 0) {
-                const renderIndex = firstMatchFound ? null : (
+            if (row.original.liquidityUSD === 0 && !row.original.inFarming)
+                return (
                     <TableRow
-                        key={'closed-positions'}
-                        className="hover:bg-transparent flex p-4 border-none"
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                        className={`border-card-border/40 ${
+                            isSelected ? 'bg-muted-primary/60' : 'bg-card-dark'
+                        } ${(action || link) && 'cursor-pointer'} ${
+                            action || link
+                                ? isSelected
+                                    ? 'hover:bg-muted-primary'
+                                    : 'hover:bg-card-hover'
+                                : 'hover:bg-card-dark'
+                        }`}
+                        onClick={() => {
+                            if (action) {
+                                action(row.original.id);
+                            } else if (link) {
+                                navigate(`/${link}/${row.original.id}`);
+                            }
+                        }}
                     >
-                        <td className="ml-4 whitespace-nowrap w-12">Closed</td>
+                        {row.getVisibleCells().map((cell: any) => (
+                            <TableCell key={cell.id} className="text-left">
+                                {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext()
+                                )}
+                            </TableCell>
+                        ))}
                     </TableRow>
                 );
-                firstMatchFound = true;
-                return (
-                    <React.Fragment key={row.id}>
-                        {renderIndex}
-                        <TableRow
-                            key={row.id}
-                            data-state={row.getIsSelected() && 'selected'}
-                            className={`border-card-border/40 ${
-                                isSelected
-                                    ? 'bg-muted-primary/60'
-                                    : 'bg-card-dark'
-                            } ${(action || link) && 'cursor-pointer'} ${
-                                action || link
-                                    ? isSelected
-                                        ? 'hover:bg-muted-primary'
-                                        : 'hover:bg-card-hover'
-                                    : 'hover:bg-card-dark'
-                            }`}
-                            onClick={() => {
-                                if (action) {
-                                    action(row.original.id);
-                                } else if (link) {
-                                    navigate(`/${link}/${row.original.id}`);
-                                }
-                            }}
-                        >
-                            {row.getVisibleCells().map((cell: any) => (
-                                <TableCell key={cell.id} className="text-left">
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </React.Fragment>
-                );
-            }
-            return null;
         });
     }, [zeroLiquidityPositions]);
 
@@ -216,7 +192,10 @@ const DataTable = <TData, TValue>({
                     ))}
                 </TableHeader>
                 <TableBody className="hover:bg-transparent text-[16px]">
-                    {!table.getRowModel().rows?.length ? (
+                    {table.getRowModel().rows?.length === 0 ||
+                    (!filterStatus.Active &&
+                        !filterStatus.Closed &&
+                        !filterStatus.OnFarming) ? (
                         <TableRow className="hover:bg-card h-full">
                             <TableCell
                                 colSpan={columns.length}
@@ -227,73 +206,165 @@ const DataTable = <TData, TValue>({
                         </TableRow>
                     ) : (
                         <>
-                            {table.getRowModel().rows.map((row: any) => {
-                                const isSelected =
-                                    Number(selectedRow) ===
-                                    Number(row.original.id);
-                                if (
-                                    (row.original.liquidityUSD > 0 &&
-                                        !row.original.inFarming) ||
-                                    row.original.liquidityUSD === undefined
-                                )
-                                    return (
-                                        <TableRow
-                                            key={row.id}
-                                            data-state={
-                                                row.getIsSelected() &&
-                                                'selected'
-                                            }
-                                            className={`border-card-border/40 ${
-                                                isSelected
-                                                    ? 'bg-muted-primary/60'
-                                                    : 'bg-card-dark'
-                                            } ${
-                                                (action || link) &&
-                                                'cursor-pointer'
-                                            } ${
-                                                action || link
-                                                    ? isSelected
-                                                        ? 'hover:bg-muted-primary'
-                                                        : 'hover:bg-card-hover'
-                                                    : 'hover:bg-card-dark'
-                                            }`}
-                                            onClick={() => {
-                                                if (action) {
-                                                    action(row.original.id);
-                                                } else if (link) {
-                                                    navigate(
-                                                        `/${link}/${row.original.id}`
-                                                    );
-                                                }
-                                            }}
+                            {activePositions.length > 0 &&
+                                filterStatus.Active === true && (
+                                    <TableRow
+                                        key={'active-positions'}
+                                        className="hover:bg-transparent h-full cursor-pointer border-opacity-30 border-t"
+                                        onClick={() => {
+                                            setExpandActive(!expandActive);
+                                        }}
+                                    >
+                                        <td
+                                            colSpan={columns.length}
+                                            className="pl-8 h-12 text-left whitespace-nowrap border-opacity-30 border-t border-b"
                                         >
-                                            {row
-                                                .getVisibleCells()
-                                                .map((cell: any) => (
-                                                    <TableCell
-                                                        key={cell.id}
-                                                        className="text-left"
-                                                    >
-                                                        {flexRender(
-                                                            cell.column
-                                                                .columnDef.cell,
-                                                            cell.getContext()
-                                                        )}
-                                                    </TableCell>
-                                                ))}
-                                        </TableRow>
-                                    );
-                            })}
+                                            <span className="flex gap-4 items-center">
+                                                Active
+                                                <ChevronDown
+                                                    className={cn(
+                                                        'opacity-50 transition-transform ease-in-out duration-200',
+                                                        !expandActive &&
+                                                            '-rotate-90 opacity-100'
+                                                    )}
+                                                    size={18}
+                                                />
+                                            </span>
+                                        </td>
+                                    </TableRow>
+                                )}
+                            {filterStatus.Active === true &&
+                                expandActive &&
+                                table.getRowModel().rows.map((row: any) => {
+                                    const isSelected =
+                                        Number(selectedRow) ===
+                                        Number(row.original.id);
+                                    if (
+                                        (row.original.liquidityUSD > 0 &&
+                                            !row.original.inFarming) ||
+                                        row.original.liquidityUSD === undefined
+                                    )
+                                        return (
+                                            <TableRow
+                                                key={row.id}
+                                                data-state={
+                                                    row.getIsSelected() &&
+                                                    'selected'
+                                                }
+                                                className={`border-card-border/40 ${
+                                                    isSelected
+                                                        ? 'bg-muted-primary/60'
+                                                        : 'bg-card-dark'
+                                                } ${
+                                                    (action || link) &&
+                                                    'cursor-pointer'
+                                                } ${
+                                                    action || link
+                                                        ? isSelected
+                                                            ? 'hover:bg-muted-primary'
+                                                            : 'hover:bg-card-hover'
+                                                        : 'hover:bg-card-dark'
+                                                }`}
+                                                onClick={() => {
+                                                    if (action) {
+                                                        action(row.original.id);
+                                                    } else if (link) {
+                                                        navigate(
+                                                            `/${link}/${row.original.id}`
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                {row
+                                                    .getVisibleCells()
+                                                    .map((cell: any) => (
+                                                        <TableCell
+                                                            key={cell.id}
+                                                            className="text-left"
+                                                        >
+                                                            {flexRender(
+                                                                cell.column
+                                                                    .columnDef
+                                                                    .cell,
+                                                                cell.getContext()
+                                                            )}
+                                                        </TableCell>
+                                                    ))}
+                                            </TableRow>
+                                        );
+                                })}
+
                             {farmingPositions.length > 0 &&
+                                filterStatus.OnFarming && (
+                                    <TableRow
+                                        key={'farming-positions'}
+                                        className="hover:bg-transparent h-full cursor-pointer border-opacity-30"
+                                        onClick={() => {
+                                            setExpandOnFarming(
+                                                !expandOnFarming
+                                            );
+                                        }}
+                                    >
+                                        <td
+                                            colSpan={columns.length}
+                                            className="pl-8 h-12 text-left whitespace-nowrap border-opacity-30 border-t border-b"
+                                        >
+                                            <span className="flex gap-4 items-center">
+                                                On Farming
+                                                <ChevronDown
+                                                    className={cn(
+                                                        'opacity-50 transition-transform ease-in-out duration-200',
+                                                        !expandOnFarming &&
+                                                            '-rotate-90 opacity-100'
+                                                    )}
+                                                    size={18}
+                                                />
+                                            </span>
+                                        </td>
+                                    </TableRow>
+                                )}
+                            {farmingPositions.length > 0 &&
+                                filterStatus.OnFarming &&
+                                expandOnFarming &&
                                 renderFarmingPositions()}
+
                             {zeroLiquidityPositions.length > 0 &&
+                                filterStatus.Closed && (
+                                    <TableRow
+                                        key={'closed-positions'}
+                                        className="hover:bg-transparent h-full cursor-pointer border-opacity-30 "
+                                        onClick={() => {
+                                            setExpandClosed(!expandClosed);
+                                        }}
+                                    >
+                                        <td
+                                            colSpan={columns.length}
+                                            className="pl-8 h-12 text-left whitespace-nowrap border-opacity-30 border-b border-t"
+                                        >
+                                            <span className="flex gap-4 items-center">
+                                                Closed
+                                                <ChevronDown
+                                                    className={cn(
+                                                        'opacity-50 transition-transform ease-in-out duration-200',
+                                                        !expandClosed &&
+                                                            '-rotate-90 opacity-100'
+                                                    )}
+                                                    size={18}
+                                                />
+                                            </span>
+                                        </td>
+                                    </TableRow>
+                                )}
+                            {zeroLiquidityPositions.length > 0 &&
+                                filterStatus.Closed &&
+                                expandClosed &&
                                 renderZeroLiquidityPositions()}
                         </>
                     )}
                 </TableBody>
             </Table>
             {showPagination && (
-                <div className="flex items-center justify-end space-x-2 pt-4 pb-2 px-4 mt-auto">
+                <div className="flex items-center justify-end space-x-2 px-4 mt-auto">
                     <Button
                         variant="outline"
                         size="sm"

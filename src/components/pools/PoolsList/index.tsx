@@ -76,7 +76,7 @@ const PoolsList = () => {
                 data={formattedPools}
                 defaultSortingID={'tvlUSD'}
                 link={'pool'}
-                showPagination={false}
+                showPagination={true}
                 loading={isLoading}
             />
         </div>
