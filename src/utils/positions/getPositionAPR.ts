@@ -21,7 +21,11 @@ export async function getPositionAPR(
 
         const liquidity = await algebraPool.read.liquidity()
 
-        const poolDayFees = poolFeeData && Boolean(poolFeeData.length) && poolFeeData.reduce((acc, v) => acc + Number(v.feesUSD), 0)
+        // Today fees
+        const poolDayFees = poolFeeData && Boolean(poolFeeData.length) && Number(poolFeeData[0].feesUSD)
+
+        // Avg fees
+        // const poolDayFees = poolFeeData && Boolean(poolFeeData.length) && poolFeeData.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolFeeData.length
 
         const yearFee = poolDayFees && poolDayFees * 365
 
