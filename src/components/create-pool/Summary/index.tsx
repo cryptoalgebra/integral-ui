@@ -1,7 +1,7 @@
 import CurrencyLogo from '@/components/common/CurrencyLogo';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSingleTokenQuery } from '@/graphql/generated/graphql';
-import { useSwapState } from '@/state/swapStore';
+import { useMintState } from '@/state/mintStore';
 import { Currency } from '@cryptoalgebra/integral-sdk';
 import { useEffect, useState } from 'react';
 import { Address } from 'viem';
@@ -13,7 +13,7 @@ interface ISummary {
 
 const Summary = ({ currencyA, currencyB }: ISummary) => {
     const [suggestedPrice, setSuggestedPrice] = useState(0);
-    const { typedValue } = useSwapState();
+    const { startPriceTypedValue } = useMintState();
 
     const token0 = currencyA?.wrapped.address.toLowerCase() as Address;
     const token1 = currencyB?.wrapped.address.toLowerCase() as Address;
@@ -67,15 +67,15 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
                 )}
 
                 <div>
-                    {`1 ${currencyB?.symbol} = ${typedValue || 0} ${
-                        currencyA?.symbol
+                    {`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${
+                        currencyB?.symbol
                     }`}
                 </div>
             </div>
             {suggestedPrice > 0 && (
                 <div className="text-left ml-2 flex justify-between">
-                    <p className="opacity-50">Suggested price:</p>
-                    <p className="opacity-50">{` 1 ${currencyB?.symbol} = ${suggestedPrice} ${currencyA?.symbol}`}</p>
+                    <p className="opacity-50">Suggested price:</p>  
+                    <p className="opacity-50">{` 1 ${currencyA?.symbol} = ${suggestedPrice} ${currencyB?.symbol}`}</p>
                 </div>
             )}
         </div>

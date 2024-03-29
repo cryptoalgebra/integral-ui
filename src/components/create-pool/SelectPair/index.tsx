@@ -44,12 +44,12 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
     return (
         <div className="relative flex flex-col gap-2 items-center">
             <TokenCard
+                disabled
                 showBalance={false}
-                value={startPriceTypedValue}
-                handleTokenSelection={handleInputSelect}
+                value={'1'}
                 currency={currencyA}
                 otherCurrency={currencyB}
-                handleValueChange={handleTypeInput}
+                handleTokenSelection={handleInputSelect}
             />
 
             <button
@@ -60,13 +60,14 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
             </button>
 
             <TokenCard
-                disabled
                 showBalance={false}
-                value={'1'}
+                value={startPriceTypedValue}
+                handleTokenSelection={handleOutputSelect}
                 currency={currencyB}
                 otherCurrency={currencyA}
-                handleTokenSelection={handleOutputSelect}
+                handleValueChange={handleTypeInput}
             />
+
         </div>
     );
 };
