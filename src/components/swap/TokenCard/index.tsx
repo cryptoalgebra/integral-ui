@@ -1,7 +1,7 @@
 import CurrencyLogo from '@/components/common/CurrencyLogo';
 import TokenSelectorModal from '@/components/modals/TokenSelectorModal';
 import { Input } from '@/components/ui/input';
-import { formatCurrency } from '@/utils/common/formatCurrency';
+import { formatBalance } from '@/utils/common/formatBalance';
 import { formatUSD } from '@/utils/common/formatUSD';
 import { Currency, Percent } from '@cryptoalgebra/integral-sdk';
 import { ChevronRight } from 'lucide-react';
@@ -51,7 +51,7 @@ const TokenCard = ({
     const balanceString = useMemo(() => {
         if (isLoading || !balance) return 'Loading...';
 
-        return formatCurrency.format(Number(balance.formatted));
+        return formatBalance(balance.formatted);
     }, [balance, isLoading]);
 
     const handleInput = useCallback((value: string) => {

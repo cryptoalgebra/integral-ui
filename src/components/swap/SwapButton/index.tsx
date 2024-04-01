@@ -254,7 +254,7 @@ const SwapButton = () => {
             </Button>
             {isRatesChanged && (
                 <span className="text-neutral-400 text-sm my-1">
-                    Rates have been changed
+                    Rate was updated.
                 </span>
             )}
         </>
