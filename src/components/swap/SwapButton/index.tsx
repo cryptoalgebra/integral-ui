@@ -5,7 +5,6 @@ import {
     DEFAULT_CHAIN_NAME,
 } from '@/constants/default-chain-id';
 import { useApproveCallbackFromTrade } from '@/hooks/common/useApprove';
-import { useUSDCValue } from '@/hooks/common/useUSDCValue';
 import { useQuotesResults } from '@/hooks/swap/useQuotesResults';
 import { useSwapCallback } from '@/hooks/swap/useSwapCallback';
 import useWrapCallback, { WrapType } from '@/hooks/swap/useWrapCallback';
@@ -14,8 +13,10 @@ import { ApprovalState } from '@/types/approve-state';
 import { SwapField } from '@/types/swap-field';
 import { QuoteResult } from '@/types/swap-quote';
 import { TradeState } from '@/types/trade-state';
-import { computeFiatValuePriceImpact } from '@/utils/swap/computePriceImpact';
-import { warningSeverity } from '@/utils/swap/prices';
+import {
+    computeRealizedLPFeePercent,
+    warningSeverity,
+} from '@/utils/swap/prices';
 import { Currency, CurrencyAmount } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -87,33 +88,17 @@ const SwapButton = () => {
     const routeNotFound = !trade?.route;
     const isLoadingRoute = TradeState.LOADING === tradeState.state;
 
-    const { price: fiatValueInputPrice } = useUSDCValue(
-        parsedAmounts[SwapField.INPUT]
-    );
-    const { price: fiatValueOutputPrice } = useUSDCValue(
-        parsedAmounts[SwapField.OUTPUT]
-    );
-
-    const priceImpact = computeFiatValuePriceImpact(
-        fiatValueInputPrice,
-        fiatValueOutputPrice
-    );
-
     const { approvalState, approvalCallback } = useApproveCallbackFromTrade(
         trade,
         allowedSlippage
     );
 
     const priceImpactSeverity = useMemo(() => {
-        const executionPriceImpact = trade?.priceImpact;
-        return warningSeverity(
-            executionPriceImpact && priceImpact
-                ? executionPriceImpact.greaterThan(priceImpact)
-                    ? executionPriceImpact
-                    : priceImpact
-                : executionPriceImpact ?? priceImpact
-        );
-    }, [priceImpact, trade]);
+        if (!trade) return 4;
+        const realizedLpFeePercent = computeRealizedLPFeePercent(trade);
+        const priceImpact = trade.priceImpact.subtract(realizedLpFeePercent);
+        return warningSeverity(priceImpact);
+    }, [trade]);
 
     const showApproveFlow =
         !swapInputError &&
