@@ -46,26 +46,6 @@ const PositionCard = ({
             closedFarming.id === positionInFarming?.eternalFarming
     )[0];
 
-    const [, pool] = usePool(position?.pool);
-    const positionEntity =
-        pool &&
-        position &&
-        new Position({
-            pool,
-            liquidity: position.liquidity.toString(),
-            tickLower: Number(position.tickLower),
-            tickUpper: Number(position.tickUpper),
-        });
-
-    const mintInfo = useDerivedMintInfo(
-        positionEntity?.amount0.currency,
-        positionEntity?.amount1.currency,
-        position?.pool,
-        INITIAL_POOL_FEE,
-        positionEntity?.amount0.currency,
-        positionEntity || undefined
-    );
-
     const token0 = position?.token0;
     const token1 = position?.token1;
 
@@ -79,6 +59,26 @@ const PositionCard = ({
 
     const currencyA = useAlgebraToken(isWNative0 ? ADDRESS_ZERO : token0);
     const currencyB = useAlgebraToken(isWNative1 ? ADDRESS_ZERO : token1);
+
+    const [, pool] = usePool(position?.pool);
+    const positionEntity =
+        pool &&
+        position &&
+        new Position({
+            pool,
+            liquidity: position.liquidity.toString(),
+            tickLower: Number(position.tickLower),
+            tickUpper: Number(position.tickUpper),
+        });
+
+    const mintInfo = useDerivedMintInfo(
+        currencyA,
+        currencyB,
+        position?.pool,
+        INITIAL_POOL_FEE,
+        currencyA,
+        positionEntity || undefined
+    );
 
     const [positionLiquidityUSD, positionFeesUSD, positionAPR] =
         selectedPosition

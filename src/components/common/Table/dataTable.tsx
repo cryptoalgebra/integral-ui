@@ -129,7 +129,7 @@ const DataTable = <TData, TValue>({
     const renderZeroLiquidityPositions = useCallback(() => {
         return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
-            if (row.original.liquidityUSD === 0 && !row.original.inFarming)
+            if (row.original.liquidityUSD === 0)
                 return (
                     <TableRow
                         key={row.id}
