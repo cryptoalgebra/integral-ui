@@ -29,7 +29,7 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
     },
     {
         accessorKey: 'outOfRange',
-        header: () => <HeaderItem>Status</HeaderItem>,
+        header: ({ column }) => <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>Status</HeaderItem>,
         cell: ({ getValue }) => getValue() ? <span className="text-yellow-400">Out of range</span> : <span className="text-green-400">In range</span> 
     },
     {

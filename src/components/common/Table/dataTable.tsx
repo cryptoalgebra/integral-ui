@@ -104,7 +104,7 @@ const DataTable = <TData, TValue>({
                                     ? 'hover:bg-muted-primary'
                                     : 'hover:bg-card-hover'
                                 : 'hover:bg-card-dark'
-                        }`}
+                        } ${!expandOnFarming && 'collapse border-0 opacity-0'}`}
                         onClick={() => {
                             if (action) {
                                 action(row.original.id);
@@ -142,7 +142,7 @@ const DataTable = <TData, TValue>({
                                     ? 'hover:bg-muted-primary'
                                     : 'hover:bg-card-hover'
                                 : 'hover:bg-card-dark'
-                        }`}
+                        } ${!expandClosed && 'collapse border-0 opacity-0'}`}
                         onClick={() => {
                             if (action) {
                                 action(row.original.id);
@@ -178,7 +178,7 @@ const DataTable = <TData, TValue>({
                             {headerGroup.headers.map((header) => (
                                 <TableHead
                                     key={header.id}
-                                    className="rounded-xl text-white font-semibold"
+                                    className="rounded-xl text-white font-semibold transition-all ease-in-out duration-300"
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -223,7 +223,7 @@ const DataTable = <TData, TValue>({
                                                 Active
                                                 <ChevronDown
                                                     className={cn(
-                                                        'opacity-50 transition-transform ease-in-out duration-200',
+                                                        'opacity-50 transition-transform ease-in-out duration-200 mt-auto',
                                                         !expandActive &&
                                                             '-rotate-90 opacity-100'
                                                     )}
@@ -234,7 +234,6 @@ const DataTable = <TData, TValue>({
                                     </TableRow>
                                 )}
                             {filterStatus.Active === true &&
-                                expandActive &&
                                 table.getRowModel().rows.map((row: any) => {
                                     const isSelected =
                                         Number(selectedRow) ===
@@ -264,7 +263,7 @@ const DataTable = <TData, TValue>({
                                                             ? 'hover:bg-muted-primary'
                                                             : 'hover:bg-card-hover'
                                                         : 'hover:bg-card-dark'
-                                                }`}
+                                                } ${!expandActive && 'border-0 opacity-0 collapse'}`}
                                                 onClick={() => {
                                                     if (action) {
                                                         action(row.original.id);
@@ -313,7 +312,7 @@ const DataTable = <TData, TValue>({
                                                 On Farming
                                                 <ChevronDown
                                                     className={cn(
-                                                        'opacity-50 transition-transform ease-in-out duration-200',
+                                                        'opacity-50 transition-transform ease-in-out duration-200 mt-auto',
                                                         !expandOnFarming &&
                                                             '-rotate-90 opacity-100'
                                                     )}
@@ -325,7 +324,6 @@ const DataTable = <TData, TValue>({
                                 )}
                             {farmingPositions.length > 0 &&
                                 filterStatus.OnFarming &&
-                                expandOnFarming &&
                                 renderFarmingPositions()}
 
                             {zeroLiquidityPositions.length > 0 &&
@@ -345,7 +343,7 @@ const DataTable = <TData, TValue>({
                                                 Closed
                                                 <ChevronDown
                                                     className={cn(
-                                                        'opacity-50 transition-transform ease-in-out duration-200',
+                                                        'opacity-50 transition-transform ease-in-out duration-200 mt-auto',
                                                         !expandClosed &&
                                                             '-rotate-90 opacity-100'
                                                     )}
@@ -357,7 +355,6 @@ const DataTable = <TData, TValue>({
                                 )}
                             {zeroLiquidityPositions.length > 0 &&
                                 filterStatus.Closed &&
-                                expandClosed &&
                                 renderZeroLiquidityPositions()}
                         </>
                     )}
