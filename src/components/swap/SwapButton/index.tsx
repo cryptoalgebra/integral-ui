@@ -66,16 +66,10 @@ const SwapButton = () => {
 
     const parsedAmounts = useMemo(
         () => ({
-            [SwapField.INPUT]:
-                independentField === SwapField.INPUT
-                    ? parsedAmount
-                    : trade?.inputAmount,
-            [SwapField.OUTPUT]:
-                independentField === SwapField.OUTPUT
-                    ? parsedAmount
-                    : trade?.outputAmount,
+            [SwapField.INPUT]: parsedAmountA,
+            [SwapField.OUTPUT]: parsedAmountB,
         }),
-        [independentField, parsedAmount, trade]
+        [parsedAmountA, parsedAmountB]
     );
 
     const userHasSpecifiedInputOutput = Boolean(
