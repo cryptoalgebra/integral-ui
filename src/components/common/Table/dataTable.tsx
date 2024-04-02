@@ -178,7 +178,7 @@ const DataTable = <TData, TValue>({
                             {headerGroup.headers.map((header) => (
                                 <TableHead
                                     key={header.id}
-                                    className="rounded-xl text-white font-semibold transition-all ease-in-out duration-300"
+                                    className="rounded-xl text-white font-semibold"
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -223,7 +223,7 @@ const DataTable = <TData, TValue>({
                                                 Active
                                                 <ChevronDown
                                                     className={cn(
-                                                        'opacity-50 transition-transform ease-in-out duration-200 mt-auto',
+                                                        'opacity-50 mt-auto',
                                                         !expandActive &&
                                                             '-rotate-90 opacity-100'
                                                     )}
