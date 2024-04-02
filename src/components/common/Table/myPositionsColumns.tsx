@@ -29,12 +29,24 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
     },
     {
         accessorKey: 'outOfRange',
-        header: () => <HeaderItem>Status</HeaderItem>,
+        header: ({ column }) => <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>Status</HeaderItem>,
         cell: ({ getValue }) => getValue() ? <span className="text-yellow-400">Out of range</span> : <span className="text-green-400">In range</span> 
     },
     {
         accessorKey: 'range',
-        header: () => <HeaderItem>Range</HeaderItem>
+        header: () => <HeaderItem>Range</HeaderItem>,
+        cell: ({ getValue }) => {
+            const range = getValue() as string;
+            const minRange = "0.0000";
+            const maxRange = "338492131855223783712001310944818317035.9647"
+            const splittedRange = range.split(" — ");
+
+            if(splittedRange[0] === minRange && splittedRange[1] === maxRange) return "Full Range";
+            if(splittedRange[0] === minRange) splittedRange[0] = "0";
+            if(splittedRange[1] === maxRange) splittedRange[1] = "∞";
+
+            return splittedRange.join(" — ");
+        }
     },
     {
         accessorKey: 'apr',

@@ -8,6 +8,7 @@ import { DynamicFeePluginIcon } from '../PluginIcons';
 import { formatUSD } from '@/utils/common/formatUSD';
 import { usePoolPlugins } from '@/hooks/pools/usePoolPlugins';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FarmingPluginIcon } from '../PluginIcons';
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -51,11 +52,12 @@ const PoolPair = ({ pair, fee }: Pool) => {
 };
 
 const Plugins = ({ poolId }: { poolId: Address }) => {
-    const { dynamicFeePlugin } = usePoolPlugins(poolId);
+    const { dynamicFeePlugin, farmingPlugin } = usePoolPlugins(poolId);
 
     return (
         <div className="flex gap-2">
             {dynamicFeePlugin && <DynamicFeePluginIcon />}
+            {farmingPlugin && <FarmingPluginIcon />}
         </div>
     );
 };

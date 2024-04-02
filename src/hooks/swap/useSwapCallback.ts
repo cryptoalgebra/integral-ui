@@ -109,7 +109,7 @@ export function useSwapCallback(
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
 
-    const { isLoading } = useTransitionAwait(swapData?.hash, `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol} `)
+    const { isLoading, isSuccess } = useTransitionAwait(swapData?.hash, `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol} `)
 
     return useMemo(() => {
 
@@ -117,16 +117,18 @@ export function useSwapCallback(
             state: SwapCallbackState.INVALID,
             callback: null,
             error: "No trade was found",
-            isLoading: false
+            isLoading: false,
+            isSuccess: false
         }
 
         return {
             state: SwapCallbackState.VALID,
             callback: swapCallback,
             error: null,
-            isLoading
+            isLoading,
+            isSuccess
         }
 
-    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig])
+    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig, isSuccess])
 
 }
