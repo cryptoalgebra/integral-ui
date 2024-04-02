@@ -28,9 +28,10 @@ const CreatePoolForm = () => {
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
 
-    const areCurrenciesSelected = currencyA && currencyB
+    const areCurrenciesSelected = currencyA && currencyB;
 
-    const isSameToken = areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped)
+    const isSameToken =
+        areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped);
 
     const poolAddress =
         areCurrenciesSelected && !isSameToken
@@ -105,7 +106,7 @@ const CreatePoolForm = () => {
                 currencyB={currencyB}
             />
 
-            {areCurrenciesSelected && !isSameToken &&  !isPoolExists && (
+            {areCurrenciesSelected && !isSameToken && !isPoolExists && (
                 <Summary currencyA={currencyA} currencyB={currencyB} />
             )}
 

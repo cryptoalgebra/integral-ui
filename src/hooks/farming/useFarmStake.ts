@@ -5,6 +5,9 @@ import { useTransitionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
 import { useFarmCheckApprove } from './useFarmCheckApprove';
+import { useEffect, useState } from 'react';
+import { farmingClient } from '@/graphql/clients';
+import { Deposit } from '@/graphql/generated/graphql';
 
 export function useFarmStake({
     tokenId,
@@ -20,6 +23,8 @@ export function useFarmStake({
     nonce: bigint;
 }) {
     const { approved } = useFarmCheckApprove(tokenId);
+
+    const [isQueryLoading, setIsQueryLoading] = useState<boolean>(false);
 
     const address = tokenId && approved ? FARMING_CENTER : undefined;
 
@@ -45,8 +50,39 @@ export function useFarmStake({
         `Stake Position #${tokenId}`
     );
 
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        setIsQueryLoading(true);
+        const interval: NodeJS.Timeout = setInterval(
+            () =>
+                farmingClient.refetchQueries({
+                    include: ['Deposits'],
+                    onQueryUpdated: (query, { result: diff }) => {
+                        const currentPos = diff.deposits.find(
+                            (deposit: Deposit) =>
+                                deposit.id.toString() === tokenId.toString()
+                        );
+                        if (!currentPos) return;
+
+                        if (currentPos.eternalFarming !== null) {
+                            query.refetch().then(() => {
+                                setIsQueryLoading(false);
+                                clearInterval(interval);
+                            });
+                        } else {
+                            query.refetch().then();
+                        }
+                    },
+                }),
+            2000
+        );
+
+        return () => clearInterval(interval);
+    }, [isSuccess]);
+
     return {
-        isLoading,
+        isLoading: isQueryLoading || isLoading,
         isSuccess,
         onStake,
     };
@@ -67,6 +103,8 @@ export function useFarmUnstake({
     nonce: bigint;
     account: Address;
 }) {
+    const [isQueryLoading, setIsQueryLoading] = useState<boolean>(false);
+
     const exitFarmingCalldata = encodeFunctionData({
         abi: farmingCenterABI,
         functionName: 'exitFarming',
@@ -113,8 +151,39 @@ export function useFarmUnstake({
         `Unstake Position #${tokenId}`
     );
 
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        setIsQueryLoading(true);
+        const interval: NodeJS.Timeout = setInterval(
+            () =>
+                farmingClient.refetchQueries({
+                    include: ['Deposits'],
+                    onQueryUpdated: (query, { result: diff }) => {
+                        const currentPos = diff.deposits.find(
+                            (deposit: Deposit) =>
+                                deposit.id.toString() === tokenId.toString()
+                        );
+                        if (!currentPos) return;
+
+                        if (currentPos.eternalFarming === null) {
+                            query.refetch().then(() => {
+                                setIsQueryLoading(false);
+                                clearInterval(interval);
+                            });
+                        } else {
+                            query.refetch().then();
+                        }
+                    },
+                }),
+            2000
+        );
+
+        return () => clearInterval(interval);
+    }, [isSuccess]);
+
     return {
-        isLoading,
+        isLoading: isLoading || isQueryLoading,
         isSuccess,
         onUnstake,
     };

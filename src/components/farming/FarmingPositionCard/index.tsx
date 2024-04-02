@@ -1,5 +1,7 @@
+import { useAlgebraPositionManagerTokenUri } from '@/generated';
 import { Deposit } from '@/graphql/generated/graphql';
 import { cn } from '@/lib/utils';
+import { useEffect, useRef } from 'react';
 
 interface FarmingPositionCardProps {
     position: Deposit;
@@ -14,6 +16,22 @@ const FarmingPositionCard = ({
     className,
     onClick,
 }: FarmingPositionCardProps) => {
+    const { data: uri } = useAlgebraPositionManagerTokenUri({
+        args: [BigInt(position.id)],
+    });
+
+    const imgRef = useRef<any>();
+
+    const json =
+        uri &&
+        JSON.parse(atob(uri.slice('data:application/json;base64,'.length)));
+
+    useEffect(() => {
+        if (!imgRef?.current || !json) return;
+
+        imgRef.current.src = json.image;
+    }, [imgRef, json]);
+
     return (
         <div
             onClick={onClick}
@@ -23,13 +41,21 @@ const FarmingPositionCard = ({
             )}
         >
             <div
-                className="w-12 h-12 rounded-full flex items-center justify-center"
+                className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
                 style={{
                     background:
                         'linear-gradient(181.1deg, #686EFF 0.93%, #141520 99.07%)',
                 }}
             >
-                {position.id}
+                {json ? (
+                    <img
+                        ref={imgRef}
+                        style={{ transform: 'scale(2)' }}
+                        className=""
+                    />
+                ) : (
+                    <p>{position.id}</p>
+                )}
             </div>
             <div className="flex flex-col">
                 <p>Position #{position.id}</p>

@@ -56,7 +56,6 @@ export function useActiveFarming({
         },
         client: farmingClient,
         skip: !poolInfo,
-        pollInterval: 5000,
     });
 
     useEffect(() => {

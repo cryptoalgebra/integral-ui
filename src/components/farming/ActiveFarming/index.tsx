@@ -160,7 +160,7 @@ const ActiveFarming = ({
 
                     <CardInfo
                         additional={
-                            !isSameReward
+                            !isSameReward && farmingRewards !== '0.0000'
                                 ? `${
                                       formattedRewardEarned.toFixed(2) ===
                                       '0.00'

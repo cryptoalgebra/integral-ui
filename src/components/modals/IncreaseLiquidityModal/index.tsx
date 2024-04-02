@@ -10,6 +10,7 @@ import {
 import { IDerivedMintInfo } from '@/state/mintStore';
 import { ManageLiquidity } from '@/types/manage-liquidity';
 import { Currency } from '@cryptoalgebra/integral-sdk';
+import { useState } from 'react';
 
 interface IncreaseLiquidityModalProps {
     tokenId: number;
@@ -24,8 +25,14 @@ export function IncreaseLiquidityModal({
     currencyB,
     mintInfo,
 }: IncreaseLiquidityModalProps) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleCloseModal = () => {
+        setIsOpen(false);
+    };
+
     return (
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button disabled={false} className="whitespace-nowrap w-full">
                     Add liquidity
@@ -41,6 +48,7 @@ export function IncreaseLiquidityModal({
                     </DialogTitle>
                 </DialogHeader>
                 <AmountsSection
+                    handleCloseModal={handleCloseModal}
                     tokenId={tokenId}
                     currencyA={currencyA}
                     currencyB={currencyB}

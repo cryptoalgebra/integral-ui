@@ -55,8 +55,8 @@ export const AddLiquidityButton = ({
 
     const { calldata, value } = useMemo(() => {
         if (
-            !account || 
-            !mintInfo.position || 
+            !account ||
+            !mintInfo.position ||
             JSBI.EQ(mintInfo.position.liquidity, ZERO)
         )
             return { calldata: undefined, value: undefined };
@@ -137,6 +137,9 @@ export const AddLiquidityButton = ({
             >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
         );
 
+    if (mintInfo.errorMessage)
+        return <Button disabled>{mintInfo.errorMessage}</Button>;
+
     if (showApproveA || showApproveB)
         return (
             <div className="flex w-full gap-2">
@@ -168,9 +171,6 @@ export const AddLiquidityButton = ({
                 )}
             </div>
         );
-
-    if (mintInfo.errorMessage)
-        return <Button disabled>{mintInfo.errorMessage}</Button>;
 
     return (
         <Button
