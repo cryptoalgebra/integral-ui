@@ -1,6 +1,6 @@
 import TokenCard from '@/components/swap/TokenCard';
-import { IDerivedMintInfo, useMintActionHandlers } from '@/state/mintStore';
-import { useSwapActionHandlers, useSwapState } from '@/state/swapStore';
+import { IDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mintStore';
+import { useSwapActionHandlers } from '@/state/swapStore';
 import { SwapField } from '@/types/swap-field';
 import { Currency } from '@cryptoalgebra/integral-sdk';
 import { ChevronsUpDownIcon } from 'lucide-react';
@@ -13,12 +13,12 @@ interface ISelectPair {
 }
 
 const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
-    const { onCurrencySelection, onUserInput, onSwitchTokens } =
+    const { onCurrencySelection, onSwitchTokens } =
         useSwapActionHandlers();
 
     const { onStartPriceInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
-    const { typedValue } = useSwapState();
+    const { startPriceTypedValue } = useMintState();
 
     const handleInputSelect = useCallback(
         (inputCurrency: Currency) => {
@@ -36,21 +36,20 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
 
     const handleTypeInput = useCallback(
         (value: string) => {
-            onUserInput(SwapField.INPUT, value);
             onStartPriceInput(value);
         },
-        [onUserInput, onStartPriceInput]
+        [onStartPriceInput]
     );
 
     return (
         <div className="relative flex flex-col gap-2 items-center">
             <TokenCard
+                disabled
                 showBalance={false}
-                value={typedValue}
-                handleTokenSelection={handleInputSelect}
+                value={'1'}
                 currency={currencyA}
                 otherCurrency={currencyB}
-                handleValueChange={handleTypeInput}
+                handleTokenSelection={handleInputSelect}
             />
 
             <button
@@ -61,13 +60,14 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
             </button>
 
             <TokenCard
-                disabled
                 showBalance={false}
-                value={'1'}
+                value={startPriceTypedValue}
+                handleTokenSelection={handleOutputSelect}
                 currency={currencyB}
                 otherCurrency={currencyA}
-                handleTokenSelection={handleOutputSelect}
+                handleValueChange={handleTypeInput}
             />
+
         </div>
     );
 };

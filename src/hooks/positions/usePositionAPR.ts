@@ -29,7 +29,11 @@ export function usePositionAPR(
 
     const nativePrice = bundles?.bundles[0] && Number(bundles.bundles[0].maticPriceUSD)
 
-    const poolDayFees = poolFeeData && Boolean(poolFeeData.poolDayDatas.length) && poolFeeData.poolDayDatas.reduce((acc, v) => acc + Number(v.feesUSD), 0)
+    // Today fees
+    const poolDayFees = poolFeeData && Boolean(poolFeeData.poolDayDatas.length) && Number(poolFeeData.poolDayDatas[0].feesUSD)
+
+    // Avg fees
+    // const poolDayFees = poolFeeData && Boolean(poolFeeData.poolDayDatas.length) && poolFeeData.poolDayDatas.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolFeeData.poolDayDatas.length
 
     const yearFee = poolDayFees && poolDayFees * 365
 
