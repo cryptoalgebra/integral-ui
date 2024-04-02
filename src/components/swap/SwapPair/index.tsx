@@ -14,7 +14,6 @@ import {
 import { useCallback, useMemo } from 'react';
 import TokenCard from '../TokenCard';
 import { ChevronsUpDownIcon } from 'lucide-react';
-import { computeFiatValuePriceImpact } from '@/utils/swap/computePriceImpact';
 import useWrapCallback, { WrapType } from '@/hooks/swap/useWrapCallback';
 
 const SwapPair = () => {
@@ -72,6 +71,16 @@ const SwapPair = () => {
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
+    const parsedAmountA =
+        independentField === SwapField.INPUT
+            ? parsedAmount
+            : trade?.inputAmount;
+
+    const parsedAmountB =
+        independentField === SwapField.OUTPUT
+            ? parsedAmount
+            : trade?.outputAmount;
+
     const parsedAmounts = useMemo(
         () =>
             showWrap
@@ -80,16 +89,10 @@ const SwapPair = () => {
                       [SwapField.OUTPUT]: parsedAmount,
                   }
                 : {
-                      [SwapField.INPUT]:
-                          independentField === SwapField.INPUT
-                              ? parsedAmount
-                              : trade?.inputAmount,
-                      [SwapField.OUTPUT]:
-                          independentField === SwapField.OUTPUT
-                              ? parsedAmount
-                              : trade?.outputAmount,
+                      [SwapField.INPUT]: parsedAmountA,
+                      [SwapField.OUTPUT]: parsedAmountB,
                   },
-        [independentField, parsedAmount, showWrap, trade]
+        [parsedAmount, showWrap, parsedAmountA, parsedAmountB]
     );
 
     const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(
@@ -105,29 +108,21 @@ const SwapPair = () => {
             onUserInput(SwapField.INPUT, maxInputAmount.toExact());
     }, [maxInputAmount, onUserInput]);
 
-    const { price: fiatValueInputPrice, formatted: fiatValueInputFormatted } =
-        useUSDCValue(
-            tryParseAmount(
-                parsedAmounts[SwapField.INPUT]?.toSignificant(
-                    (parsedAmounts[SwapField.INPUT]?.currency.decimals || 6) / 2
-                ),
-                baseCurrency
-            )
-        );
-    const { price: fiatValueOutputPrice, formatted: fiatValueOutputFormatted } =
-        useUSDCValue(
-            tryParseAmount(
-                parsedAmounts[SwapField.OUTPUT]?.toSignificant(
-                    (parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6) /
-                        2
-                ),
-                quoteCurrency
-            )
-        );
-
-    const priceImpact = computeFiatValuePriceImpact(
-        fiatValueInputPrice,
-        fiatValueOutputPrice
+    const { formatted: fiatValueInputFormatted } = useUSDCValue(
+        tryParseAmount(
+            parsedAmounts[SwapField.INPUT]?.toSignificant(
+                (parsedAmounts[SwapField.INPUT]?.currency.decimals || 6) / 2
+            ),
+            baseCurrency
+        )
+    );
+    const { formatted: fiatValueOutputFormatted } = useUSDCValue(
+        tryParseAmount(
+            parsedAmounts[SwapField.OUTPUT]?.toSignificant(
+                (parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6) / 2
+            ),
+            quoteCurrency
+        )
     );
 
     const formattedAmounts = {
@@ -150,7 +145,6 @@ const SwapPair = () => {
                 handleMaxValue={handleMaxInput}
                 fiatValue={fiatValueInputFormatted ?? undefined}
                 showMaxButton={showMaxButton}
-                priceImpact={priceImpact}
                 showBalance={true}
             />
             <button
@@ -166,7 +160,6 @@ const SwapPair = () => {
                 handleTokenSelection={handleOutputSelect}
                 handleValueChange={handleTypeOutput}
                 fiatValue={fiatValueOutputFormatted ?? undefined}
-                priceImpact={priceImpact}
                 showBalance={true}
             />
         </div>

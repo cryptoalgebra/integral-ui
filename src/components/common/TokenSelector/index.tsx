@@ -15,10 +15,10 @@ import {
     ExtendedNative,
     Token,
 } from '@cryptoalgebra/integral-sdk';
-import { formatCurrency } from '@/utils/common/formatCurrency';
 import { useTokensState } from '@/state/tokensStore';
 import { Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatBalance } from '@/utils/common/formatBalance';
 
 const TokenSelectorView = {
     DEFAULT_LIST: 'DEFAULT_LIST',
@@ -108,6 +108,12 @@ const TokenRow = ({
         token: token.id === ADDRESS_ZERO ? undefined : (token.id as Address),
     });
 
+    const balanceString = useMemo(() => {
+        if (isLoading || !balance) return 'Loading...';
+
+        return formatBalance(balance.formatted);
+    }, [balance, isLoading]);
+
     const lock = otherCurrency?.isNative
         ? token.id === ADDRESS_ZERO
         : token.id.toLowerCase() ===
@@ -154,7 +160,7 @@ const TokenRow = ({
                 {isLoading
                     ? 'Loading...'
                     : balance
-                    ? formatCurrency.format(Number(balance.formatted))
+                    ? balanceString
                     : ''}
             </div>
         </button>

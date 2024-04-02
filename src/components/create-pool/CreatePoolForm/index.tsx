@@ -11,7 +11,7 @@ import {
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
 import { Address, useContractWrite } from 'wagmi';
-import { useDerivedMintInfo } from '@/state/mintStore';
+import { useDerivedMintInfo, useMintState } from '@/state/mintStore';
 import Loader from '@/components/common/Loader';
 import { PoolState, usePool } from '@/hooks/pools/usePool';
 import Summary from '../Summary';
@@ -21,10 +21,9 @@ import { STABLECOINS } from '@/constants/tokens';
 const CreatePoolForm = () => {
     const { currencies } = useDerivedSwapInfo();
 
-    const {
-        typedValue,
-        actions: { selectCurrency, typeInput },
-    } = useSwapState();
+    const { actions: { selectCurrency } } = useSwapState();
+
+    const { startPriceTypedValue, actions: { typeStartPriceInput } } = useMintState()
 
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
@@ -85,18 +84,16 @@ const CreatePoolForm = () => {
     );
 
     useEffect(() => {
-        selectCurrency(SwapField.INPUT, undefined);
-        selectCurrency(SwapField.OUTPUT, undefined);
-        typeInput(SwapField.INPUT, '');
-        typeInput(SwapField.OUTPUT, '');
+        selectCurrency(SwapField.INPUT, undefined)
+        selectCurrency(SwapField.OUTPUT, undefined)
+        typeStartPriceInput('')
 
         return () => {
-            selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address);
-            typeInput(SwapField.INPUT, '');
-            typeInput(SwapField.OUTPUT, '');
-        };
-    }, []);
+            selectCurrency(SwapField.INPUT, ADDRESS_ZERO)
+            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address as Account)
+            typeStartPriceInput('')
+        }
+    }, [])
 
     return (
         <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-3xl">
@@ -116,9 +113,9 @@ const CreatePoolForm = () => {
             <Button
                 className="mt-2"
                 disabled={
-                    isLoading ||
-                    isPoolExists ||
-                    !typedValue ||
+                    isLoading || 
+                    isPoolExists || 
+                    !startPriceTypedValue || 
                     !areCurrenciesSelected ||
                     isSameToken
                 }
@@ -132,7 +129,7 @@ const CreatePoolForm = () => {
                     'Select currencies'
                 ) : isPoolExists ? (
                     'Pool already exists'
-                ) : !typedValue ? (
+                ) : !startPriceTypedValue ? (
                     'Enter initial price'
                 ) : (
                     'Create Pool'
