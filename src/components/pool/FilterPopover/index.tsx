@@ -11,9 +11,8 @@ import { usePositionFilterStore } from '@/state/positionFilterStore';
 import { cn } from '@/lib/utils';
 
 const FilterPopover = ({ children }: { children: React.ReactNode }) => {
-    
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { filterStatus, handleSwitchToggle } = usePositionFilterStore();
+    const {filterStatus, actions: { setFilterStatus }} = usePositionFilterStore();
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -40,7 +39,7 @@ const FilterPopover = ({ children }: { children: React.ReactNode }) => {
                                 filterStatus[PositionsStatus.ACTIVE]
                             )}
                             onCheckedChange={() =>
-                                handleSwitchToggle(PositionsStatus.ACTIVE)
+                                setFilterStatus(PositionsStatus.ACTIVE)
                             }
                         />
                     </label>
@@ -52,7 +51,7 @@ const FilterPopover = ({ children }: { children: React.ReactNode }) => {
                                 filterStatus[PositionsStatus.ON_FARMING]
                             )}
                             onCheckedChange={() =>
-                                handleSwitchToggle(PositionsStatus.ON_FARMING)
+                                setFilterStatus(PositionsStatus.ON_FARMING)
                             }
                         />
                     </label>
@@ -64,7 +63,7 @@ const FilterPopover = ({ children }: { children: React.ReactNode }) => {
                                 filterStatus[PositionsStatus.CLOSED]
                             )}
                             onCheckedChange={() =>
-                                handleSwitchToggle(PositionsStatus.CLOSED)
+                                setFilterStatus(PositionsStatus.CLOSED)
                             }
                         />
                     </label>

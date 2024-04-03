@@ -73,7 +73,7 @@ const MyPositionsTable = <TData, TValue>({
     });
 
     const activePositions = data.filter(
-        (pos: any) => !pos.inFarming && !pos.isClosed && !pos.pair // TODO
+        (pos: any) => !pos.inFarming && !pos.isClosed // TODO
     );
 
     const farmingPositions = data.filter(
