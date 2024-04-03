@@ -169,7 +169,7 @@ const DataTable = <TData, TValue>({
     return (
         <>
             <Table>
-                <TableHeader className="[&_tr]:border-b-0">
+                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow
                             key={headerGroup.id}
@@ -178,7 +178,7 @@ const DataTable = <TData, TValue>({
                             {headerGroup.headers.map((header) => (
                                 <TableHead
                                     key={header.id}
-                                    className="rounded-xl text-white font-semibold"
+                                    className="rounded-xl text-white font-semibold [&_svg]:mt-auto"
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -191,12 +191,12 @@ const DataTable = <TData, TValue>({
                         </TableRow>
                     ))}
                 </TableHeader>
-                <TableBody className="hover:bg-transparent text-[16px]">
+                <TableBody className="[&_tr]:border-opacity-30 hover:bg-transparent text-[16px]">
                     {table.getRowModel().rows?.length === 0 ||
                     (!filterStatus.Active &&
                         !filterStatus.Closed &&
                         !filterStatus.OnFarming) ? (
-                        <TableRow className="hover:bg-card h-full">
+                        <TableRow className="hover:bg-card h-full border-0">
                             <TableCell
                                 colSpan={columns.length}
                                 className="h-24 text-center"
@@ -210,20 +210,20 @@ const DataTable = <TData, TValue>({
                                 filterStatus.Active === true && (
                                     <TableRow
                                         key={'active-positions'}
-                                        className="hover:bg-transparent h-full cursor-pointer border-opacity-30 border-t"
+                                        className="hover:bg-transparent h-full cursor-pointer"
                                         onClick={() => {
                                             setExpandActive(!expandActive);
                                         }}
                                     >
                                         <td
                                             colSpan={columns.length}
-                                            className="pl-8 h-12 text-left whitespace-nowrap border-opacity-30 border-t border-b"
+                                            className="pl-8 h-12 text-left whitespace-nowrap"
                                         >
                                             <span className="flex gap-4 items-center">
                                                 Active
                                                 <ChevronDown
                                                     className={cn(
-                                                        'opacity-50 mt-auto',
+                                                        'opacity-50 transition-transform ease-in-out duration-200 mt-auto',
                                                         !expandActive &&
                                                             '-rotate-90 opacity-100'
                                                     )}
@@ -297,7 +297,7 @@ const DataTable = <TData, TValue>({
                                 filterStatus.OnFarming && (
                                     <TableRow
                                         key={'farming-positions'}
-                                        className="hover:bg-transparent h-full cursor-pointer border-opacity-30"
+                                        className="hover:bg-transparent h-full cursor-pointer"
                                         onClick={() => {
                                             setExpandOnFarming(
                                                 !expandOnFarming
@@ -306,7 +306,7 @@ const DataTable = <TData, TValue>({
                                     >
                                         <td
                                             colSpan={columns.length}
-                                            className="pl-8 h-12 text-left whitespace-nowrap border-opacity-30 border-t border-b"
+                                            className="pl-8 h-12 text-left whitespace-nowrap"
                                         >
                                             <span className="flex gap-4 items-center">
                                                 On Farming
@@ -330,14 +330,14 @@ const DataTable = <TData, TValue>({
                                 filterStatus.Closed && (
                                     <TableRow
                                         key={'closed-positions'}
-                                        className="hover:bg-transparent h-full cursor-pointer border-opacity-30 "
+                                        className="hover:bg-transparent h-full cursor-pointer"
                                         onClick={() => {
                                             setExpandClosed(!expandClosed);
                                         }}
                                     >
                                         <td
                                             colSpan={columns.length}
-                                            className="pl-8 h-12 text-left whitespace-nowrap border-opacity-30 border-b border-t"
+                                            className="pl-8 h-12 text-left whitespace-nowrap"
                                         >
                                             <span className="flex gap-4 items-center">
                                                 Closed
