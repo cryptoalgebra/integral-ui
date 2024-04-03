@@ -19,7 +19,7 @@ export const usePositionFilterStore = create(
     persist<FilterStore>(
         (set) => ({
             filterStatus: {
-                [PositionsStatus.ACTIVE]: true,
+                [PositionsStatus.OPEN]: true,
                 [PositionsStatus.ON_FARMING]: true,
                 [PositionsStatus.CLOSED]: false,
             },
@@ -36,7 +36,7 @@ export const usePositionFilterStore = create(
                 reset: () =>
                     set({
                         filterStatus: {
-                            [PositionsStatus.ACTIVE]: true,
+                            [PositionsStatus.OPEN]: true,
                             [PositionsStatus.ON_FARMING]: true,
                             [PositionsStatus.CLOSED]: false,
                         },
