@@ -18,12 +18,13 @@ import { usePositions } from '@/hooks/positions/usePositions';
 import { FormattedPosition } from '@/types/formatted-position';
 import { getPositionAPR } from '@/utils/positions/getPositionAPR';
 import { getPositionFees } from '@/utils/positions/getPositionFees';
-import { Position } from '@cryptoalgebra/integral-sdk';
+import { Position, ZERO } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { MoveRightIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Address, useAccount } from 'wagmi';
+import JSBI from 'jsbi'
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -164,6 +165,7 @@ const PoolPage = () => {
             );
             return {
                 id: positionId,
+                isClosed: JSBI.EQ(position.liquidity, ZERO),
                 outOfRange:
                     poolEntity.tickCurrent < position.tickLower ||
                     poolEntity.tickCurrent > position.tickUpper,

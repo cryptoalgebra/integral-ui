@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { useUserState } from "@/state/userStore";
 import { Percent } from "@cryptoalgebra/integral-sdk";
 import { SettingsIcon } from "lucide-react";
@@ -15,11 +16,12 @@ const Settings = () => {
                 <SettingsIcon />
             </Button>
         </PopoverTrigger>
-        <PopoverContent align={'end'} className="flex flex-col gap-2 w-fit bg-card rounded-3xl border border-card-border text-white">
+        <PopoverContent align={'end'} className="flex flex-col gap-4 w-fit bg-card rounded-3xl border border-card-border text-white">
             <div className="text-md font-bold">Transaction Settings</div>
             <Separator orientation={'horizontal'} className="bg-border" />
             <SlippageTolerance />
             <TransactionDeadline />
+            <ExpertMode />
         </PopoverContent>
     </Popover>
 
@@ -148,6 +150,19 @@ const TransactionDeadline = () => {
         </div>
     </div>
 
+}
+const ExpertMode = () => {
+    const { isExpertMode, actions: { setIsExpertMode } } = useUserState();
+
+    return <div className="flex flex-col gap-2 max-w-[332px]">
+            <div className="flex justify-between items-center gap-2 text-md font-semibold">
+                Expert Mode
+                <Switch checked={isExpertMode} onCheckedChange={setIsExpertMode} />
+            </div>
+            <p className="whitespace-break-spaces">
+                Advanced control over swap parameters such as price setting and gas management.
+            </p>
+        </div>
 }
 
 export default Settings;

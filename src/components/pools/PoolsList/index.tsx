@@ -1,4 +1,3 @@
-import DataTable from '@/components/common/Table/dataTable';
 import { poolsColumns } from '@/components/common/Table/poolsColumns';
 import {
     usePoolsListQuery,
@@ -8,6 +7,7 @@ import { useMemo } from 'react';
 import { Address } from 'viem';
 import { POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from '@/constants/api';
 import useSWR from 'swr';
+import PoolsTable from '@/components/common/Table/poolsTable';
 
 const PoolsList = () => {
     const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery();
@@ -71,7 +71,7 @@ const PoolsList = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <DataTable
+            <PoolsTable
                 columns={poolsColumns}
                 data={formattedPools}
                 defaultSortingID={'tvlUSD'}
