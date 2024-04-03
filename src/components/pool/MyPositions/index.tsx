@@ -1,7 +1,7 @@
 import { myPositionsColumns } from '@/components/common/Table/myPositionsColumns';
-import DataTable from '@/components/common/Table/dataTable';
 import { Address } from 'wagmi';
 import { FormattedPosition } from '@/types/formatted-position';
+import MyPositionsTable from '@/components/common/Table/myPositionsTable';
 
 interface MyPositionsProps {
     positions: FormattedPosition[];
@@ -17,7 +17,7 @@ const MyPositions = ({
 }: MyPositionsProps) => {
     return (
         <div className="flex flex-col min-h-[377px] pb-8 bg-card border border-card-border/60 rounded-3xl">
-            <DataTable
+            <MyPositionsTable
                 defaultSortingID="liquidityUSD"
                 columns={myPositionsColumns}
                 data={positions}

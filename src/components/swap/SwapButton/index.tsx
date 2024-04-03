@@ -8,6 +8,7 @@ import { useApproveCallbackFromTrade } from '@/hooks/common/useApprove';
 import { useSwapCallback } from '@/hooks/swap/useSwapCallback';
 import useWrapCallback, { WrapType } from '@/hooks/swap/useWrapCallback';
 import { useDerivedSwapInfo, useSwapState } from '@/state/swapStore';
+import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import { SwapField } from '@/types/swap-field';
 import { TradeState } from '@/types/trade-state';
@@ -25,6 +26,8 @@ const SwapButton = () => {
     const { selectedNetworkId } = useWeb3ModalState();
 
     const { address: account } = useAccount();
+
+    const { isExpertMode } = useUserState();
 
     const { independentField, typedValue } = useSwapState();
     const {
@@ -73,7 +76,6 @@ const SwapButton = () => {
             parsedAmounts[independentField]?.greaterThan('0')
     );
 
-    const isExpertMode = true;
     const routeNotFound = !trade?.route;
     const isLoadingRoute = TradeState.LOADING === tradeState.state;
 
