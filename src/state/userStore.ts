@@ -18,18 +18,21 @@ interface UserState {
     txDeadline: number;
     slippage: Percent | "auto";
     pendingTransactions: PendingTransactions;
+    isExpertMode: boolean;
     actions: {
         setTxDeadline: (txDeadline: number) => void;
         setSlippage: (slippage: Percent | "auto") => void;
         addPendingTransaction: (hash: Address) => void;
         updatePendingTransaction: (hash: Address, transaction: Transaction) => void;
         deletePendingTransaction: (hash: Address) => void;
+        setIsExpertMode: (isExpertMode: boolean) => void;
     }
 }
 
 export const useUserState = create<UserState>((set, get) => ({
     txDeadline: 180,
     slippage: "auto",
+    isExpertMode: false,
     pendingTransactions: {},
     importedTokens: {},
     actions: {
@@ -62,6 +65,9 @@ export const useUserState = create<UserState>((set, get) => ({
                 pendingTransactions
             })
         },
+        setIsExpertMode: (isExpertMode) => set({
+            isExpertMode
+        })
     }
 }))
 
