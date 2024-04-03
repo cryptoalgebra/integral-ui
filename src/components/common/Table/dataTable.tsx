@@ -79,19 +79,19 @@ const DataTable = <TData, TValue>({
     });
 
     const activePositions = data.filter(
-        (pos: any) => !pos.inFarming && pos.liquidityUSD > 0
+        (pos: any) => !pos.inFarming && !pos.isClosed && !pos.pair // TODO
     );
 
     const farmingPositions = data.filter((pos: any) => pos.inFarming);
 
     const zeroLiquidityPositions = data.filter(
-        (pos: any) => pos.liquidityUSD === 0
+        (pos: any) => pos.isClosed
     );
 
     const renderFarmingPositions = useCallback(() => {
         return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
-            if (row.original.liquidityUSD > 0 && row.original.inFarming)
+            if (!row.original.isClosed && row.original.inFarming)
                 return (
                     <TableRow
                         key={row.id}
@@ -129,7 +129,7 @@ const DataTable = <TData, TValue>({
     const renderZeroLiquidityPositions = useCallback(() => {
         return table.getRowModel().rows.map((row: any) => {
             const isSelected = Number(selectedRow) === Number(row.original.id);
-            if (row.original.liquidityUSD === 0)
+            if (row.original.isClosed)
                 return (
                     <TableRow
                         key={row.id}
@@ -238,11 +238,7 @@ const DataTable = <TData, TValue>({
                                     const isSelected =
                                         Number(selectedRow) ===
                                         Number(row.original.id);
-                                    if (
-                                        (row.original.liquidityUSD > 0 &&
-                                            !row.original.inFarming) ||
-                                        row.original.liquidityUSD === undefined
-                                    )
+                                    if (!row.original.isClosed && !row.original.inFarming)
                                         return (
                                             <TableRow
                                                 key={row.id}

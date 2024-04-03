@@ -4,20 +4,16 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from '@/components/ui/popover';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PositionsStatus } from '@/types/position-filter-status';
 import { usePositionFilterStore } from '@/state/positionFilterStore';
 import { cn } from '@/lib/utils';
 
 const FilterPopover = ({ children }: { children: React.ReactNode }) => {
+    
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { filterStatus, handleSwitchToggle, reset } =
-        usePositionFilterStore();
-
-    useEffect(() => {
-        return () => reset();
-    }, [reset]);
+    const { filterStatus, handleSwitchToggle } = usePositionFilterStore();
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
