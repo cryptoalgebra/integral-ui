@@ -83,7 +83,7 @@ const MyPositionsTable = <TData, TValue>({
     const closedPositions = data.filter((pos: any) => pos.isClosed);
 
     const noActivePositions =
-        filterStatus.Active && activePositions.length === 0;
+        filterStatus.Open && activePositions.length === 0;
     const noFarmingPositions =
         filterStatus.OnFarming && farmingPositions.length === 0;
     const noClosedPositions =
@@ -91,13 +91,13 @@ const MyPositionsTable = <TData, TValue>({
 
     const renderHeaderRow = useCallback(
         (positionStatus: PositionsStatus) => {
-            const isStatusActive = positionStatus === PositionsStatus.ACTIVE;
+            const isStatusActive = positionStatus === PositionsStatus.OPEN;
             const isStatusOnFarming =
                 positionStatus === PositionsStatus.ON_FARMING;
             const isStatusClosed = positionStatus === PositionsStatus.CLOSED;
             return (
                 <TableRow
-                    key={'active-positions'}
+                    key={'open-positions'}
                     className="hover:bg-transparent h-full cursor-pointer"
                     onClick={() => {
                         if (isStatusActive) setExpandActive(!expandActive);
@@ -111,7 +111,7 @@ const MyPositionsTable = <TData, TValue>({
                         className="pl-8 h-12 text-left whitespace-nowrap"
                     >
                         <span className="flex gap-4 items-center">
-                            {isStatusActive && 'Active'}
+                            {isStatusActive && 'Open'}
                             {isStatusOnFarming && 'On Farming'}
                             {isStatusClosed && 'Closed'}
                             <ChevronDown
@@ -139,7 +139,7 @@ const MyPositionsTable = <TData, TValue>({
 
     const renderPositions = useCallback(
         (positionStatus: PositionsStatus) => {
-            const isStatusActive = positionStatus === PositionsStatus.ACTIVE;
+            const isStatusActive = positionStatus === PositionsStatus.OPEN;
             const isStatusOnFarming =
                 positionStatus === PositionsStatus.ON_FARMING;
             const isStatusClosed = positionStatus === PositionsStatus.CLOSED;
@@ -246,7 +246,7 @@ const MyPositionsTable = <TData, TValue>({
                 </TableHeader>
                 <TableBody className="[&_tr]:border-opacity-30 hover:bg-transparent text-[16px]">
                     {table.getRowModel().rows?.length === 0 ||
-                    (!filterStatus.Active &&
+                    (!filterStatus.Open &&
                         !filterStatus.Closed &&
                         !filterStatus.OnFarming) ||
                     (noActivePositions &&
@@ -260,12 +260,12 @@ const MyPositionsTable = <TData, TValue>({
                         !filterStatus.OnFarming) ||
                     (noFarmingPositions &&
                         noClosedPositions &&
-                        !filterStatus.Active) ||
+                        !filterStatus.Open) ||
                     (noFarmingPositions &&
-                        !filterStatus.Active &&
+                        !filterStatus.Open &&
                         !filterStatus.Closed) ||
                     (noClosedPositions &&
-                        !filterStatus.Active &&
+                        !filterStatus.Open &&
                         !filterStatus.OnFarming) ? (
                         <TableRow className="hover:bg-card h-full border-0">
                             <TableCell
@@ -278,13 +278,13 @@ const MyPositionsTable = <TData, TValue>({
                     ) : (
                         <>
                             {activePositions.length > 0 &&
-                                filterStatus.Active && (
+                                filterStatus.Open && (
                                     <>
                                         {renderHeaderRow(
-                                            PositionsStatus.ACTIVE
+                                            PositionsStatus.OPEN
                                         )}
                                         {renderPositions(
-                                            PositionsStatus.ACTIVE
+                                            PositionsStatus.OPEN
                                         )}
                                     </>
                                 )}

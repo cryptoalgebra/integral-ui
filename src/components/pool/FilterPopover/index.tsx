@@ -32,14 +32,14 @@ const FilterPopover = ({ children }: { children: React.ReactNode }) => {
             <PopoverContent sideOffset={5}>
                 <div className="flex flex-col gap-2">
                     <label className="flex justify-between items-center">
-                        Active
+                        Open
                         <Switch
-                            id="Active"
+                            id="Open"
                             checked={Boolean(
-                                filterStatus[PositionsStatus.ACTIVE]
+                                filterStatus[PositionsStatus.OPEN]
                             )}
                             onCheckedChange={() =>
-                                setFilterStatus(PositionsStatus.ACTIVE)
+                                setFilterStatus(PositionsStatus.OPEN)
                             }
                         />
                     </label>
