@@ -22,6 +22,7 @@ export const useTokensState = create(persist<TokensState>((set, get) => ({
         importToken: (address, symbol, name, decimals, chainId) => {
             const { importedTokens } = get()
 
+            console.log(importedTokens)
             set({
                 importedTokens: {
                     ...importedTokens,
