@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
 import { useTransitionAwait } from "../common/useTransactionAwait";
 import { formatCurrency } from "@/utils/common/formatCurrency";
+import { ApprovalStateType } from "@/types/approve-state";
 
 interface SwapCallEstimate {
     calldata: string
@@ -27,6 +28,7 @@ interface FailedCall extends SwapCallEstimate {
 export function useSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | undefined,
     allowedSlippage: Percent,
+    approvalState: ApprovalStateType
 ) {
 
     const { address: account } = useAccount()
@@ -40,6 +42,8 @@ export function useSwapCallback(
         async function findBestCall() {
 
             if (!swapCalldata || !account) return
+
+            setBestCall(undefined)
 
             const algebraRouter = getAlgebraRouter({})
 
@@ -98,7 +102,7 @@ export function useSwapCallback(
 
         swapCalldata && findBestCall()
 
-    }, [swapCalldata])
+    }, [swapCalldata, approvalState, account])
 
 
     const { config: swapConfig } = usePrepareAlgebraRouterMulticall({

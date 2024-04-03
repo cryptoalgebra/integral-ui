@@ -5,27 +5,22 @@ import {
     DEFAULT_CHAIN_NAME,
 } from '@/constants/default-chain-id';
 import { useApproveCallbackFromTrade } from '@/hooks/common/useApprove';
-import { useQuotesResults } from '@/hooks/swap/useQuotesResults';
 import { useSwapCallback } from '@/hooks/swap/useSwapCallback';
 import useWrapCallback, { WrapType } from '@/hooks/swap/useWrapCallback';
 import { useDerivedSwapInfo, useSwapState } from '@/state/swapStore';
 import { ApprovalState } from '@/types/approve-state';
 import { SwapField } from '@/types/swap-field';
-import { QuoteResult } from '@/types/swap-quote';
 import { TradeState } from '@/types/trade-state';
 import {
     computeRealizedLPFeePercent,
     warningSeverity,
 } from '@/utils/swap/prices';
-import { Currency, CurrencyAmount } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 
 const SwapButton = () => {
     const { open } = useWeb3Modal();
-
-    const [isRatesChanged, setIsRatesChanged] = useState<boolean>(false);
 
     const { selectedNetworkId } = useWeb3ModalState();
 
@@ -100,54 +95,20 @@ const SwapButton = () => {
             approvalState === ApprovalState.PENDING) &&
         !(priceImpactSeverity > 3 && !isExpertMode);
 
-    const { refetch: refetchQuotesA } = useQuotesResults({
-        exactInput: true,
-        amountIn: parsedAmountA,
-        currencyOut: currencies[SwapField.OUTPUT],
-    });
-
     const {
         callback: swapCallback,
         error: swapCallbackError,
         isLoading: isSwapLoading,
-        isSuccess: isSwapSuccess,
-    } = useSwapCallback(trade, allowedSlippage);
+    } = useSwapCallback(trade, allowedSlippage, approvalState);
 
     const handleSwap = useCallback(async () => {
-        if (!swapCallback || !parsedAmountB || !currencies) return;
+        if (!swapCallback) return;
         try {
-            const { data } = await refetchQuotesA();
-            const quoteResult = data?.[0]?.result as QuoteResult;
-
-            const quoteAmountB = quoteResult[0];
-
-            const parsedQuoteAmountB = CurrencyAmount.fromRawAmount(
-                currencies[SwapField.OUTPUT] as Currency,
-                quoteAmountB.toString()
-            );
-
-            if (parsedQuoteAmountB.toExact() !== parsedAmountB.toExact()) {
-                setIsRatesChanged(true);
-                return;
-            } else {
-                setIsRatesChanged(false);
-            }
-
             await swapCallback();
         } catch (error) {
             return new Error(`Swap Failed ${error}`);
         }
-    }, [swapCallback, refetchQuotesA, currencies, parsedAmountB]);
-
-    useEffect(() => {
-        if (!isSwapSuccess) return;
-        refetchQuotesA();
-    }, [isSwapSuccess, refetchQuotesA]);
-
-    useEffect(() => {
-        if (!isRatesChanged) return;
-        setIsRatesChanged(false);
-    }, [typedValue]);
+    }, [swapCallback]);
 
     const isValid = !swapInputError;
 
@@ -231,11 +192,6 @@ const SwapButton = () => {
                     'Swap'
                 )}
             </Button>
-            {isRatesChanged && (
-                <span className="text-neutral-400 text-sm my-1">
-                    Rate was updated.
-                </span>
-            )}
         </>
     );
 };

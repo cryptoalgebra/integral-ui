@@ -53,6 +53,7 @@ export function useQuotesResults({
             functionName: functionName,
             args: quote,
         })),
+        watch: true
     });
 
     return {
