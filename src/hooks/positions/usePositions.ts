@@ -27,6 +27,7 @@ export interface PositionFromTokenId {
 function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
     isLoading: boolean;
     positions: PositionFromTokenId[] | undefined;
+    refetch: () => void;
 } {
     const inputs = useMemo(
         () => (tokenIds ? tokenIds.map((tokenId) => tokenId) : []),
@@ -38,6 +39,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         isLoading,
         isError,
         error,
+        refetch
     } = useContractReads({
         contracts: inputs.map((x) => ({
             address: ALGEBRA_POSITION_MANAGER,
@@ -81,14 +83,15 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                 });
         }
         return undefined;
-    }, [isLoading, isError, error, results, tokenIds, account]);
+    }, [isLoading, isError, error, results, tokenIds, account, refetch]);
 
     return useMemo(() => {
         return {
             isLoading,
             positions,
+            refetch
         };
-    }, [isLoading, positions]);
+    }, [isLoading, positions, refetch]);
 }
 
 export function usePositions() {
@@ -133,32 +136,35 @@ export function usePositions() {
         return [];
     }, [account, tokenIdResults]);
 
-    const { positions, isLoading: positionsLoading } =
+    const { positions, isLoading: positionsLoading, refetch } =
         usePositionsFromTokenIds(tokenIds);
 
     return {
         loading: someTokenIdsLoading || balanceLoading || positionsLoading,
         positions,
+        refetch
     };
 }
 
 export function usePosition(tokenId: string | number | undefined): {
     loading: boolean;
     position: PositionFromTokenId | undefined;
+    refetch: () => void;
 } {
     const tokenIdArr = useMemo(() => {
         if (!tokenId) return;
         return [tokenId];
     }, [tokenId]);
 
-    const { isLoading, positions } = usePositionsFromTokenIds(tokenIdArr);
+    const { isLoading, positions, refetch } = usePositionsFromTokenIds(tokenIdArr);
 
     return useMemo(() => {
         return {
             loading: isLoading,
             position: positions?.[0],
+            refetch
         };
-    }, [isLoading, positions]);
+    }, [isLoading, positions, refetch]);
 }
 
 export function usePositionInFarming(tokenId: string | number | undefined) {

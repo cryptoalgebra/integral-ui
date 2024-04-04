@@ -8,6 +8,7 @@ import {
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useApprove } from '@/hooks/common/useApprove';
 import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
+import { usePosition, usePositions } from '@/hooks/positions/usePositions';
 import { IDerivedMintInfo } from '@/state/mintStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
@@ -48,6 +49,10 @@ export const IncreaseLiquidityButton = ({
     const { selectedNetworkId } = useWeb3ModalState();
 
     const { txDeadline } = useUserState();
+
+    const { refetch: refetchAllPositions } = usePositions();
+
+    const { refetch: refetchPosition } = usePosition(tokenId);
 
     const useNative = baseCurrency?.isNative
         ? baseCurrency
@@ -126,7 +131,9 @@ export const IncreaseLiquidityButton = ({
         );
 
     useEffect(() => {
-        if (isSuccess) handleCloseModal?.();
+        if (!isSuccess) return;
+        Promise.all([refetchPosition(), refetchAllPositions()])
+            .then(() => handleCloseModal?.());
     }, [isSuccess]);
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
