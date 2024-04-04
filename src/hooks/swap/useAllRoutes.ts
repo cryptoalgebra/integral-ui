@@ -2,6 +2,7 @@ import { Currency, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, Route, Token } 
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"
+import { useUserState } from "@/state/userStore"
 
 
 /**
@@ -75,7 +76,7 @@ export function useAllRoutes(
 
     const { pools, loading: poolsLoading } = useSwapPools(currencyIn, currencyOut)
 
-    const singleHopOnly = false
+    const { isMultihop } = useUserState();
 
     return useMemo(() => {
         if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
@@ -84,9 +85,8 @@ export function useAllRoutes(
                 routes: [],
             }
 
-        //Hack
+        // Hack
         // const singleIfWrapped = (currencyIn.isNative || currencyOut.isNative)
-        const singleIfWrapped = false
 
         const routes = computeAllRoutes(
             currencyIn,
@@ -96,9 +96,9 @@ export function useAllRoutes(
             [],
             [],
             currencyIn,
-            singleHopOnly || singleIfWrapped ? 1 : 3
+            isMultihop ? 3 : 1
         )
 
         return { loading: false, routes }
-    }, [chainId, currencyIn, currencyOut, pools, poolsLoading, singleHopOnly])
+    }, [chainId, currencyIn, currencyOut, pools, poolsLoading, isMultihop])
 }

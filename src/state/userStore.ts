@@ -19,6 +19,7 @@ interface UserState {
     slippage: Percent | "auto";
     pendingTransactions: PendingTransactions;
     isExpertMode: boolean;
+    isMultihop: boolean;
     actions: {
         setTxDeadline: (txDeadline: number) => void;
         setSlippage: (slippage: Percent | "auto") => void;
@@ -26,6 +27,7 @@ interface UserState {
         updatePendingTransaction: (hash: Address, transaction: Transaction) => void;
         deletePendingTransaction: (hash: Address) => void;
         setIsExpertMode: (isExpertMode: boolean) => void;
+        setIsMultihop: (isMultihop: boolean) => void;
     }
 }
 
@@ -33,6 +35,7 @@ export const useUserState = create<UserState>((set, get) => ({
     txDeadline: 180,
     slippage: "auto",
     isExpertMode: false,
+    isMultihop: true,
     pendingTransactions: {},
     importedTokens: {},
     actions: {
@@ -67,6 +70,9 @@ export const useUserState = create<UserState>((set, get) => ({
         },
         setIsExpertMode: (isExpertMode) => set({
             isExpertMode
+        }),
+        setIsMultihop: (isMultihop) => set({
+            isMultihop
         })
     }
 }))
