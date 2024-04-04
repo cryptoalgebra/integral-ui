@@ -3,12 +3,7 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import {
-    ADDRESS_ZERO,
-    INITIAL_POOL_FEE,
-    Position,
-    WNATIVE,
-} from '@cryptoalgebra/integral-sdk';
+import { INITIAL_POOL_FEE, Position } from '@cryptoalgebra/integral-sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';
@@ -23,8 +18,7 @@ import { EternalFarming } from '@/graphql/generated/graphql';
 import ActiveFarmingCard from '../ActiveFarmingCard';
 import ClosedFarmingCard from '../ClosedFarmingCard';
 import { IncreaseLiquidityModal } from '@/components/modals/IncreaseLiquidityModal';
-import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
-import { useAlgebraToken } from '@/hooks/common/useAlgebraToken';
+import { useCurrency } from '@/hooks/common/useCurrency';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -49,16 +43,8 @@ const PositionCard = ({
     const token0 = position?.token0;
     const token1 = position?.token1;
 
-    const isWNative0 =
-        token0?.toLowerCase() ===
-        WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase();
-
-    const isWNative1 =
-        token1?.toLowerCase() ===
-        WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase();
-
-    const currencyA = useAlgebraToken(isWNative0 ? ADDRESS_ZERO : token0);
-    const currencyB = useAlgebraToken(isWNative1 ? ADDRESS_ZERO : token1);
+    const currencyA = useCurrency(token0, true);
+    const currencyB = useCurrency(token1, true);
 
     const [, pool] = usePool(position?.pool);
     const positionEntity =
@@ -139,12 +125,12 @@ const PositionCard = ({
                 <div className="flex justify-between font-semibold">
                     <div>
                         {`${positionEntity.amount0.toFixed(2)} ${
-                            positionEntity.amount0.currency.symbol
+                            currencyA?.symbol
                         }`}
                     </div>
                     <div>
                         {`${positionEntity.amount1.toFixed(2)} ${
-                            positionEntity.amount1.currency.symbol
+                            currencyB?.symbol
                         }`}
                     </div>
                 </div>
