@@ -22,9 +22,18 @@ export function useAllTokens(showNativeToken: boolean = true) {
     const tokensBlackList: Address[] = useMemo(() => [], []);
 
     const mergedTokens = useMemo(() => {
-        if (!allTokens) return [];
-
         const tokens = new Map<Address, TokenFieldsFragment>();
+        
+        if (!allTokens) {
+            const _importedTokens = Object.values(importedTokens[chainId] || []);
+            for (const token of _importedTokens) {
+                tokens.set(token.id.toLowerCase() as Address, {
+                    ...token,
+                    derivedMatic: 0,
+                });
+            }
+            return [...tokens].map(([, token]) => ({ ...token }));
+        }
 
         if (showNativeToken)
             tokens.set(ADDRESS_ZERO, {

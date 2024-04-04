@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/integral-sdk@^0.11.17":
-  version "0.11.17"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-0.11.17.tgz#fc9ca466c0395992b0ea0bcb50d905c654d6f424"
-  integrity sha512-ZfzEDnVC+7U52Qdr0vTo+mFJan5NtpekZ9Mx6FdmjncS8dGFQWRWVbDfG837tZlex7MJLpr/j9IrX2oVp5jP5g==
+"@cryptoalgebra/integral-sdk@^0.11.22":
+  version "0.11.22"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-0.11.22.tgz#01b367f05461b279a8bd7d26207ddc05f96b8549"
+  integrity sha512-JHI3QVX/ybYDaegawhnKS83awWBmMLsp/GqIiMLJkX5XKeyix/bYyt1s86Tui7QC7bLbZPUJb+xCJ7t+DxYmqA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
