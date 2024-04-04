@@ -3,9 +3,7 @@ import React from "react";
 import { Address } from "wagmi";
 import USDTLogo from '@/assets/tokens/usdt.png'
 import USDCLogo from '@/assets/tokens/usdc.svg'
-import BeraLogo from '@/assets/tokens/bera.png'
 import WBTCLogo from '@/assets/tokens/wbtc.svg'
-import HoneyLogo from '@/assets/tokens/honey.png'
 import EtherLogo from '@/assets/tokens/ether.svg'
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,11 +16,11 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ['0x5806e416da447b267cea759358cf22cc41fae80f']: {
-        symbol: 'BERA',
-        logo: BeraLogo
+    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: {
+        symbol: 'ETH',
+        logo: EtherLogo
     },
-    ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: {
+    ['0x7d98346b3b000c55904918e3d9e2fc3f94683b01']: {
         symbol: 'USDT',
         logo: USDTLogo
     },
@@ -33,14 +31,6 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ['0x6581e59a1c8da66ed0d313a0d4029dce2f746cc5']: {
         symbol: 'USDC',
         logo: USDCLogo
-    },
-    ['0x7eeca4205ff31f947edbd49195a7a88e6a91161b']: {
-        symbol: 'HONEY',
-        logo: HoneyLogo
-    },
-    ['0x8239fbb3e3d0c2cdfd7888d8af7701240ac4dca4']: {
-        symbol: 'WETH',
-        logo: EtherLogo
     }
 }
 
@@ -58,7 +48,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
     }
 
     if (currency.isNative) {
-        return <img src={BeraLogo} alt={'BERA'} width={size} height={size} className={classString} style={style} />
+        return <img src={EtherLogo} alt={'ETH'} width={size} height={size} className={classString} style={style} />
     }
 
     return <div className={`${classString} flex items-center justify-center bg-white text-black`} style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}>
