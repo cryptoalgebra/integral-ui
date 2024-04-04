@@ -1,4 +1,4 @@
-name: Algebra Integral Berachain Deploy
+name: Algebra Integral Deploy
 
 on:
   push:
