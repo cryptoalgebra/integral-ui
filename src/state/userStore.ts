@@ -79,7 +79,6 @@ export const useUserState = create(persist<UserState>((set, get) => ({
     }
 }), {
         name: 'user-state-storage',
-        partialize: (state) => state,
         merge(persistedState: any, currentState) {
             return deepMerge(
                 { ...currentState, slippage: persistedState.slippage === "auto" ? "auto" : new Percent(0) },
