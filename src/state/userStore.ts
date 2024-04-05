@@ -1,7 +1,9 @@
+import deepMerge from 'lodash.merge';
 import { Percent } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { Address } from "wagmi";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface Transaction {
     success: boolean;
@@ -31,7 +33,7 @@ interface UserState {
     }
 }
 
-export const useUserState = create<UserState>((set, get) => ({
+export const useUserState = create(persist<UserState>((set, get) => ({
     txDeadline: 180,
     slippage: "auto",
     isExpertMode: false,
@@ -75,7 +77,17 @@ export const useUserState = create<UserState>((set, get) => ({
             isMultihop
         })
     }
-}))
+}), {
+        name: 'user-state-storage',
+        partialize: (state) => state,
+        merge(persistedState: any, currentState) {
+            return deepMerge(
+                { ...currentState, slippage: persistedState.slippage === "auto" ? "auto" : new Percent(0) },
+                persistedState
+                );
+        },
+    }
+))
 
 
 export function useUserSlippageToleranceWithDefault(defaultSlippageTolerance: Percent): Percent {
