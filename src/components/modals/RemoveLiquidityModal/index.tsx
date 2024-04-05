@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Slider } from "@/components/ui/slider";
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
 import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
-import { usePosition } from "@/hooks/positions/usePositions";
+import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
 import { useUserState } from "@/state/userStore";
 import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/integral-sdk";
@@ -22,7 +22,9 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     const { txDeadline } = useUserState()
     const { address: account } = useAccount();
 
-    const { position } = usePosition(positionId);
+    const { refetch: refetchAllPositions } = usePositions();
+
+    const { position, refetch: refetchPosition } = usePosition(positionId);
 
     const { percent } = useBurnState();
 
@@ -94,7 +96,9 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     };
 
     useEffect(() => {
-        if (isSuccess) handleCloseModal?.();
+        if (!isSuccess) return;
+        Promise.all([refetchPosition(), refetchAllPositions()])
+            .then(() => handleCloseModal?.());
     }, [isSuccess]);
 
     return <Dialog open={isOpen} onOpenChange={setIsOpen}>
