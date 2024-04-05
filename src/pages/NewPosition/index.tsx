@@ -10,19 +10,13 @@ import {
     useMintState,
     useRangeHopCallbacks,
 } from '@/state/mintStore';
-import {
-    ADDRESS_ZERO,
-    Bound,
-    INITIAL_POOL_FEE,
-    WNATIVE,
-} from '@cryptoalgebra/integral-sdk';
+import { Bound, INITIAL_POOL_FEE } from '@cryptoalgebra/integral-sdk';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'wagmi';
 import AmountsSection from '@/components/create-position/AmountsSection';
 import { ManageLiquidity } from '@/types/manage-liquidity';
-import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
-import { useAlgebraToken } from '@/hooks/common/useAlgebraToken';
+import { useCurrency } from '@/hooks/common/useCurrency';
 
 type NewPositionPageParams = Record<'pool', Address>;
 
@@ -37,16 +31,8 @@ const NewPositionPage = () => {
         address: poolAddress,
     });
 
-    const isWNative0 =
-        token0?.toLowerCase() ===
-        WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase();
-
-    const isWNative1 =
-        token1?.toLowerCase() ===
-        WNATIVE[DEFAULT_CHAIN_ID].address.toLowerCase();
-
-    const currencyA = useAlgebraToken(isWNative0 ? ADDRESS_ZERO : token0);
-    const currencyB = useAlgebraToken(isWNative1 ? ADDRESS_ZERO : token1);
+    const currencyA = useCurrency(token0, true);
+    const currencyB = useCurrency(token1, true);
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,

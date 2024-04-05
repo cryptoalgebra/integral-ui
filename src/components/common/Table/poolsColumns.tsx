@@ -1,7 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { HeaderItem } from './common';
 import { Address } from 'wagmi';
-import { useCurrency } from '@/hooks/common/useCurrency';
 import CurrencyLogo from '../CurrencyLogo';
 import { TokenFieldsFragment } from '@/graphql/generated/graphql';
 import { DynamicFeePluginIcon } from '../PluginIcons';
@@ -9,6 +8,7 @@ import { formatUSD } from '@/utils/common/formatUSD';
 import { usePoolPlugins } from '@/hooks/pools/usePoolPlugins';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FarmingPluginIcon } from '../PluginIcons';
+import { useCurrency } from '@/hooks/common/useCurrency';
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -26,8 +26,11 @@ interface Pool {
 }
 
 const PoolPair = ({ pair, fee }: Pool) => {
-    const currencyA = useCurrency(pair.token0.id as Address);
-    const currencyB = useCurrency(pair.token1.id as Address);
+    const token0 = pair.token0.id as Address;
+    const token1 = pair.token1.id as Address;
+
+    const currencyA = useCurrency(token0, true);
+    const currencyB = useCurrency(token1, true);
 
     return (
         <div className="flex items-center gap-4 ml-2">
