@@ -1,5 +1,6 @@
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
+import { useUserState } from '@/state/userStore';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -31,22 +32,25 @@ export function useTransitionAwait(
 
     const navigate = useNavigate();
 
+    const { actions: { addPendingTransaction } } = useUserState();
+
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash,
     });
 
     useEffect(() => {
-        if (isLoading) {
+        if (isLoading && hash) {
             toast({
                 title: title,
                 description: description || 'Transaction was sent',
                 action: <ViewTxOnExplorer hash={hash} />,
             });
+            addPendingTransaction(hash);
         }
-    }, [isLoading]);
+    }, [isLoading, addPendingTransaction, hash]);
 
     useEffect(() => {
-        if (isLoading) {
+        if (isError && hash) {
             toast({
                 title: title,
                 description: description || 'Transaction failed',
@@ -56,7 +60,7 @@ export function useTransitionAwait(
     }, [isError]);
 
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess && hash) {
             toast({
                 title: title,
                 description: description || 'Transaction confirmed',
