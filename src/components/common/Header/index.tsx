@@ -78,9 +78,7 @@ const Account = () => {
 
 const TransactionHistoryPopover = ({children}: {children: React.ReactNode}) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { pendingTransactions } = useUserState();
-
-    usePendingTransactions();
+    const pendingTransactions = usePendingTransactions();
 
     return <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
@@ -94,13 +92,13 @@ const TransactionHistoryPopover = ({children}: {children: React.ReactNode}) => {
             <PopoverContent className="w-fit flex flex-col gap-4 -translate-x-12 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4" sideOffset={6}>
                 Pending Transactions
                 <hr/>
-                <ul className="flex flex-col gap-2 w-52">
+                <ul className="flex flex-col gap-4 w-52">
                     {Object.entries(pendingTransactions).map(([hash, transaction]) => (
                         <Link
                             to={`https://holesky.etherscan.io/tx/${hash}`}
                             target={'_blank'}
                         >
-                            <li className="flex justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border hover:bg-card-dark/80" key={hash}>
+                            <li className="flex justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
                                 <img src={etherScanLogo} width={32} />
                                 <span className={cn(transaction.success ? "opacity-50" : transaction.error && "text-red-500")}>{truncateHash(hash as Address)}</span>
                                 <ExternalLinkIcon size={18} />

@@ -1,9 +1,10 @@
 import deepMerge from 'lodash.merge';
 import { Percent } from "@cryptoalgebra/integral-sdk";
-import { useMemo } from "react";
-import { Address, useWatchPendingTransactions } from "wagmi";
+import { useEffect, useMemo } from "react";
+import { Address, usePublicClient } from "wagmi";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { waitForTransactionReceipt } from 'viem/actions';
 
 export interface Transaction {
     success: boolean;
@@ -15,7 +16,7 @@ export interface PendingTransactions {
     [hash: Address]: Transaction
 }
 
-const MAX_TRANSACTIONS = 5;
+const MAX_TRANSACTIONS = 8;
 
 interface UserState {
     txDeadline: number;
@@ -107,13 +108,14 @@ export function useUserSlippageToleranceWithDefault(defaultSlippageTolerance: Pe
 export function usePendingTransactions() {
     const { pendingTransactions, actions: { deletePendingTransaction } } = useUserState();
 
-    useWatchPendingTransactions({
-        listener: (hashes) => {
-            for (const txIndex in pendingTransactions) {
-                if (!hashes.includes(txIndex as Address)) {
-                    deletePendingTransaction(txIndex as Address);
-                }
-            }
+    const config = usePublicClient();
+
+    useEffect(() => {
+        for (const txHash of Object.keys(pendingTransactions)) {
+            waitForTransactionReceipt(config, { confirmations: 1, hash: txHash as Address })
+                .then(() => deletePendingTransaction(txHash as Address));
         }
-    })
+    }, [config, pendingTransactions, deletePendingTransaction]);
+
+    return pendingTransactions;
 }
