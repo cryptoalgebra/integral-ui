@@ -1,10 +1,10 @@
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
-import { useUserState } from '@/state/userStore';
+import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Address, useWaitForTransaction } from 'wagmi';
+import { Address, useAccount, useWaitForTransaction } from 'wagmi';
 
 export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     hash ? (
@@ -34,23 +34,25 @@ export function useTransitionAwait(
 
     const navigate = useNavigate();
 
-    const { actions: { addPendingTransaction, updatePendingTransaction } } = useUserState();
+    const { address: account } = useAccount();
+
+    const { actions: { addPendingTransaction, updatePendingTransaction } } = usePendingTransactionsStore();
 
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash,
     });
 
     useEffect(() => {
-        if (isLoading && hash) {
+        if (isLoading && hash && account) {
             toast({
                 title: title,
                 description: description || 'Transaction was sent',
                 action: <ViewTxOnExplorer hash={hash} />,
             });
-            addPendingTransaction(hash);
-            updatePendingTransaction(hash, { data: {title, description, tokenA, tokenB}, loading: true, success: null, error: null });
+            addPendingTransaction(account, hash);
+            updatePendingTransaction(account, hash, { data: { title, description, tokenA, tokenB }, loading: true, success: null, error: null });
         }
-    }, [isLoading, addPendingTransaction, updatePendingTransaction, hash]);
+    }, [isLoading, hash, account]);
 
     useEffect(() => {
         if (isError && hash) {

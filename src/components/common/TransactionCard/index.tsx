@@ -1,13 +1,13 @@
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { Transaction } from "@/state/userStore";
 import { truncateHash } from "@/utils/common/truncateHash";
 import { Address } from "viem";
 import CurrencyLogo from "../CurrencyLogo";
 import EtherScanLogo from "@/assets/etherscan-logo-circle.svg"
 import { ExternalLinkIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Transaction } from "@/state/pendingTransactionsStore";
 
-export const TransactionCard = ({hash, transaction}: {hash: Address, transaction: Transaction}) => {
+export const TransactionCard = ({ hash, transaction }: { hash: Address, transaction: Transaction }) => {
     const currencyA = useCurrency(transaction.data.tokenA, true);
     const currencyB = useCurrency(transaction.data.tokenB, true);
 
@@ -15,7 +15,7 @@ export const TransactionCard = ({hash, transaction}: {hash: Address, transaction
             to={`https://holesky.etherscan.io/tx/${hash}`}
             target={'_blank'}
             >
-                <li className="flex justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
+                <li className="flex h-16 justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
                     {
                         currencyB && currencyA ?
                         <div className="w-[36px] relative">

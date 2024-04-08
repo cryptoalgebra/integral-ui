@@ -6,12 +6,13 @@ import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id"
 import { Button } from "@/components/ui/button"
 import { UnplugIcon, WalletIcon } from "lucide-react"
-import { usePendingTransactions, useUserState } from "@/state/userStore"
 import Loader from "../Loader"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useState } from "react"
 import { Address } from "viem"
 import { TransactionCard } from "../TransactionCard"
+import { useAccount } from "wagmi"
+import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore"
 
 const Header = () => <header className="sticky top-4 z-10 grid grid-cols-3 justify-between items-center py-1 px-2 bg-card border border-card-border rounded-3xl gap-4">
     <Algebra />
@@ -34,9 +35,11 @@ const Account = () => {
 
     const { open } = useWeb3Modal()
 
-    const { pendingTransactions } = useUserState()
+    const { pendingTransactions } = usePendingTransactionsStore()
 
-    const numberOfTransactions = Object.keys(pendingTransactions).length
+    const { address: account } = useAccount();
+
+    const numberOfTransactions = account && pendingTransactions[account] ? Object.keys(pendingTransactions[account]).length : 0;
 
     const { selectedNetworkId } = useWeb3ModalState()
 
@@ -77,8 +80,9 @@ const Account = () => {
 const TransactionHistoryPopover = ({children}: {children: React.ReactNode}) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const pendingTransactions = usePendingTransactions();
+    const { address: account } = useAccount();
 
-    return <Popover open={isOpen} onOpenChange={setIsOpen}>
+    if (account) return <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
                 <Button
                     className="flex font-normal items-center my-auto h-10 px-4 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-3xl transition-all duration-200"
@@ -91,7 +95,7 @@ const TransactionHistoryPopover = ({children}: {children: React.ReactNode}) => {
                 Pending Transactions
                 <hr/>
                 <ul className="flex flex-col gap-4 w-64">
-                    {Object.entries(pendingTransactions).reverse().map(([hash, transaction]) => <TransactionCard key={hash} hash={hash as Address} transaction={transaction} />)}
+                    {Object.entries(pendingTransactions[account]).reverse().map(([hash, transaction]) => <TransactionCard key={hash} hash={hash as Address} transaction={transaction} />)}
                 </ul>
             </PopoverContent>
         </Popover>
