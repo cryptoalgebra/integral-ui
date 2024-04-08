@@ -122,7 +122,9 @@ export const AddLiquidityButton = ({
         addLiquidityData?.hash,
         'Add liquidity',
         '',
-        `/pool/${poolAddress}`
+        `/pool/${poolAddress}`,
+        baseCurrency?.wrapped.address as Address,
+        quoteCurrency?.wrapped.address as Address
     );
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;

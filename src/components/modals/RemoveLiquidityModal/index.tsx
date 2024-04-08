@@ -9,7 +9,7 @@ import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state
 import { useUserState } from "@/state/userStore";
 import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
-import { useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 
 interface RemoveLiquidityModalProps {
     positionId: number;
@@ -81,7 +81,14 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig)
 
-    const { isLoading: isRemoveLoading, isSuccess } = useTransitionAwait(removeLiquidityData?.hash, 'Remove liquidity')
+    const { isLoading: isRemoveLoading, isSuccess } = useTransitionAwait(
+        removeLiquidityData?.hash,
+        'Remove liquidity',
+        '',
+        '',
+        position?.token0 as Address,
+        position?.token1 as Address
+    )
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity
 

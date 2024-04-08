@@ -6,8 +6,16 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { waitForTransactionReceipt } from 'viem/actions';
 
+interface TransactionData {
+    title: string;
+    description?: string;
+    tokenA?: Address;
+    tokenB?: Address;
+}
+
 export interface Transaction {
-    success: boolean;
+    data: TransactionData;
+    success: boolean | null;
     loading: boolean;
     error: Error | null;
 }

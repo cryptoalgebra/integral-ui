@@ -8,6 +8,7 @@ import { useFarmCheckApprove } from './useFarmCheckApprove';
 import { useEffect, useState } from 'react';
 import { farmingClient } from '@/graphql/clients';
 import { Deposit } from '@/graphql/generated/graphql';
+import { isSameRewards } from '@/utils/farming/isSameRewards';
 
 export function useFarmStake({
     tokenId,
@@ -45,9 +46,15 @@ export function useFarmStake({
 
     const { data: data, writeAsync: onStake } = useContractWrite(config);
 
+    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
+
     const { isLoading, isSuccess } = useTransitionAwait(
         data?.hash,
-        `Stake Position #${tokenId}`
+        `Stake Position #${tokenId}`,
+        '',
+        '',
+        rewardToken,
+        !isSameReward ? bonusRewardToken : undefined,
     );
 
     useEffect(() => {
@@ -146,9 +153,15 @@ export function useFarmUnstake({
 
     const { data: data, writeAsync: onUnstake } = useContractWrite(config);
 
+    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
+
     const { isLoading, isSuccess } = useTransitionAwait(
         data?.hash,
-        `Unstake Position #${tokenId}`
+        `Unstake Position #${tokenId}`,
+        '',
+        '',
+        rewardToken,
+        !isSameReward ? bonusRewardToken : undefined,
     );
 
     useEffect(() => {

@@ -5,6 +5,7 @@ import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { useTransitionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { Deposit } from '@/graphql/generated/graphql';
+import { isSameRewards } from '@/utils/farming/isSameRewards';
 
 export function useFarmHarvest({
     tokenId,
@@ -38,10 +39,16 @@ export function useFarmHarvest({
     });
 
     const { data: data, writeAsync: onHarvest } = useContractWrite(config);
+    
+    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
 
     const { isLoading, isSuccess } = useTransitionAwait(
         data?.hash,
-        `Harvest Position #${tokenId}`
+        `Harvest Position #${tokenId}`,
+        '',
+        '',
+        rewardToken,
+        !isSameReward ? bonusRewardToken : undefined,
     );
 
     return {
@@ -98,9 +105,15 @@ export function useFarmHarvestAll(
 
     const { data: data, writeAsync: onHarvestAll } = useContractWrite(config);
 
+    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
+
     const { isLoading, isSuccess } = useTransitionAwait(
         data?.hash,
-        `Harvest All Positions`
+        `Harvest All Positions`,
+        '',
+        '',
+        rewardToken,
+        !isSameReward ? bonusRewardToken : undefined,
     );
 
     return {

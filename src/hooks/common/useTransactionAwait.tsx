@@ -26,13 +26,15 @@ export function useTransitionAwait(
     hash: Address | undefined,
     title: string,
     description?: string,
-    redirectPath?: string
+    redirectPath?: string,
+    tokenA?: Address,
+    tokenB?: Address
 ) {
     const { toast } = useToast();
 
     const navigate = useNavigate();
 
-    const { actions: { addPendingTransaction } } = useUserState();
+    const { actions: { addPendingTransaction, updatePendingTransaction } } = useUserState();
 
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash,
@@ -46,8 +48,9 @@ export function useTransitionAwait(
                 action: <ViewTxOnExplorer hash={hash} />,
             });
             addPendingTransaction(hash);
+            updatePendingTransaction(hash, { data: {title, description, tokenA, tokenB}, loading: true, success: null, error: null });
         }
-    }, [isLoading, addPendingTransaction, hash]);
+    }, [isLoading, addPendingTransaction, updatePendingTransaction, hash]);
 
     useEffect(() => {
         if (isError && hash) {

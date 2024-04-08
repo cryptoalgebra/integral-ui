@@ -1,19 +1,17 @@
 import Navigation from "@/components/common/Navigation"
 import AlgebraLogo from "@/assets/algebra-logo.svg"
 import AlgebraIntegral from "@/assets/algebra-itegral.svg"
-import { Link, NavLink } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id"
 import { Button } from "@/components/ui/button"
-import { ExternalLinkIcon, UnplugIcon, WalletIcon } from "lucide-react"
+import { UnplugIcon, WalletIcon } from "lucide-react"
 import { usePendingTransactions, useUserState } from "@/state/userStore"
 import Loader from "../Loader"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
 import { useState } from "react"
-import { truncateHash } from "@/utils/common/truncateHash"
 import { Address } from "viem"
-import etherScanLogo from "@/assets/etherscan-logo-circle.svg"
+import { TransactionCard } from "../TransactionCard"
 
 const Header = () => <header className="sticky top-4 z-10 grid grid-cols-3 justify-between items-center py-1 px-2 bg-card border border-card-border rounded-3xl gap-4">
     <Algebra />
@@ -92,19 +90,8 @@ const TransactionHistoryPopover = ({children}: {children: React.ReactNode}) => {
             <PopoverContent className="w-fit flex flex-col gap-4 -translate-x-12 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4" sideOffset={6}>
                 Pending Transactions
                 <hr/>
-                <ul className="flex flex-col gap-4 w-52">
-                    {Object.entries(pendingTransactions).map(([hash, transaction]) => (
-                        <Link
-                            to={`https://holesky.etherscan.io/tx/${hash}`}
-                            target={'_blank'}
-                        >
-                            <li className="flex justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
-                                <img src={etherScanLogo} width={32} />
-                                <span className={cn(transaction.success ? "opacity-50" : transaction.error && "text-red-500")}>{truncateHash(hash as Address)}</span>
-                                <ExternalLinkIcon size={18} />
-                            </li>
-                        </Link>
-                    ))}
+                <ul className="flex flex-col gap-4 w-64">
+                    {Object.entries(pendingTransactions).reverse().map(([hash, transaction]) => <TransactionCard key={hash} hash={hash as Address} transaction={transaction} />)}
                 </ul>
             </PopoverContent>
         </Popover>
