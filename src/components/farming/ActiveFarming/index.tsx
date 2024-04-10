@@ -16,6 +16,7 @@ import Loader from '@/components/common/Loader';
 import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
 import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
 import { useFarmingAPR } from '@/hooks/farming/useFarmingAPR';
+import { useAlgebraVirtualPoolRewardRates } from '@/generated';
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -78,10 +79,17 @@ const ActiveFarming = ({
 
     const formattedTVL = TVL.toFixed(2);
 
+    const {data: rates} = useAlgebraVirtualPoolRewardRates({
+        address: farming.farming.virtualPool,
+    })
+
+    const rewardRate = rates ? rates[0] : 0n;
+    const bonusRewardRate = rates ? rates[1] : 0n;
+
     const rewardRatePerDay =
         Number(
             formatUnits(
-                farming.farming.rewardRate,
+                rewardRate,
                 farming.rewardToken.decimals
             )
         ) *
@@ -92,7 +100,7 @@ const ActiveFarming = ({
     const bonusRewardRatePerDay =
         Number(
             formatUnits(
-                farming.farming.bonusRewardRate,
+                bonusRewardRate,
                 farming.bonusRewardToken?.decimals
             )
         ) *
