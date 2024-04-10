@@ -79,7 +79,7 @@ const ActiveFarming = ({
 
     const formattedTVL = TVL.toFixed(2);
 
-    const {data: rates} = useAlgebraVirtualPoolRewardRates({
+    const { data: rates } = useAlgebraVirtualPoolRewardRates({
         address: farming.farming.virtualPool,
     })
 
