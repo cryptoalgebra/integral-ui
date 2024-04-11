@@ -27,7 +27,7 @@ interface UserTransactions {
     [account: Address]: PendingTransactions
 }
 
-const MAX_TRANSACTIONS = 8;
+const MAX_TRANSACTIONS = 10;
 
 interface UserState {
     pendingTransactions: UserTransactions;
@@ -46,7 +46,7 @@ export const usePendingTransactionsStore = create(persist<UserState>((set, get) 
             const transactionKeys = pendingTransactions[account] ? Object.keys(pendingTransactions[account]) : [];
             
             if (transactionKeys.length >= MAX_TRANSACTIONS) {
-              delete pendingTransactions[transactionKeys[0] as Address];
+                delete pendingTransactions[account][transactionKeys[0] as Address];
             }
             
             set({
@@ -89,19 +89,21 @@ export const usePendingTransactionsStore = create(persist<UserState>((set, get) 
 ))
 
 export function usePendingTransactions() {
-    const { pendingTransactions, actions: { deletePendingTransaction } } = usePendingTransactionsStore();
+    const { pendingTransactions, actions: { updatePendingTransaction } } = usePendingTransactionsStore();
 
     const { address: account } = useAccount();
 
     const config = usePublicClient();
-
+    
     useEffect(() => {
         if (!account) return;
-        for (const txHash of Object.keys(pendingTransactions[account])) {
+        const pendingTransactionsList = Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading)
+        for (const [txHash] of pendingTransactionsList) {
             waitForTransactionReceipt(config, { confirmations: 1, hash: txHash as Address })
-                .then(() => deletePendingTransaction(account, txHash as Address));
+                .then(() => updatePendingTransaction(account, txHash as Address, { ...pendingTransactions[account][txHash as Address], loading: false, success: true, error: null }))
+                .catch((error) => updatePendingTransaction(account, txHash as Address, { ...pendingTransactions[account][txHash as Address], loading: false, success: false, error }));
         }
-    }, [config, pendingTransactions, deletePendingTransaction, account]);
+    }, [config, pendingTransactions, updatePendingTransaction, account]);
 
     return pendingTransactions;
 }

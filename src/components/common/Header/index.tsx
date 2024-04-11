@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom"
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id"
 import { Button } from "@/components/ui/button"
-import { UnplugIcon, WalletIcon } from "lucide-react"
+import { AlignJustify, UnplugIcon, WalletIcon } from "lucide-react"
 import Loader from "../Loader"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useState } from "react"
@@ -39,7 +39,9 @@ const Account = () => {
 
     const { address: account } = useAccount();
 
-    const numberOfTransactions = account && pendingTransactions[account] ? Object.keys(pendingTransactions[account]).length : 0;
+    const showTxHistory = account && pendingTransactions[account] ? Object.keys(pendingTransactions[account]).length > 0 : false
+    
+    const pendingTxCount = account && pendingTransactions[account] ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length : 0;
 
     const { selectedNetworkId } = useWeb3ModalState()
 
@@ -59,7 +61,7 @@ const Account = () => {
             <w3m-network-button />
         </div>
             <div className="hidden md:block">
-                <w3m-button balance={numberOfTransactions === 0 ? "show" : "hide"} />
+                <w3m-button balance={pendingTxCount > 0 ? "hide" : "show"} />
             </div>
         <div className="md:hidden">
             <Button onClick={() => open()} variant={'icon'} size={'icon'}>
@@ -67,11 +69,27 @@ const Account = () => {
             </Button>
         </div>
         {
-            numberOfTransactions > 0 &&
+            showTxHistory &&
             <TransactionHistoryPopover>
-                    <Loader />
-                    <span>{numberOfTransactions}</span>
-                    <span>Pending</span>    
+                    {
+                        pendingTxCount > 0 ?
+                        <Button
+                            className="flex font-normal items-center my-auto h-10 px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-3xl transition-all duration-200"
+                            aria-label="Transaction history"
+                        >
+                            <Loader />
+                            <span>{pendingTxCount}</span>
+                            <span>Pending</span>
+                        </Button>
+                        :
+                        <Button
+                            variant="ghost"
+                            className="flex font-normal items-center my-auto h-10 px-3 justify-center gap-2 bg-card-light/20 cursor-pointer border border-card-light hover:border-border/30 rounded-3xl transition-all duration-200"
+                            aria-label="Transaction history"
+                        >
+                            <AlignJustify size={20} />
+                        </Button>
+                    }
             </TransactionHistoryPopover>
         }
     </div>
@@ -83,18 +101,13 @@ const TransactionHistoryPopover = ({children}: {children: React.ReactNode}) => {
     const { address: account } = useAccount();
 
     if (account) return <Popover open={isOpen} onOpenChange={setIsOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    className="flex font-normal items-center my-auto h-10 px-4 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-3xl transition-all duration-200"
-                    aria-label="Transaction history"
-                >
-                    {children}
-                </Button>
+            <PopoverTrigger>
+                {children}
             </PopoverTrigger>
-            <PopoverContent className="w-fit flex flex-col gap-4 -translate-x-12 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4" sideOffset={6}>
-                Pending Transactions
+            <PopoverContent className="w-fit max-h-80 flex flex-col gap-4 -translate-x-28 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4" sideOffset={6}>
+                Transaction History
                 <hr/>
-                <ul className="flex flex-col gap-4 w-64">
+                <ul className="flex flex-col gap-4 w-64 overflow-auto ">
                     {Object.entries(pendingTransactions[account]).reverse().map(([hash, transaction]) => <TransactionCard key={hash} hash={hash as Address} transaction={transaction} />)}
                 </ul>
             </PopoverContent>
