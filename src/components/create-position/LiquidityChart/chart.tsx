@@ -152,6 +152,8 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         fill = '#cdd1ff'
                     } else if (entry.isCurrent) {
                         fill = '#cd27f0'
+                    } else if (entry.isAfterSwap) {
+                        fill = 'url(#colorUv)'
                     } else if (leftPrice && rightPrice) {
                         if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
                             fill = 'url(#colorUv)'

@@ -3,10 +3,10 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
-import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
+import { BarChart2, BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO, Currency } from "@cryptoalgebra/integral-sdk";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Address } from "wagmi";
@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import MarketDepthChart from "../MarketDepthChart";
+import TicksChart from "../TicksChart";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -49,23 +50,20 @@ const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, curren
 }
 
 const mainnetPoolsMapping: { [key: Address]: Address } = {
-    ['0x89406233d4290f405eabb6f320fd648276b8b5b7']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
-    ['0x9367e79bbc401cec2545b4671a80892a26ae1cd9']: '0x9a772018fbd77fcd2d25657e5c547baff3fd7d16',
-    ['0x9f032424a5a4b0effb7fe4912f3e325c105345bc']: '0x3416cf6c708da44db2624d63ea0aaef7113527c6'
+    ['0x7d2bfee75340767fc0ae49bea7c7378e3eb70949']: '0x4e68ccd3e89f51c3074ca5072bbac773960dfa36', // ETH / USDT
 }
 
 const mainnetTokensMapping: { [key: Address]: Address } = {
-    ['0x20b28b1e4665fff290650586ad76e977eab90c5d']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-    ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    ['0xbc892d5f23d3733cff8986d011ca8ff1249d16ca']: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    [ADDRESS_ZERO]: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH
+    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
+    ['0x7d98346b3b000c55904918e3d9e2fc3f94683b01']: '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
 }
 
 const SwapChart = () => {
 
     const chartRef = useRef<HTMLDivElement>(null);
 
-    const [chartType, setChartType] = useState<SwapChartViewType>(SwapChartView.LINE);
+    const [chartType, setChartType] = useState<SwapChartViewType>(SwapChartView.TICKS);
     const [chartSpan, setChartSpan] = useState<SwapChartSpanType>(SwapChartSpan.DAY);
     const [chartPair, setChartPair] = useState<SwapChartPairType>(SwapChartPair.AB);
 
@@ -295,49 +293,61 @@ const SwapChart = () => {
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
 
-            <Popover open={isPoolSwitcherOpen}>
-                <PopoverTrigger
-                    onMouseDown={() => setIsPoolSwitcherOpen(v => !v)}
-                    className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
-                    <div className="flex items-center gap-4 font-semibold">
-                        <span className="flex">{pairImage}</span>
-                        <span>{pairTitle}</span>
-                    </div>
-                    <div>
-                        <ChevronDownIcon size={20} className={`duration-300 ${isPoolSwitcherOpen ? 'rotate-180' : ''}`} />
-                    </div>
-                </PopoverTrigger>
+            {
+                chartType !== SwapChartView.TICKS ?
+                <Popover open={isPoolSwitcherOpen}>
+                    <PopoverTrigger
+                        onMouseDown={() => setIsPoolSwitcherOpen(v => !v)}
+                        className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
+                        <div className="flex items-center gap-4 font-semibold">
+                            <span className="flex">{pairImage}</span>
+                            <span>{pairTitle}</span>
+                        </div>
+                        <div>
+                            <ChevronDownIcon size={20} className={`duration-300 ${isPoolSwitcherOpen ? 'rotate-180' : ''}`} />
+                        </div>
+                    </PopoverTrigger>
 
-                <PopoverContent
-                    onPointerDownOutside={() => setTimeout(() => setIsPoolSwitcherOpen(false), 0)}
-                    className="bg-card rounded-3xl border border-card-border">
-                    <div className="flex flex-col gap-2 text-white">
-                        {
-                            pairSelectorList?.map((item) => <div
-                                key={`chart-pair-selector-item-${item.pair}`}
-                                className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover duration-200"
-                                onClick={() => {
-                                    setChartPair(item.pair)
-                                    setIsPoolSwitcherOpen(false)
-                                }}>{item.title}</div>)
-                        }
-                    </div>
-                </PopoverContent>
-            </Popover>
+                    <PopoverContent
+                        onPointerDownOutside={() => setTimeout(() => setIsPoolSwitcherOpen(false), 0)}
+                        className="bg-card rounded-3xl border border-card-border w-full">
+                        <div className="flex flex-col gap-2 text-white">
+                            {
+                                pairSelectorList?.map((item) => <div
+                                    key={`chart-pair-selector-item-${item.pair}`}
+                                    className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover duration-200"
+                                    onClick={() => {
+                                        setChartPair(item.pair)
+                                        setIsPoolSwitcherOpen(false)
+                                    }}>{item.title}</div>)
+                            }
+                        </div>
+                    </PopoverContent>
+                </Popover>
+                :
+                <div></div>
+            }
             <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
+               {chartType !== SwapChartView.TICKS &&
+               <>
+                    <div className="flex gap-2">
+                        <Button variant={chartSpan === SwapChartSpan.DAY ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.DAY)}>
+                            1D
+                        </Button>
+                        <Button variant={chartSpan === SwapChartSpan.WEEK ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.WEEK)}>
+                            1W
+                        </Button>
+                        <Button variant={chartSpan === SwapChartSpan.MONTH ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.MONTH)}>
+                            1M
+                        </Button>
+                    </div>
+                    <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                </>
+                }
                 <div className="flex gap-2">
-                    <Button variant={chartSpan === SwapChartSpan.DAY ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.DAY)}>
-                        1D
+                    <Button variant={chartType === SwapChartView.TICKS ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.TICKS)}>
+                        <BarChart2 size={20} />
                     </Button>
-                    <Button variant={chartSpan === SwapChartSpan.WEEK ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.WEEK)}>
-                        1W
-                    </Button>
-                    <Button variant={chartSpan === SwapChartSpan.MONTH ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.MONTH)}>
-                        1M
-                    </Button>
-                </div>
-                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
-                <div className="flex gap-2">
                     <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
                         <LineChartIcon size={20} />
                     </Button>
@@ -368,28 +378,36 @@ const SwapChart = () => {
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
 
-            <div className="flex items-center justify-center w-full h-full" ref={chartRef}></div>
+            {chartType === SwapChartView.TICKS && tokenA && tokenB && poolAddress && <TicksChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolAddress} />}
 
-            <div className="absolute right-0 top-0 flex flex-col items-end w-full text-3xl text-right">
-                {chartCreated ? <>
-                    <div className="text-3xl font-bold">
-                        <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
-                        <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
-                    </div>
-                    <div className="text-[#b7b7b7] text-sm">
-                        {displayValue ? displayDate : null}
-                    </div>
-                </> : <>
-                    <Skeleton className="w-[150px] h-[38px] bg-card" />
-                    <Skeleton className="w-[60px] h-[18px] bg-card mt-[2px]" />
-                </>}
-            </div>
-            
-            {!chartCreated ? (
-                <div className="flex items-center justify-center absolute w-full h-full">
-                    <Loader />
+            {chartType !== SwapChartView.TICKS && 
+            <>
+
+                <div className="flex items-center justify-center w-full h-full" ref={chartRef}></div>
+
+                <div className="absolute right-0 top-0 flex flex-col items-end w-full text-3xl text-right">
+                    {chartCreated ? <>
+                        <div className="text-3xl font-bold">
+                            <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
+                            <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
+                        </div>
+                        <div className="text-[#b7b7b7] text-sm">
+                            {displayValue ? displayDate : null}
+                        </div>
+                    </> : <>
+                        <Skeleton className="w-[150px] h-[38px] bg-card" />
+                        <Skeleton className="w-[60px] h-[18px] bg-card mt-[2px]" />
+                    </>}
                 </div>
-            ) : null}
+                
+                {!chartCreated ? (
+                    <div className="flex items-center justify-center absolute w-full h-full">
+                        <Loader />
+                    </div>
+                ) : null}
+            
+            </>
+            }
 
         </div>
     </div>

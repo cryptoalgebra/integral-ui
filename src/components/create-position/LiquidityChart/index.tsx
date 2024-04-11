@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MAX_UINT128 } from "@/constants/max-uint128";
+import { useDerivedSwapInfo } from "@/state/swapStore";
 
 interface LiquidityChartProps {
     currencyA: Currency | undefined;
@@ -24,6 +25,8 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
     const [processedData, setProcessedData] = useState<any>(null)
 
     const [zoom, setZoom] = useState(50)
+
+    const { tickAfterSwap } = useDerivedSwapInfo();
 
     const {
         fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },
@@ -45,6 +48,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
                 ticksResult.ticksProcessed.map(async (t, i) => {
                     const active = t.tickIdx === ticksResult.activeTickIdx
                     const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(t.tickIdx)
+                    const afterSwap = tickAfterSwap && tickAfterSwap <= t.tickIdx && t.tickIdx <= ticksResult.activeTickIdx
                     const mockTicks = [
                         {
                             index: Number(t.tickIdx) - Number(ticksResult.tickSpacing),
@@ -80,6 +84,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
                     return {
                         index: i,
                         isCurrent: active,
+                        isAfterSwap: afterSwap,
                         activeLiquidity: parseFloat(t.liquidityActive.toString()),
                         price0: parseFloat(t.price0),
                         price1: parseFloat(t.price1),
@@ -92,7 +97,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
         }
 
         processTicks()
-    }, [ticksResult])
+    }, [ticksResult, tickAfterSwap])
 
     useEffect(() => {
 
