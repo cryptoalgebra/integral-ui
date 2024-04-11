@@ -83,8 +83,7 @@ const ActiveFarming = ({
         address: farming.farming.virtualPool,
     })
 
-    const rewardRate = rates ? rates[0] : 0n;
-    const bonusRewardRate = rates ? rates[1] : 0n;
+    const [rewardRate, bonusRewardRate] = rates || [0n, 0n];
 
     const rewardRatePerDay =
         Number(
