@@ -1,5 +1,5 @@
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
-import { useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated";
 import { useEffect, useMemo, useState } from "react";
@@ -113,7 +113,14 @@ export function useSwapCallback(
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
 
-    const { isLoading, isSuccess } = useTransitionAwait(swapData?.hash, `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol} `)
+    const { isLoading, isSuccess } = useTransitionAwait(
+        swapData?.hash,
+        `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol}`,
+        "",
+        "",
+        trade?.inputAmount.currency.wrapped.address as Address,
+        trade?.outputAmount.currency.wrapped.address as Address
+    )
 
     return useMemo(() => {
 

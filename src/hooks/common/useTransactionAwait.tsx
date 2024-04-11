@@ -1,9 +1,10 @@
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
+import { usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Address, useWaitForTransaction } from 'wagmi';
+import { Address, useAccount, useWaitForTransaction } from 'wagmi';
 
 export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     hash ? (
@@ -25,28 +26,36 @@ export function useTransitionAwait(
     hash: Address | undefined,
     title: string,
     description?: string,
-    redirectPath?: string
+    redirectPath?: string,
+    tokenA?: Address,
+    tokenB?: Address
 ) {
     const { toast } = useToast();
 
     const navigate = useNavigate();
+
+    const { address: account } = useAccount();
+
+    const { actions: { addPendingTransaction, updatePendingTransaction } } = usePendingTransactionsStore();
 
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash,
     });
 
     useEffect(() => {
-        if (isLoading) {
+        if (isLoading && hash && account) {
             toast({
                 title: title,
                 description: description || 'Transaction was sent',
                 action: <ViewTxOnExplorer hash={hash} />,
             });
+            addPendingTransaction(account, hash);
+            updatePendingTransaction(account, hash, { data: { title, description, tokenA, tokenB }, loading: true, success: null, error: null });
         }
-    }, [isLoading]);
+    }, [isLoading, hash, account]);
 
     useEffect(() => {
-        if (isLoading) {
+        if (isError && hash) {
             toast({
                 title: title,
                 description: description || 'Transaction failed',
@@ -56,7 +65,7 @@ export function useTransitionAwait(
     }, [isError]);
 
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess && hash) {
             toast({
                 title: title,
                 description: description || 'Transaction confirmed',

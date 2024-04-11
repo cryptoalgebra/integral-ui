@@ -22,7 +22,7 @@ import {
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
 import { useEffect, useMemo } from 'react';
-import { useAccount, useContractWrite } from 'wagmi';
+import { Address, useAccount, useContractWrite } from 'wagmi';
 
 interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -127,7 +127,11 @@ export const IncreaseLiquidityButton = ({
     const { isLoading: isIncreaseLiquidityLoading, isSuccess } =
         useTransitionAwait(
             increaseLiquidityData?.hash,
-            `Add Liquidity to #${tokenId}`
+            `Add Liquidity to #${tokenId}`,
+            "",
+            "",
+            baseCurrency?.wrapped.address as Address,
+            quoteCurrency?.wrapped.address as Address
         );
 
     useEffect(() => {

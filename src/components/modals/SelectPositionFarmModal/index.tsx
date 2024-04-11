@@ -35,7 +35,11 @@ export function SelectPositionFarmModal({
 
     const { approved, isLoading: isApproving } = useFarmCheckApprove(tokenId);
 
-    const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
+    const { isLoading: isApproveLoading, onApprove } = useFarmApprove(
+        tokenId,
+        farming.farming.rewardToken,
+        farming.farming.bonusRewardToken
+    );
 
     const { isLoading: isStakeLoading, onStake } = useFarmStake({
         tokenId,

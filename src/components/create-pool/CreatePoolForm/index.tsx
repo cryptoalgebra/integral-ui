@@ -81,7 +81,9 @@ const CreatePoolForm = () => {
         createPoolData?.hash,
         'Create Pool',
         '',
-        '/pools'
+        '/pools',
+        currencyA?.wrapped.address as Address,
+        currencyB?.wrapped.address as Address
     );
 
     useEffect(() => {

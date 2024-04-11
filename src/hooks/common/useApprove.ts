@@ -31,7 +31,13 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 
     const { data: approvalData, writeAsync: approve } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(approvalData?.hash, `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`)
+    const { isLoading, isSuccess } = useTransitionAwait(
+        approvalData?.hash,
+        `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`,
+        "",
+        "",
+        token?.address as Address
+    )
 
     return {
         approvalState: isLoading ? ApprovalState.PENDING : isSuccess && approvalState === ApprovalState.APPROVED ? ApprovalState.APPROVED : approvalState,

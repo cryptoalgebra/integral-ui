@@ -7,7 +7,7 @@ import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { NonfungiblePositionManager } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
-import { useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 
 interface CollectFeesProps {
     mintInfo: IDerivedMintInfo;
@@ -49,7 +49,14 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
 
     const { data: collectData, write: collect } = useContractWrite(collectConfig)
 
-    const { isLoading } = useTransitionAwait(collectData?.hash, 'Collect fees')
+    const { isLoading } = useTransitionAwait(
+        collectData?.hash,
+        'Collect fees',
+        '',
+        '',
+        mintInfo.currencies.CURRENCY_A?.wrapped.address as Address,
+        mintInfo.currencies.CURRENCY_B?.wrapped.address as Address
+    )
     
     const collectedFees = positionFeesUSD === '$0' && !zeroRewards ? '< $0.001' : positionFeesUSD
 
