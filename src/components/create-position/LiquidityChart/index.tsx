@@ -34,18 +34,14 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
 
     useEffect(() => {
         if (!currencyA || !currencyB) return
-        fetchTicksSurroundingPrice(currencyA, currencyB).then(e => console.log(e))
+        fetchTicksSurroundingPrice(currencyA, currencyB)
     }, [currencyA, currencyB])
 
     useEffect(() => {
         if (!ticksResult || !ticksResult.ticksProcessed) return
 
-        processTicks(ticksResult, currencyA, currencyB, tickAfterSwap)
+        processTicks(ticksResult, tickAfterSwap)
             .then((data) => setProcessedData(data))
-            .catch(() => {
-                processTicks(ticksResult, currencyB, currencyA, tickAfterSwap, true)
-                    .then((data) => setProcessedData(data))
-            })
     }, [ticksResult, tickAfterSwap])
 
     useEffect(() => {
