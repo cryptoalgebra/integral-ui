@@ -6,7 +6,7 @@ import { useSwapChart } from "@/hooks/swap/useSwapChart";
 import { BarChart2, BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { ADDRESS_ZERO, Currency } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Address } from "wagmi";
@@ -16,6 +16,8 @@ import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import MarketDepthChart from "../MarketDepthChart";
 import TicksChart from "../TicksChart";
+import { useDerivedMintInfo } from "@/state/mintStore";
+import PresetTabs from "@/components/create-position/PresetTabs";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -70,6 +72,8 @@ const SwapChart = () => {
     const { currencies, poolAddress: poolId } = useDerivedSwapInfo();
 
     const [tokenA, tokenB] = [currencies.INPUT?.wrapped, currencies.OUTPUT?.wrapped];
+
+    const mintInfo = useDerivedMintInfo(tokenA, tokenB, poolId, INITIAL_POOL_FEE, tokenA, undefined);
 
     const [chartCreated, setChart] = useState<any | undefined>();
     const [series, setSeries] = useState<LightWeightCharts.ISeriesApi<"Area" | "Candlestick"> | undefined>();
@@ -325,7 +329,7 @@ const SwapChart = () => {
                     </PopoverContent>
                 </Popover>
                 :
-                <div></div>
+                <PresetTabs currencyA={tokenA} currencyB={tokenB} mintInfo={mintInfo} />
             }
             <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
                {chartType !== SwapChartView.TICKS &&
@@ -378,7 +382,7 @@ const SwapChart = () => {
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
 
-            {chartType === SwapChartView.TICKS && tokenA && tokenB && poolAddress && <TicksChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolAddress} />}
+            {chartType === SwapChartView.TICKS && tokenA && tokenB && poolId && <TicksChart currencyA={tokenA} currencyB={tokenB} />}
 
             {chartType !== SwapChartView.TICKS && 
             <>

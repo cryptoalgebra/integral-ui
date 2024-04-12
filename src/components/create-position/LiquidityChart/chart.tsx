@@ -11,6 +11,7 @@ interface CustomBarProps {
     fill: string;
     percent: number | undefined;
     isCurrent: boolean;
+    isAfterSwapTick: boolean;
 }
 
 interface CustomTooltipProps {
@@ -38,10 +39,11 @@ const CustomBar = ({
     height,
     fill,
     percent,
-    isCurrent
+    isCurrent,
+    isAfterSwapTick
 }: CustomBarProps) => {
     return (
-        <g>
+        <g className='group'>
             <defs>
                 <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='100%'>
                     <stop offset='0' stopColor='#2797ff' />
@@ -49,12 +51,13 @@ const CustomBar = ({
                 </linearGradient>
             </defs>
             {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
-            {isCurrent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {isCurrent && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {isAfterSwapTick && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
     )
 }
-
+    
 const CustomTooltip = ({
     props,
     currencyA,
@@ -130,6 +133,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                 dataKey="activeLiquidity"
                 fill="#2172E5"
                 isAnimationActive={false}
+                className=''
                 shape={(props) => {
                     const price = props[isSorted ? 'price0' : 'price1']
                     let percent = 0
@@ -139,7 +143,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         percent = (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
                     }
 
-                    return <CustomBar height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} />
+                    return <CustomBar key={props.index} height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} isAfterSwapTick={props.isAfterSwapTick} />
                 }}
             >
                 {formattedData?.map((entry: any, index: number) => {
@@ -152,12 +156,15 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         fill = '#cdd1ff'
                     } else if (entry.isCurrent) {
                         fill = '#cd27f0'
-                    } else if (entry.isAfterSwap) {
-                        fill = 'url(#colorUv)'
                     } else if (leftPrice && rightPrice) {
                         if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
                             fill = 'url(#colorUv)'
                         }
+                    } else if (entry.isAfterSwapRange) {
+                        fill = 'url(#colorUv)'
+                    }
+                    if (entry.isAfterSwapTick) {
+                        fill = 'orange'
                     }
 
                     return <Cell key={`cell-${index}`} fill={fill} />
