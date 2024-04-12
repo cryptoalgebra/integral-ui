@@ -4,9 +4,10 @@ import { useSwapCallArguments } from "./useSwapCallArguments";
 import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
-import { useTransitionAwait } from "../common/useTransactionAwait";
+import { useTransactionAwait } from "../common/useTransactionAwait";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { ApprovalStateType } from "@/types/approve-state";
+import { TransactionType } from "@/state/pendingTransactionsStore";
 
 interface SwapCallEstimate {
     calldata: string
@@ -113,13 +114,14 @@ export function useSwapCallback(
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
 
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         swapData?.hash,
-        `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol}`,
-        "",
-        "",
-        trade?.inputAmount.currency.wrapped.address as Address,
-        trade?.outputAmount.currency.wrapped.address as Address
+        {
+            title: `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol}`,
+            tokenA: trade?.inputAmount.currency.wrapped.address as Address,
+            tokenB: trade?.outputAmount.currency.wrapped.address as Address,
+            type: TransactionType.SWAP
+        }
     )
 
     return useMemo(() => {

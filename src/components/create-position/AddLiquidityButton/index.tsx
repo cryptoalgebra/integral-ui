@@ -7,8 +7,9 @@ import {
 } from '@/constants/default-chain-id';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useApprove } from '@/hooks/common/useApprove';
-import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
+import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
 import { IDerivedMintInfo } from '@/state/mintStore';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import {
@@ -118,13 +119,15 @@ export const AddLiquidityButton = ({
     const { data: addLiquidityData, write: addLiquidity } =
         useContractWrite(addLiquidityConfig);
 
-    const { isLoading: isAddingLiquidityLoading } = useTransitionAwait(
+    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
         addLiquidityData?.hash,
-        'Add liquidity',
-        '',
-        `/pool/${poolAddress}`,
-        baseCurrency?.wrapped.address as Address,
-        quoteCurrency?.wrapped.address as Address
+        {
+            title: 'Add liquidity',
+            tokenA: baseCurrency?.wrapped.address as Address,
+            tokenB: quoteCurrency?.wrapped.address as Address,
+            type: TransactionType.POOL,
+        },
+        `/pool/${poolAddress}`
     );
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
