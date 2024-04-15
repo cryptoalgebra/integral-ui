@@ -18,6 +18,7 @@ import MarketDepthChart from "../MarketDepthChart";
 import TicksChart from "../TicksChart";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import PresetTabs from "@/components/create-position/PresetTabs";
+import { PoolState } from "@/hooks/pools/usePool";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -91,6 +92,9 @@ const SwapChart = () => {
     const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
     const [isPoolSwitcherOpen, setIsPoolSwitcherOpen] = useState(false)
 
+    const isPoolExists = mintInfo.poolState === PoolState.EXISTS;
+
+    const isPoolEmpty = isPoolExists && mintInfo.noLiquidity;
 
     useEffect(() => {
         setChart(undefined);
@@ -329,6 +333,9 @@ const SwapChart = () => {
                     </PopoverContent>
                 </Popover>
                 :
+                isPoolEmpty || !isPoolExists ?
+                <div></div>
+                :
                 <PresetTabs currencyA={tokenA} currencyB={tokenB} mintInfo={mintInfo} />
             }
             <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
@@ -382,7 +389,11 @@ const SwapChart = () => {
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
 
-            {chartType === SwapChartView.TICKS && tokenA && tokenB && poolId && <TicksChart currencyA={tokenA} currencyB={tokenB} />}
+            {chartType === SwapChartView.TICKS && !isPoolExists && <div>Pool doesn't exists.</div>}
+
+            {chartType === SwapChartView.TICKS && isPoolEmpty &&  <div>Pool is empty.</div>}
+
+            {chartType === SwapChartView.TICKS && isPoolExists && !isPoolEmpty && tokenA && tokenB && <TicksChart currencyA={tokenA} currencyB={tokenB} />}
 
             {chartType !== SwapChartView.TICKS && 
             <>

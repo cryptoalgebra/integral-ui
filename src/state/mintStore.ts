@@ -284,7 +284,7 @@ export function useDerivedMintInfo(
 
     const [poolState, pool] = usePool(poolAddress as Address);
 
-    const noLiquidity = poolState === PoolState.NOT_EXISTS;
+    const noLiquidity = pool?.liquidity.toString() === '0';
 
     const dynamicFee = pool ? pool.fee : 100;
 
