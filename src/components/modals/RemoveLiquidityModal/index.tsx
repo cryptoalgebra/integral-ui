@@ -156,30 +156,14 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                 <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
 
                 <div className="flex gap-2">
-                    <Button
-                        disabled={isRemoveLoading}
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([25])}>25%</Button>
-                    <Button
-                        disabled={isRemoveLoading}
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([50])}>50%</Button>
-                    <Button
-                        disabled={isRemoveLoading}
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([75])}>75%</Button>
-                    <Button
-                        disabled={isRemoveLoading}
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([100])}>100%</Button>
+                    {[25, 50, 75, 100].map((v) => (
+                        <Button
+                            disabled={isRemoveLoading}
+                            variant={'icon'}
+                            className="border border-card-border"
+                            size={'sm'}
+                            onClick={() => setSliderValue([v])}>{v}%</Button>
+                    ))}
                 </div>
 
                 <Slider
