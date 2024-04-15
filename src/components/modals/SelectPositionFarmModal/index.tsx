@@ -85,12 +85,12 @@ export function SelectPositionFarmModal({
                 style={{ borderRadius: '32px' }}
             >
                 <DialogHeader>
-                    <DialogTitle className="font-bold select-none mt-2 max-md:mx-auto">
+                    <DialogTitle className="font-bold select-none my-2 max-md:mx-auto">
                         Select Position
                     </DialogTitle>
                 </DialogHeader>
 
-                <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 my-4 overflow-auto">
+                <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 overflow-auto">
                     {availablePositions.length > 0 ? (
                         availablePositions.map((position) => {
                             const currentFormattedPosition = positionsData.find(
@@ -125,7 +125,7 @@ export function SelectPositionFarmModal({
                         </h3>
                     )}
                 </ul>
-                <div className="w-full flex gap-4">
+                <div className="w-full flex gap-4 mt-2">
                     {isApproving ? (
                         <Button disabled className="w-full">
                             Checking Approval...
