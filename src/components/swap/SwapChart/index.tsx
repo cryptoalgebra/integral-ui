@@ -3,7 +3,7 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
-import { BarChart2, BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
+import { BarChart3, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
@@ -18,7 +18,6 @@ import TicksChart from "../TicksChart";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import { PoolState } from "@/hooks/pools/usePool";
 import TicksZoomBar from "../TicksZoomBar";
-import MarketDepthChart from "../MarketDepthChart";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -91,7 +90,7 @@ const SwapChart = () => {
     const poolAddress = poolId ? mainnetPoolsMapping[poolId] : '';
     const tokenAddress = chartPair === SwapChartPair.A && tokenA ? mainnetTokensMapping[tokenA.address.toLowerCase() as Address] : tokenB ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address] : '';
 
-    const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
+    // const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
     const [isPoolSwitcherOpen, setIsPoolSwitcherOpen] = useState(false)
 
     const isPoolExists = mintInfo.poolState === PoolState.EXISTS;
@@ -299,7 +298,7 @@ const SwapChart = () => {
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
-        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} />
+        {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} /> */}
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
 
@@ -361,7 +360,7 @@ const SwapChart = () => {
                 }
                 <div className="flex gap-2">
                     <Button variant={chartType === SwapChartView.TICKS ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.TICKS)}>
-                        <BarChart2 size={20} />
+                        <BarChart3 size={20} />
                     </Button>
                     <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
                         <LineChartIcon size={20} />
@@ -378,7 +377,7 @@ const SwapChart = () => {
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                {/* <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 <HoverCard>
                     <HoverCardTrigger>
                         <Button variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
@@ -388,7 +387,7 @@ const SwapChart = () => {
                     <HoverCardContent>
                         <div className="font-bold">Market Depth</div>
                     </HoverCardContent>
-                </HoverCard>
+                </HoverCard> */}
             </div>
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
