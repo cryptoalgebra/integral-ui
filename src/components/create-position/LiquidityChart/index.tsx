@@ -4,9 +4,9 @@ import { Presets } from "@/types/presets";
 import { Token, Price, Currency } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useDerivedSwapInfo } from "@/state/swapStore";
 import { processTicks } from "@/utils/swap/processTicks";
+import { TicksChartLoader } from "@/components/common/TicksChartLoader";
 
 interface LiquidityChartProps {
     currencyA?: Currency;
@@ -16,15 +16,13 @@ interface LiquidityChartProps {
     priceUpper?: Price<Token, Token>;
 }
 
-// const ZOOM_STEP = 5
-
 const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceUpper }: LiquidityChartProps) => {
 
     const { preset } = useMintState()
 
     const [processedData, setProcessedData] = useState<any>(null)
 
-    const [zoom, setZoom] = useState(50)
+    const [zoom, setZoom] = useState<number>(50)
 
     const { tickAfterSwap } = useDerivedSwapInfo();
 
@@ -87,12 +85,6 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
     const rightPrice = useMemo(() => {
         return isSorted ? priceUpper?.toSignificant(18) : priceLower?.invert().toSignificant(18)
     }, [isSorted, priceLower, priceUpper])
-    
-    // const isZoomMin = zoom - ZOOM_STEP <= 10
-    // const isZoomMax = zoom + ZOOM_STEP > 40
-
-    // const handleZoomIn = () => setZoom((zoom) => zoom + ZOOM_STEP)
-    // const handleZoomOut = () => setZoom((zoom) => zoom - ZOOM_STEP)
 
     return <div className="flex w-full h-full">
 
@@ -105,25 +97,9 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
             zoom={zoom} 
             currencyA={currencyA} 
             currencyB={currencyB}
-         /> : <LiquidityChartLoader /> }
+         /> : <TicksChartLoader /> }
     </div>
 
 }
-
-const LiquidityChartLoader = () => <div className="flex items-end gap-4 w-full h-[250px]">
-    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[130px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[160px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[130px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[160px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[200px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[140px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[130px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[140px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[120px] bg-card-light" />
-    <Skeleton className="w-[40px] h-[190px] bg-card-light" />
-</div>
 
 export default LiquidityChart;

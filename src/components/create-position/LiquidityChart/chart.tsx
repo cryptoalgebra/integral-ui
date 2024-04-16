@@ -23,12 +23,12 @@ interface CustomTooltipProps {
 
 interface ChartProps {
     formattedData: any;
-    currencyA: Currency | undefined;
-    currencyB: Currency | undefined;
-    leftPrice: string | undefined;
-    rightPrice: string | undefined;
-    currentPrice: number | undefined;
-    isSorted: boolean | undefined;
+    currencyA?: Currency;
+    currencyB?: Currency;
+    leftPrice?: string;
+    rightPrice?: string;
+    currentPrice?: number;
+    isSorted?: boolean;
     zoom: number;
 }
 
@@ -133,7 +133,6 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                 dataKey="activeLiquidity"
                 fill="#2172E5"
                 isAnimationActive={false}
-                className=''
                 shape={(props) => {
                     const price = props[isSorted ? 'price0' : 'price1']
                     let percent = 0

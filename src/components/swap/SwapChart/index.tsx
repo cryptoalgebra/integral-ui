@@ -3,7 +3,7 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
-import { BarChart2, BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
+import { BarChart2, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
@@ -14,11 +14,10 @@ import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import MarketDepthChart from "../MarketDepthChart";
 import TicksChart from "../TicksChart";
 import { useDerivedMintInfo } from "@/state/mintStore";
-import PresetTabs from "@/components/create-position/PresetTabs";
 import { PoolState } from "@/hooks/pools/usePool";
+import TicksZoomBar from "../TicksZoomBar";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -69,6 +68,8 @@ const SwapChart = () => {
     const [chartType, setChartType] = useState<SwapChartViewType>(SwapChartView.TICKS);
     const [chartSpan, setChartSpan] = useState<SwapChartSpanType>(SwapChartSpan.DAY);
     const [chartPair, setChartPair] = useState<SwapChartPairType>(SwapChartPair.AB);
+
+    const [ticksChartZoom, setTicksChartZoom] = useState<number>(50);
 
     const { currencies, poolAddress: poolId } = useDerivedSwapInfo();
 
@@ -297,7 +298,7 @@ const SwapChart = () => {
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
-        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} />
+        {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} /> */}
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
 
@@ -333,14 +334,16 @@ const SwapChart = () => {
                     </PopoverContent>
                 </Popover>
                 :
-                isPoolEmpty || !isPoolExists ?
                 <div></div>
-                :
-                <PresetTabs currencyA={tokenA} currencyB={tokenB} mintInfo={mintInfo} />
             }
             <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
-               {chartType !== SwapChartView.TICKS &&
-               <>
+                {chartType === SwapChartView.TICKS ?
+                <>
+                    <TicksZoomBar zoom={ticksChartZoom} onZoom={setTicksChartZoom} />
+                    <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                </>
+                :
+                <>
                     <div className="flex gap-2">
                         <Button variant={chartSpan === SwapChartSpan.DAY ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartSpan(SwapChartSpan.DAY)}>
                             1D
@@ -374,7 +377,7 @@ const SwapChart = () => {
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                {/* <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 <HoverCard>
                     <HoverCardTrigger>
                         <Button variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
@@ -384,16 +387,16 @@ const SwapChart = () => {
                     <HoverCardContent>
                         <div className="font-bold">Market Depth</div>
                     </HoverCardContent>
-                </HoverCard>
+                </HoverCard> */}
             </div>
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
 
             {chartType === SwapChartView.TICKS && !isPoolExists && <div>Pool doesn't exists.</div>}
 
-            {chartType === SwapChartView.TICKS && isPoolEmpty &&  <div>Pool is empty.</div>}
+            {chartType === SwapChartView.TICKS && isPoolEmpty &&  <div className="my-auto">Pool has no liquidity.</div>}
 
-            {chartType === SwapChartView.TICKS && isPoolExists && !isPoolEmpty && tokenA && tokenB && <TicksChart currencyA={tokenA} currencyB={tokenB} />}
+            {chartType === SwapChartView.TICKS && isPoolExists && !isPoolEmpty && tokenA && tokenB && <TicksChart currencyA={tokenA} currencyB={tokenB} zoom={ticksChartZoom} />}
 
             {chartType !== SwapChartView.TICKS && 
             <>
