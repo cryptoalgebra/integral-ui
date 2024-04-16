@@ -89,42 +89,43 @@ export function SelectPositionFarmModal({
                         Select Position
                     </DialogTitle>
                 </DialogHeader>
-
-                <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 overflow-auto">
-                    {availablePositions.length > 0 ? (
-                        availablePositions.map((position) => {
-                            const currentFormattedPosition = positionsData.find(
-                                (fposition) =>
-                                    Number(fposition.id) === Number(position.id)
-                            );
-                            if (!currentFormattedPosition) return;
-                            return (
-                                <FarmingPositionCard
-                                    key={position.id}
-                                    className={cn(
-                                        'w-full row-span-1 col-span-1',
-                                        selectedPosition?.id === position.id
-                                            ? 'border-primary-button hover:border-primary-button'
-                                            : ''
-                                    )}
-                                    onClick={() =>
-                                        handleSelectPosition(position)
-                                    }
-                                    position={position}
-                                    status={
-                                        currentFormattedPosition.outOfRange
-                                            ? 'Out of range'
-                                            : 'In range'
-                                    }
-                                />
-                            );
-                        })
-                    ) : (
-                        <h3 className="mx-auto col-span-2">
-                            You don't have available positions for this pool
-                        </h3>
-                    )}
-                </ul>
+                <div className='py-1'>
+                    <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 overflow-auto">
+                        {availablePositions.length > 0 ? (
+                            availablePositions.map((position) => {
+                                const currentFormattedPosition = positionsData.find(
+                                    (fposition) =>
+                                        Number(fposition.id) === Number(position.id)
+                                );
+                                if (!currentFormattedPosition) return;
+                                return (
+                                    <FarmingPositionCard
+                                        key={position.id}
+                                        className={cn(
+                                            'w-full row-span-1 col-span-1',
+                                            selectedPosition?.id === position.id
+                                                ? 'border-primary-button hover:border-primary-button'
+                                                : ''
+                                        )}
+                                        onClick={() =>
+                                            handleSelectPosition(position)
+                                        }
+                                        position={position}
+                                        status={
+                                            currentFormattedPosition.outOfRange
+                                                ? 'Out of range'
+                                                : 'In range'
+                                        }
+                                    />
+                                );
+                            })
+                        ) : (
+                            <h3 className="mx-auto col-span-2">
+                                You don't have available positions for this pool
+                            </h3>
+                        )}
+                    </ul>
+                </div>
                 <div className="w-full flex gap-4 mt-2">
                     {isApproving ? (
                         <Button disabled className="w-full">
