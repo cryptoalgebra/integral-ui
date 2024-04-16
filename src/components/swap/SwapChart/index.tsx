@@ -3,7 +3,7 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
-import { BarChart2, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
+import { BarChart2, BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
@@ -18,6 +18,7 @@ import TicksChart from "../TicksChart";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import { PoolState } from "@/hooks/pools/usePool";
 import TicksZoomBar from "../TicksZoomBar";
+import MarketDepthChart from "../MarketDepthChart";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -298,7 +299,7 @@ const SwapChart = () => {
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
-        {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} /> */}
+        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} />
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
 
@@ -338,10 +339,10 @@ const SwapChart = () => {
             }
             <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
                 {chartType === SwapChartView.TICKS ?
-                <>
+                <div className="flex gap-2">
                     <TicksZoomBar zoom={ticksChartZoom} onZoom={setTicksChartZoom} />
                     <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
-                </>
+                </div>
                 :
                 <>
                     <div className="flex gap-2">
@@ -377,7 +378,7 @@ const SwapChart = () => {
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                {/* <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
+                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 <HoverCard>
                     <HoverCardTrigger>
                         <Button variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
@@ -387,7 +388,7 @@ const SwapChart = () => {
                     <HoverCardContent>
                         <div className="font-bold">Market Depth</div>
                     </HoverCardContent>
-                </HoverCard> */}
+                </HoverCard>
             </div>
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>

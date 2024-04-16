@@ -36,11 +36,12 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
     }, [currencyA, currencyB])
 
     useEffect(() => {
+        if (!currencyA || !currencyB) return
         if (!ticksResult || !ticksResult.ticksProcessed) return
 
-        processTicks(ticksResult, tickAfterSwap)
+        processTicks(currencyA, currencyB, ticksResult, tickAfterSwap)
             .then((data) => setProcessedData(data))
-    }, [ticksResult, tickAfterSwap])
+    }, [ticksResult, tickAfterSwap, currencyA, currencyB])
 
     useEffect(() => {
 

@@ -14,10 +14,10 @@ const TicksZoomBar = ({ zoom, onZoom }: TicksZoomBarProps) => {
     const handleZoomOut = () => zoom > MIN_ZOOM && onZoom(zoom - ZOOM_STEP)
 
     return <>
-        <Button variant="ghost" size='icon' onClick={handleZoomOut}>-</Button>
-        <Button variant="ghost" className="h-10 max-sm:hidden" onClick={() => onZoom(50)}>Common</Button>
-        <Button variant="ghost" className="h-10 max-sm:hidden" onClick={() => onZoom(10)}>Full</Button>
-        <Button variant="ghost" size='icon' onClick={handleZoomIn}>+</Button>
+        <Button variant={zoom === 50 ? "iconActive" : "icon"} className="h-10 max-sm:hidden text-sm" onClick={() => onZoom(50)}>Common</Button>
+        <Button variant={zoom === 10 ? "iconActive" : "icon"} className="h-10 max-sm:hidden text-sm" onClick={() => onZoom(10)}>Full</Button>
+        <Button disabled={zoom <= MIN_ZOOM} variant="icon" className="text-lg pb-0.5" size='icon' onClick={handleZoomOut}>-</Button>
+        <Button disabled={zoom >= MAX_ZOOM} variant="icon" size='icon' className="text-lg pb-0.5" onClick={handleZoomIn}>+</Button>
     </>
 }
 

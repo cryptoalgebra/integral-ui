@@ -2,6 +2,8 @@
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
 import { Currency } from "@cryptoalgebra/integral-sdk";
+import { formatCurrency } from '@/utils/common/formatCurrency';
+import { formatUnits } from 'viem';
 
 interface CustomBarProps {
     x: number;
@@ -63,32 +65,25 @@ const CustomTooltip = ({
     currencyA,
     currencyB,
 }: CustomTooltipProps) => {
-
     const price0 = props?.payload?.[0]?.payload.price0
     const price1 = props?.payload?.[0]?.payload.price1
-    // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
-    // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
+    const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
+    const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
+    const isReversed = props?.payload?.[0]?.payload.isReversed
 
     return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
         <div className="flex gap-4 justify-between">
             <div>{`${currencyA?.symbol} Price:`}</div>
-            <div>{`${price0 ? `${Number(price0).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-            })} ${currencyB?.symbol}` : ''}`}</div>
+            <div>{`${formatCurrency.format(isReversed ? price1 : price0)} ${currencyB?.symbol}`}</div>
         </div>
         <div className="flex gap-4 justify-between">
             <div>{`${currencyB?.symbol} Price:`}</div>
-            <div>{`${price1 ? `${Number(price1).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-            })} ${currencyA?.symbol}` : ''}`}</div>
+            <div>{`${formatCurrency.format(isReversed ? price0 : price1)} ${currencyA?.symbol}`}</div>
         </div>
-        {/* {currentPrice && price0 && currentPrice > price1 ? <div className="flex gap-4 justify-between">
-            <div>{`${currencyA?.symbol} Locked: `}</div>
-            <div>{`${tvlToken0 ? formatNumber(tvlToken0) : ''} ${currencyA?.symbol}`}</div>
-        </div> : <div className="flex gap-4 justify-between">
-            <div>{`${currencyB?.symbol} Locked: `}</div>
-            <div>{`${tvlToken1 ? formatNumber(tvlToken1) : ''} ${currencyB?.symbol}`}</div>
-        </div>} */}
+        <div className="flex gap-4 justify-between">
+            <div>Amount:</div>
+            <div>{`${formatCurrency.format(isReversed ? tvlToken1 : tvlToken0)} ${currencyA?.symbol}`}</div>
+        </div>
     </div>
 }
 

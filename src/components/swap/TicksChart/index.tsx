@@ -19,20 +19,24 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
     const { tickAfterSwap } = useDerivedSwapInfo();
 
     const {
-        fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },
+        fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice, ticksLoading },
     } = useInfoTickData()
 
     useEffect(() => {
-        if (!currencyA || !currencyB) return
+        if (!currencyA || !currencyB || ticksLoading) return
         fetchTicksSurroundingPrice(currencyA, currencyB)
-    }, [currencyA, currencyB])
+    }, [currencyA, currencyB, ticksLoading])
 
     useEffect(() => {
-        if (!ticksResult || !ticksResult.ticksProcessed) return
+        if (!ticksResult || !ticksResult.ticksProcessed || ticksLoading) return
 
-        processTicks(ticksResult, tickAfterSwap)
+        processTicks(currencyA, currencyB, ticksResult, tickAfterSwap)
             .then((data) => setProcessedData(data))
-    }, [ticksResult, tickAfterSwap])
+            .catch(() => {
+                processTicks(currencyB, currencyA, ticksResult, tickAfterSwap)
+                .then((data) => setProcessedData(data))
+            })
+    }, [ticksResult, tickAfterSwap, ticksLoading])
 
     const formattedData = useMemo(() => {
         if (!processedData) return undefined
@@ -48,7 +52,7 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
     
     const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
 
-    return <div className="flex w-full h-full mt-24">
+    return <div className="flex w-full h-full mt-12">
         {formattedData ?  <Chart
             formattedData={formattedData} 
             isSorted={isSorted} 
