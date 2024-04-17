@@ -3,13 +3,13 @@ import {
     FARMING_CENTER,
 } from '@/constants/addresses';
 import { algebraPositionManagerABI } from '@/generated';
-import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransitionAwait } from '../common/useTransactionAwait';
+import { useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { useTransactionAwait } from '../common/useTransactionAwait';
 import { useEffect } from 'react';
 import { useFarmCheckApprove } from './useFarmCheckApprove';
-import { isSameRewards } from '@/utils/farming/isSameRewards';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 
-export function useFarmApprove(tokenId: bigint, rewardToken: Address, bonusRewardToken: Address) {
+export function useFarmApprove(tokenId: bigint) {
     const APPROVE = true;
 
     const { config } = usePrepareContractWrite({
@@ -21,15 +21,13 @@ export function useFarmApprove(tokenId: bigint, rewardToken: Address, bonusRewar
 
     const { data: data, writeAsync: onApprove } = useContractWrite(config);
 
-    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
-
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Approve Position #${tokenId}`,
-        '',
-        '',
-        rewardToken,
-        !isSameReward ? bonusRewardToken : undefined,
+        {
+            title: `Approve Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     const { handleCheckApprove } = useFarmCheckApprove(tokenId);

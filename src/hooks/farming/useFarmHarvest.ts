@@ -2,10 +2,10 @@ import { FARMING_CENTER } from '@/constants/addresses';
 import { farmingCenterABI } from '@/generated';
 import { getRewardsCalldata } from '@/utils/farming/getRewardsCalldata';
 import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransitionAwait } from '../common/useTransactionAwait';
+import { useTransactionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { Deposit } from '@/graphql/generated/graphql';
-import { isSameRewards } from '@/utils/farming/isSameRewards';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 
 export function useFarmHarvest({
     tokenId,
@@ -40,15 +40,13 @@ export function useFarmHarvest({
 
     const { data: data, writeAsync: onHarvest } = useContractWrite(config);
     
-    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
-
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Harvest Position #${tokenId}`,
-        '',
-        '',
-        rewardToken,
-        !isSameReward ? bonusRewardToken : undefined,
+        {
+            title: `Harvest Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     return {
@@ -105,15 +103,13 @@ export function useFarmHarvestAll(
 
     const { data: data, writeAsync: onHarvestAll } = useContractWrite(config);
 
-    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
-
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Harvest All Positions`,
-        '',
-        '',
-        rewardToken,
-        !isSameReward ? bonusRewardToken : undefined,
+        {
+            title: `Harvest All Positions`,
+            type: TransactionType.FARM,
+            tokenId: "0",
+        }
     );
 
     return {

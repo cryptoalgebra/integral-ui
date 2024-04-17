@@ -1,14 +1,14 @@
 import { FARMING_CENTER } from '@/constants/addresses';
 import { farmingCenterABI } from '@/generated';
 import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransitionAwait } from '../common/useTransactionAwait';
+import { useTransactionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
 import { useFarmCheckApprove } from './useFarmCheckApprove';
 import { useEffect, useState } from 'react';
 import { farmingClient } from '@/graphql/clients';
 import { Deposit } from '@/graphql/generated/graphql';
-import { isSameRewards } from '@/utils/farming/isSameRewards';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 
 export function useFarmStake({
     tokenId,
@@ -46,15 +46,13 @@ export function useFarmStake({
 
     const { data: data, writeAsync: onStake } = useContractWrite(config);
 
-    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
-
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Stake Position #${tokenId}`,
-        '',
-        '',
-        rewardToken,
-        !isSameReward ? bonusRewardToken : undefined,
+        {
+            title: `Stake Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     useEffect(() => {
@@ -151,15 +149,13 @@ export function useFarmUnstake({
 
     const { data: data, writeAsync: onUnstake } = useContractWrite(config);
 
-    const isSameReward = isSameRewards(rewardToken, bonusRewardToken)
-
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Unstake Position #${tokenId}`,
-        '',
-        '',
-        rewardToken,
-        !isSameReward ? bonusRewardToken : undefined,
+        {
+            title: `Unstake Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     useEffect(() => {

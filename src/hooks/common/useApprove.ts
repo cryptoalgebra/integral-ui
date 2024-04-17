@@ -1,11 +1,12 @@
+import { formatBalance } from '@/utils/common/formatBalance';
 import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { useNeedAllowance } from "./useNeedAllowance";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 import { useMemo } from "react";
 import { Address, erc20ABI, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { ALGEBRA_ROUTER } from "@/constants/addresses";
-import { useTransitionAwait } from "./useTransactionAwait";
-import { formatCurrency } from "@/utils/common/formatCurrency";
+import { useTransactionAwait } from "./useTransactionAwait";
+import { TransactionType } from "@/state/pendingTransactionsStore";
 
 export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: Address) {
 
@@ -31,12 +32,13 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 
     const { data: approvalData, writeAsync: approve } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         approvalData?.hash,
-        `Approve ${formatCurrency.format(Number(amountToApprove?.toSignificant()))} ${amountToApprove?.currency.symbol}`,
-        "",
-        "",
-        token?.address as Address
+        {
+            title: `Approve ${formatBalance(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
+            tokenA: token?.address as Address,
+            type: TransactionType.SWAP
+        }
     )
 
     return {
