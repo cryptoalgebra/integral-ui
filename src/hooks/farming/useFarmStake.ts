@@ -71,10 +71,8 @@ export function useFarmStake({
                         if (!currentPos) return;
 
                         if (currentPos.eternalFarming !== null) {
-                            query.refetch().then(() => {
-                                setIsQueryLoading(false);
-                                clearInterval(interval);
-                            });
+                            setIsQueryLoading(false);
+                            clearInterval(interval);
                         } else {
                             query.refetch().then();
                         }
@@ -176,10 +174,8 @@ export function useFarmUnstake({
                         if (!currentPos) return;
 
                         if (currentPos.eternalFarming === null) {
-                            query.refetch().then(() => {
-                                setIsQueryLoading(false);
-                                clearInterval(interval);
-                            });
+                            setIsQueryLoading(false);
+                            clearInterval(interval);
                         } else {
                             query.refetch().then();
                         }
