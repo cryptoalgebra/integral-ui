@@ -33,8 +33,8 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
         processTicks(currencyA, currencyB, ticksResult, tickAfterSwap)
             .then((data) => setProcessedData(data))
             .catch(() => {
-                processTicks(currencyB, currencyA, ticksResult, tickAfterSwap)
-                .then((data) => setProcessedData(data))
+                processTicks(currencyB, currencyA, ticksResult, tickAfterSwap, true)
+                .then((reversedData) => setProcessedData(reversedData))
             })
     }, [ticksResult, tickAfterSwap, ticksLoading])
 

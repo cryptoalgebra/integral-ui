@@ -2,21 +2,22 @@ import { MAX_UINT128 } from "@/constants/max-uint128";
 import { TicksResult } from "@/types/ticks-info";
 import { Currency, CurrencyAmount, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk";
 
-export async function processTicks(currencyA: Currency, currencyB: Currency, ticksResult?: TicksResult, tickAfterSwap?: number | null) {
+export async function processTicks(currencyA: Currency, currencyB: Currency, ticksResult?: TicksResult, tickAfterSwap?: number | null, isReversed = false) {
     if (!ticksResult) return;
-
-    const isReversed = tickAfterSwap && tickAfterSwap > ticksResult.activeTickIdx;
 
     const _data = await Promise.all(
         ticksResult.ticksProcessed.map(async (t, i) => {
             const active = t.tickIdx === ticksResult.activeTickIdx;
-            const afterSwapRange = isReversed
-                ? tickAfterSwap >= t.tickIdx && t.tickIdx >= ticksResult.activeTickIdx
-                : tickAfterSwap && tickAfterSwap <= t.tickIdx && t.tickIdx <= ticksResult.activeTickIdx;
+            const nextTickLiquidity = ticksResult.ticksProcessed[i + 1]?.liquidityActive;
+            const prevTickLiquidity = ticksResult.ticksProcessed[i - 1]?.liquidityActive;
 
-            const afterSwapTick = isReversed
-                ? tickAfterSwap + DEFAULT_TICK_SPACING >= t.tickIdx && tickAfterSwap <= t.tickIdx
-                : tickAfterSwap && tickAfterSwap - DEFAULT_TICK_SPACING <= t.tickIdx && tickAfterSwap >= t.tickIdx;
+            const afterSwapRange = tickAfterSwap && 
+                (tickAfterSwap >= t.tickIdx && t.tickIdx >= ticksResult.activeTickIdx
+                    || tickAfterSwap <= t.tickIdx && t.tickIdx <= ticksResult.activeTickIdx);
+
+            const afterSwapTick = tickAfterSwap && 
+                (tickAfterSwap - DEFAULT_TICK_SPACING <= t.tickIdx && tickAfterSwap >= t.tickIdx) 
+                    || (afterSwapRange && nextTickLiquidity === 0n || afterSwapRange && prevTickLiquidity === 0n);
 
             const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(t.tickIdx);
             const mockTicks = [

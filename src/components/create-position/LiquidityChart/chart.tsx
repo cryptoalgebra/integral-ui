@@ -2,8 +2,7 @@
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
 import { Currency } from "@cryptoalgebra/integral-sdk";
-import { formatCurrency } from '@/utils/common/formatCurrency';
-import { formatUnits } from 'viem';
+import { formatBalance } from '@/utils/common/formatBalance';
 
 interface CustomBarProps {
     x: number;
@@ -54,7 +53,7 @@ const CustomBar = ({
             </defs>
             {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
             {isCurrent && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
-            {isAfterSwapTick && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
+            {isAfterSwapTick && !isCurrent && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
     )
@@ -65,24 +64,28 @@ const CustomTooltip = ({
     currencyA,
     currencyB,
 }: CustomTooltipProps) => {
-    const price0 = props?.payload?.[0]?.payload.price0
-    const price1 = props?.payload?.[0]?.payload.price1
-    const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
-    const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
-    const isReversed = props?.payload?.[0]?.payload.isReversed
+    const price0 = Number(props?.payload?.[0]?.payload.price0);
+    const price1 = Number(props?.payload?.[0]?.payload.price1);
+    const formattedPrice0 = price0 < 0.1 ? price0 : price0.toLocaleString();
+    const formattedPrice1 = price1 < 0.1 ? price1 : price1.toLocaleString();
+    
+    const tvlToken0 = String(props?.payload?.[0]?.payload.tvlToken0);
+    const tvlToken1 = String(props?.payload?.[0]?.payload.tvlToken1);
+
+    const isReversed = props?.payload?.[0]?.payload.isReversed;
 
     return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
         <div className="flex gap-4 justify-between">
             <div>{`${currencyA?.symbol} Price:`}</div>
-            <div>{`${formatCurrency.format(isReversed ? price1 : price0)} ${currencyB?.symbol}`}</div>
+            <div>{`${isReversed ? formattedPrice1 : formattedPrice0} ${currencyB?.symbol}`}</div>
         </div>
         <div className="flex gap-4 justify-between">
             <div>{`${currencyB?.symbol} Price:`}</div>
-            <div>{`${formatCurrency.format(isReversed ? price0 : price1)} ${currencyA?.symbol}`}</div>
+            <div>{`${isReversed ? formattedPrice0 : formattedPrice1} ${currencyA?.symbol}`}</div>
         </div>
         <div className="flex gap-4 justify-between">
             <div>Amount:</div>
-            <div>{`${formatCurrency.format(isReversed ? tvlToken1 : tvlToken0)} ${currencyA?.symbol}`}</div>
+            <div>{`${formatBalance(isReversed || isReversed === undefined ? tvlToken1 : tvlToken0)} ${currencyA?.symbol}`}</div>
         </div>
     </div>
 }
@@ -157,7 +160,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     } else if (entry.isAfterSwapRange) {
                         fill = 'url(#colorUv)'
                     }
-                    if (entry.isAfterSwapTick) {
+                    if (entry.isAfterSwapTick && !entry.isCurrent) {
                         fill = 'orange'
                     }
 
