@@ -7,9 +7,10 @@ import {
 } from '@/constants/default-chain-id';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useApprove } from '@/hooks/common/useApprove';
-import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
+import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
 import { usePosition, usePositions } from '@/hooks/positions/usePositions';
 import { IDerivedMintInfo } from '@/state/mintStore';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import {
@@ -125,13 +126,14 @@ export const IncreaseLiquidityButton = ({
         useContractWrite(increaseLiquidityConfig);
 
     const { isLoading: isIncreaseLiquidityLoading, isSuccess } =
-        useTransitionAwait(
+        useTransactionAwait(
             increaseLiquidityData?.hash,
-            `Add Liquidity to #${tokenId}`,
-            "",
-            "",
-            baseCurrency?.wrapped.address as Address,
-            quoteCurrency?.wrapped.address as Address
+            {
+                title: `Add Liquidity to #${tokenId}`,
+                tokenA: baseCurrency?.wrapped.address as Address,
+                tokenB: quoteCurrency?.wrapped.address as Address,
+                type: TransactionType.POOL
+            }
         );
 
     useEffect(() => {
