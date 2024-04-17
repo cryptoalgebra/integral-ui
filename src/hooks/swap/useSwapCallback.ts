@@ -1,3 +1,4 @@
+import { formatBalance } from '@/utils/common/formatBalance';
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { Address, useAccount, useContractWrite } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
@@ -5,7 +6,6 @@ import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated"
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
 import { useTransactionAwait } from "../common/useTransactionAwait";
-import { formatCurrency } from "@/utils/common/formatCurrency";
 import { ApprovalStateType } from "@/types/approve-state";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 
@@ -117,7 +117,7 @@ export function useSwapCallback(
     const { isLoading, isSuccess } = useTransactionAwait(
         swapData?.hash,
         {
-            title: `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol}`,
+            title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
             tokenA: trade?.inputAmount.currency.wrapped.address as Address,
             tokenB: trade?.outputAmount.currency.wrapped.address as Address,
             type: TransactionType.SWAP
