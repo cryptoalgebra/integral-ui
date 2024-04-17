@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
-import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
+import { farmingClient } from "@/graphql/clients";
+import { Deposit } from "@/graphql/generated/graphql";
+import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
+import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
@@ -81,13 +84,14 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig)
 
-    const { isLoading: isRemoveLoading, isSuccess } = useTransitionAwait(
+    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(
         removeLiquidityData?.hash,
-        'Remove liquidity',
-        '',
-        '',
-        position?.token0 as Address,
-        position?.token1 as Address
+        {
+            title: 'Removing liquidity',
+            tokenA: position?.token0 as Address,
+            tokenB: position?.token1 as Address,
+            type: TransactionType.POOL
+        }
     )
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity
@@ -104,8 +108,38 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     useEffect(() => {
         if (!isSuccess) return;
+        let interval: NodeJS.Timeout;
+
+        /* pool positions refetch */
         Promise.all([refetchPosition(), refetchAllPositions()])
-            .then(() => handleCloseModal?.());
+
+        /* farming deposits refetch */
+            .then(() => {
+                handleCloseModal?.();
+                if(sliderValue[0] !== 100) return;
+                interval = setInterval(
+                    () =>
+                        farmingClient.refetchQueries({
+                            include: ['Deposits'],
+                            onQueryUpdated: (query, { result: diff }) => {
+                                const currentPos = diff.deposits.find(
+                                    (deposit: Deposit) =>
+                                        deposit.id.toString() === positionId.toString()
+                                );
+                                if (!currentPos) return;
+
+                                if (currentPos.eternalFarming === null) {
+                                    clearInterval(interval);
+                                } else {
+                                    query.refetch().then();
+                                }
+                            },
+                        }),
+                    2000
+                );
+            });
+
+        return () => clearInterval(interval);
     }, [isSuccess]);
 
     return <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -122,26 +156,15 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                 <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
 
                 <div className="flex gap-2">
-                    <Button
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([25])}>25%</Button>
-                    <Button
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([50])}>50%</Button>
-                    <Button
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([75])}>75%</Button>
-                    <Button
-                        variant={'icon'}
-                        className="border border-card-border"
-                        size={'sm'}
-                        onClick={() => setSliderValue([100])}>100%</Button>
+                    {[25, 50, 75, 100].map((v) => (
+                        <Button
+                            key={`liquidity-percent-${v}`}
+                            disabled={isRemoveLoading}
+                            variant={'icon'}
+                            className="border border-card-border"
+                            size={'sm'}
+                            onClick={() => setSliderValue([v])}>{v}%</Button>
+                    ))}
                 </div>
 
                 <Slider
@@ -153,6 +176,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                     onValueChange={(v) => setSliderValue(v)}
                     className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                     aria-label="Liquidity Percent"
+                    disabled={isRemoveLoading}
                 />
 
                 <Button disabled={isDisabled} onClick={() => removeLiquidity && removeLiquidity()}>

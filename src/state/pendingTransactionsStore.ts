@@ -5,27 +5,31 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { waitForTransactionReceipt } from 'viem/actions';
 
-interface TransactionData {
+export enum TransactionType {
+    SWAP = "SWAP",
+    FARM = "FARM",
+    POOL = "POOL",
+}
+
+export interface TransactionInfo {
     title: string;
     description?: string;
     tokenA?: Address;
     tokenB?: Address;
+    tokenId?: string;
+    type: TransactionType;
 }
 
 export interface Transaction {
-    data: TransactionData;
+    data: TransactionInfo;
     success: boolean | null;
     loading: boolean;
     error: Error | null;
 }
 
-interface PendingTransactions {
-    [hash: Address]: Transaction
-}
+type PendingTransactions = Record<Address, Transaction>;
 
-interface UserTransactions {
-    [account: Address]: PendingTransactions
-}
+type UserTransactions = Record<Address, PendingTransactions>;
 
 const MAX_TRANSACTIONS = 10;
 

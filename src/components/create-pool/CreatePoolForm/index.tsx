@@ -9,7 +9,7 @@ import {
     computePoolAddress,
 } from '@cryptoalgebra/integral-sdk';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
-import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
+import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
 import { Address, useContractWrite } from 'wagmi';
 import { useDerivedMintInfo, useMintState } from '@/state/mintStore';
 import Loader from '@/components/common/Loader';
@@ -17,6 +17,7 @@ import { PoolState, usePool } from '@/hooks/pools/usePool';
 import Summary from '../Summary';
 import SelectPair from '../SelectPair';
 import { STABLECOINS } from '@/constants/tokens';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 
 const CreatePoolForm = () => {
     const { currencies } = useDerivedSwapInfo();
@@ -77,13 +78,15 @@ const CreatePoolForm = () => {
     const { data: createPoolData, write: createPool } =
         useContractWrite(createPoolConfig);
 
-    const { isLoading } = useTransitionAwait(
+    const { isLoading } = useTransactionAwait(
         createPoolData?.hash,
-        'Create Pool',
-        '',
-        '/pools',
-        currencyA?.wrapped.address as Address,
-        currencyB?.wrapped.address as Address
+        {
+            title: 'Create Pool',
+            tokenA: currencyA?.wrapped.address as Address,
+            tokenB: currencyB?.wrapped.address as Address,
+            type: TransactionType.POOL,
+        },
+        '/pools'
     );
 
     useEffect(() => {
