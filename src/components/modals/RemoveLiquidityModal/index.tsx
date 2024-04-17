@@ -127,9 +127,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                                 if (!currentPos) return;
 
                                 if (currentPos.eternalFarming === null) {
-                                    query.refetch().then(() => {
-                                        clearInterval(interval);
-                                    });
+                                    clearInterval(interval);
                                 } else {
                                     query.refetch().then();
                                 }
@@ -158,6 +156,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                 <div className="flex gap-2">
                     {[25, 50, 75, 100].map((v) => (
                         <Button
+                            key={`liquidity-percent-${v}`}
                             disabled={isRemoveLoading}
                             variant={'icon'}
                             className="border border-card-border"
