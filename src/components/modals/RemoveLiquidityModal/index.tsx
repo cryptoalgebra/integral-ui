@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
 import { farmingClient } from "@/graphql/clients";
 import { Deposit } from "@/graphql/generated/graphql";
-import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
+import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
