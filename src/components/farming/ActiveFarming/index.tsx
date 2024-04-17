@@ -33,22 +33,22 @@ const ActiveFarming = ({
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
-
+    
     const APR = useFarmingAPR({ farmingId: farming.farming.id });
-
+    
     const isSameReward = isSameRewards(
         farming.farming.rewardToken,
         farming.farming.bonusRewardToken
     );
-
+    
     const formattedRewardEarned = Number(
         formatUnits(rewardEarned, farming.rewardToken.decimals)
     );
-
+    
     const formattedBonusRewardEarned = Number(
         formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals)
     );
-
+    
     const rewardEarnedUSD = useRewardEarnedUSD({
         token: farming.rewardToken,
         reward: rewardEarned,
@@ -167,7 +167,7 @@ const ActiveFarming = ({
 
                     <CardInfo
                         additional={
-                            !isSameReward && farmingRewards !== '0.0000'
+                            !isSameReward
                                 ? `${
                                       formattedRewardEarned.toFixed(2) ===
                                       '0.00'
@@ -181,7 +181,17 @@ const ActiveFarming = ({
                                                 2
                                             )
                                   } ${farming.bonusRewardToken?.symbol}`
-                                : ''
+                                : bonusRewardEarned === 0n ? `${
+                                    formattedRewardEarned.toFixed(2) ===
+                                    '0.00'
+                                        ? '<0.01'
+                                        : formattedRewardEarned.toFixed(2)
+                                } ${farming.rewardToken.symbol}`
+                                : `${(formattedRewardEarned + formattedBonusRewardEarned).toFixed(2) ===
+                                    '0.00'
+                                        ? '<0.01'
+                                        : formattedRewardEarned.toFixed(2)
+                                } ${farming.rewardToken.symbol}`
                         }
                         className="w-full"
                         title="EARNED"
