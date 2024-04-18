@@ -49,7 +49,7 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
         const slicedData = processedData.slice(middle - chunkLength, middle + chunkLength);
 
         return slicedData.reverse();
-    }, [processedData, zoom]);
+    }, [processedData, zoom, tick]);
 
     return (
         <div className="flex w-full h-full mt-12">
