@@ -1,33 +1,46 @@
 import { MAX_UINT128 } from "@/constants/max-uint128";
 import { TicksResult } from "@/types/ticks-info";
-import { Currency, CurrencyAmount, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk";
 
-export async function processTicks(currencyA: Currency, currencyB: Currency, ticksResult?: TicksResult, tickAfterSwap?: number | null, isReversed = false) {
+export async function processTicks(
+    currencyA: Currency,
+    currencyB: Currency,
+    tick: number,
+    ticksResult?: TicksResult,
+    tickAfterSwap?: number | null,
+    isReversed = false
+) {
     if (!ticksResult) return;
 
     const _data = await Promise.all(
         ticksResult.ticksProcessed.map(async (t, i) => {
-            const active = t.tickIdx === ticksResult.activeTickIdx;
+            const currentTick = t.tickIdx;
+            const nextTick = ticksResult.ticksProcessed[i + 1]?.tickIdx;
+            const prevTick = ticksResult.ticksProcessed[i - 1]?.tickIdx;
+
             const nextTickLiquidity = ticksResult.ticksProcessed[i + 1]?.liquidityActive;
             const prevTickLiquidity = ticksResult.ticksProcessed[i - 1]?.liquidityActive;
 
-            const afterSwapRange = tickAfterSwap && 
-                (tickAfterSwap >= t.tickIdx && t.tickIdx >= ticksResult.activeTickIdx
-                    || tickAfterSwap <= t.tickIdx && t.tickIdx <= ticksResult.activeTickIdx);
+            const active = currentTick <= tick && tick < nextTick;
 
-            const afterSwapTick = tickAfterSwap && 
-                (tickAfterSwap - DEFAULT_TICK_SPACING <= t.tickIdx && tickAfterSwap >= t.tickIdx) 
-                    || (afterSwapRange && nextTickLiquidity === 0n || afterSwapRange && prevTickLiquidity === 0n);
+            const afterSwapRange =
+                tickAfterSwap &&
+                ((tickAfterSwap >= currentTick && currentTick >= tick) || (tickAfterSwap <= currentTick && currentTick <= tick));
 
-            const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(t.tickIdx);
+            const afterSwapTick =
+                (tickAfterSwap && tickAfterSwap >= currentTick && tickAfterSwap < nextTick) ||
+                (afterSwapRange && nextTickLiquidity === 0n) ||
+                (afterSwapRange && prevTickLiquidity === 0n);
+
+            const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(currentTick);
             const mockTicks = [
                 {
-                    index: Number(t.tickIdx) - Number(ticksResult.tickSpacing),
+                    index: Number(currentTick) - Number(ticksResult.tickSpacing),
                     liquidityGross: t.liquidityGross.toString(),
                     liquidityNet: (t.liquidityNet * -1n).toString(),
                 },
                 {
-                    index: t.tickIdx,
+                    index: currentTick,
                     liquidityGross: t.liquidityGross.toString(),
                     liquidityNet: t.liquidityNet.toString(),
                 },
@@ -40,15 +53,13 @@ export async function processTicks(currencyA: Currency, currencyB: Currency, tic
                           INITIAL_POOL_FEE,
                           sqrtPriceX96,
                           t.liquidityActive.toString(),
-                          t.tickIdx,
+                          currentTick,
                           ticksResult.tickSpacing,
                           mockTicks
                       )
                     : undefined;
 
-            const nextSqrtX96 = ticksResult.ticksProcessed[i - 1]
-                ? TickMath.getSqrtRatioAtTick(ticksResult.ticksProcessed[i - 1].tickIdx)
-                : undefined;
+            const nextSqrtX96 = prevTick ? TickMath.getSqrtRatioAtTick(prevTick) : undefined;
 
             const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, MAX_UINT128.toString()) : undefined;
 

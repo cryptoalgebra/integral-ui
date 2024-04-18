@@ -13,55 +13,53 @@ interface TicksChartProps {
 }
 
 const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
+    const [processedData, setProcessedData] = useState<any>(null);
 
-    const [processedData, setProcessedData] = useState<any>(null)
-
-    const { tickAfterSwap } = useDerivedSwapInfo();
+    const { tickAfterSwap, tick } = useDerivedSwapInfo();
 
     const {
-        fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice, ticksLoading },
-    } = useInfoTickData()
+        fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },
+    } = useInfoTickData();
 
     useEffect(() => {
-        if (!currencyA || !currencyB || ticksLoading) return
-        fetchTicksSurroundingPrice(currencyA, currencyB)
-    }, [currencyA, currencyB, ticksLoading])
+        if (!currencyA || !currencyB) return;
+        fetchTicksSurroundingPrice(currencyA, currencyB);
+    }, [currencyA, currencyB]);
 
     useEffect(() => {
-        if (!ticksResult || !ticksResult.ticksProcessed || ticksLoading) return
+        if (!ticksResult || !ticksResult.ticksProcessed) return;
+        if (!tick) return;
 
-        processTicks(currencyA, currencyB, ticksResult, tickAfterSwap)
+        processTicks(currencyA, currencyB, tick, ticksResult, tickAfterSwap)
             .then((data) => setProcessedData(data))
             .catch(() => {
-                processTicks(currencyB, currencyA, ticksResult, tickAfterSwap, true)
-                .then((reversedData) => setProcessedData(reversedData))
-            })
-    }, [ticksResult, tickAfterSwap, ticksLoading])
+                processTicks(currencyB, currencyA, tick, ticksResult, tickAfterSwap, true).then((reversedData) =>
+                    setProcessedData(reversedData)
+                );
+            });
+    }, [ticksResult, tickAfterSwap, tick, currencyA, currencyB]);
 
     const formattedData = useMemo(() => {
-        if (!processedData) return undefined
-        if (processedData && processedData.length === 0) return undefined
+        if (!processedData) return undefined;
+        if (processedData && processedData.length === 0) return undefined;
 
-        const middle = Math.round(processedData.length / 2)
-        const chunkLength = Math.round(processedData.length / zoom)
+        const middle = Math.round(processedData.length / 2);
+        const chunkLength = Math.round(processedData.length / zoom);
 
-        const slicedData = processedData.slice(middle - chunkLength, middle + chunkLength)
+        const slicedData = processedData.slice(middle - chunkLength, middle + chunkLength);
 
-        return slicedData.reverse()
-    }, [processedData, zoom])
-    
-    const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
+        return slicedData.reverse();
+    }, [processedData, zoom]);
 
-    return <div className="flex w-full h-full mt-12">
-        {formattedData ?  <Chart
-            formattedData={formattedData} 
-            isSorted={isSorted} 
-            zoom={zoom} 
-            currencyA={currencyA} 
-            currencyB={currencyB}
-         /> : <TicksChartLoader /> }
-    </div>
-
-}
+    return (
+        <div className="flex w-full h-full mt-12">
+            {formattedData ? (
+                <Chart formattedData={formattedData} zoom={zoom} currencyA={currencyA} currencyB={currencyB} />
+            ) : (
+                <TicksChartLoader />
+            )}
+        </div>
+    );
+};
 
 export default TicksChart;

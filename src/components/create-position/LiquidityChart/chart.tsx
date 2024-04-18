@@ -136,7 +136,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     let percent = 0
                     if (price === +Number(leftPrice).toFixed(8) || price === +Number(rightPrice).toFixed(8)) {
                         const currentPriceIdx = formattedData.findIndex((v: any) => v.isCurrent)
-                        const currentPriceRealIndex = formattedData[currentPriceIdx].index
+                        const currentPriceRealIndex = formattedData[currentPriceIdx]?.index
                         percent = (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
                     }
 

@@ -24,7 +24,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
 
     const [zoom, setZoom] = useState<number>(50)
 
-    const { tickAfterSwap } = useDerivedSwapInfo();
+    const { tickAfterSwap, tick } = useDerivedSwapInfo();
 
     const {
         fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },
@@ -36,12 +36,17 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
     }, [currencyA, currencyB])
 
     useEffect(() => {
-        if (!currencyA || !currencyB) return
-        if (!ticksResult || !ticksResult.ticksProcessed) return
+        if (!currencyA || !currencyB) return;
+        if (!ticksResult || !ticksResult.ticksProcessed || !tick) return;
 
-        processTicks(currencyA, currencyB, ticksResult, tickAfterSwap)
+        processTicks(currencyA, currencyB, tick, ticksResult, tickAfterSwap)
             .then((data) => setProcessedData(data))
-    }, [ticksResult, tickAfterSwap, currencyA, currencyB])
+            .catch(() => {
+                processTicks(currencyB, currencyA, tick, ticksResult, tickAfterSwap, true).then((reversedData) =>
+                    setProcessedData(reversedData)
+                );
+            });
+    }, [ticksResult, tickAfterSwap, currencyA, currencyB, tick])
 
     useEffect(() => {
 
