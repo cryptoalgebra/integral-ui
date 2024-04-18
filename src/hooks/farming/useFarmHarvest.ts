@@ -1,10 +1,10 @@
-import { FARMING_CENTER } from '@/constants/addresses';
-import { farmingCenterABI } from '@/generated';
-import { getRewardsCalldata } from '@/utils/farming/getRewardsCalldata';
-import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransitionAwait } from '../common/useTransactionAwait';
-import { encodeFunctionData } from 'viem';
-import { Deposit } from '@/graphql/generated/graphql';
+import { FARMING_CENTER } from "@/constants/addresses";
+import { farmingCenterABI } from "@/generated";
+import { getRewardsCalldata } from "@/utils/farming/getRewardsCalldata";
+import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useTransitionAwait } from "../common/useTransactionAwait";
+import { encodeFunctionData } from "viem";
+import { Deposit } from "@/graphql/generated/graphql";
 
 export function useFarmHarvest({
     tokenId,
@@ -33,16 +33,13 @@ export function useFarmHarvest({
     const { config } = usePrepareContractWrite({
         address: account && tokenId ? FARMING_CENTER : undefined,
         abi: farmingCenterABI,
-        functionName: 'multicall',
+        functionName: "multicall",
         args: [calldata],
     });
 
     const { data: data, writeAsync: onHarvest } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(
-        data?.hash,
-        `Harvest Position #${tokenId}`
-    );
+    const { isLoading, isSuccess } = useTransitionAwait(data?.hash, `Harvest Position #${tokenId}`);
 
     return {
         isLoading,
@@ -82,7 +79,7 @@ export function useFarmHarvestAll(
 
             const calldata = encodeFunctionData({
                 abi: farmingCenterABI,
-                functionName: 'multicall',
+                functionName: "multicall",
                 args: [rewardsCalldata],
             });
             calldatas.push(calldata);
@@ -92,16 +89,13 @@ export function useFarmHarvestAll(
     const { config } = usePrepareContractWrite({
         address: FARMING_CENTER,
         abi: farmingCenterABI,
-        functionName: 'multicall',
+        functionName: "multicall",
         args: [calldatas],
     });
 
     const { data: data, writeAsync: onHarvestAll } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(
-        data?.hash,
-        `Harvest All Positions`
-    );
+    const { isLoading, isSuccess } = useTransitionAwait(data?.hash, `Harvest All Positions`);
 
     return {
         isLoading,
