@@ -48,6 +48,16 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
 
         const slicedData = processedData.slice(middle - chunkLength, middle + chunkLength);
 
+        if (slicedData[slicedData.length - 1].isAfterSwapRange) {
+            slicedData.map((t: any) => (t.isAfterSwapTick = false));
+            slicedData[slicedData.length - 1].isAfterSwapTick = true;
+        }
+
+        if (slicedData[0].isAfterSwapRange) {
+            slicedData.map((t: any) => (t.isAfterSwapTick = false));
+            slicedData[0].isAfterSwapTick = true;
+        }
+
         return slicedData.reverse();
     }, [processedData, zoom, tick]);
 

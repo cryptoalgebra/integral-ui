@@ -80,12 +80,17 @@ const CustomTooltip = ({
             <div>{`${isReversed ? formattedPrice1 : formattedPrice0} ${currencyB?.symbol}`}</div>
         </div>
         <div className="flex gap-4 justify-between">
+            <div>{`${currencyA?.symbol} Amount:`}</div>
+            <div>{`${formatBalance(isReversed || isReversed === undefined ? tvlToken1 : tvlToken0)} ${currencyA?.symbol}`}</div>
+        </div>
+        <hr />
+        <div className="flex gap-4 justify-between">
             <div>{`${currencyB?.symbol} Price:`}</div>
             <div>{`${isReversed ? formattedPrice0 : formattedPrice1} ${currencyA?.symbol}`}</div>
         </div>
         <div className="flex gap-4 justify-between">
-            <div>Amount:</div>
-            <div>{`${formatBalance(isReversed || isReversed === undefined ? tvlToken1 : tvlToken0)} ${currencyA?.symbol}`}</div>
+            <div>{`${currencyB?.symbol} Amount:`}</div>
+            <div>{`${formatBalance(isReversed || isReversed === undefined ? tvlToken0 : tvlToken1)} ${currencyB?.symbol}`}</div>
         </div>
     </div>
 }

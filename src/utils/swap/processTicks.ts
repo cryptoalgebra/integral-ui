@@ -18,19 +18,13 @@ export async function processTicks(
             const nextTick = ticksResult.ticksProcessed[i + 1]?.tickIdx;
             const prevTick = ticksResult.ticksProcessed[i - 1]?.tickIdx;
 
-            const nextTickLiquidity = ticksResult.ticksProcessed[i + 1]?.liquidityActive;
-            const prevTickLiquidity = ticksResult.ticksProcessed[i - 1]?.liquidityActive;
-
             const active = currentTick <= tick && tick < nextTick;
 
             const afterSwapRange =
                 tickAfterSwap &&
                 ((tickAfterSwap >= currentTick && currentTick >= tick) || (tickAfterSwap <= currentTick && currentTick <= tick));
 
-            const afterSwapTick =
-                (tickAfterSwap && tickAfterSwap >= currentTick && tickAfterSwap < nextTick) ||
-                (afterSwapRange && nextTickLiquidity === 0n) ||
-                (afterSwapRange && prevTickLiquidity === 0n);
+            const afterSwapTick = tickAfterSwap && tickAfterSwap >= currentTick && tickAfterSwap < nextTick;
 
             const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(currentTick);
             const mockTicks = [

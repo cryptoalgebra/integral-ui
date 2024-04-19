@@ -69,7 +69,7 @@ const SwapChart = () => {
     const [chartSpan, setChartSpan] = useState<SwapChartSpanType>(SwapChartSpan.DAY);
     const [chartPair, setChartPair] = useState<SwapChartPairType>(SwapChartPair.AB);
 
-    const [ticksChartZoom, setTicksChartZoom] = useState<number>(50);
+    const [ticksChartZoom, setTicksChartZoom] = useState<number>(window.innerWidth < 720 ? 100 : 50);
 
     const { currencies, poolAddress: poolId } = useDerivedSwapInfo();
 
