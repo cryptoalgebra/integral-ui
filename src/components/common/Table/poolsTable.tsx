@@ -40,7 +40,6 @@ const PoolsTable = <TData, TValue>({
 }: PoolsTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>(defaultSortingID ? [{ id: defaultSortingID, desc: true }] : []);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [isMyPools, setIsMyPools] = useState(false);
 
     const navigate = useNavigate();
 
@@ -57,31 +56,32 @@ const PoolsTable = <TData, TValue>({
             sorting,
             columnFilters,
         },
+        globalFilterFn: (row: any, _, value: boolean | undefined) => row.original.isMyPool === value,
     });
 
-    const searchID = "pair";
+    const isMyPools: boolean | undefined = table.getState().globalFilter;
 
-    const tableRows = isMyPools ? table.getRowModel().rows.filter((row: any) => row.original.isMyPool) : table.getRowModel().rows;
+    const searchID = "pair";
 
     if (loading) return <LoadingState />;
 
     return (
         <>
             {searchID && (
-                <div className="flex gap-4 w-full justify-between items-center p-4 pb-0 ">
+                <div className="flex gap-4 w-full justify-between items-center p-4 pb-0">
                     <div className="flex items-center relative w-fit">
                         <Input
                             placeholder="Search pool"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
-                            className="border border-border border-opacity-60 pl-12 h-12 w-64 focus:border-opacity-100 rounded-xl"
+                            className="border border-border border-opacity-60 pl-12 h-12 w-80 focus:border-opacity-100 rounded-xl"
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
                     <ul className="flex gap-1 p-1 border rounded-xl border-border/60 w-fit h-12">
                         <li>
                             <Button
-                                onClick={() => setIsMyPools(false)}
+                                onClick={() => table.setGlobalFilter(undefined)}
                                 className="rounded-lg h-full p-4 w-fit"
                                 size="md"
                                 variant={!isMyPools ? "iconActive" : "ghost"}
@@ -91,7 +91,7 @@ const PoolsTable = <TData, TValue>({
                         </li>
                         <li>
                             <Button
-                                onClick={() => setIsMyPools(true)}
+                                onClick={() => table.setGlobalFilter(true)}
                                 className="rounded-lg h-full p-4 w-fit"
                                 size="md"
                                 variant={isMyPools ? "iconActive" : "ghost"}
@@ -130,14 +130,14 @@ const PoolsTable = <TData, TValue>({
                     ))}
                 </TableHeader>
                 <TableBody className="hover:bg-transparent text-[16px]">
-                    {!tableRows.length ? (
+                    {!table.getRowModel().rows.length ? (
                         <TableRow className="hover:bg-card h-full">
                             <TableCell colSpan={columns.length} className="h-24 text-center">
                                 No results.
                             </TableCell>
                         </TableRow>
                     ) : (
-                        tableRows.map((row: any) => {
+                        table.getRowModel().rows.map((row: any) => {
                             return (
                                 <TableRow
                                     key={row.id}
