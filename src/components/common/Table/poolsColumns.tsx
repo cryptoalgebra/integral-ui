@@ -1,14 +1,14 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { HeaderItem } from './common';
-import { Address } from 'wagmi';
-import CurrencyLogo from '../CurrencyLogo';
-import { TokenFieldsFragment } from '@/graphql/generated/graphql';
-import { DynamicFeePluginIcon } from '../PluginIcons';
-import { formatUSD } from '@/utils/common/formatUSD';
-import { usePoolPlugins } from '@/hooks/pools/usePoolPlugins';
-import { Skeleton } from '@/components/ui/skeleton';
-import { FarmingPluginIcon } from '../PluginIcons';
-import { useCurrency } from '@/hooks/common/useCurrency';
+import { ColumnDef } from "@tanstack/react-table";
+import { HeaderItem } from "./common";
+import { Address } from "wagmi";
+import CurrencyLogo from "../CurrencyLogo";
+import { TokenFieldsFragment } from "@/graphql/generated/graphql";
+import { DynamicFeePluginIcon } from "../PluginIcons";
+import { formatUSD } from "@/utils/common/formatUSD";
+import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FarmingPluginIcon } from "../PluginIcons";
+import { useCurrency } from "@/hooks/common/useCurrency";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -23,6 +23,8 @@ interface Pool {
     volume24USD: number;
     maxApr: number;
     avgApr: number;
+    isMyPool: boolean;
+    hasActiveFarming: boolean;
 }
 
 const PoolPair = ({ pair, fee }: Pool) => {
@@ -36,11 +38,7 @@ const PoolPair = ({ pair, fee }: Pool) => {
         <div className="flex items-center gap-4 ml-2">
             <div className="flex">
                 <CurrencyLogo currency={currencyA} size={30} />
-                <CurrencyLogo
-                    currency={currencyB}
-                    size={30}
-                    className="-ml-2"
-                />
+                <CurrencyLogo currency={currencyB} size={30} className="-ml-2" />
             </div>
 
             {currencyA && currencyB ? (
@@ -67,76 +65,52 @@ const Plugins = ({ poolId }: { poolId: Address }) => {
 
 export const poolsColumns: ColumnDef<Pool>[] = [
     {
-        accessorKey: 'pair',
+        accessorKey: "pair",
         header: () => <HeaderItem className="ml-2">Pool</HeaderItem>,
         cell: ({ row }) => <PoolPair {...row.original} />,
         filterFn: (v, _, value) =>
-            [
-                v.original.pair.token0.symbol,
-                v.original.pair.token1.symbol,
-                v.original.pair.token0.name,
-                v.original.pair.token1.name,
-            ]
-                .join(' ')
+            [v.original.pair.token0.symbol, v.original.pair.token1.symbol, v.original.pair.token0.name, v.original.pair.token1.name]
+                .join(" ")
                 .toLowerCase()
                 .includes(value),
     },
     {
-        accessorKey: 'plugins',
+        accessorKey: "plugins",
         header: () => <HeaderItem>Plugins</HeaderItem>,
         cell: ({ row }) => <Plugins poolId={row.original.id} />,
+        filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
     },
     {
-        accessorKey: 'tvlUSD',
+        accessorKey: "tvlUSD",
         header: ({ column }) => (
-            <HeaderItem
-                sort={() =>
-                    column.toggleSorting(column.getIsSorted() === 'asc')
-                }
-                isAsc={column.getIsSorted() === 'asc'}
-            >
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
                 TVL
             </HeaderItem>
         ),
         cell: ({ getValue }) => formatUSD.format(getValue() as number),
     },
     {
-        accessorKey: 'volume24USD',
+        accessorKey: "volume24USD",
         header: ({ column }) => (
-            <HeaderItem
-                sort={() =>
-                    column.toggleSorting(column.getIsSorted() === 'asc')
-                }
-                isAsc={column.getIsSorted() === 'asc'}
-            >
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
                 Volume 24H
             </HeaderItem>
         ),
         cell: ({ getValue }) => formatUSD.format(getValue() as number),
     },
     {
-        accessorKey: 'maxApr',
+        accessorKey: "maxApr",
         header: ({ column }) => (
-            <HeaderItem
-                sort={() =>
-                    column.toggleSorting(column.getIsSorted() === 'asc')
-                }
-                isAsc={column.getIsSorted() === 'asc'}
-            >
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
                 Max. APR
             </HeaderItem>
         ),
         cell: ({ getValue }) => `${getValue()} %`,
     },
     {
-        accessorKey: 'avgApr',
+        accessorKey: "avgApr",
         header: ({ column }) => (
-            <HeaderItem
-                sort={() =>
-                    column.toggleSorting(column.getIsSorted() === 'asc')
-                }
-                isAsc={column.getIsSorted() === 'asc'}
-            >
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
                 Avg. APR
             </HeaderItem>
         ),
