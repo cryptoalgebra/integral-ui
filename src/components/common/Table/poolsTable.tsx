@@ -74,15 +74,15 @@ const PoolsTable = <TData, TValue>({
                             placeholder="Search pool"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
-                            className="border border-border border-opacity-60 pl-12 h-12 w-80 focus:border-opacity-100 rounded-xl"
+                            className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-xl"
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
-                    <ul className="flex gap-1 p-1 border rounded-xl border-border/60 w-fit h-12">
+                    <ul className="flex gap-1 p-1 border rounded-xl border-border/60 w-fit h-12 max-xs:hidden">
                         <li>
                             <Button
                                 onClick={() => table.setGlobalFilter(undefined)}
-                                className="rounded-lg h-full p-4 w-fit"
+                                className="rounded-lg h-full p-4 w-fit flex-nowrap"
                                 size="md"
                                 variant={!isMyPools ? "iconActive" : "ghost"}
                             >
@@ -92,7 +92,7 @@ const PoolsTable = <TData, TValue>({
                         <li>
                             <Button
                                 onClick={() => table.setGlobalFilter(true)}
-                                className="rounded-lg h-full p-4 w-fit"
+                                className="rounded-lg h-full p-4 w-fit whitespace-nowrap"
                                 size="md"
                                 variant={isMyPools ? "iconActive" : "ghost"}
                             >
@@ -100,10 +100,10 @@ const PoolsTable = <TData, TValue>({
                             </Button>
                         </li>
                     </ul>
-                    <div className="flex gap-2 items-center w-fit ml-auto">
+                    <div className="flex gap-2 max-md:gap-4 items-center w-fit ml-auto max-sm:hidden">
                         <label className="flex gap-2 items-center" htmlFor="farmingAvailable">
-                            <Tractor size={20} color="#d84eff" />
-                            Farming Available
+                            <Tractor className="w-5 h-5 max-md:w-6 max-md:h-6" color="#d84eff" />
+                            <span className="max-md:hidden">Farming Available</span>
                         </label>
                         <Switch
                             id="farmingAvailable"
