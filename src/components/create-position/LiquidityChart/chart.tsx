@@ -13,6 +13,7 @@ interface CustomBarProps {
     percent: number | undefined;
     isCurrent: boolean;
     isAfterSwapTick: boolean;
+    isFocused: boolean;
 }
 
 interface CustomTooltipProps {
@@ -41,10 +42,11 @@ const CustomBar = ({
     fill,
     percent,
     isCurrent,
-    isAfterSwapTick
+    isAfterSwapTick,
+    isFocused,
 }: CustomBarProps) => {
     return (
-        <g className='group'>
+        <g>
             <defs>
                 <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='100%'>
                     <stop offset='0' stopColor='#2797ff' />
@@ -52,8 +54,8 @@ const CustomBar = ({
                 </linearGradient>
             </defs>
             {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
-            {isCurrent && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
-            {isAfterSwapTick && !isCurrent && <text className='group-hover:flex hidden' x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
+            {isCurrent && isFocused && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {isAfterSwapTick && !isCurrent && isFocused && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
     )
@@ -145,7 +147,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         percent = (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
                     }
 
-                    return <CustomBar key={props.index} height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} isAfterSwapTick={props.isAfterSwapTick} />
+                    return <CustomBar isFocused={Boolean(props.index === focusBar)} key={props.index} height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} isAfterSwapTick={props.isAfterSwapTick} />
                 }}
             >
                 {formattedData?.map((entry: any, index: number) => {

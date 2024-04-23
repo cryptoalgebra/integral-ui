@@ -21,10 +21,7 @@ export async function processTicks(
             const active = currentTick <= tick && tick < nextTick;
 
             const afterSwapRange =
-                tickAfterSwap &&
-                ((tickAfterSwap >= currentTick && currentTick >= tick) || (tickAfterSwap <= currentTick && currentTick <= tick));
-
-            const afterSwapTick = tickAfterSwap && tickAfterSwap >= currentTick && tickAfterSwap < nextTick;
+                tickAfterSwap && ((tickAfterSwap >= currentTick && currentTick >= tick) || (tickAfterSwap <= nextTick && nextTick <= tick));
 
             const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(currentTick);
             const mockTicks = [
@@ -68,7 +65,7 @@ export async function processTicks(
                 index: i,
                 isCurrent: active,
                 isAfterSwapRange: afterSwapRange,
-                isAfterSwapTick: afterSwapTick,
+                isAfterSwapTick: null,
                 isReversed,
                 activeLiquidity: parseFloat(t.liquidityActive.toString()),
                 price0: parseFloat(t.price0),
