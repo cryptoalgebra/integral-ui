@@ -152,7 +152,7 @@ const PoolsTable = <TData, TValue>({
                                     }}
                                 >
                                     {row.getVisibleCells().map((cell: any) => (
-                                        <TableCell key={cell.id} className="text-left">
+                                        <TableCell key={cell.id} className="text-left min-w-[120px] first:min-w-[320px]">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
