@@ -85,8 +85,7 @@ export function SelectPositionFarmModal({
                         Select Position
                     </DialogTitle>
                 </DialogHeader>
-                <div className='py-1'>
-                    <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 overflow-auto">
+                    <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-x-4 gap-y-2 overflow-auto">
                         {availablePositions.length > 0 ? (
                             availablePositions.map((position) => {
                                 const currentFormattedPosition = positionsData.find(
@@ -98,7 +97,7 @@ export function SelectPositionFarmModal({
                                     <FarmingPositionCard
                                         key={position.id}
                                         className={cn(
-                                            'w-full row-span-1 col-span-1',
+                                            'w-full row-span-1 col-span-1 my-1',
                                             selectedPosition?.id === position.id
                                                 ? 'border-primary-button hover:border-primary-button'
                                                 : ''
@@ -121,7 +120,6 @@ export function SelectPositionFarmModal({
                             </h3>
                         )}
                     </ul>
-                </div>
                 <div className="w-full flex gap-4 mt-2">
                     {isApproving ? (
                         <Button disabled className="w-full">
