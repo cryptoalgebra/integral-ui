@@ -17,18 +17,25 @@ const TicksZoomBar = ({ zoom, onZoom }: TicksZoomBarProps) => {
     return (
         <>
             <Button
-                variant={zoom === DEFAULT_ZOOM ? "iconActive" : "ghost"}
-                className="h-10 max-sm:hidden text-sm"
-                onClick={() => onZoom(DEFAULT_ZOOM)}
-            >
-                Common
-            </Button>
-            <Button
                 variant={zoom === MIN_ZOOM ? "iconActive" : "ghost"}
                 className="h-10 max-sm:hidden text-sm"
                 onClick={() => onZoom(MIN_ZOOM)}
             >
-                Full
+                10%
+            </Button>
+            <Button
+                variant={zoom === DEFAULT_ZOOM ? "iconActive" : "ghost"}
+                className="h-10 max-sm:hidden text-sm"
+                onClick={() => onZoom(DEFAULT_ZOOM)}
+            >
+                50%
+            </Button>
+            <Button
+                variant={zoom === MAX_ZOOM ? "iconActive" : "ghost"}
+                className="h-10 max-sm:hidden text-sm"
+                onClick={() => onZoom(MAX_ZOOM)}
+            >
+                100%
             </Button>
             <Button disabled={zoom <= MIN_ZOOM} variant="icon" className="text-lg pb-0.5" size="icon" onClick={handleZoomOut}>
                 -
