@@ -300,14 +300,14 @@ const SwapChart = () => {
 
         {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} /> */}
 
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
+        <div className="flex flex-col md:flex-row ml-auto gap-4 justify-between">
 
             {
                 chartType !== SwapChartView.TICKS ?
                 <Popover open={isPoolSwitcherOpen}>
                     <PopoverTrigger
                         onMouseDown={() => setIsPoolSwitcherOpen(v => !v)}
-                        className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
+                        className="flex items-center justify-between w-fit min-w-[240px] py-2 px-4 ml-auto rounded-3xl bg-card border border-card-border hover:bg-card-hover duration-200">
                         <div className="flex items-center gap-4 font-semibold">
                             <span className="flex">{pairImage}</span>
                             <span>{pairTitle}</span>
@@ -338,7 +338,7 @@ const SwapChart = () => {
             }
             <div className="flex gap-4 w-fit p-2 bg-card border border-card-border rounded-3xl">
                 {chartType === SwapChartView.TICKS ?
-                <div className="flex gap-2">
+                <div className="flex gap-2 max-sm:hidden">
                     <TicksZoomBar zoom={ticksChartZoom} onZoom={setTicksChartZoom} />
                     <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 </div>
@@ -390,6 +390,12 @@ const SwapChart = () => {
                 </HoverCard> */}
             </div>
         </div>
+        {
+            chartType === SwapChartView.TICKS &&
+            <div className="flex gap-2 mr-2 ml-auto absolute right-0 top-20 z-50 max-md:top-24">
+                <TicksZoomBar zoom={ticksChartZoom} onZoom={setTicksChartZoom} onlyZoom />
+            </div>
+        }
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
 
             {chartType === SwapChartView.TICKS && !isPoolExists && <div>Pool doesn't exists.</div>}
