@@ -23,8 +23,8 @@ interface Pool {
     volume24USD: number;
     maxApr: number;
     avgApr: number;
-    isMyPool: boolean;
-    hasActiveFarming: boolean;
+    isMyPool: boolean | undefined;
+    hasActiveFarming: boolean | undefined;
 }
 
 const PoolPair = ({ pair, fee }: Pool) => {
@@ -78,7 +78,7 @@ export const poolsColumns: ColumnDef<Pool>[] = [
         accessorKey: "plugins",
         header: () => <HeaderItem>Plugins</HeaderItem>,
         cell: ({ row }) => <Plugins poolId={row.original.id} />,
-        filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
+        filterFn: (v) => v.original.hasActiveFarming === true,
     },
     {
         accessorKey: "tvlUSD",

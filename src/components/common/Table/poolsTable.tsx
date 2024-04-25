@@ -56,7 +56,7 @@ const PoolsTable = <TData, TValue>({
             sorting,
             columnFilters,
         },
-        globalFilterFn: (row: any, _, value: boolean | undefined) => row.original.isMyPool === value,
+        globalFilterFn: (row: any) => row.original.isMyPool === true,
     });
 
     const isMyPools: boolean | undefined = table.getState().globalFilter;
@@ -71,7 +71,7 @@ const PoolsTable = <TData, TValue>({
                 <div className="flex gap-4 w-full justify-between items-center p-4 pb-0">
                     <div className="flex items-center relative w-fit">
                         <Input
-                            placeholder="Search pool"
+                            placeholder="Search"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
                             className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-xl"

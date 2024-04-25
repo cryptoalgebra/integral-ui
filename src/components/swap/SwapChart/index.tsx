@@ -8,9 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Address } from "wagmi";
-import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -18,6 +16,7 @@ import TicksChart from "../TicksChart";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import { PoolState } from "@/hooks/pools/usePool";
 import TicksZoomBar from "../TicksZoomBar";
+import { formatPrice } from "@/utils/common/formatPrice";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -247,18 +246,17 @@ const SwapChart = () => {
         const value = formattedData[formattedData.length - 1].value;
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
-            return formatCurrency.format(value)
+            return formatPrice(value, 2)
         }
 
-        return formatUSD.format(value)
+        return formatPrice(value, 2)
     }, [formattedData, chartPair])
 
     const displayValueCurrency = chartPair === SwapChartPair.AB ? currencies.OUTPUT?.symbol : chartPair === SwapChartPair.BA ? currencies.INPUT?.symbol : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B ? '' : ''
 
     const crosshairMoveHandler = useCallback((param: any) => {
         if (param.point) {
-            const formatter = chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA ? formatCurrency : formatUSD
-            setDisplayValued(formatter.format(param.seriesData.get(series).value))
+            setDisplayValued(formatPrice(param.seriesData.get(series).value, 2))
             setDisplayDate(new Date(param.time * 1000).toLocaleDateString())
         } else {
             setDisplayDate(new Date().toLocaleDateString())

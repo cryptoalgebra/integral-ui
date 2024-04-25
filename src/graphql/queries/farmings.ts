@@ -31,3 +31,11 @@ export const DEPOSITS = gql`
         }
     }
 `;
+
+export const ALL_FARMINGS = gql`
+    query AllFarmings {
+        eternalFarmings {
+            pool
+        }
+    }
+`;
