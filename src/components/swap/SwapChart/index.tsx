@@ -159,7 +159,7 @@ const SwapChart = () => {
             chartCreated.timeScale().fitContent();
             chartCreated.timeScale().scrollToPosition(0, false);
         }
-    }, [chartCreated, chartRef, chartRef]);
+    }, [chartCreated, chartRef, chartRef, chartSpan]);
 
     const isClient = typeof window === "object";
     useEffect(() => {
@@ -243,7 +243,9 @@ const SwapChart = () => {
     const currentValue = useMemo(() => {
         if (!formattedData) return ''
 
-        const value = formattedData[formattedData.length - 1].value;
+        const value = formattedData[formattedData.length - 1]?.value;
+
+        if (!value) return '';
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
             return formatPrice(value, 2)
