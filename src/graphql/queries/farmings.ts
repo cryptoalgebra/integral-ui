@@ -32,9 +32,9 @@ export const DEPOSITS = gql`
     }
 `;
 
-export const ALL_FARMINGS = gql`
-    query AllFarmings {
-        eternalFarmings {
+export const ACTIVE_FARMINGS = gql`
+    query ActiveFarmings {
+        eternalFarmings(where: {isDeactivated: false}) {
             pool
         }
     }

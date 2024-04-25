@@ -1,5 +1,5 @@
 import { poolsColumns } from "@/components/common/Table/poolsColumns";
-import { useAllFarmingsQuery, usePoolsListQuery, usePoolsVolumeDataQuery } from "@/graphql/generated/graphql";
+import { useActiveFarmingsQuery, usePoolsListQuery, usePoolsVolumeDataQuery } from "@/graphql/generated/graphql";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from "@/constants/api";
@@ -16,7 +16,7 @@ const PoolsList = () => {
     const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
     const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
     
-    const { data: activeFarmings, loading: isFarmingsLoading } = useAllFarmingsQuery({
+    const { data: activeFarmings, loading: isFarmingsLoading } = useActiveFarmingsQuery({
         client: farmingClient
     })
 
