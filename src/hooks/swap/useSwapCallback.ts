@@ -109,7 +109,8 @@ export function useSwapCallback(
     const { config: swapConfig } = usePrepareAlgebraRouterMulticall({
         args: bestCall && [bestCall.calldata],
         value: BigInt(bestCall?.value || 0),
-        enabled: Boolean(bestCall)
+        enabled: Boolean(bestCall),
+        gas: bestCall ? bestCall.gasEstimate * (10000n + 2000n) / 10000n : undefined
     })
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)

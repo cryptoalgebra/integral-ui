@@ -20,7 +20,7 @@ function poolEquals(poolA: Pool, poolB: Pool): boolean {
 function computeAllRoutes(
     currencyIn: Currency,
     currencyOut: Currency,
-    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string } }[],
+    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string, fee: string } }[],
     chainId: number,
     currentPath: Pool[] = [],
     allPaths: Route<Currency, Currency>[] = [],
@@ -36,9 +36,9 @@ function computeAllRoutes(
 
         const [tokenA, tokenB] = pool.tokens
 
-        const { liquidity, price, tick } = pool.pool
+        const { liquidity, price, tick, fee } = pool.pool
 
-        const newPool = new Pool(tokenA, tokenB, INITIAL_POOL_FEE, price, liquidity, Number(tick), DEFAULT_TICK_SPACING)
+        const newPool = new Pool(tokenA, tokenB, +fee as unknown as 100, price, liquidity, Number(tick), DEFAULT_TICK_SPACING)
 
         if (!newPool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(newPool, pathPool))) continue
 
