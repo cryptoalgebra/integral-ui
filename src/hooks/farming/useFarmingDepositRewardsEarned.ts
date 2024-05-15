@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRewardEarnedUSD } from "./useRewardEarnedUSD";
 import { formatUnits } from "viem";
 import { EternalFarming, useSingleTokenQuery } from "@/graphql/generated/graphql";
+import { formatAmount } from "@/utils/common/formatAmount";
 
 export function useFarmingDepositRewardsEarned({ farming, positionId }: { farming: EternalFarming; positionId: bigint }) {
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
@@ -19,8 +20,6 @@ export function useFarmingDepositRewardsEarned({ farming, positionId }: { farmin
             tokenId: farming.bonusRewardToken,
         },
     });
-
-    console.log(rewardEarned, bonusRewardEarned);
 
     const fetchDepositRewards = useCallback(() => {
         getFarmingRewards({
@@ -60,12 +59,11 @@ export function useFarmingDepositRewardsEarned({ farming, positionId }: { farmin
     }, [fetchDepositRewards]);
 
     return {
-        rewardEarned: formattedRewardEarned === 0 ? "0" : formattedRewardEarned < 0.01 ? "<0.01" : formattedRewardEarned.toFixed(2),
-        bonusRewardEarned:
-            formattedBonusRewardEarned === 0 ? "0" : formattedBonusRewardEarned < 0.01 ? "<0.01" : formattedBonusRewardEarned.toFixed(2),
+        rewardEarned: formatAmount(formattedRewardEarned.toString(), 2),
+        bonusRewardEarned: formatAmount(formattedBonusRewardEarned.toString(), 2),
         rewardEarnedUSD,
         bonusRewardEarnedUSD,
-        totalEarned: formattedTotalEarned === 0 ? "0" : formattedTotalEarned < 0.01 ? "<0.01" : formattedTotalEarned.toFixed(2),
+        totalEarned: formatAmount(formattedTotalEarned.toString(), 2),
         totalEarnedUSD,
         refetch: fetchDepositRewards,
     };

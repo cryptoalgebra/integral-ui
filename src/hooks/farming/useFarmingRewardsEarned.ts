@@ -4,8 +4,9 @@ import { getFarmingRewards } from "@/utils/farming/getFarmingRewards";
 import { useCallback, useEffect, useState } from "react";
 import { useRewardEarnedUSD } from "./useRewardEarnedUSD";
 import { formatUnits } from "viem";
+import { formatAmount } from "@/utils/common/formatAmount";
 
-export function useFarmingRewardsEarned({ farming, deposits }: { farming: Farming, deposits: Deposit[] }) {
+export function useFarmingRewardsEarned({ farming, deposits }: { farming: Farming; deposits: Deposit[] }) {
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
 
@@ -39,10 +40,10 @@ export function useFarmingRewardsEarned({ farming, deposits }: { farming: Farmin
     }, [deposits, farming]);
 
     const formattedRewardEarned = Number(formatUnits(rewardEarned, farming.rewardToken.decimals));
-    
+
     const formattedBonusRewardEarned = Number(formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals));
 
-    const formattedTotalEarned = formattedRewardEarned + formattedBonusRewardEarned
+    const formattedTotalEarned = formattedRewardEarned + formattedBonusRewardEarned;
 
     const rewardEarnedUSD = useRewardEarnedUSD({
         token: farming.rewardToken,
@@ -61,10 +62,10 @@ export function useFarmingRewardsEarned({ farming, deposits }: { farming: Farmin
     }, [fetchAllRewards]);
 
     return {
-        rewardEarned: formattedRewardEarned === 0 ? '0' : formattedRewardEarned < 0.01 ? '<0.01' : formattedRewardEarned.toFixed(),
-        bonusRewardEarned: formattedBonusRewardEarned === 0 ? '0' : formattedBonusRewardEarned < 0.01 ? '<0.01' : formattedBonusRewardEarned.toFixed(),
-        totalEarned: formattedTotalEarned === 0 ? '0' : formattedTotalEarned < 0.01 ? '<0.01' : formattedTotalEarned.toFixed(),
+        rewardEarned: formatAmount(formattedRewardEarned.toString(), 2),
+        bonusRewardEarned: formatAmount(formattedBonusRewardEarned.toString(), 2),
+        totalEarned: formatAmount(formattedTotalEarned.toString(), 2),
         totalEarnedUSD,
         refetch: fetchAllRewards,
-    }
+    };
 }
