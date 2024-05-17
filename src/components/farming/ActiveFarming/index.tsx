@@ -15,6 +15,7 @@ import { useFarmingAPR } from "@/hooks/farming/useFarmingAPR";
 import { useFarmingUserTVL } from "@/hooks/farming/useFarmingUserTVL";
 import { useFarmingRewardRates } from "@/hooks/farming/useFarmingRewardRates";
 import { useFarmingRewardsEarned } from "@/hooks/farming/useFarmingRewardsEarned";
+import { formatAmount, reverseFormatAmount } from "@/utils/common/formatAmount";
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -101,7 +102,10 @@ const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps)
                                 <>
                                     <CurrencyLogo size={32} currency={rewardTokenCurrency} />
                                     <p>
-                                        {`${Number(rewardRatePerDay) + Number(bonusRewardRatePerDay)} ${farming.rewardToken.symbol} / day`}
+                                        {`${formatAmount(
+                                            (reverseFormatAmount(rewardRatePerDay) + reverseFormatAmount(bonusRewardRatePerDay)).toString(),
+                                            4
+                                        )} ${farming.rewardToken.symbol} / day`}
                                     </p>
                                 </>
                             ) : (
