@@ -1,37 +1,36 @@
-import { Button } from '@/components/ui/button';
-import { useDerivedSwapInfo, useSwapState } from '@/state/swapStore';
-import { useEffect, useMemo } from 'react';
-import { SwapField } from '@/types/swap-field';
-import {
-    ADDRESS_ZERO,
-    INITIAL_POOL_FEE,
-    NonfungiblePositionManager,
-    computePoolAddress,
-} from '@cryptoalgebra/integral-sdk';
-import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
-import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
-import { Address, useContractWrite } from 'wagmi';
-import { useDerivedMintInfo, useMintState } from '@/state/mintStore';
-import Loader from '@/components/common/Loader';
-import { PoolState, usePool } from '@/hooks/pools/usePool';
-import Summary from '../Summary';
-import SelectPair from '../SelectPair';
-import { STABLECOINS } from '@/constants/tokens';
+import { Button } from "@/components/ui/button";
+import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { useEffect, useMemo } from "react";
+import { SwapField } from "@/types/swap-field";
+import { ADDRESS_ZERO, INITIAL_POOL_FEE, NonfungiblePositionManager, computePoolAddress } from "@cryptoalgebra/integral-sdk";
+import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
+import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
+import { Address, useContractWrite } from "wagmi";
+import { useDerivedMintInfo, useMintState } from "@/state/mintStore";
+import Loader from "@/components/common/Loader";
+import { PoolState, usePool } from "@/hooks/pools/usePool";
+import Summary from "../Summary";
+import SelectPair from "../SelectPair";
+import { STABLECOINS } from "@/constants/tokens";
 
 const CreatePoolForm = () => {
     const { currencies } = useDerivedSwapInfo();
 
-    const { actions: { selectCurrency } } = useSwapState();
+    const {
+        actions: { selectCurrency },
+    } = useSwapState();
 
-    const { startPriceTypedValue, actions: { typeStartPriceInput } } = useMintState()
+    const {
+        startPriceTypedValue,
+        actions: { typeStartPriceInput },
+    } = useMintState();
 
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
 
     const areCurrenciesSelected = currencyA && currencyB;
 
-    const isSameToken =
-        areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped);
+    const isSameToken = areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped);
 
     const poolAddress =
         areCurrenciesSelected && !isSameToken
@@ -64,76 +63,52 @@ const CreatePoolForm = () => {
         return NonfungiblePositionManager.createCallParameters(mintInfo.pool);
     }, [mintInfo?.pool]);
 
-    const { config: createPoolConfig } =
-        usePrepareAlgebraPositionManagerMulticall({
-            args: Array.isArray(calldata)
-                ? [calldata as Address[]]
-                : [[calldata] as Address[]],
-            value: BigInt(value || 0),
-            enabled: Boolean(calldata),
-        });
+    const { config: createPoolConfig } = usePrepareAlgebraPositionManagerMulticall({
+        args: Array.isArray(calldata) ? [calldata as Address[]] : [[calldata] as Address[]],
+        value: BigInt(value || 0),
+        enabled: Boolean(calldata),
+    });
 
+    const { data: createPoolData, write: createPool } = useContractWrite(createPoolConfig);
 
-    const { data: createPoolData, write: createPool } =
-        useContractWrite(createPoolConfig);
-
-    const { isLoading } = useTransitionAwait(
-        createPoolData?.hash,
-        'Create Pool',
-        '',
-        '/pools'
-    );
+    const { isLoading } = useTransitionAwait(createPoolData?.hash, "Create Pool", "", "/pools");
 
     useEffect(() => {
-        selectCurrency(SwapField.INPUT, undefined)
-        selectCurrency(SwapField.OUTPUT, undefined)
-        typeStartPriceInput('')
+        selectCurrency(SwapField.INPUT, undefined);
+        selectCurrency(SwapField.OUTPUT, undefined);
+        typeStartPriceInput("");
 
         return () => {
-            selectCurrency(SwapField.INPUT, ADDRESS_ZERO)
-            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address as Account)
-            typeStartPriceInput('')
-        }
-    }, [])
+            selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
+            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address);
+            typeStartPriceInput("");
+        };
+    }, []);
 
     return (
         <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-3xl">
-            <h2 className="font-semibold text-xl text-left ml-2 mt-2">
-                Select Pair
-            </h2>
-            <SelectPair
-                mintInfo={mintInfo}
-                currencyA={currencyA}
-                currencyB={currencyB}
-            />
+            <h2 className="font-semibold text-xl text-left ml-2 mt-2">Select Pair</h2>
+            <SelectPair mintInfo={mintInfo} currencyA={currencyA} currencyB={currencyB} />
 
-            {areCurrenciesSelected && !isSameToken && !isPoolExists && (
-                <Summary currencyA={currencyA} currencyB={currencyB} />
-            )}
+            {areCurrenciesSelected && !isSameToken && !isPoolExists && <Summary currencyA={currencyA} currencyB={currencyB} />}
 
             <Button
                 className="mt-2"
-                disabled={
-                    isLoading || 
-                    isPoolExists || 
-                    !startPriceTypedValue || 
-                    !areCurrenciesSelected ||
-                    isSameToken
-                }
+                disabled={isLoading || isPoolExists || !startPriceTypedValue || !areCurrenciesSelected || isSameToken}
                 onClick={() => createPool && createPool()}
             >
                 {isLoading ? (
                     <Loader />
                 ) : isSameToken ? (
-                    'Select another pair'
+                    "Select another pair"
                 ) : !areCurrenciesSelected ? (
-                    'Select currencies'
+                    "Select currencies"
                 ) : isPoolExists ? (
-                    'Pool already exists'
+                    "Pool already exists"
                 ) : !startPriceTypedValue ? (
-                    'Enter initial price'
+                    "Enter initial price"
                 ) : (
-                    'Create Pool'
+                    "Create Pool"
                 )}
             </Button>
         </div>
