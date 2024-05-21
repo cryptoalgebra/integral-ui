@@ -94,8 +94,6 @@ const SwapChart = () => {
 
     const isPoolExists = mintInfo.poolState === PoolState.EXISTS;
 
-    const isPoolEmpty = isPoolExists && mintInfo.noLiquidity;
-
     useEffect(() => {
         setChart(undefined);
 
@@ -400,9 +398,7 @@ const SwapChart = () => {
 
             {chartType === SwapChartView.TICKS && !isPoolExists && <div>Pool doesn't exists.</div>}
 
-            {chartType === SwapChartView.TICKS && isPoolEmpty &&  <div className="my-auto">Pool has no liquidity.</div>}
-
-            {chartType === SwapChartView.TICKS && isPoolExists && !isPoolEmpty && tokenA && tokenB && <TicksChart currencyA={tokenA} currencyB={tokenB} zoom={ticksChartZoom} />}
+            {chartType === SwapChartView.TICKS && isPoolExists && tokenA && tokenB && <TicksChart currencyA={tokenA} currencyB={tokenB} zoom={ticksChartZoom} />}
 
             {chartType !== SwapChartView.TICKS && 
             <>

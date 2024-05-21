@@ -284,9 +284,7 @@ export function useDerivedMintInfo(
 
     const [poolState, pool] = usePool(poolAddress as Address);
 
-    const noLiquidity = pool?.liquidity.toString() === '0';
-
-    const isExists = poolState === PoolState.EXISTS;
+    const noLiquidity = poolState === PoolState.EXISTS;
 
     const dynamicFee = pool ? pool.fee : 100;
 
@@ -299,8 +297,8 @@ export function useDerivedMintInfo(
 
     // always returns the price with 0 as base token
     const price: Price<Token, Token> | undefined = useMemo(() => {
-        // if does not exists use typed value
-        if (!isExists) {
+        // if no liquidity use typed value
+        if (noLiquidity) {
             const parsedQuoteAmount = tryParseAmount(
                 startPriceTypedValue,
                 invertPrice ? token0 : token1
@@ -326,7 +324,7 @@ export function useDerivedMintInfo(
             // get the amount of quote currency
             return pool && token0 ? pool.priceOf(token0) : undefined;
         }
-    }, [isExists, startPriceTypedValue, invertPrice, token1, token0, pool]);
+    }, [noLiquidity, startPriceTypedValue, invertPrice, token1, token0, pool]);
 
     // check for invalid price input (converts to invalid ratio)
     const invalidPrice = useMemo(() => {

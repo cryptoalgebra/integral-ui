@@ -25,12 +25,12 @@ interface CustomTooltipProps {
 
 interface ChartProps {
     formattedData: any;
-    currencyA?: Currency;
-    currencyB?: Currency;
-    leftPrice?: string;
-    rightPrice?: string;
-    currentPrice?: number;
-    isSorted?: boolean;
+    currencyA: Currency | undefined;
+    currencyB: Currency | undefined;
+    leftPrice: string | undefined;
+    rightPrice: string | undefined;
+    currentPrice: number | undefined;
+    isSorted: boolean | undefined;
     zoom: number;
 }
 
