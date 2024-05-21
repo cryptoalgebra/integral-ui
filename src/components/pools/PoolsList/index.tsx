@@ -1,12 +1,12 @@
 import { poolsColumns } from "@/components/common/Table/poolsColumns";
-import { usePoolsListQuery, usePoolsVolumeDataQuery } from "@/graphql/generated/graphql";
+import { useActiveFarmingsQuery, usePoolsListQuery, usePoolsVolumeDataQuery } from "@/graphql/generated/graphql";
 import { useMemo } from "react";
 import { Address } from "viem";
-import { POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from "@/constants/api";
+import { ETERNAL_FARMINGS_API, POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from "@/constants/api";
 import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";
-import { usePoolsStore } from "@/state/poolsStore";
+import { farmingClient } from "@/graphql/clients";
 
 const PoolsList = () => {
     const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery();
@@ -15,15 +15,24 @@ const PoolsList = () => {
 
     const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
     const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
+    const { data: farmingsAPR } = useSWR(ETERNAL_FARMINGS_API, fetcher);
+
+    const { data: activeFarmings, loading: isFarmingsLoading } = useActiveFarmingsQuery({
+        client: farmingClient,
+    });
 
     const { positions, loading: isPositionsLoading } = usePositions();
 
-    const isLoading = isPoolsListLoading || isPoolsVolumeLoading || isPoolsMaxAprLoading || isPoolsAvgAprLoading || isPositionsLoading;
-
-    const { pluginsForPools } = usePoolsStore();
+    const isLoading =
+        isPoolsListLoading ||
+        isPoolsVolumeLoading ||
+        isPoolsMaxAprLoading ||
+        isPoolsAvgAprLoading ||
+        isPositionsLoading ||
+        isFarmingsLoading;
 
     const formattedPools = useMemo(() => {
-        if (!pools?.pools || !poolsMaxApr || !poolsAvgApr || !poolsVolume?.poolDayDatas || !positions) return [];
+        if (isLoading || !pools || !poolsVolume || !positions) return [];
 
         return pools.pools.map(({ id, token0, token1, fee, totalValueLockedUSD }) => {
             const currentPool = poolsVolume.poolDayDatas.find((currPool) => currPool.pool.id === id);
@@ -34,8 +43,14 @@ const PoolsList = () => {
             const msIn24Hours = 24 * 60 * 60 * 1000;
 
             const openPositions = positions.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
+            const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
+            const hasActiveFarming = Boolean(activeFarming);
 
-            const hasActiveFarming = pluginsForPools[id as Address]?.farmingPlugin;
+            const poolMaxApr = poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
+            const poolAvgApr = poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
+            const farmApr = activeFarming ? farmingsAPR[activeFarming.id] : 0;
+
+            const avgApr = farmApr + poolAvgApr;
 
             return {
                 id: id as Address,
@@ -46,13 +61,15 @@ const PoolsList = () => {
                 fee: Number(fee) / 10_000,
                 tvlUSD: Number(totalValueLockedUSD),
                 volume24USD: timeDifference <= msIn24Hours && currentPool ? currentPool.volumeUSD : 0,
-                maxApr: poolsMaxApr[id] ? poolsMaxApr[id].toFixed(2) : 0,
-                avgApr: poolsAvgApr[id] ? poolsAvgApr[id].toFixed(2) : 0,
+                poolMaxApr,
+                poolAvgApr,
+                farmApr,
+                avgApr,
                 isMyPool: openPositions?.length > 0,
                 hasActiveFarming,
             };
         });
-    }, [pools, poolsMaxApr, poolsAvgApr, poolsVolume, positions]);
+    }, [isLoading, pools, poolsVolume, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR]);
 
     return (
         <div className="flex flex-col gap-4">

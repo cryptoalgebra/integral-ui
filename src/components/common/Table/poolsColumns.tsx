@@ -9,6 +9,9 @@ import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FarmingPluginIcon } from "../PluginIcons";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { formatPercent } from "@/utils/common/formatPercent";
+import { ReactNode } from "react";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -21,8 +24,10 @@ interface Pool {
     fee: number;
     tvlUSD: number;
     volume24USD: number;
-    maxApr: number;
+    poolMaxApr: number;
+    poolAvgApr: number;
     avgApr: number;
+    farmApr: number;
     isMyPool: boolean;
     hasActiveFarming: boolean;
 }
@@ -63,6 +68,19 @@ const Plugins = ({ poolId }: { poolId: Address }) => {
     );
 };
 
+const AvgAPR = ({ children, avgApr, farmApr, maxApr }: { children: ReactNode; avgApr: string; farmApr: string; maxApr: string }) => {
+    return (
+        <HoverCard>
+            <HoverCardTrigger>{children}</HoverCardTrigger>
+            <HoverCardContent>
+                <p>Avg. APR - {avgApr}</p>
+                <p>Farm APR - {farmApr}</p>
+                <p>Max APR - {maxApr}</p>
+            </HoverCardContent>
+        </HoverCard>
+    );
+};
+
 export const poolsColumns: ColumnDef<Pool>[] = [
     {
         accessorKey: "pair",
@@ -99,21 +117,22 @@ export const poolsColumns: ColumnDef<Pool>[] = [
         cell: ({ getValue }) => formatUSD.format(getValue() as number),
     },
     {
-        accessorKey: "maxApr",
-        header: ({ column }) => (
-            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                Max. APR
-            </HeaderItem>
-        ),
-        cell: ({ getValue }) => `${getValue()} %`,
-    },
-    {
         accessorKey: "avgApr",
         header: ({ column }) => (
             <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
                 Avg. APR
             </HeaderItem>
         ),
-        cell: ({ getValue }) => `${getValue()} %`,
+        cell: ({ getValue, row }) => {
+            return (
+                <AvgAPR
+                    avgApr={formatPercent.format(row.original.poolAvgApr)}
+                    maxApr={formatPercent.format(row.original.poolMaxApr)}
+                    farmApr={formatPercent.format(row.original.farmApr)}
+                >
+                    {formatPercent.format(getValue() as number)}
+                </AvgAPR>
+            );
+        },
     },
 ];

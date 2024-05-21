@@ -164,6 +164,13 @@ const PoolsTable = <TData, TValue>({
             </Table>
             {showPagination && (
                 <div className="flex items-center justify-end space-x-2 px-4 mt-auto">
+                    <p className="mr-2">
+                        {`${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} - 
+                        ${Math.min(
+                            table.getState().pagination.pageSize * (table.getState().pagination.pageIndex + 1),
+                            table.getFilteredRowModel().rows.length
+                        )} of ${table.getFilteredRowModel().rows.length}`}
+                    </p>
                     <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
                         Previous
                     </Button>
