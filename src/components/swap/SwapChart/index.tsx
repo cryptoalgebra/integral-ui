@@ -158,7 +158,7 @@ const SwapChart = () => {
             chartCreated.timeScale().fitContent();
             chartCreated.timeScale().scrollToPosition(0, false);
         }
-    }, [chartCreated, chartRef, chartRef, chartSpan]);
+    }, [chartCreated, chartRef]);
 
     const isClient = typeof window === "object";
     useEffect(() => {
@@ -256,7 +256,7 @@ const SwapChart = () => {
     const displayValueCurrency = chartPair === SwapChartPair.AB ? currencies.OUTPUT?.symbol : chartPair === SwapChartPair.BA ? currencies.INPUT?.symbol : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B ? '' : ''
 
     const crosshairMoveHandler = useCallback((param: any) => {
-        if (param.point) {
+        if (param.point && param.seriesData.get(series)) {
             setDisplayValued(formatPrice(param.seriesData.get(series).value, 2))
             setDisplayDate(new Date(param.time * 1000).toLocaleDateString())
         } else {
