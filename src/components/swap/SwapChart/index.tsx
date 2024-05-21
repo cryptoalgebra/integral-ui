@@ -6,7 +6,7 @@ import { useSwapChart } from "@/hooks/swap/useSwapChart";
 import { BarChart3, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO, Currency, INITIAL_POOL_FEE, ZERO } from "@cryptoalgebra/integral-sdk";
 import { Button } from "@/components/ui/button";
 import { Address } from "wagmi";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +17,7 @@ import { useDerivedMintInfo } from "@/state/mintStore";
 import { PoolState } from "@/hooks/pools/usePool";
 import TicksZoomBar from "../TicksZoomBar";
 import { formatPrice } from "@/utils/common/formatPrice";
+import JSBI from "jsbi";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -274,6 +275,11 @@ const SwapChart = () => {
         setDisplayValued(currentValue)
     }, [currentValue])
 
+    useEffect(() => {
+        if(isPoolExists) setChartType(SwapChartView.TICKS)
+        else setChartType(SwapChartView.LINE)
+    }, [isPoolExists])
+
     const [pairImage, pairTitle] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT) return [
             <Loader size={16} />,
@@ -293,6 +299,8 @@ const SwapChart = () => {
             title: getTokenTitle(pair, currencies.INPUT!, currencies.OUTPUT!)
         }))
     }, [currencies.INPUT, currencies.OUTPUT, chartPair])
+
+    if (!isPoolExists && !poolAddress || JSBI.equal(mintInfo.pool?.liquidity as JSBI, ZERO)) return null;
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
@@ -357,12 +365,12 @@ const SwapChart = () => {
                 </>
                 }
                 <div className="flex gap-2">
-                    <Button variant={chartType === SwapChartView.TICKS ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.TICKS)}>
+                    {isPoolExists && <Button variant={chartType === SwapChartView.TICKS ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.TICKS)}>
                         <BarChart3 size={20} />
-                    </Button>
-                    <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
+                    </Button>}
+                    {poolAddress && <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
                         <LineChartIcon size={20} />
-                    </Button>
+                    </Button>}
                     <HoverCard>
                         <HoverCardTrigger>
                             <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
@@ -390,13 +398,11 @@ const SwapChart = () => {
         </div>
         {
             chartType === SwapChartView.TICKS &&
-            <div className="flex gap-2 mr-2 ml-auto absolute right-0 top-20 z-50 max-md:top-24">
+            <div className="flex gap-2 mr-2 ml-auto absolute right-0 top-20 z-20 max-md:top-24">
                 <TicksZoomBar zoom={ticksChartZoom} onZoom={setTicksChartZoom} onlyZoom />
             </div>
         }
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>
-
-            {chartType === SwapChartView.TICKS && !isPoolExists && <div>Pool doesn't exists.</div>}
 
             {chartType === SwapChartView.TICKS && isPoolExists && tokenA && tokenB && <TicksChart currencyA={tokenA} currencyB={tokenB} zoom={ticksChartZoom} />}
 
