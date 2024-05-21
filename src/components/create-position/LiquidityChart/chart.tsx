@@ -27,10 +27,10 @@ interface ChartProps {
     formattedData: any;
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
-    leftPrice: string | undefined;
-    rightPrice: string | undefined;
-    currentPrice: number | undefined;
-    isSorted: boolean | undefined;
+    leftPrice?: string;
+    rightPrice?: string;
+    currentPrice?: number;
+    isSorted?: boolean;
     zoom: number;
 }
 
