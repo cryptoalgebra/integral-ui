@@ -300,7 +300,7 @@ const SwapChart = () => {
         }))
     }, [currencies.INPUT, currencies.OUTPUT, chartPair])
 
-    if (!isPoolExists && !poolAddress || JSBI.equal(mintInfo.pool?.liquidity as JSBI, ZERO)) return null;
+    if (!isPoolExists && !poolAddress || (mintInfo.pool && JSBI.equal(mintInfo.pool.liquidity, ZERO))) return null;
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
