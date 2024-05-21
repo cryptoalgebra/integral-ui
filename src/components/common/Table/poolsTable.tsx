@@ -152,7 +152,7 @@ const PoolsTable = <TData, TValue>({
                                     }}
                                 >
                                     {row.getVisibleCells().map((cell: any) => (
-                                        <TableCell key={cell.id} className="text-left">
+                                        <TableCell key={cell.id} className="text-left min-w-[120px] first:min-w-[320px]">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -164,13 +164,15 @@ const PoolsTable = <TData, TValue>({
             </Table>
             {showPagination && (
                 <div className="flex items-center justify-end space-x-2 px-4 mt-auto">
-                    <p className="mr-2">
-                        {`${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} - 
+                    {table.getFilteredRowModel().rows.length > 0 && (
+                        <p className="mr-2">
+                            {`${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} - 
                         ${Math.min(
                             table.getState().pagination.pageSize * (table.getState().pagination.pageIndex + 1),
                             table.getFilteredRowModel().rows.length
                         )} of ${table.getFilteredRowModel().rows.length}`}
-                    </p>
+                        </p>
+                    )}
                     <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
                         Previous
                     </Button>

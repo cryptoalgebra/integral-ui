@@ -117,6 +117,15 @@ export const poolsColumns: ColumnDef<Pool>[] = [
         cell: ({ getValue }) => formatUSD.format(getValue() as number),
     },
     {
+        accessorKey: "fees24USD",
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                Fees 24H
+            </HeaderItem>
+        ),
+        cell: ({ getValue }) => formatUSD.format(getValue() as number),
+    },
+    {
         accessorKey: "avgApr",
         header: ({ column }) => (
             <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
