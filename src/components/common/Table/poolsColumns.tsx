@@ -137,7 +137,7 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 <AvgAPR
                     avgApr={formatPercent.format(row.original.poolAvgApr)}
                     maxApr={formatPercent.format(row.original.poolMaxApr)}
-                    farmApr={row.original.hasActiveFarming && formatPercent.format(row.original.farmApr)}
+                    farmApr={row.original.hasActiveFarming ? formatPercent.format(row.original.farmApr) : undefined}
                 >
                     {formatPercent.format(getValue() as number)}
                 </AvgAPR>

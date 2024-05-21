@@ -45,7 +45,7 @@ const PoolsList = () => {
 
             const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
             const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
-            const farmApr = activeFarming && farmingsAPR ? farmingsAPR[activeFarming.id] : 0;
+            const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
 
             const avgApr = farmApr + poolAvgApr;
 
