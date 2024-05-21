@@ -63,6 +63,10 @@ const PoolsTable = <TData, TValue>({
 
     const searchID = "pair";
 
+    const totalRows = table.getFilteredRowModel().rows.length;
+    const startsFromRow = table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1;
+    const endsAtRow = Math.min(startsFromRow + table.getState().pagination.pageSize - 1, totalRows);
+
     if (loading) return <LoadingState />;
 
     return (
@@ -164,13 +168,11 @@ const PoolsTable = <TData, TValue>({
             </Table>
             {showPagination && (
                 <div className="flex items-center justify-end space-x-2 px-4 mt-auto">
-                    {table.getFilteredRowModel().rows.length > 0 && (
+                    {totalRows > 0 && (
                         <p className="mr-2">
-                            {`${table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} - 
-                        ${Math.min(
-                            table.getState().pagination.pageSize * (table.getState().pagination.pageIndex + 1),
-                            table.getFilteredRowModel().rows.length
-                        )} of ${table.getFilteredRowModel().rows.length}`}
+                            {startsFromRow === totalRows
+                                ? `${startsFromRow} of ${totalRows}`
+                                : `${startsFromRow} - ${endsAtRow} of ${totalRows}`}
                         </p>
                     )}
                     <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
