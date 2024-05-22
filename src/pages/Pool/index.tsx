@@ -18,6 +18,7 @@ import { usePositions } from '@/hooks/positions/usePositions';
 import { FormattedPosition } from '@/types/formatted-position';
 import { getPositionAPR } from '@/utils/positions/getPositionAPR';
 import { getPositionFees } from '@/utils/positions/getPositionFees';
+import { formatAmount } from '@/utils/common/formatAmount';
 import { Position, ZERO } from '@cryptoalgebra/integral-sdk';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { MoveRightIcon } from 'lucide-react';
@@ -169,7 +170,7 @@ const PoolPage = () => {
                 outOfRange:
                     poolEntity.tickCurrent < position.tickLower ||
                     poolEntity.tickCurrent > position.tickUpper,
-                range: `${position.token0PriceLower.toFixed()} — ${position.token0PriceUpper.toFixed()}`,
+                range: `${formatAmount(position.token0PriceLower.toFixed(6), 6)} — ${formatAmount(position.token0PriceUpper.toFixed(6), 6)}`,
                 liquidityUSD: formatLiquidityUSD(position),
                 feesUSD: formatFeesUSD(idx),
                 apr: formatAPR(idx),
