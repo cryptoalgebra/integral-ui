@@ -50,8 +50,10 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
 
         slicedData.forEach((t: any) => (t.showWestArrow = false) || (t.showEastArrow = false));
 
-        const firstTick = slicedData.find((t: any, i) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && !t.isReversed);
-        const lastTick = [...slicedData].reverse().find((t: any, i) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && t.isReversed);
+        const firstTick = slicedData.find((t: any, i: number) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && !t.isReversed);
+        const lastTick = [...slicedData]
+            .reverse()
+            .find((t: any, i: number) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && t.isReversed);
 
         if (firstTick) firstTick.showWestArrow = true;
 
