@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const ETERNAL_FARMINGS = gql`
     query EternalFarmings($pool: Bytes) {
@@ -28,6 +28,15 @@ export const DEPOSITS = gql`
             owner
             pool
             rangeLength
+        }
+    }
+`;
+
+export const ACTIVE_FARMINGS = gql`
+    query ActiveFarmings {
+        eternalFarmings(where: { isDeactivated: false }) {
+            pool
+            id
         }
     }
 `;

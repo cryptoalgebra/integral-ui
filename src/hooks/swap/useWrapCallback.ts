@@ -35,7 +35,11 @@ export default function useWrapCallback(
 
     const { isLoading: isWrapLoading } = useTransactionAwait(
         wrapData?.hash,
-        { title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL} to W${DEFAULT_NATIVE_SYMBOL}`, type: TransactionType.SWAP }
+        { 
+            title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL}`,
+            tokenA: WNATIVE[chainId].address as Address,
+            type: TransactionType.SWAP
+        }
     )
 
     const { config: unwrapConfig } = usePrepareWrappedNativeWithdraw({
@@ -47,8 +51,12 @@ export default function useWrapCallback(
 
     const { isLoading: isUnwrapLoading } = useTransactionAwait(
         unwrapData?.hash,
-        { title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL} to ${DEFAULT_NATIVE_SYMBOL}`, type: TransactionType.SWAP }
-    )
+        { 
+            title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL}`,
+            tokenA: WNATIVE[chainId].address as Address,
+            type: TransactionType.SWAP,
+        }
+    )   
 
     const { data: balance } = useBalance({
         enabled: Boolean(inputCurrency),

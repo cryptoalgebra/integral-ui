@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const POOL_FRAGMENT = gql`
     fragment PoolFields on Pool {
@@ -21,7 +21,7 @@ export const POOL_FRAGMENT = gql`
         token0Price
         token1Price
     }
-`
+`;
 export const TICK_FRAGMENT = gql`
     fragment TickFields on Tick {
         tickIdx
@@ -30,25 +30,31 @@ export const TICK_FRAGMENT = gql`
         price0
         price1
     }
-`
+`;
 
 export const POOL_FEE_DATA_FRAGMENT = gql`
-    fragment PoolFeeDataFields on PoolFeeData {
-        fee
-        timestamp
+    fragment PoolFeeDataFields on PoolDayData {
+        feesUSD
     }
-`
+`;
 
 export const POOL_DAY_DATA_FRAGMENT = gql`
     fragment PoolDayDataFields on PoolDayData {
         feesUSD
+        tvlUSD
+        volumeUSD
+        id
+        date
     }
-`
+`;
 
 export const POOLS_LIST = gql`
     query PoolsList {
         pools {
             ...PoolFields
+            poolDayData(first: 1, orderBy: date, orderDirection: desc) {
+                ...PoolDayDataFields
+            }
         }
     }
 `;
@@ -59,7 +65,7 @@ export const ALL_TICKS = gql`
             ...TickFields
         }
     }
-`
+`;
 
 export const SINGLE_POOL = gql`
     query SinglePool($poolId: ID!) {
@@ -67,7 +73,7 @@ export const SINGLE_POOL = gql`
             ...PoolFields
         }
     }
-`
+`;
 
 export const MULTIPLE_POOLS = gql`
     query MultiplePools($poolIds: [ID!]) {
@@ -75,24 +81,25 @@ export const MULTIPLE_POOLS = gql`
             ...PoolFields
         }
     }
-`
+`;
 
 export const POOL_FEE_DATA = gql`
     query PoolFeeData($poolId: String) {
         poolDayDatas(where: { pool: $poolId }, orderBy: date, orderDirection: desc) {
-            ...PoolDayDataFields
-        }
-    }
-`
-
-export const POOLS_VOLUME_DATA = gql`
-    query PoolsVolumeData {
-        poolDayDatas(orderBy: date, orderDirection: desc) {
-            date
-            volumeUSD
-            pool {
-                id
-            }
+            ...PoolFeeDataFields
         }
     }
 `;
+
+// export const POOLS_DAY_DATAS = gql`
+//     query PoolsVolumeData {
+//         poolDayDatas(orderBy: date, orderDirection: desc) {
+//             date
+//             pool {
+//                 id
+//             }
+//             volumeUSD
+//             ...PoolDayDataFields
+//         }
+//     }
+// `;
