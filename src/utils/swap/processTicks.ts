@@ -20,6 +20,8 @@ export async function processTicks(
 
             const active = currentTick <= tick && tick < nextTick;
 
+            const afterSwap = tickAfterSwap && tickAfterSwap >= currentTick && tickAfterSwap < nextTick;
+
             const afterSwapRange =
                 tickAfterSwap && ((tickAfterSwap >= currentTick && currentTick >= tick) || (tickAfterSwap <= nextTick && nextTick <= tick));
 
@@ -65,7 +67,7 @@ export async function processTicks(
                 index: i,
                 isCurrent: active,
                 isAfterSwapRange: afterSwapRange,
-                isAfterSwapTick: null,
+                isAfterSwapTick: afterSwap,
                 isReversed,
                 activeLiquidity: parseFloat(t.liquidityActive.toString()),
                 price0: parseFloat(t.price0),

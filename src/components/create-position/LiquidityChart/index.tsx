@@ -4,7 +4,6 @@ import { Presets } from "@/types/presets";
 import { Token, Price, Currency } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
-import { useDerivedSwapInfo } from "@/state/swapStore";
 import { processTicks } from "@/utils/swap/processTicks";
 import { TicksChartLoader } from "@/components/common/TicksChartLoader";
 
@@ -24,8 +23,6 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
 
     const [zoom, setZoom] = useState<number>(50)
 
-    const { tickAfterSwap } = useDerivedSwapInfo();
-
     const {
         fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },
     } = useInfoTickData()
@@ -39,14 +36,14 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
         if (!currencyA || !currencyB) return;
         if (!ticksResult || !ticksResult.ticksProcessed) return;
 
-        processTicks(currencyA, currencyB, ticksResult.activeTickIdx, ticksResult, tickAfterSwap)
+        processTicks(currencyA, currencyB, ticksResult.activeTickIdx, ticksResult, null)
             .then((data) => setProcessedData(data))
             .catch(() => {
-                processTicks(currencyB, currencyA, ticksResult.activeTickIdx, ticksResult, tickAfterSwap, true).then((reversedData) =>
+                processTicks(currencyB, currencyA, ticksResult.activeTickIdx, ticksResult, null, true).then((reversedData) =>
                     setProcessedData(reversedData)
                 );
             });
-    }, [ticksResult, tickAfterSwap, currencyA, currencyB])
+    }, [ticksResult, currencyA, currencyB])
 
     useEffect(() => {
 

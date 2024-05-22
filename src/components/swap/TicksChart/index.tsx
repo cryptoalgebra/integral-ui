@@ -48,17 +48,17 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
 
         const slicedData = processedData.slice(middle - chunkLength, middle + chunkLength);
 
-        slicedData.forEach((t: any) => (t.isAfterSwapTick = false));
+        slicedData.forEach((t: any) => (t.showWestArrow = false) || (t.showEastArrow = false));
 
-        const firstTick = slicedData.find((t: any) => t.isAfterSwapRange && !t.isReversed);
-        const lastTick = [...slicedData].reverse().find((t: any) => t.isAfterSwapRange && t.isReversed);
+        const firstTick = slicedData.find((t: any, i) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && !t.isReversed);
+        const lastTick = [...slicedData].reverse().find((t: any, i) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && t.isReversed);
 
-        if (firstTick) firstTick.isAfterSwapTick = true;
+        if (firstTick) firstTick.showWestArrow = true;
 
-        if (lastTick) lastTick.isAfterSwapTick = true;
+        if (lastTick) lastTick.showEastArrow = true;
 
         return slicedData.reverse();
-    }, [processedData, zoom, tick]);
+    }, [processedData, zoom]);
 
     return (
         <div className="flex w-full h-full mt-12">

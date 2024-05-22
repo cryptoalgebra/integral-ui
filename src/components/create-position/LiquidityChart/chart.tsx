@@ -1,8 +1,8 @@
-// import { formatNumber } from "app/functions"
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
 import { Currency } from "@cryptoalgebra/integral-sdk";
 import { formatBalance } from '@/utils/common/formatBalance';
+import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 
 interface CustomBarProps {
     x: number;
@@ -14,6 +14,8 @@ interface CustomBarProps {
     isCurrent: boolean;
     isAfterSwapTick: boolean;
     isFocused: boolean;
+    showEastArrow: boolean;
+    showWestArrow: boolean;
 }
 
 interface CustomTooltipProps {
@@ -44,6 +46,8 @@ const CustomBar = ({
     isCurrent,
     isAfterSwapTick,
     isFocused,
+    showEastArrow,
+    showWestArrow
 }: CustomBarProps) => {
     return (
         <g>
@@ -55,6 +59,8 @@ const CustomBar = ({
             </defs>
             {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
             {isCurrent && isFocused && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {showEastArrow && <ArrowBigRight size={28} x='97%' y={y - 35} fill='orange' color='orange' />}
+            {showWestArrow && <ArrowBigLeft size={28} y={y - 35} fill='orange' color='orange' />}
             {isAfterSwapTick && !isCurrent && isFocused && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
@@ -142,7 +148,22 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         percent = (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
                     }
 
-                    return <CustomBar isFocused={Boolean(props.index === focusBar)} key={props.index} height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} isAfterSwapTick={props.isAfterSwapTick} />
+                    return (
+                        <CustomBar
+                            isFocused={Boolean(props.index === focusBar)}
+                            key={props.index}
+                            height={props.height}
+                            width={props.width}
+                            x={props.x}
+                            y={props.y}
+                            fill={props.fill}
+                            percent={percent}
+                            isCurrent={props.isCurrent}
+                            isAfterSwapTick={props.isAfterSwapTick}
+                            showEastArrow={props.showEastArrow}
+                            showWestArrow={props.showWestArrow}
+                        />
+                    );
                 }}
             >
                 {formattedData?.map((entry: any, index: number) => {
