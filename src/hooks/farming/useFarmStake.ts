@@ -1,13 +1,14 @@
 import { FARMING_CENTER } from '@/constants/addresses';
 import { farmingCenterABI } from '@/generated';
 import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransitionAwait } from '../common/useTransactionAwait';
+import { useTransactionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
 import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
 import { useFarmCheckApprove } from './useFarmCheckApprove';
 import { useEffect, useState } from 'react';
 import { farmingClient } from '@/graphql/clients';
 import { Deposit } from '@/graphql/generated/graphql';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 
 export function useFarmStake({
     tokenId,
@@ -45,9 +46,13 @@ export function useFarmStake({
 
     const { data: data, writeAsync: onStake } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Stake Position #${tokenId}`
+        {
+            title: `Stake Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     useEffect(() => {
@@ -66,10 +71,8 @@ export function useFarmStake({
                         if (!currentPos) return;
 
                         if (currentPos.eternalFarming !== null) {
-                            query.refetch().then(() => {
-                                setIsQueryLoading(false);
-                                clearInterval(interval);
-                            });
+                            setIsQueryLoading(false);
+                            clearInterval(interval);
                         } else {
                             query.refetch().then();
                         }
@@ -146,9 +149,13 @@ export function useFarmUnstake({
 
     const { data: data, writeAsync: onUnstake } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Unstake Position #${tokenId}`
+        {
+            title: `Unstake Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     useEffect(() => {
@@ -167,10 +174,8 @@ export function useFarmUnstake({
                         if (!currentPos) return;
 
                         if (currentPos.eternalFarming === null) {
-                            query.refetch().then(() => {
-                                setIsQueryLoading(false);
-                                clearInterval(interval);
-                            });
+                            setIsQueryLoading(false);
+                            clearInterval(interval);
                         } else {
                             query.refetch().then();
                         }

@@ -1,9 +1,10 @@
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
+import { TransactionInfo, usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Address, useWaitForTransaction } from 'wagmi';
+import { Address, useAccount, useWaitForTransaction } from 'wagmi';
 
 export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     hash ? (
@@ -21,45 +22,50 @@ export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
         <></>
     );
 
-export function useTransitionAwait(
+export function useTransactionAwait(
     hash: Address | undefined,
-    title: string,
-    description?: string,
-    redirectPath?: string
+    transactionInfo: TransactionInfo,
+    redirectPath?: string,
 ) {
     const { toast } = useToast();
 
     const navigate = useNavigate();
+
+    const { address: account } = useAccount();
+
+    const { actions: { addPendingTransaction, updatePendingTransaction } } = usePendingTransactionsStore();
 
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash,
     });
 
     useEffect(() => {
-        if (isLoading) {
+        if (isLoading && hash && account) {
             toast({
-                title: title,
-                description: description || 'Transaction was sent',
+                title: transactionInfo.title,
+                description: transactionInfo.description || 'Transaction was sent',
                 action: <ViewTxOnExplorer hash={hash} />,
             });
+            addPendingTransaction(account, hash);
+            updatePendingTransaction(account, hash, { data: transactionInfo, loading: true, success: null, error: null });
         }
-    }, [isLoading]);
+    }, [isLoading, hash, account]);
 
     useEffect(() => {
-        if (isLoading) {
+        if (isError && hash) {
             toast({
-                title: title,
-                description: description || 'Transaction failed',
+                title: transactionInfo.title,
+                description: transactionInfo.description || 'Transaction failed',
                 action: <ViewTxOnExplorer hash={hash} />,
             });
         }
     }, [isError]);
 
     useEffect(() => {
-        if (isSuccess) {
+        if (isSuccess && hash) {
             toast({
-                title: title,
-                description: description || 'Transaction confirmed',
+                title: transactionInfo.title,
+                description: transactionInfo.description || 'Transaction confirmed',
                 action: <ViewTxOnExplorer hash={hash} />,
             });
             if (redirectPath) {

@@ -2,12 +2,13 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
-import { useTransitionAwait } from "@/hooks/common/useTransactionAwait";
+import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { IDerivedMintInfo } from "@/state/mintStore";
+import { TransactionType } from "@/state/pendingTransactionsStore";
 import { NonfungiblePositionManager } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
-import { useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 
 interface CollectFeesProps {
     mintInfo: IDerivedMintInfo;
@@ -49,7 +50,15 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
 
     const { data: collectData, write: collect } = useContractWrite(collectConfig)
 
-    const { isLoading } = useTransitionAwait(collectData?.hash, 'Collect fees')
+    const { isLoading } = useTransactionAwait(
+        collectData?.hash,
+        {
+            title: 'Collect fees',
+            tokenA: mintInfo.currencies.CURRENCY_A?.wrapped.address as Address,
+            tokenB: mintInfo.currencies.CURRENCY_B?.wrapped.address as Address,
+            type: TransactionType.POOL
+        }
+    )
     
     const collectedFees = positionFeesUSD === '$0' && !zeroRewards ? '< $0.001' : positionFeesUSD
 

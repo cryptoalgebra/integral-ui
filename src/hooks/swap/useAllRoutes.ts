@@ -1,7 +1,8 @@
-import { Currency, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, Route, Token } from "@cryptoalgebra/integral-sdk"
+import { Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/integral-sdk"
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"
+import { useUserState } from "@/state/userStore"
 
 
 /**
@@ -19,7 +20,7 @@ function poolEquals(poolA: Pool, poolB: Pool): boolean {
 function computeAllRoutes(
     currencyIn: Currency,
     currencyOut: Currency,
-    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string } }[],
+    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string, fee: string } }[],
     chainId: number,
     currentPath: Pool[] = [],
     allPaths: Route<Currency, Currency>[] = [],
@@ -35,9 +36,9 @@ function computeAllRoutes(
 
         const [tokenA, tokenB] = pool.tokens
 
-        const { liquidity, price, tick } = pool.pool
+        const { liquidity, price, tick, fee } = pool.pool
 
-        const newPool = new Pool(tokenA, tokenB, INITIAL_POOL_FEE, price, liquidity, Number(tick), DEFAULT_TICK_SPACING)
+        const newPool = new Pool(tokenA, tokenB, +fee as unknown as 100, price, liquidity, Number(tick), DEFAULT_TICK_SPACING)
 
         if (!newPool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(newPool, pathPool))) continue
 
@@ -75,7 +76,7 @@ export function useAllRoutes(
 
     const { pools, loading: poolsLoading } = useSwapPools(currencyIn, currencyOut)
 
-    const singleHopOnly = false
+    const { isMultihop } = useUserState();
 
     return useMemo(() => {
         if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
@@ -84,9 +85,8 @@ export function useAllRoutes(
                 routes: [],
             }
 
-        //Hack
+        // Hack
         // const singleIfWrapped = (currencyIn.isNative || currencyOut.isNative)
-        const singleIfWrapped = false
 
         const routes = computeAllRoutes(
             currencyIn,
@@ -96,9 +96,9 @@ export function useAllRoutes(
             [],
             [],
             currencyIn,
-            singleHopOnly || singleIfWrapped ? 1 : 3
+            isMultihop ? 3 : 1
         )
 
         return { loading: false, routes }
-    }, [chainId, currencyIn, currencyOut, pools, poolsLoading, singleHopOnly])
+    }, [chainId, currencyIn, currencyOut, pools, poolsLoading, isMultihop])
 }

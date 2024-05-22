@@ -3,8 +3,9 @@ import { usePrepareWrappedNativeDeposit, usePrepareWrappedNativeWithdraw } from 
 import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { Address, useAccount, useBalance, useChainId, useContractWrite } from "wagmi";
-import { useTransitionAwait } from "../common/useTransactionAwait";
+import { useTransactionAwait } from "../common/useTransactionAwait";
 import { DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
+import { TransactionType } from "@/state/pendingTransactionsStore";
 
 export const WrapType = {
     NOT_APPLICABLE: 'NOT_APPLICABLE',
@@ -32,7 +33,10 @@ export default function useWrapCallback(
 
     const { data: wrapData, write: wrap } = useContractWrite(wrapConfig)
 
-    const { isLoading: isWrapLoading } = useTransitionAwait(wrapData?.hash, `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL} to W${DEFAULT_NATIVE_SYMBOL}`)
+    const { isLoading: isWrapLoading } = useTransactionAwait(
+        wrapData?.hash,
+        { title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL} to W${DEFAULT_NATIVE_SYMBOL}`, type: TransactionType.SWAP }
+    )
 
     const { config: unwrapConfig } = usePrepareWrappedNativeWithdraw({
         address: WNATIVE[chainId].address as Address,
@@ -41,7 +45,10 @@ export default function useWrapCallback(
 
     const { data: unwrapData, write: unwrap } = useContractWrite(unwrapConfig)
 
-    const { isLoading: isUnwrapLoading } = useTransitionAwait(unwrapData?.hash, `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL} to ${DEFAULT_NATIVE_SYMBOL}`)
+    const { isLoading: isUnwrapLoading } = useTransactionAwait(
+        unwrapData?.hash,
+        { title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL} to ${DEFAULT_NATIVE_SYMBOL}`, type: TransactionType.SWAP }
+    )
 
     const { data: balance } = useBalance({
         enabled: Boolean(inputCurrency),

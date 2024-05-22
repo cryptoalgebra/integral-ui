@@ -7,8 +7,10 @@ import {
 } from '@/constants/default-chain-id';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useApprove } from '@/hooks/common/useApprove';
-import { useTransitionAwait } from '@/hooks/common/useTransactionAwait';
+import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
+import { usePosition, usePositions } from '@/hooks/positions/usePositions';
 import { IDerivedMintInfo } from '@/state/mintStore';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import {
@@ -21,7 +23,7 @@ import {
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
 import { useEffect, useMemo } from 'react';
-import { useAccount, useContractWrite } from 'wagmi';
+import { Address, useAccount, useContractWrite } from 'wagmi';
 
 interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -48,6 +50,10 @@ export const IncreaseLiquidityButton = ({
     const { selectedNetworkId } = useWeb3ModalState();
 
     const { txDeadline } = useUserState();
+
+    const { refetch: refetchAllPositions } = usePositions();
+
+    const { refetch: refetchPosition } = usePosition(tokenId);
 
     const useNative = baseCurrency?.isNative
         ? baseCurrency
@@ -120,13 +126,20 @@ export const IncreaseLiquidityButton = ({
         useContractWrite(increaseLiquidityConfig);
 
     const { isLoading: isIncreaseLiquidityLoading, isSuccess } =
-        useTransitionAwait(
+        useTransactionAwait(
             increaseLiquidityData?.hash,
-            `Add Liquidity to #${tokenId}`
+            {
+                title: `Add Liquidity to #${tokenId}`,
+                tokenA: baseCurrency?.wrapped.address as Address,
+                tokenB: quoteCurrency?.wrapped.address as Address,
+                type: TransactionType.POOL
+            }
         );
 
     useEffect(() => {
-        if (isSuccess) handleCloseModal?.();
+        if (!isSuccess) return;
+        Promise.all([refetchPosition(), refetchAllPositions()])
+            .then(() => handleCloseModal?.());
     }, [isSuccess]);
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;

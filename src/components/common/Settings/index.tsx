@@ -16,11 +16,12 @@ const Settings = () => {
                 <SettingsIcon />
             </Button>
         </PopoverTrigger>
-        <PopoverContent align={'end'} className="flex flex-col gap-4 w-fit bg-card rounded-3xl border border-card-border text-white">
+        <PopoverContent align={'end'} className="flex flex-col gap-4 p-6 w-fit bg-card rounded-3xl border border-card-border text-white">
             <div className="text-md font-bold">Transaction Settings</div>
             <Separator orientation={'horizontal'} className="bg-border" />
             <SlippageTolerance />
             <TransactionDeadline />
+            <Multihop />
             <ExpertMode />
         </PopoverContent>
     </Popover>
@@ -156,11 +157,25 @@ const ExpertMode = () => {
 
     return <div className="flex flex-col gap-2 max-w-[332px]">
             <div className="flex justify-between items-center gap-2 text-md font-semibold">
-                Expert Mode
-                <Switch checked={isExpertMode} onCheckedChange={setIsExpertMode} />
+                <label htmlFor="expert-mode">Expert mode</label>
+                <Switch id="expert-mode" checked={isExpertMode} onCheckedChange={setIsExpertMode} />
             </div>
             <p className="whitespace-break-spaces">
                 Advanced control over swap parameters such as price setting and gas management.
+            </p>
+        </div>
+}
+
+const Multihop = () => {
+    const { isMultihop, actions: { setIsMultihop } } = useUserState();
+
+    return <div className="flex flex-col gap-2 max-w-[332px]">
+            <div className="flex justify-between items-center gap-2 text-md font-semibold">
+                <label htmlFor="multihop">Multihop</label>
+                <Switch id="multihop" checked={isMultihop} onCheckedChange={setIsMultihop} />
+            </div>
+            <p className="whitespace-break-spaces">
+                Optimized trades across multiple liquidity pools.
             </p>
         </div>
 }

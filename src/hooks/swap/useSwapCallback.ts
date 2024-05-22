@@ -1,12 +1,13 @@
+import { formatBalance } from '@/utils/common/formatBalance';
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
-import { useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useContractWrite } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
-import { useTransitionAwait } from "../common/useTransactionAwait";
-import { formatCurrency } from "@/utils/common/formatCurrency";
+import { useTransactionAwait } from "../common/useTransactionAwait";
 import { ApprovalStateType } from "@/types/approve-state";
+import { TransactionType } from "@/state/pendingTransactionsStore";
 
 interface SwapCallEstimate {
     calldata: string
@@ -108,12 +109,21 @@ export function useSwapCallback(
     const { config: swapConfig } = usePrepareAlgebraRouterMulticall({
         args: bestCall && [bestCall.calldata],
         value: BigInt(bestCall?.value || 0),
-        enabled: Boolean(bestCall)
+        enabled: Boolean(bestCall),
+        gas: bestCall ? bestCall.gasEstimate * (10000n + 2000n) / 10000n : undefined
     })
 
     const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
 
-    const { isLoading, isSuccess } = useTransitionAwait(swapData?.hash, `Swap ${formatCurrency.format(Number(trade?.inputAmount.toSignificant()))} ${trade?.inputAmount.currency.symbol} `)
+    const { isLoading, isSuccess } = useTransactionAwait(
+        swapData?.hash,
+        {
+            title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
+            tokenA: trade?.inputAmount.currency.wrapped.address as Address,
+            tokenB: trade?.outputAmount.currency.wrapped.address as Address,
+            type: TransactionType.SWAP
+        }
+    )
 
     return useMemo(() => {
 

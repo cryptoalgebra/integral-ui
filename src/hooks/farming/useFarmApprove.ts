@@ -4,9 +4,10 @@ import {
 } from '@/constants/addresses';
 import { algebraPositionManagerABI } from '@/generated';
 import { useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransitionAwait } from '../common/useTransactionAwait';
+import { useTransactionAwait } from '../common/useTransactionAwait';
 import { useEffect } from 'react';
 import { useFarmCheckApprove } from './useFarmCheckApprove';
+import { TransactionType } from '@/state/pendingTransactionsStore';
 
 export function useFarmApprove(tokenId: bigint) {
     const APPROVE = true;
@@ -20,9 +21,13 @@ export function useFarmApprove(tokenId: bigint) {
 
     const { data: data, writeAsync: onApprove } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransitionAwait(
+    const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
-        `Approve Position #${tokenId}`
+        {
+            title: `Approve Position #${tokenId}`,
+            tokenId: tokenId.toString(),
+            type: TransactionType.FARM
+        }
     );
 
     const { handleCheckApprove } = useFarmCheckApprove(tokenId);
