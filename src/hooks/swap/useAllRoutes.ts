@@ -1,4 +1,4 @@
-import { Currency, DEFAULT_TICK_SPACING, INITIAL_POOL_FEE, Pool, Route, Token } from "@cryptoalgebra/integral-sdk"
+import { Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/integral-sdk"
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"
