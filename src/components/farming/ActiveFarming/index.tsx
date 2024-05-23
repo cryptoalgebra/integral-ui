@@ -15,7 +15,6 @@ import { useFarmingAPR } from "@/hooks/farming/useFarmingAPR";
 import { useFarmingUserTVL } from "@/hooks/farming/useFarmingUserTVL";
 import { useFarmingRewardRates } from "@/hooks/farming/useFarmingRewardRates";
 import { useFarmingRewardsEarned } from "@/hooks/farming/useFarmingRewardsEarned";
-import { formatAmount, reverseFormatAmount } from "@/utils/common/formatAmount";
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -30,7 +29,7 @@ const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps)
 
     const userTVL = useFarmingUserTVL({ deposits, positionsData });
 
-    const { rewardRatePerDay, bonusRewardRatePerDay } = useFarmingRewardRates(farming);
+    const { rewardRatePerDay, bonusRewardRatePerDay, sumOfRewardRates } = useFarmingRewardRates(farming);
 
     const { rewardEarned, bonusRewardEarned, totalEarned, totalEarnedUSD, refetch } = useFarmingRewardsEarned({
         farming,
@@ -41,8 +40,7 @@ const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps)
     const bonusRewardTokenCurrency = useCurrency(farming.farming.bonusRewardToken);
 
     const isSameReward = farming.farming.rewardToken.toLowerCase() === farming.farming.bonusRewardToken.toLowerCase();
-    const isSingleReward =
-        farming.farming.bonusRewardToken.toLowerCase() === ADDRESS_ZERO.toLowerCase() || farming.farming.bonusRewardToken === null;
+    const isSingleReward = farming.farming.bonusRewardToken.toLowerCase() === ADDRESS_ZERO || farming.farming.bonusRewardToken === null;
 
     const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
         {
@@ -101,12 +99,7 @@ const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps)
                             {isSameReward ? (
                                 <>
                                     <CurrencyLogo size={32} currency={rewardTokenCurrency} />
-                                    <p>
-                                        {`${formatAmount(
-                                            (reverseFormatAmount(rewardRatePerDay) + reverseFormatAmount(bonusRewardRatePerDay)).toString(),
-                                            4
-                                        )} ${farming.rewardToken.symbol} / day`}
-                                    </p>
+                                    <p>{`${sumOfRewardRates} ${farming.rewardToken.symbol} / day`}</p>
                                 </>
                             ) : (
                                 <div className="flex w-full gap-4 max-md:flex-col">

@@ -53,7 +53,7 @@ const ClosedFarmingCard = ({ positionInEndedFarming, selectedPosition }: ClosedF
                                 <span className="text-cyan-300 drop-shadow-cyan">${totalEarnedUSD}</span>
                             </div>
                         </HoverCardTrigger>
-                        {totalEarned === "0" ? null : (
+                        {totalEarned !== "0" && (
                             <HoverCardContent className="flex flex-col gap-2">
                                 {isSameReward ? (
                                     <span>
