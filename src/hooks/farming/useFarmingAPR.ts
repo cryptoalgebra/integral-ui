@@ -1,6 +1,6 @@
-import { ETERNAL_FARMINGS_API, fetcher } from '@/constants/api';
-import { useMemo } from 'react';
-import useSWR from 'swr';
+import { ETERNAL_FARMINGS_API, fetcher } from "@/constants/api";
+import { useMemo } from "react";
+import useSWR from "swr";
 
 export function useFarmingAPR({ farmingId }: { farmingId: string }): string {
     const { data: farmingsAPR } = useSWR(ETERNAL_FARMINGS_API, fetcher);
