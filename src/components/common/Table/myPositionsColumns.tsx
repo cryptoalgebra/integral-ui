@@ -34,19 +34,8 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
     },
     {
         accessorKey: 'range',
-        header: () => <HeaderItem className='min-w-[150px]'>Range</HeaderItem>,
-        cell: ({ getValue }) => {
-            const range = getValue() as string;
-            const minRange = "0.0000";
-            const maxRange = "338492131855223783712001310944818317035.9647"
-            const splittedRange = range.split(" — ");
-
-            if(splittedRange[0] === minRange && splittedRange[1] === maxRange) return "Full Range";
-            if(splittedRange[0] === minRange) splittedRange[0] = "0";
-            if(splittedRange[1] === maxRange) splittedRange[1] = "∞";
-
-            return splittedRange.join(" — ");
-        }
+        header: () => <HeaderItem className='min-w-[180px]'>Range</HeaderItem>,
+        cell: ({ getValue }) => getValue() as string,
     },
     {
         accessorKey: 'apr',

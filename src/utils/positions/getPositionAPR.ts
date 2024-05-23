@@ -1,13 +1,13 @@
 import { getAlgebraPool } from "@/generated"
 import { Position } from "@cryptoalgebra/integral-sdk"
-import { PoolDayDataFieldsFragment, PoolFieldsFragment } from "@/graphql/generated/graphql"
+import { PoolFeeDataFieldsFragment, PoolFieldsFragment } from "@/graphql/generated/graphql"
 import { Address } from "wagmi"
 
 export async function getPositionAPR(
     poolId: Address, 
     position: Position, 
     pool: PoolFieldsFragment | undefined | null, 
-    poolFeeData: PoolDayDataFieldsFragment[] | undefined, 
+    poolFeeData: PoolFeeDataFieldsFragment[] | undefined, 
     nativePrice: string | undefined 
 ) {
 

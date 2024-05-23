@@ -9,6 +9,9 @@ import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FarmingPluginIcon } from "../PluginIcons";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { formatPercent } from "@/utils/common/formatPercent";
+import { ReactNode } from "react";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -21,10 +24,12 @@ interface Pool {
     fee: number;
     tvlUSD: number;
     volume24USD: number;
-    maxApr: number;
+    poolMaxApr: number;
+    poolAvgApr: number;
     avgApr: number;
-    isMyPool: boolean | undefined;
-    hasActiveFarming: boolean | undefined;
+    farmApr: number;
+    isMyPool: boolean;
+    hasActiveFarming: boolean;
 }
 
 const PoolPair = ({ pair, fee }: Pool) => {
@@ -60,6 +65,29 @@ const Plugins = ({ poolId }: { poolId: Address }) => {
             {dynamicFeePlugin && <DynamicFeePluginIcon />}
             {farmingPlugin && <FarmingPluginIcon />}
         </div>
+    );
+};
+
+const AvgAPR = ({
+    children,
+    avgApr,
+    farmApr,
+    maxApr,
+}: {
+    children: ReactNode;
+    avgApr: string;
+    farmApr: string | undefined;
+    maxApr: string;
+}) => {
+    return (
+        <HoverCard>
+            <HoverCardTrigger>{children}</HoverCardTrigger>
+            <HoverCardContent>
+                <p>Avg. APR - {avgApr}</p>
+                {farmApr && <p>Farm APR - {farmApr}</p>}
+                <p>Max APR - {maxApr}</p>
+            </HoverCardContent>
+        </HoverCard>
     );
 };
 
@@ -99,13 +127,13 @@ export const poolsColumns: ColumnDef<Pool>[] = [
         cell: ({ getValue }) => formatUSD.format(getValue() as number),
     },
     {
-        accessorKey: "maxApr",
+        accessorKey: "fees24USD",
         header: ({ column }) => (
             <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                Max. APR
+                Fees 24H
             </HeaderItem>
         ),
-        cell: ({ getValue }) => `${getValue()} %`,
+        cell: ({ getValue }) => formatUSD.format(getValue() as number),
     },
     {
         accessorKey: "avgApr",
@@ -114,6 +142,16 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 Avg. APR
             </HeaderItem>
         ),
-        cell: ({ getValue }) => `${getValue()} %`,
+        cell: ({ getValue, row }) => {
+            return (
+                <AvgAPR
+                    avgApr={formatPercent.format(row.original.poolAvgApr / 100)}
+                    maxApr={formatPercent.format(row.original.poolMaxApr / 100)}
+                    farmApr={row.original.hasActiveFarming ? formatPercent.format(row.original.farmApr / 100) : undefined}
+                >
+                    {formatPercent.format((getValue() as number) / 100)}
+                </AvgAPR>
+            );
+        },
     },
 ];
