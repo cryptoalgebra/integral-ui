@@ -68,7 +68,17 @@ const Plugins = ({ poolId }: { poolId: Address }) => {
     );
 };
 
-const AvgAPR = ({ children, avgApr, farmApr, maxApr }: { children: ReactNode; avgApr: string; farmApr: string | undefined; maxApr: string }) => {
+const AvgAPR = ({
+    children,
+    avgApr,
+    farmApr,
+    maxApr,
+}: {
+    children: ReactNode;
+    avgApr: string;
+    farmApr: string | undefined;
+    maxApr: string;
+}) => {
     return (
         <HoverCard>
             <HoverCardTrigger>{children}</HoverCardTrigger>
@@ -135,11 +145,11 @@ export const poolsColumns: ColumnDef<Pool>[] = [
         cell: ({ getValue, row }) => {
             return (
                 <AvgAPR
-                    avgApr={formatPercent.format(row.original.poolAvgApr)}
-                    maxApr={formatPercent.format(row.original.poolMaxApr)}
-                    farmApr={row.original.hasActiveFarming ? formatPercent.format(row.original.farmApr) : undefined}
+                    avgApr={formatPercent.format(row.original.poolAvgApr / 100)}
+                    maxApr={formatPercent.format(row.original.poolMaxApr / 100)}
+                    farmApr={row.original.hasActiveFarming ? formatPercent.format(row.original.farmApr / 100) : undefined}
                 >
-                    {formatPercent.format(getValue() as number)}
+                    {formatPercent.format((getValue() as number) / 100)}
                 </AvgAPR>
             );
         },
