@@ -100,7 +100,7 @@ const ActiveFarming = ({
         60 *
         24;
 
-    const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
+    const { isLoading, onHarvestAll, isSuccess, isPending: isHarvestPending } = useFarmHarvestAll(
         {
             rewardToken: farming.farming.rewardToken,
             bonusRewardToken: farming.farming.bonusRewardToken,
@@ -258,12 +258,12 @@ const ActiveFarming = ({
                         disabled={
                             (rewardEarnedUSD === 0 &&
                                 bonusRewardEarnedUSD === 0) ||
-                            isLoading
+                            isLoading || isHarvestPending
                         }
                         onClick={handleHarvestAll}
                         className="w-1/2"
                     >
-                        {isLoading ? <Loader /> : 'Collect Rewards'}
+                        {isHarvestPending ? 'Signing...' : isLoading ? <Loader /> : 'Collect Rewards'}
                     </Button>
                     <SelectPositionFarmModal
                         isHarvestLoading={isLoading}

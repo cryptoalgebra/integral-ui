@@ -38,7 +38,7 @@ export function useFarmHarvest({
         args: [calldata],
     });
 
-    const { data: data, writeAsync: onHarvest } = useContractWrite(config);
+    const { data: data, writeAsync: onHarvest, isLoading: isPending } = useContractWrite(config);
     
     const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
@@ -53,6 +53,7 @@ export function useFarmHarvest({
         isLoading,
         isSuccess,
         onHarvest,
+        isPending
     };
 }
 
@@ -101,7 +102,7 @@ export function useFarmHarvestAll(
         args: [calldatas],
     });
 
-    const { data: data, writeAsync: onHarvestAll } = useContractWrite(config);
+    const { data: data, writeAsync: onHarvestAll, isLoading: isPending } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
@@ -116,5 +117,6 @@ export function useFarmHarvestAll(
         isLoading,
         isSuccess,
         onHarvestAll,
+        isPending
     };
 }

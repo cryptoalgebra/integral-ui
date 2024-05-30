@@ -82,7 +82,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         enabled: Boolean(calldata)
     });
 
-    const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig)
+    const { data: removeLiquidityData, write: removeLiquidity, isLoading: isPending } = useContractWrite(removeLiquidityConfig)
 
     const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(
         removeLiquidityData?.hash,
@@ -94,7 +94,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         }
     )
 
-    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity
+    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity || isPending
 
     useEffect(() => {
         onPercentSelect(sliderValue[0])
@@ -180,7 +180,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                 />
 
                 <Button disabled={isDisabled} onClick={() => removeLiquidity && removeLiquidity()}>
-                    {isRemoveLoading ? <Loader /> : 'Remove Liquidity'}
+                    {isPending ? 'Signing...' : isRemoveLoading ? <Loader /> : 'Remove Liquidity'}
                 </Button>
 
             </div>

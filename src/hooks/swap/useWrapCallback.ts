@@ -19,7 +19,7 @@ export default function useWrapCallback(
     inputCurrency: Currency | undefined,
     outputCurrency: Currency | undefined,
     typedValue: string | undefined
-): { wrapType: typeof WrapType[keyof typeof WrapType]; execute?: undefined | (() => void); loading?: boolean; inputError?: string } {
+): { wrapType: typeof WrapType[keyof typeof WrapType]; execute?: undefined | (() => void); loading?: boolean; inputError?: string, isPending?: boolean } {
     
     const chainId = useChainId()
     const { address: account } = useAccount()
@@ -47,7 +47,7 @@ export default function useWrapCallback(
         args: inputAmount ? [BigInt(inputAmount.quotient.toString())] : undefined
     })
 
-    const { data: unwrapData, write: unwrap } = useContractWrite(unwrapConfig)
+    const { data: unwrapData, write: unwrap, isLoading: isPending } = useContractWrite(unwrapConfig)
 
     const { isLoading: isUnwrapLoading } = useTransactionAwait(
         unwrapData?.hash,
@@ -77,17 +77,19 @@ export default function useWrapCallback(
                 wrapType: WrapType.WRAP,
                 execute: sufficientBalance && inputAmount ? wrap : undefined,
                 loading: isWrapLoading,
-                inputError: sufficientBalance ? undefined : hasInputAmount ? `Insufficient ${DEFAULT_NATIVE_SYMBOL} balance` : `Enter ${DEFAULT_NATIVE_SYMBOL} amount`
+                inputError: sufficientBalance ? undefined : hasInputAmount ? `Insufficient ${DEFAULT_NATIVE_SYMBOL} balance` : `Enter ${DEFAULT_NATIVE_SYMBOL} amount`,
+                isPending,
             }
         } else if (weth.equals(inputCurrency) && outputCurrency.isNative) {
             return {
                 wrapType: WrapType.UNWRAP,
                 execute: sufficientBalance && inputAmount ? unwrap : undefined,
                 loading: isUnwrapLoading,
-                inputError: sufficientBalance ? undefined : hasInputAmount ? `Insufficient W${DEFAULT_NATIVE_SYMBOL} balance` : `Enter W${DEFAULT_NATIVE_SYMBOL} amount`
+                inputError: sufficientBalance ? undefined : hasInputAmount ? `Insufficient W${DEFAULT_NATIVE_SYMBOL} balance` : `Enter W${DEFAULT_NATIVE_SYMBOL} amount`,
+                isPending,
             }
         } else {
             return NOT_APPLICABLE
         }
-    }, [chainId, inputCurrency, outputCurrency, inputAmount, balance, isWrapLoading, isUnwrapLoading, wrap, unwrap])
+    }, [chainId, inputCurrency, outputCurrency, inputAmount, balance, isWrapLoading, isUnwrapLoading, wrap, unwrap, isPending])
 }

@@ -26,11 +26,11 @@ const ClosedFarmingCard = ({
         account: account ?? ADDRESS_ZERO,
     };
 
-    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
+    const { onUnstake, isLoading: isUnstaking, isPending } = useFarmUnstake(farmingArgs);
 
     return (
-        <Button disabled={isUnstaking} onClick={onUnstake}>
-            {isUnstaking ? <Loader /> : 'Exit from farming'}
+        <Button disabled={isUnstaking || isPending} onClick={onUnstake}>
+            {isPending ? 'Signing...' : isUnstaking ? <Loader /> : 'Exit from farming'}
         </Button>
     );
 };
