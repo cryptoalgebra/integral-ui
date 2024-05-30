@@ -44,6 +44,7 @@ const SwapButton = () => {
         execute: onWrap,
         loading: isWrapLoading,
         inputError: wrapInputError,
+        isPending: isWrapPending
     } = useWrapCallback(
         currencies[SwapField.INPUT],
         currencies[SwapField.OUTPUT],
@@ -79,7 +80,7 @@ const SwapButton = () => {
     const routeNotFound = !trade?.route;
     const isLoadingRoute = TradeState.LOADING === tradeState.state;
 
-    const { approvalState, approvalCallback } = useApproveCallbackFromTrade(
+    const { approvalState, approvalCallback, isPending: isApprovePending } = useApproveCallbackFromTrade(
         trade,
         allowedSlippage
     );
@@ -101,6 +102,7 @@ const SwapButton = () => {
         callback: swapCallback,
         error: swapCallbackError,
         isLoading: isSwapLoading,
+        isPending: isSwapPending,
     } = useSwapCallback(trade, allowedSlippage, approvalState);
 
     const handleSwap = useCallback(async () => {
@@ -118,6 +120,8 @@ const SwapButton = () => {
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
 
+    const isPending = isSwapPending || isApprovePending || isWrapPending;
+
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
@@ -127,6 +131,8 @@ const SwapButton = () => {
                 onClick={() => open({ view: 'Networks' })}
             >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
         );
+
+    if (isPending) return <Button disabled>Signing...</Button>;
 
     if (showWrap && wrapInputError)
         return <Button disabled>{wrapInputError}</Button>;

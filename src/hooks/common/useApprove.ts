@@ -30,7 +30,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
         ] as [Address, bigint]
     })
 
-    const { data: approvalData, writeAsync: approve } = useContractWrite(config);
+    const { data: approvalData, writeAsync: approve, isLoading: isPending } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useTransactionAwait(
         approvalData?.hash,
@@ -43,7 +43,8 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 
     return {
         approvalState: isLoading ? ApprovalState.PENDING : isSuccess && approvalState === ApprovalState.APPROVED ? ApprovalState.APPROVED : approvalState,
-        approvalCallback: approve
+        approvalCallback: approve,
+        isPending
     }
 
 }

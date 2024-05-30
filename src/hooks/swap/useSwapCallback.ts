@@ -113,7 +113,7 @@ export function useSwapCallback(
         gas: bestCall ? bestCall.gasEstimate * (10000n + 2000n) / 10000n : undefined
     })
 
-    const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
+    const { data: swapData, writeAsync: swapCallback, isLoading: isPending } = useContractWrite(swapConfig)
 
     const { isLoading, isSuccess } = useTransactionAwait(
         swapData?.hash,
@@ -132,7 +132,8 @@ export function useSwapCallback(
             callback: null,
             error: "No trade was found",
             isLoading: false,
-            isSuccess: false
+            isSuccess: false,
+            isPending: false,
         }
 
         return {
@@ -140,9 +141,10 @@ export function useSwapCallback(
             callback: swapCallback,
             error: null,
             isLoading,
-            isSuccess
+            isSuccess,
+            isPending,
         }
 
-    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig, isSuccess])
+    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig, isSuccess, isPending])
 
 }

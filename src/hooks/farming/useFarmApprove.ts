@@ -19,7 +19,7 @@ export function useFarmApprove(tokenId: bigint) {
         args: [tokenId, APPROVE, FARMING_CENTER],
     });
 
-    const { data: data, writeAsync: onApprove } = useContractWrite(config);
+    const { data: data, writeAsync: onApprove, isLoading: isPending } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
@@ -42,5 +42,6 @@ export function useFarmApprove(tokenId: bigint) {
         isLoading,
         isSuccess,
         onApprove,
+        isPending
     };
 }

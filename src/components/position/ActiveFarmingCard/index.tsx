@@ -49,9 +49,10 @@ const ActiveFarmingCard = ({
         onHarvest,
         isLoading: isHarvesting,
         isSuccess: isHarvested,
+        isPending: isHarvestPending,
     } = useFarmHarvest(farmingArgs);
 
-    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
+    const { onUnstake, isLoading: isUnstaking, isPending: isUnstakePending } = useFarmUnstake(farmingArgs);
 
     const handleUnstake = async () => {
         if (!account) return;
@@ -86,17 +87,17 @@ const ActiveFarmingCard = ({
                 </div>
                 <Button
                     size={'md'}
-                    disabled={isHarvesting || isUnstaking}
+                    disabled={isHarvesting || isUnstaking || isHarvestPending || isUnstakePending}
                     onClick={handleHarvest}
                 >
-                    {isHarvesting ? <Loader /> : 'Collect'}
+                    {isHarvesting || isHarvestPending ? <Loader /> : 'Collect'}
                 </Button>
             </div>
             <Button
                 onClick={handleUnstake}
-                disabled={isUnstaking || isHarvesting}
+                disabled={isUnstaking || isHarvesting || isUnstakePending}
             >
-                {isUnstaking ? <Loader /> : 'Exit from farming'}
+                {isUnstakePending ? 'Signing...' : isUnstaking ? <Loader /> : 'Exit from farming'}
             </Button>
         </div>
     );

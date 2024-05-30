@@ -75,7 +75,7 @@ const CreatePoolForm = () => {
         });
 
 
-    const { data: createPoolData, write: createPool } =
+    const { data: createPoolData, write: createPool, isLoading: isPending } =
         useContractWrite(createPoolConfig);
 
     const { isLoading } = useTransactionAwait(
@@ -123,11 +123,14 @@ const CreatePoolForm = () => {
                     isPoolExists || 
                     !startPriceTypedValue || 
                     !areCurrenciesSelected ||
-                    isSameToken
+                    isSameToken ||
+                    isPending
                 }
                 onClick={() => createPool && createPool()}
             >
-                {isLoading ? (
+                {isPending ? (
+                    'Signing...'
+                ) : isLoading ? (
                     <Loader />
                 ) : isSameToken ? (
                     'Select another pair'

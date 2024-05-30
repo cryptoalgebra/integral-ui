@@ -44,7 +44,7 @@ export function useFarmStake({
         ],
     });
 
-    const { data: data, writeAsync: onStake } = useContractWrite(config);
+    const { data: data, writeAsync: onStake, isLoading: isPending } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
@@ -88,6 +88,7 @@ export function useFarmStake({
         isLoading: isQueryLoading || isLoading,
         isSuccess,
         onStake,
+        isPending
     };
 }
 
@@ -147,7 +148,7 @@ export function useFarmUnstake({
         args: [calldatas],
     });
 
-    const { data: data, writeAsync: onUnstake } = useContractWrite(config);
+    const { data: data, writeAsync: onUnstake, isLoading: isPending } = useContractWrite(config);
 
     const { isLoading, isSuccess } = useTransactionAwait(
         data?.hash,
@@ -191,5 +192,6 @@ export function useFarmUnstake({
         isLoading: isLoading || isQueryLoading,
         isSuccess,
         onUnstake,
+        isPending
     };
 }

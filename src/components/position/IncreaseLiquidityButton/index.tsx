@@ -82,6 +82,7 @@ export const IncreaseLiquidityButton = ({
     const {
         approvalState: approvalStateA,
         approvalCallback: approvalCallbackA,
+        isPending: isPendingA,
     } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
         ALGEBRA_POSITION_MANAGER
@@ -89,6 +90,7 @@ export const IncreaseLiquidityButton = ({
     const {
         approvalState: approvalStateB,
         approvalCallback: approvalCallbackB,
+        isPending: isPendingB,
     } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_B],
         ALGEBRA_POSITION_MANAGER
@@ -122,7 +124,7 @@ export const IncreaseLiquidityButton = ({
             value: BigInt(value || 0),
         });
 
-    const { data: increaseLiquidityData, write: increaseLiquidity } =
+    const { data: increaseLiquidityData, write: increaseLiquidity, isLoading: isIncreaseLiquidityPending } =
         useContractWrite(increaseLiquidityConfig);
 
     const { isLoading: isIncreaseLiquidityLoading, isSuccess } =
@@ -162,11 +164,13 @@ export const IncreaseLiquidityButton = ({
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button
-                        disabled={approvalStateA === ApprovalState.PENDING}
+                        disabled={approvalStateA === ApprovalState.PENDING || isPendingA}
                         className="w-full"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
                     >
-                        {approvalStateA === ApprovalState.PENDING ? (
+                        {isPendingA ? (
+                            'Signing...'
+                        ) : approvalStateA === ApprovalState.PENDING ? (
                             <Loader />
                         ) : (
                             `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`
@@ -175,11 +179,13 @@ export const IncreaseLiquidityButton = ({
                 )}
                 {showApproveB && (
                     <Button
-                        disabled={approvalStateB === ApprovalState.PENDING}
+                        disabled={approvalStateB === ApprovalState.PENDING || isPendingB}
                         className="w-full"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
                     >
-                        {approvalStateB === ApprovalState.PENDING ? (
+                        {isPendingB ? (
+                            'Signing...'
+                        ) : approvalStateB === ApprovalState.PENDING ? (
                             <Loader />
                         ) : (
                             `Approve ${mintInfo.currencies.CURRENCY_B?.symbol}`
@@ -191,10 +197,10 @@ export const IncreaseLiquidityButton = ({
 
     return (
         <Button
-            disabled={!isReady || isIncreaseLiquidityLoading}
+            disabled={!isReady || isIncreaseLiquidityLoading || isIncreaseLiquidityPending}
             onClick={() => increaseLiquidity && increaseLiquidity()}
         >
-            {isIncreaseLiquidityLoading ? <Loader /> : 'Add Liquidity'}
+            {isIncreaseLiquidityPending ? 'Signing...' : isIncreaseLiquidityLoading ? <Loader /> : 'Add Liquidity'}
         </Button>
     );
 };

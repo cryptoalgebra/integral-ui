@@ -35,9 +35,9 @@ export function SelectPositionFarmModal({
 
     const { approved, isLoading: isApproving } = useFarmCheckApprove(tokenId);
 
-    const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
+    const { isLoading: isApproveLoading, onApprove, isPending: isApprovePending } = useFarmApprove(tokenId);
 
-    const { isLoading: isStakeLoading, onStake } = useFarmStake({
+    const { isLoading: isStakeLoading, onStake, isPending: isStakePending } = useFarmStake({
         tokenId,
         rewardToken: farming.farming.rewardToken,
         bonusRewardToken: farming.farming.bonusRewardToken,
@@ -130,11 +130,13 @@ export function SelectPositionFarmModal({
                     ) : selectedPosition && availablePositions.length > 0 ? (
                         <>
                             <Button
-                                disabled={approved || isApproveLoading}
+                                disabled={approved || isApproveLoading || isApprovePending}
                                 className="w-1/2"
                                 onClick={handleApprove}
                             >
-                                {approved ? (
+                                {isApprovePending ? (
+                                    <span>Signing...</span>
+                                ) : approved ? (
                                     <span>1. Approved</span>
                                 ) : isApproveLoading ? (
                                     <Loader />
@@ -143,11 +145,11 @@ export function SelectPositionFarmModal({
                                 )}
                             </Button>
                             <Button
-                                disabled={!approved || isStakeLoading}
+                                disabled={!approved || isStakeLoading || isStakePending}
                                 className="w-1/2"
                                 onClick={handleStake}
                             >
-                                {isStakeLoading ? <Loader /> : '2. Deposit'}
+                                {isStakePending ? 'Signing...' : isStakeLoading ? <Loader /> : '2. Deposit'}
                             </Button>
                         </>
                     ) : (

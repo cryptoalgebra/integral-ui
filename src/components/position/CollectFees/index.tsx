@@ -48,7 +48,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
         value: BigInt(value || 0)
     });
 
-    const { data: collectData, write: collect } = useContractWrite(collectConfig)
+    const { data: collectData, write: collect, isLoading: isPending } = useContractWrite(collectConfig)
 
     const { isLoading } = useTransactionAwait(
         collectData?.hash,
@@ -69,8 +69,8 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
                 {collectedFees ? <span className="text-cyan-300 drop-shadow-cyan">{collectedFees}</span> : <Skeleton className="w-[100px] h-[30px]" />}
             </div>
         </div>
-        <Button size={'md'} disabled={!collect || zeroRewards || isLoading} onClick={() => collect && collect()}>
-            {isLoading ? <Loader /> : 'Collect fees'}
+        <Button size={'md'} disabled={!collect || zeroRewards || isLoading || isPending} onClick={() => collect && collect()}>
+            {isPending || isLoading ? <Loader /> : 'Collect fees'}
         </Button>
     </div>
 
