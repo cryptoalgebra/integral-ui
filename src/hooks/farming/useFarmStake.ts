@@ -3,7 +3,7 @@ import { farmingCenterABI } from '@/generated';
 import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { useTransactionAwait } from '../common/useTransactionAwait';
 import { encodeFunctionData } from 'viem';
-import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
+import { MaxUint128 } from '@cryptoalgebra/custom-pools-sdk';
 import { useFarmCheckApprove } from './useFarmCheckApprove';
 import { useEffect, useState } from 'react';
 import { farmingClient } from '@/graphql/clients';

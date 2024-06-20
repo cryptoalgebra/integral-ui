@@ -2,7 +2,7 @@ import TokenCard from '@/components/swap/TokenCard';
 import { IDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mintStore';
 import { useSwapActionHandlers } from '@/state/swapStore';
 import { SwapField } from '@/types/swap-field';
-import { Currency } from '@cryptoalgebra/integral-sdk';
+import { Currency } from '@cryptoalgebra/custom-pools-sdk';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import { useCallback } from 'react';
 

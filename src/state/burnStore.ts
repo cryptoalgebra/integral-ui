@@ -3,7 +3,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { usePool } from "@/hooks/pools/usePool";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { PositionFromTokenId } from "@/hooks/positions/usePositions";
-import { Currency, CurrencyAmount, Percent, Position, computePoolAddress, unwrappedToken } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, Percent, Position, computePoolAddress, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
 import { Address, useAccount } from "wagmi";
 import { create } from "zustand";

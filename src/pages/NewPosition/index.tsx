@@ -10,7 +10,7 @@ import {
     useMintState,
     useRangeHopCallbacks,
 } from '@/state/mintStore';
-import { Bound, INITIAL_POOL_FEE } from '@cryptoalgebra/integral-sdk';
+import { Bound, INITIAL_POOL_FEE } from '@cryptoalgebra/custom-pools-sdk';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'wagmi';

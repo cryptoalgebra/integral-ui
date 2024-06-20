@@ -118,6 +118,11 @@ export const algebraRouterABI = [
                     },
                     {
                         "internalType": "address",
+                        "name": "deployer",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
                         "name": "recipient",
                         "type": "address"
                     },
@@ -170,6 +175,11 @@ export const algebraRouterABI = [
                     {
                         "internalType": "address",
                         "name": "tokenOut",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "deployer",
                         "type": "address"
                     },
                     {
@@ -272,6 +282,11 @@ export const algebraRouterABI = [
                     {
                         "internalType": "address",
                         "name": "tokenOut",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "deployer",
                         "type": "address"
                     },
                     {
@@ -626,4 +641,4 @@ export const algebraRouterABI = [
         "stateMutability": "payable",
         "type": "receive"
     }
-] as const
+] as const;

@@ -20,6 +20,7 @@ export const POOL_FRAGMENT = gql`
         untrackedFeesUSD
         token0Price
         token1Price
+        deployer
     }
 `;
 export const TICK_FRAGMENT = gql`
@@ -87,6 +88,14 @@ export const POOL_FEE_DATA = gql`
     query PoolFeeData($poolId: String) {
         poolDayDatas(where: { pool: $poolId }, orderBy: date, orderDirection: desc) {
             ...PoolFeeDataFields
+        }
+    }
+`;
+
+export const CUSTOM_POOL_DEPLOYER = gql`
+    query CustomPoolDeployer($poolId: ID!) {
+        pool(id: $poolId) {
+            deployer
         }
     }
 `;

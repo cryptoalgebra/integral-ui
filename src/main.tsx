@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import {
     createBrowserRouter,
     Navigate,
@@ -68,10 +70,14 @@ const router = createBrowserRouter([
     },
 ]);
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <ApolloProvider client={infoClient}>
-            <RouterProvider router={router} />
-        </ApolloProvider>
+        <QueryClientProvider client={queryClient}>
+            <ApolloProvider client={infoClient}>
+                <RouterProvider router={router} />
+            </ApolloProvider>
+        </QueryClientProvider>
     </React.StrictMode>
 );

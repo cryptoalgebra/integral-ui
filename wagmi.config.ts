@@ -19,7 +19,8 @@ import {
     algebraQuoterV2ABI,
     algebraEternalFarmingABI,
     farmingCenterABI,
-    wNativeABI
+    wNativeABI,
+    algebraCustomPoolDeployerABI
 } from './src/abis';
 
 const contracts: ContractConfig[] = [
@@ -65,6 +66,10 @@ const contracts: ContractConfig[] = [
         address: FARMING_CENTER,
         abi: farmingCenterABI,
         name: 'FarmingCenter',
+    },
+    {
+        abi: algebraCustomPoolDeployerABI,
+        name: 'AlgebraCustomPoolDeployer'
     },
     {
         abi: wNativeABI,

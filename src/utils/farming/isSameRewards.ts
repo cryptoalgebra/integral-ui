@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
 import { Address } from 'viem';
 
 export const isSameRewards = (

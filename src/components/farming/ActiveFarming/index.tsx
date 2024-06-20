@@ -13,7 +13,7 @@ import { useCurrency } from '@/hooks/common/useCurrency';
 import { useAccount } from 'wagmi';
 import { useFarmHarvestAll } from '@/hooks/farming/useFarmHarvest';
 import Loader from '@/components/common/Loader';
-import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
 import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
 import { useFarmingAPR } from '@/hooks/farming/useFarmingAPR';
 

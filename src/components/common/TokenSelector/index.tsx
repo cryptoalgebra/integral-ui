@@ -14,7 +14,7 @@ import {
     Currency,
     ExtendedNative,
     Token,
-} from '@cryptoalgebra/integral-sdk';
+} from '@cryptoalgebra/custom-pools-sdk';
 import { useTokensState } from '@/state/tokensStore';
 import { Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';

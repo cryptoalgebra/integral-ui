@@ -1,5 +1,5 @@
 import { farmingCenterABI } from '@/generated';
-import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
+import { MaxUint128 } from '@cryptoalgebra/custom-pools-sdk';
 import { Address, encodeFunctionData } from 'viem';
 import { isSameRewards } from './isSameRewards';
 

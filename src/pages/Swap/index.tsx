@@ -4,8 +4,22 @@ import SwapParams from '@/components/swap/SwapParams';
 import PageContainer from '@/components/common/PageContainer';
 import PageTitle from '@/components/common/PageTitle';
 import PoweredByAlgebra from '@/components/common/PoweredByAlgebra';
+import {useDerivedSwapInfo} from "@/state/swapStore.ts";
+import {useSmartRouterBestRoute} from "@/hooks/routing/useSmartRouterBestRoute.ts";
+import { Currency as CurrencyBN } from '@cryptoalgebra/router-custom-pools';
+// import {useSmartRouterCallback} from "@/hooks/routing/useSmartRouterCallback.ts";
 
 const SwapPage = () => {
+
+    const derivedSwap = useDerivedSwapInfo();
+
+    const smartTrade = useSmartRouterBestRoute(
+        derivedSwap.parsedAmountBN,
+        (derivedSwap.isExactIn ? derivedSwap.currencies.OUTPUT : derivedSwap.currencies.INPUT) as CurrencyBN,
+        derivedSwap.isExactIn,
+        true
+    );
+
     return (
         <PageContainer>
             <PageTitle title={'Swap'} />
@@ -15,9 +29,9 @@ const SwapPage = () => {
                     {/* <IntegralPools /> */}
 
                     <div className="flex flex-col gap-1 w-full bg-card border border-card-border p-2 rounded-3xl">
-                        <SwapPair />
-                        <SwapParams />
-                        <SwapButton />
+                        <SwapPair derivedSwap={derivedSwap} smartTrade={smartTrade.trade?.bestTrade} />
+                        <SwapParams derivedSwap={derivedSwap} smartTrade={smartTrade.trade?.bestTrade} isSmartTradeLoading={smartTrade.isLoading} />
+                        <SwapButton derivedSwap={derivedSwap} smartTrade={smartTrade.trade?.bestTrade} isSmartTradeLoading={smartTrade.isLoading} callOptions={{ calldata: smartTrade.trade?.calldata, value: smartTrade.trade?.value }} />
                     </div>
                     <PoweredByAlgebra />
                 </div>

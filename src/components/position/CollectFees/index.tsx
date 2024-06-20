@@ -6,7 +6,7 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { NonfungiblePositionManager } from "@cryptoalgebra/integral-sdk";
+import { NonfungiblePositionManager } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { Address, useAccount, useContractWrite } from "wagmi";
 

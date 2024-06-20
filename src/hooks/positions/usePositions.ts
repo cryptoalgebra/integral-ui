@@ -4,7 +4,7 @@ import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
 import { useAlgebraPositionManagerBalanceOf } from '@/generated';
 import { farmingClient } from '@/graphql/clients';
 import { useDepositsQuery } from '@/graphql/generated/graphql';
-import { Token, computePoolAddress } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from '@cryptoalgebra/custom-pools-sdk';
 import { useMemo } from 'react';
 import { Address, useAccount, useContractReads } from 'wagmi';
 
@@ -19,6 +19,7 @@ export interface PositionFromTokenId {
     tickUpper: bigint;
     token0: Address;
     token1: Address;
+    deployer: Address;
     tokensOwed0: bigint;
     tokensOwed1: bigint;
     pool: Address;
@@ -54,30 +55,37 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
 
     const positions = useMemo(() => {
         if (!isLoading && !isError && tokenIds && !error) {
+
             return results
                 ?.filter((v) => !v.error)
                 .map((call, i) => {
                     const tokenId = tokenIds[i];
                     const result = call.result as any;
+                    const isBasePool = result[4] === ADDRESS_ZERO
 
-                    const pool = computePoolAddress({
+                    const pool = (isBasePool ? computePoolAddress({
                         tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
                         tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
-                    }) as Address;
+                    }) : computeCustomPoolAddress({
+                        tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
+                        tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
+                        customPoolDeployer: result[4]
+                    }) ) as Address;
 
                     return {
                         tokenId,
-                        feeGrowthInside0LastX128: result[7],
-                        feeGrowthInside1LastX128: result[8],
-                        liquidity: result[6],
+                        feeGrowthInside0LastX128: result[8],
+                        feeGrowthInside1LastX128: result[9],
+                        liquidity: result[7],
                         nonce: result[0],
                         operator: result[1],
-                        tickLower: result[4],
-                        tickUpper: result[5],
+                        tickLower: result[5],
+                        tickUpper: result[6],
                         token0: result[2],
                         token1: result[3],
-                        tokensOwed0: result[9],
-                        tokensOwed1: result[10],
+                        deployer: result[4],
+                        tokensOwed0: result[10],
+                        tokensOwed1: result[11],
                         pool,
                     };
                 });

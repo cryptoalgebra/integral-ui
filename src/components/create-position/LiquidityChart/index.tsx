@@ -1,7 +1,7 @@
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useMintState } from "@/state/mintStore";
 import { Presets } from "@/types/presets";
-import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency } from "@cryptoalgebra/integral-sdk";
+import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency, ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -59,7 +59,7 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
                     ]
                     const pool =
                         currencyA && currencyB
-                            ? new Pool(currencyA.wrapped, currencyB.wrapped, INITIAL_POOL_FEE, sqrtPriceX96, t.liquidityActive.toString(), t.tickIdx, ticksResult.tickSpacing, mockTicks)
+                            ? new Pool(currencyA.wrapped, currencyB.wrapped, INITIAL_POOL_FEE, sqrtPriceX96, ADDRESS_ZERO, t.liquidityActive.toString(), t.tickIdx, ticksResult.tickSpacing, mockTicks)
                             : undefined
 
                     const nextSqrtX96 = ticksResult.ticksProcessed[i - 1]

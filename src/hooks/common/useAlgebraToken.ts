@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 import { Address, useToken } from "wagmi"
-import { Token } from "@cryptoalgebra/integral-sdk"
-import { ExtendedNative } from "@cryptoalgebra/integral-sdk"
-import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk"
+import { Token } from "@cryptoalgebra/custom-pools-sdk"
+import { ExtendedNative } from "@cryptoalgebra/custom-pools-sdk"
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk"
 import { DEFAULT_CHAIN_ID, DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id"
 
 export function useAlgebraToken(address: Address | undefined) {

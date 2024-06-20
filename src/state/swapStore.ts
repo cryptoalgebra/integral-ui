@@ -5,7 +5,8 @@ import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestT
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, TickMath, Trade, TradeType, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, TickMath, Trade, TradeType, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk"
+import { Currency as CurrencyBN, CurrencyAmount as CurrencyAmountBN } from '@cryptoalgebra/router-custom-pools';
 import JSBI from "jsbi"
 import { useCallback, useMemo } from "react"
 import { parseUnits } from "viem"
@@ -30,6 +31,22 @@ interface SwapState {
     }
 }
 
+export interface IDerivedSwapInfo {
+    currencies: { [field in SwapFieldType]?: Currency }
+    currencyBalances: { [field in SwapFieldType]?: CurrencyAmount<Currency> }
+    parsedAmount: CurrencyAmount<Currency> | undefined
+    parsedAmountBN: CurrencyAmountBN<CurrencyBN> | undefined
+    inputError?: string
+    tradeState: { trade: Trade<Currency, Currency, TradeType> | null; state: TradeStateType; fee?: bigint[] | null }
+    toggledTrade: Trade<Currency, Currency, TradeType> | undefined
+    tickAfterSwap: number | null | undefined
+    allowedSlippage: Percent
+    poolFee: number | undefined,
+    tick: number | undefined,
+    tickSpacing: number | undefined,
+    poolAddress: Address | undefined
+    isExactIn: boolean
+}
 
 export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
@@ -103,35 +120,29 @@ export function useSwapActionHandlers(): {
     }
 }
 
-export function tryParseAmount<T extends Currency>(value?: string, currency?: T): CurrencyAmount<T> | undefined {
+export function tryParseAmount<T extends Currency>(
+    value?: string,
+    currency?: T,
+    useBN?: boolean,
+): CurrencyAmount<T> | CurrencyAmountBN<CurrencyBN> | undefined {
     if (!value || !currency) {
-        return undefined
+        return undefined;
     }
     try {
-        const typedValueParsed = parseUnits(value, currency.decimals).toString()
+        const typedValueParsed = parseUnits(value, currency.decimals).toString();
         if (typedValueParsed !== '0') {
-            return CurrencyAmount.fromRawAmount(currency, typedValueParsed)
+            if (useBN) {
+                return CurrencyAmountBN.fromRawAmount(currency as CurrencyBN, typedValueParsed) as CurrencyAmountBN<CurrencyBN>;
+            }
+            return CurrencyAmount.fromRawAmount(currency as Currency, typedValueParsed) as CurrencyAmount<T>;
         }
     } catch (error) {
-        console.debug(`Failed to parse input amount: "${value}"`, error)
+        console.debug(`Failed to parse input amount: "${value}"`, error);
     }
-    return undefined
+    return undefined;
 }
 
-export function useDerivedSwapInfo(): {
-    currencies: { [field in SwapFieldType]?: Currency }
-    currencyBalances: { [field in SwapFieldType]?: CurrencyAmount<Currency> }
-    parsedAmount: CurrencyAmount<Currency> | undefined
-    inputError?: string
-    tradeState: { trade: Trade<Currency, Currency, TradeType> | null; state: TradeStateType; fee?: bigint[] | null }
-    toggledTrade: Trade<Currency, Currency, TradeType> | undefined
-    tickAfterSwap: number | null | undefined
-    allowedSlippage: Percent
-    poolFee: number | undefined,
-    tick: number | undefined,
-    tickSpacing: number | undefined,
-    poolAddress: Address | undefined
-} {
+export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     const { address: account } = useAccount()
 
@@ -146,8 +157,25 @@ export function useDerivedSwapInfo(): {
     const outputCurrency = useCurrency(outputCurrencyId);
 
     const isExactIn: boolean = independentField === SwapField.INPUT
-    const parsedAmount = useMemo(() => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined), [typedValue, isExactIn, inputCurrency, outputCurrency])
 
+    const parsedAmount = useMemo(
+        () =>
+            tryParseAmount(
+                typedValue,
+                (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
+                false,
+            ) as CurrencyAmount<Currency>,
+        [typedValue, isExactIn, inputCurrency, outputCurrency],
+    );
+    const parsedAmountBN = useMemo(
+        () =>
+            tryParseAmount(
+                typedValue,
+                (isExactIn ? inputCurrency : outputCurrency) ?? undefined,
+                true,
+            ) as CurrencyAmountBN<CurrencyBN>,
+        [typedValue, isExactIn, inputCurrency, outputCurrency],
+    );
     const bestTradeExactIn = useBestTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
     const bestTradeExactOut = useBestTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
 
@@ -215,6 +243,7 @@ export function useDerivedSwapInfo(): {
         currencies,
         currencyBalances,
         parsedAmount,
+        parsedAmountBN,
         inputError,
         tradeState: trade,
         toggledTrade,
@@ -223,6 +252,7 @@ export function useDerivedSwapInfo(): {
         poolFee: globalState && globalState[2],
         tick: globalState && globalState[1],
         tickSpacing: tickSpacing,
-        poolAddress
+        poolAddress,
+        isExactIn
     }
 }

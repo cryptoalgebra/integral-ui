@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { IDerivedMintInfo } from '@/state/mintStore';
 import { ManageLiquidity } from '@/types/manage-liquidity';
-import { Currency } from '@cryptoalgebra/integral-sdk';
+import { Currency } from '@cryptoalgebra/custom-pools-sdk';
 import { useState } from 'react';
 
 interface IncreaseLiquidityModalProps {

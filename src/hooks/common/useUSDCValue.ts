@@ -1,6 +1,6 @@
 import { STABLECOINS } from "@/constants/tokens"
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql"
-import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/integral-sdk"
+import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk"
 import { useMemo } from "react"
 
 export function useUSDCPrice(currency: Currency | undefined) {

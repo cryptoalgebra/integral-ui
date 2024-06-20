@@ -1,9 +1,9 @@
 import { useAlgebraPoolGlobalState, useAlgebraPoolLiquidity, useAlgebraPoolTickSpacing, useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
-import { InitialPoolFee } from "@cryptoalgebra/integral-sdk";
-import { Pool } from "@cryptoalgebra/integral-sdk";
+import { Pool } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "wagmi";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";
+import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 
 export const PoolState = {
   LOADING: 'LOADING',
@@ -33,12 +33,18 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
     address
   })
 
+  const { data: poolDeployer, loading: isPoolDeployerLoading, error: isPoolDeployerError } = useCustomPoolDeployerQuery({
+    variables: {
+      poolId: address
+    }
+  })
+
   const token0 = useCurrency(token0Address)
   const token1 = useCurrency(token1Address)
 
-  const isPoolError = isTickSpacingError || isGlobalStateError || isLiquidityError || isToken0Error || isToken1Error || !address
+  const isPoolError = isTickSpacingError || isGlobalStateError || isLiquidityError || isToken0Error || isToken1Error || isPoolDeployerError || !address
 
-  const isPoolLoading = isTickSpacingLoading || isGlobalStateLoading || isLiquidityLoading || isLoadingToken0 || isLoadingToken1
+  const isPoolLoading = isTickSpacingLoading || isGlobalStateLoading || isLiquidityLoading || isLoadingToken0 || isLoadingToken1 || isPoolDeployerLoading
   const isTokensLoading = !token0 || !token1
 
   return useMemo(() => {
@@ -47,13 +53,13 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
 
     if (!tickSpacing || !globalState || liquidity === undefined) return [PoolState.NOT_EXISTS, null]
 
-    if (globalState[0] === 0n || !token0 || !token1) return [PoolState.NOT_EXISTS, null]
+    if (globalState[0] === 0n || !token0 || !token1 || !poolDeployer?.pool) return [PoolState.NOT_EXISTS, null]
 
     try {
-      return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2] as InitialPoolFee, globalState[0].toString(), Number(liquidity), globalState[1], tickSpacing)]
+      return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2], globalState[0].toString(), poolDeployer.pool.deployer, Number(liquidity), globalState[1], tickSpacing)]
     } catch (error) {
       return [PoolState.NOT_EXISTS, null]
     }
-  }, [token0, token1, globalState, liquidity, tickSpacing, isPoolError, isPoolLoading, isTokensLoading])
+  }, [token0, token1, globalState, liquidity, tickSpacing, poolDeployer, isPoolError, isPoolLoading, isTokensLoading])
 
 }

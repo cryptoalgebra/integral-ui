@@ -1,4 +1,4 @@
-import { CurrencyAmount, Percent, Token } from "@cryptoalgebra/integral-sdk"
+import { CurrencyAmount, Percent, Token } from "@cryptoalgebra/custom-pools-sdk"
 
 export const ONE_HUNDRED_PERCENT = new Percent('1')
 

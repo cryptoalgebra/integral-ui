@@ -1,17 +1,21 @@
 import Loader from "@/components/common/Loader";
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import {IDerivedSwapInfo, useSwapState} from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { TradeState } from "@/types/trade-state";
-import { computeRealizedLPFeePercent, warningSeverity } from "@/utils/swap/prices";
-import { Currency, Percent, Trade, TradeType, unwrappedToken } from "@cryptoalgebra/integral-sdk";
-import { ChevronDownIcon, ChevronRightIcon, ZapIcon } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
+import { warningSeverity } from "@/utils/swap/prices";
+import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { ChevronDownIcon, ZapIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { SmartRouter, SmartRouterTrade, Percent as PercentBN } from "@cryptoalgebra/router-custom-pools";
+import SwapRouteModal from "@/components/modals/SwapRouteModal";
+import {Button} from "@/components/ui/button.tsx";
 
-const SwapParams = () => {
+const SwapParams = ({ derivedSwap, smartTrade, isSmartTradeLoading }: { derivedSwap: IDerivedSwapInfo, smartTrade: SmartRouterTrade<TradeType>, isSmartTradeLoading: boolean }) => {
 
-    const { tradeState, toggledTrade: trade, allowedSlippage, poolAddress, currencies } = useDerivedSwapInfo();
+    const [isOpen, setIsOpen] = useState(false)
+
+    const { allowedSlippage, currencies, poolAddress } = derivedSwap;
     const { typedValue } = useSwapState()
 
     const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
@@ -20,41 +24,43 @@ const SwapParams = () => {
 
     const { dynamicFeePlugin } = usePoolPlugins(poolAddress)
 
-    const adaptiveFee = useMemo(() => {
+    const combinedFee = useMemo(() => {
+        if (!smartTrade) return undefined;
 
-        if (!tradeState.fee) return;
+        const fees = smartTrade.routes.flatMap((routes: any) =>
+            routes.pools.flatMap((pool: any) => pool.fee,
+            ),
+        );
 
         let p = 100;
 
-        for (const fee of tradeState.fee) {
-            p = p * (1 - Number(fee) / 1_000_000);
+        for (const fee of fees) {
+            p *= 1 - Number(fee) / 1_000_000;
         }
 
         return 100 - p;
-    }, [tradeState.fee]);
+    }, [smartTrade]);
 
-    const { realizedLPFee, priceImpact } = useMemo(() => {
-        if (!trade) return { realizedLPFee: undefined, priceImpact: undefined };
+    const priceImpact = useMemo(() => {
+        if (!smartTrade) return undefined;
+        return SmartRouter.getPriceImpact(smartTrade);
+    }, [smartTrade]);
 
-        const realizedLpFeePercent = computeRealizedLPFeePercent(trade);
-        const realizedLPFee = trade.inputAmount.multiply(realizedLpFeePercent);
-        const priceImpact = trade.priceImpact.subtract(realizedLpFeePercent);
-        return { priceImpact, realizedLPFee };
-    }, [trade]);
-
-    const LPFeeString = realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${realizedLPFee.currency.symbol}` : "-";
+    const allowedSlippageBN = useMemo(() => {
+        return new PercentBN(BigInt(allowedSlippage.numerator.toString()), BigInt(allowedSlippage.denominator.toString()));
+    }, [allowedSlippage.denominator, allowedSlippage.numerator]);
 
     if (wrapType !== WrapType.NOT_APPLICABLE) return
 
-    return trade ? (
+    return smartTrade ? (
         <div className="rounded text-white">
             <div className="flex justify-between">
                 <button className="flex items-center w-full text-md mb-1 text-center text-white bg-card-dark py-1 px-3 rounded-lg" onClick={() => toggleExpanded(!isExpanded)}>
-                    {adaptiveFee && (
+                    {combinedFee && (
                         <div className="rounded select-none pointer px-1.5 py-1 flex items-center relative">
                             {dynamicFeePlugin && <ZapIcon className="mr-2" strokeWidth={1} stroke="white" fill="white" size={16} />}
                             <span>
-                                {`${adaptiveFee?.toFixed(3)}% fee`}
+                                {`${combinedFee?.toFixed(3)}% fee`}
                             </span>
                         </div>
                     )}
@@ -68,21 +74,23 @@ const SwapParams = () => {
                     <div className="flex items-center justify-between">
                         <span className="font-semibold">Route</span>
                         <span>
-                            <SwapRoute trade={trade} />
+                            <SwapRouteModal isOpen={isOpen} setIsOpen={setIsOpen} routes={smartTrade?.routes}>
+                                <Button size={'sm'} onClick={() => setIsOpen(true)}>Show</Button>
+                            </SwapRouteModal>
                         </span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="font-semibold">{trade.tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum sent'}</span>
+                        <span className="font-semibold">{smartTrade.tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum sent'}</span>
                         <span>
-                            {trade.tradeType === TradeType.EXACT_INPUT
-                                ? `${trade.minimumAmountOut(allowedSlippage).toSignificant(6)} ${trade.outputAmount.currency.symbol}`
-                                : `${trade.maximumAmountIn(allowedSlippage).toSignificant(6)} ${trade.inputAmount.currency.symbol}`}
+                            {smartTrade.tradeType === TradeType.EXACT_INPUT
+                                ? `${SmartRouter.minimumAmountOut(smartTrade, allowedSlippageBN).toSignificant(6)} ${smartTrade.outputAmount.currency.symbol}`
+                                : `${SmartRouter.maximumAmountIn(smartTrade, allowedSlippageBN).toSignificant(6)} ${smartTrade.inputAmount.currency.symbol}`}
                         </span>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">LP Fee</span>
-                        <span>{LPFeeString}</span>
-                    </div>
+                    {/*<div className="flex items-center justify-between">*/}
+                    {/*    <span className="font-semibold">LP Fee</span>*/}
+                    {/*    <span>{LPFeeString}</span>*/}
+                    {/*</div>*/}
                     <div className="flex items-center justify-between">
                         <span className="font-semibold">Price impact</span>
                         <span>
@@ -96,7 +104,7 @@ const SwapParams = () => {
                 </div>
             </div>
         </div>
-    ) : trade !== undefined || tradeState.state === TradeState.LOADING ? (
+    ) : smartTrade !== undefined && isSmartTradeLoading ? (
         <div className="flex justify-center mb-1 bg-card-dark py-3 px-3 rounded-lg">
             <Loader size={17} />
         </div>
@@ -105,29 +113,16 @@ const SwapParams = () => {
     </div>;
 }
 
-const SwapRoute = ({ trade }: { trade: Trade<Currency, Currency, TradeType> }) => {
+const PriceImpact = ({ priceImpact }: { priceImpact: PercentBN | undefined }) => {
+    const severity = warningSeverity(priceImpact);
 
-    const path = trade.route.tokenPath;
+    const color = severity === 3 || severity === 4 ? 'text-red-400' : severity === 2 ? 'text-yellow-400' : 'currentColor';
 
-    return <div className="flex items-center gap-1">
-        {
-            path.map((token, idx, path) => <Fragment key={`token-path-${idx}`}>
-                <div>{unwrappedToken(token).symbol}</div>
-                {idx === path.length - 1 ? null : <ChevronRightIcon size={16} />}
-            </Fragment>)
-        }
-    </div>
-
-}
-
-const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
-
-    const severity = warningSeverity(priceImpact)
-
-    const color = severity === 3 || severity === 4 ? 'text-red-400' : severity === 2 ? 'text-yellow-400' : 'text-white'
-    
-    return <span className={color}>{priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}</span>
-
-}
+    return (
+        <span className={color}>
+            {priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : '-'}
+        </span>
+    );
+};
 
 export default SwapParams

@@ -1,5 +1,5 @@
 import { useUserSlippageToleranceWithDefault } from "@/state/userStore"
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk"
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk"
 import { useMemo } from "react"
 
 const SWAP_DEFAULT_SLIPPAGE = new Percent(50, 10_000) // .50%

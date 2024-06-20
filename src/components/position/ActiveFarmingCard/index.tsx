@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Farming } from '@/types/farming-info';
-import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
 import { useFarmHarvest } from '@/hooks/farming/useFarmHarvest';
 import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
 import { useAccount } from 'wagmi';

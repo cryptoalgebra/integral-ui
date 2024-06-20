@@ -4,23 +4,21 @@ import {
     DEFAULT_CHAIN_ID,
     DEFAULT_CHAIN_NAME,
 } from '@/constants/default-chain-id';
-import { useApproveCallbackFromTrade } from '@/hooks/common/useApprove';
-import { useSwapCallback } from '@/hooks/swap/useSwapCallback';
+import { useApproveCallbackFromSmartTrade } from '@/hooks/common/useApprove';
 import useWrapCallback, { WrapType } from '@/hooks/swap/useWrapCallback';
-import { useDerivedSwapInfo, useSwapState } from '@/state/swapStore';
+import {IDerivedSwapInfo, useSwapState} from '@/state/swapStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import { SwapField } from '@/types/swap-field';
-import { TradeState } from '@/types/trade-state';
-import {
-    computeRealizedLPFeePercent,
-    warningSeverity,
-} from '@/utils/swap/prices';
+import { warningSeverity } from '@/utils/swap/prices';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import { useCallback, useMemo } from 'react';
-import { useAccount } from 'wagmi';
+import {Address, useAccount} from 'wagmi';
+import {SmartRouter, SmartRouterTrade} from "@cryptoalgebra/router-custom-pools";
+import {TradeType, tryParseAmount} from "@cryptoalgebra/custom-pools-sdk";
+import {useSmartRouterCallback} from "@/hooks/routing/useSmartRouterCallback.ts";
 
-const SwapButton = () => {
+const SwapButton = ({ derivedSwap, smartTrade, isSmartTradeLoading, callOptions }: { derivedSwap: IDerivedSwapInfo, smartTrade: SmartRouterTrade<TradeType>, isSmartTradeLoading: boolean, callOptions: { calldata: Address, value: Address } }) => {
     const { open } = useWeb3Modal();
 
     const { selectedNetworkId } = useWeb3ModalState();
@@ -31,13 +29,12 @@ const SwapButton = () => {
 
     const { independentField, typedValue } = useSwapState();
     const {
-        tradeState,
-        toggledTrade: trade,
         allowedSlippage,
         parsedAmount,
         currencies,
         inputError: swapInputError,
-    } = useDerivedSwapInfo();
+        currencyBalances
+    } = derivedSwap;
 
     const {
         wrapType,
@@ -55,12 +52,12 @@ const SwapButton = () => {
     const parsedAmountA =
         independentField === SwapField.INPUT
             ? parsedAmount
-            : trade?.inputAmount;
+            : tryParseAmount(smartTrade?.inputAmount?.toSignificant(), smartTrade?.inputAmount?.currency);
 
     const parsedAmountB =
         independentField === SwapField.OUTPUT
             ? parsedAmount
-            : trade?.outputAmount;
+            : tryParseAmount(smartTrade?.outputAmount?.toSignificant(), smartTrade?.outputAmount?.currency);
 
     const parsedAmounts = useMemo(
         () => ({
@@ -76,20 +73,27 @@ const SwapButton = () => {
             parsedAmounts[independentField]?.greaterThan('0')
     );
 
-    const routeNotFound = !trade?.route;
-    const isLoadingRoute = TradeState.LOADING === tradeState.state;
+    const isLoadingRoute = isSmartTradeLoading;
+    const routeNotFound = !smartTrade;
+    const insufficientBalance =
+        currencyBalances[SwapField.INPUT] &&
+        smartTrade?.inputAmount &&
+        currencyBalances[SwapField.INPUT]?.lessThan(smartTrade.inputAmount.quotient.toString());
 
-    const { approvalState, approvalCallback } = useApproveCallbackFromTrade(
-        trade,
+    const { approvalState, approvalCallback } = useApproveCallbackFromSmartTrade(
+        smartTrade,
         allowedSlippage
     );
 
+    const priceImpact = useMemo(() => {
+        if (!smartTrade) return undefined;
+        return SmartRouter.getPriceImpact(smartTrade);
+    }, [smartTrade]);
+
     const priceImpactSeverity = useMemo(() => {
-        if (!trade) return 4;
-        const realizedLpFeePercent = computeRealizedLPFeePercent(trade);
-        const priceImpact = trade.priceImpact.subtract(realizedLpFeePercent);
+        if (!priceImpact) return 0;
         return warningSeverity(priceImpact);
-    }, [trade]);
+    }, [priceImpact]);
 
     const showApproveFlow =
         !swapInputError &&
@@ -97,20 +101,22 @@ const SwapButton = () => {
             approvalState === ApprovalState.PENDING) &&
         !(priceImpactSeverity > 3 && !isExpertMode);
 
-    const {
-        callback: swapCallback,
-        error: swapCallbackError,
-        isLoading: isSwapLoading,
-    } = useSwapCallback(trade, allowedSlippage, approvalState);
+
+    const swapCallback = useSmartRouterCallback(
+        callOptions.calldata,
+        callOptions.value,
+    );
+
+    const { callback, isLoading: isSwapLoading } = swapCallback
 
     const handleSwap = useCallback(async () => {
-        if (!swapCallback) return;
+        if (!callback) return;
         try {
-            await swapCallback();
+            await callback();
         } catch (error) {
             return new Error(`Swap Failed ${error}`);
         }
-    }, [swapCallback]);
+    }, [callback]);
 
     const isValid = !swapInputError;
 
@@ -155,6 +161,14 @@ const SwapButton = () => {
             </Button>
         );
 
+    if (smartTrade && insufficientBalance) {
+        return (
+            <Button>
+                {isLoadingRoute ? <Loader /> : `Insufficient ${smartTrade.inputAmount.currency.symbol} amount`}
+            </Button>
+        );
+    }
+
     if (showApproveFlow)
         return (
             <Button
@@ -178,8 +192,8 @@ const SwapButton = () => {
                 disabled={
                     !isValid ||
                     priceImpactTooHigh ||
-                    !!swapCallbackError ||
-                    isSwapLoading
+                    isSwapLoading ||
+                    isLoadingRoute
                 }
             >
                 {isSwapLoading ? (

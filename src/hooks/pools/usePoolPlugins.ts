@@ -4,7 +4,7 @@ import {
     useAlgebraBasePluginIncentive,
 } from '@/generated';
 import { usePoolsStore } from '@/state/poolsStore';
-import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
 import { useEffect } from 'react';
 import { Address } from 'wagmi';
 

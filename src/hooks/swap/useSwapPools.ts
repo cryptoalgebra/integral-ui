@@ -1,4 +1,4 @@
-import { Currency, Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { Currency, Token, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk"
 import { useEffect, useMemo, useState } from "react"
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
 import { Address } from "wagmi"
@@ -14,7 +14,7 @@ export function useSwapPools(
     currencyIn?: Currency,
     currencyOut?: Currency
 ): {
-    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string, fee: string, token0: TokenFieldsFragment, token1: TokenFieldsFragment } }[]
+    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string, fee: string, deployer: string, token0: TokenFieldsFragment, token1: TokenFieldsFragment } }[]
     loading: boolean
 } {
 
@@ -47,7 +47,7 @@ export function useSwapPools(
             //     address
             // }).read.globalState()))
 
-            const pools = poolsData.data && poolsData.data.pools.map(pool => ({ address: pool.id, liquidity: pool.liquidity, price: pool.sqrtPrice, tick: pool.tick, fee: pool.fee, token0: pool.token0, token1: pool.token1 }))
+            const pools = poolsData.data && poolsData.data.pools.map(pool => ({ address: pool.id, liquidity: pool.liquidity, price: pool.sqrtPrice, tick: pool.tick, fee: pool.fee, deployer: pool.deployer, token0: pool.token0, token1: pool.token1 }))
 
             setExistingPools(pools)
 

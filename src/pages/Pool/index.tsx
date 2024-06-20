@@ -19,7 +19,7 @@ import { FormattedPosition } from '@/types/formatted-position';
 import { getPositionAPR } from '@/utils/positions/getPositionAPR';
 import { getPositionFees } from '@/utils/positions/getPositionFees';
 import { formatAmount } from '@/utils/common/formatAmount';
-import { Position, ZERO } from '@cryptoalgebra/integral-sdk';
+import { Position, ZERO } from '@cryptoalgebra/custom-pools-sdk';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { MoveRightIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -158,7 +158,9 @@ const PoolPage = () => {
     };
 
     const positionsData = useMemo(() => {
+        console.log(filteredPositions, poolEntity, deposits)
         if (!filteredPositions || !poolEntity || !deposits) return [];
+
 
         return filteredPositions.map(({ positionId, position }, idx) => {
             const currentPosition = deposits.deposits.find(

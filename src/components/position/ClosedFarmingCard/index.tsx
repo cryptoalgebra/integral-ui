@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { EternalFarming } from '@/graphql/generated/graphql';
 import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
 import { FormattedPosition } from '@/types/formatted-position';
-import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
 import { useAccount } from 'wagmi';
 
 interface ClosedFarmingCardProps {

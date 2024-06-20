@@ -1,4 +1,4 @@
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import { Address } from "wagmi";
 import USDTLogo from '@/assets/tokens/usdt.png'

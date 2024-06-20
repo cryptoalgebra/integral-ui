@@ -3,8 +3,8 @@ import {
     Currency,
     ExtendedNative,
     WNATIVE
-} from '@cryptoalgebra/integral-sdk';
-import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
+} from '@cryptoalgebra/custom-pools-sdk';
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_CHAIN_ID, DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
 import { useAlgebraToken } from "./useAlgebraToken";
 

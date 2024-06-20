@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
 import { PresetProfits, Presets, PresetsArgs } from "@/types/presets";
 import { Button } from "@/components/ui/button";

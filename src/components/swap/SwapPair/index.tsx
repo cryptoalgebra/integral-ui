@@ -1,6 +1,6 @@
 import { useUSDCValue } from '@/hooks/common/useUSDCValue';
 import {
-    useDerivedSwapInfo,
+    IDerivedSwapInfo,
     useSwapActionHandlers,
     useSwapState,
 } from '@/state/swapStore';
@@ -8,21 +8,21 @@ import { SwapField, SwapFieldType } from '@/types/swap-field';
 import {
     Currency,
     CurrencyAmount,
-    maxAmountSpend,
+    maxAmountSpend, TradeType,
     tryParseAmount,
-} from '@cryptoalgebra/integral-sdk';
+} from '@cryptoalgebra/custom-pools-sdk';
 import { useCallback, useMemo } from 'react';
 import TokenCard from '../TokenCard';
 import { ChevronsUpDownIcon } from 'lucide-react';
 import useWrapCallback, { WrapType } from '@/hooks/swap/useWrapCallback';
+import {SmartRouterTrade} from "@cryptoalgebra/router-custom-pools";
 
-const SwapPair = () => {
+const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo, smartTrade: SmartRouterTrade<TradeType> }) => {
     const {
-        toggledTrade: trade,
         currencyBalances,
         parsedAmount,
         currencies,
-    } = useDerivedSwapInfo();
+    } = derivedSwap;
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
@@ -74,12 +74,12 @@ const SwapPair = () => {
     const parsedAmountA =
         independentField === SwapField.INPUT
             ? parsedAmount
-            : trade?.inputAmount;
+            : tryParseAmount(smartTrade?.inputAmount?.toSignificant(), smartTrade?.inputAmount?.currency);
 
     const parsedAmountB =
         independentField === SwapField.OUTPUT
             ? parsedAmount
-            : trade?.outputAmount;
+            : tryParseAmount(smartTrade?.outputAmount?.toSignificant(), smartTrade?.outputAmount?.currency);
 
     const parsedAmounts = useMemo(
         () =>

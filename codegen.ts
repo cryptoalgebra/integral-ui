@@ -3,7 +3,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
     overwrite: true,
     schema: [
-        'https://api.thegraph.com/subgraphs/name/iliaazhel/integral-core',
+        'https://api.studio.thegraph.com/proxy/50593/integral-v1-1/version/latest',
         'https://api.thegraph.com/subgraphs/name/iliaazhel/goerli-blocks',
         'https://api.thegraph.com/subgraphs/name/iliaazhel/farming-test',
     ],

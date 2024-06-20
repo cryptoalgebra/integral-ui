@@ -1,5 +1,5 @@
 import { TickFieldsFragment, useAllTicksLazyQuery, useSinglePoolLazyQuery } from "@/graphql/generated/graphql"
-import { Currency, TickMath, Token, computePoolAddress, tickToPrice } from "@cryptoalgebra/integral-sdk"
+import { Currency, TickMath, Token, computePoolAddress, tickToPrice } from "@cryptoalgebra/custom-pools-sdk"
 import { useState } from "react"
 import { Address } from "wagmi"
 import keyBy from 'lodash.keyby'

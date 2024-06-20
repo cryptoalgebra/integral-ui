@@ -1,7 +1,7 @@
 // import { formatNumber } from "app/functions"
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 interface CustomBarProps {
     x: number;
