@@ -160,8 +160,6 @@ const SwapChart = () => {
         });
     }, [chartType, chartData, currencyA, currencyB, chartPair, isSorted]);
 
-    console.log(formattedData)
-
     const handleResize = useCallback(() => {
         if (chartCreated && chartRef?.current?.parentElement) {
             chartCreated.resize(chartRef.current.offsetWidth - 32, chartRef.current.offsetHeight);
@@ -296,7 +294,7 @@ const SwapChart = () => {
         if (!chartCreated) return
         chartCreated.subscribeCrosshairMove(crosshairMoveHandler)
         return () => chartCreated.unsubscribeCrosshairMove(crosshairMoveHandler)
-    }, [chartCreated, crosshairMoveHandler])
+    }, [chartCreated])
 
     useEffect(() => {
         setDisplayValued(currentValue)
