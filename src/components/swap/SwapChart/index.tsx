@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Address } from "wagmi";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import TicksChart from "../TicksChart";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import { PoolState } from "@/hooks/pools/usePool";
@@ -129,22 +128,22 @@ const SwapChart = () => {
     const formattedData = useMemo(() => {
         if (!chartData || !currencyA || !currencyB) return;
 
-        if (chartType === SwapChartView.CANDLES) {
-            const isSorted = chartPair === SwapChartPair.AB;
+        const isInvert = (chartPair === SwapChartPair.A) || (chartPair === SwapChartPair.AB && isSorted) || (chartPair === SwapChartPair.BA && !isSorted)
 
+        if (chartType === SwapChartView.CANDLES) {
             return chartData.map((d: any) => {
                 return {
                     time: d.periodStartUnix,
-                    open: parseFloat(isSorted ? d.open : String(1 / (d.open || 1))),
-                    close: parseFloat(isSorted ? d.close : String(1 / (d.close || 1))),
-                    high: parseFloat(isSorted ? d.high : String(1 / (d.high || 1))),
-                    low: parseFloat(isSorted ? d.low : String(1 / (d.low || 1))),
+                    open: parseFloat(isInvert ? String(1 / (d.open || 1)) : d.open),
+                    close: parseFloat(isInvert ? String(1 / (d.close || 1)) : d.close),
+                    high: parseFloat(isInvert ? String(1 / (d.high || 1)) : d.high),
+                    low: parseFloat(isInvert ? String(1 / (d.low || 1)) : d.low),
                 };
             });
         }
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
-            const [token0Price] = chartPair === SwapChartPair.AB && isSorted ? ["token1Price", "token0Price"] : chartPair === SwapChartPair.BA && !isSorted ? ["token1Price", "token0Price"] : ["token0Price", "token1Price"];
+            const [token0Price] = isInvert ? ["token1Price", "token0Price"] : ["token0Price", "token1Price"];
             return chartData.map((d: any) => {
                 return {
                     time: d.periodStartUnix,
@@ -160,6 +159,8 @@ const SwapChart = () => {
             };
         });
     }, [chartType, chartData, currencyA, currencyB, chartPair, isSorted]);
+
+    console.log(formattedData)
 
     const handleResize = useCallback(() => {
         if (chartCreated && chartRef?.current?.parentElement) {
@@ -251,16 +252,18 @@ const SwapChart = () => {
     const currentValue = useMemo(() => {
         if (!formattedData) return ''
 
-        const value = formattedData[formattedData.length - 1]?.value;
+        const candleStickValue = formattedData[formattedData.length - 1]?.close;
 
-        if (!value) return '';
+        const value = formattedData[formattedData.length - 1]?.value;
+        
+        if (chartType === SwapChartView.CANDLES) return formatPrice(candleStickValue.toString(), 6)
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
             return formatPrice(value.toString(), 6)
         }
 
         return formatPrice(value.toString(), 6)
-    }, [formattedData, chartPair])
+    }, [formattedData, chartPair, chartType]);
 
     const displayValueCurrency = 
         chartPair === SwapChartPair.AB 
@@ -278,22 +281,22 @@ const SwapChart = () => {
             ? (isSorted ? currencies.OUTPUT?.symbol : currencies.INPUT?.symbol) 
             : (isSorted ? currencies.INPUT?.symbol : currencies.OUTPUT?.symbol) 
 
-
     const crosshairMoveHandler = useCallback((param: any) => {
-        if (param.point && param.seriesData.get(series)) {
-            setDisplayValued(formatPrice(param.seriesData.get(series).value.toString(), 6))
+        const seriesData = param.seriesData.get(series);
+        if (param.point && seriesData) {
+            setDisplayValued(formatPrice(seriesData.close ? seriesData.close.toString() : seriesData.value.toString(), 6))
             setDisplayDate(new Date(param.time * 1000).toLocaleDateString())
         } else {
             setDisplayDate(new Date().toLocaleDateString())
             setDisplayValued(currentValue)
         }
-    }, [series, currentValue, chartPair])
+    }, [series, currentValue])
 
     useEffect(() => {
         if (!chartCreated) return
         chartCreated.subscribeCrosshairMove(crosshairMoveHandler)
         return () => chartCreated.unsubscribeCrosshairMove(crosshairMoveHandler)
-    }, [chartCreated])
+    }, [chartCreated, crosshairMoveHandler])
 
     useEffect(() => {
         setDisplayValued(currentValue)
@@ -395,17 +398,9 @@ const SwapChart = () => {
                     {poolAddress && <Button variant={chartType === SwapChartView.LINE ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.LINE)}>
                         <LineChartIcon size={20} />
                     </Button>}
-                    <HoverCard>
-                        <HoverCardTrigger>
-                            <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)} disabled>
+                    {poolAddress && <Button variant={chartType === SwapChartView.CANDLES ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setChartType(SwapChartView.CANDLES)}>
                                 <CandlestickChartIcon size={20} />
-                            </Button>
-                        </HoverCardTrigger>
-                        <HoverCardContent>
-                            <div className="font-bold">Candlestick chart</div>
-                            <div>Coming Soon</div>
-                        </HoverCardContent>
-                    </HoverCard>
+                    </Button>}
                 </div>
                 {/* <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
                 <HoverCard>
