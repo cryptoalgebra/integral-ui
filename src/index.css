@@ -93,3 +93,7 @@
 ::-webkit-scrollbar-thumb:active{
   background: rgba(255, 255, 255, .8);
 }
+
+.recharts-surface {
+  overflow: visible;
+}

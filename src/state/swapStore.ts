@@ -204,7 +204,8 @@ export function useDerivedSwapInfo(): {
     }).toLowerCase() as Address
 
     const { data: globalState } = useAlgebraPoolGlobalState({
-        address: poolAddress
+        address: poolAddress,
+        watch: true,
     })
 
     const { data: tickSpacing } = useAlgebraPoolTickSpacing({

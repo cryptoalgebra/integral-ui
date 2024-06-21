@@ -1,7 +1,8 @@
-// import { formatNumber } from "app/functions"
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
 import { Currency } from "@cryptoalgebra/integral-sdk";
+import { formatBalance } from '@/utils/common/formatBalance';
+import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 
 interface CustomBarProps {
     x: number;
@@ -11,6 +12,10 @@ interface CustomBarProps {
     fill: string;
     percent: number | undefined;
     isCurrent: boolean;
+    isAfterSwapTick: boolean;
+    isFocused: boolean;
+    showEastArrow: boolean;
+    showWestArrow: boolean;
 }
 
 interface CustomTooltipProps {
@@ -24,10 +29,10 @@ interface ChartProps {
     formattedData: any;
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
-    leftPrice: string | undefined;
-    rightPrice: string | undefined;
-    currentPrice: number | undefined;
-    isSorted: boolean | undefined;
+    leftPrice?: string;
+    rightPrice?: string;
+    currentPrice?: number;
+    isSorted?: boolean;
     zoom: number;
 }
 
@@ -38,7 +43,11 @@ const CustomBar = ({
     height,
     fill,
     percent,
-    isCurrent
+    isCurrent,
+    isAfterSwapTick,
+    isFocused,
+    showEastArrow,
+    showWestArrow
 }: CustomBarProps) => {
     return (
         <g>
@@ -49,47 +58,47 @@ const CustomBar = ({
                 </linearGradient>
             </defs>
             {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
-            {isCurrent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {isCurrent && isFocused && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {showEastArrow && <ArrowBigRight size={28} x='97%' y={y - 35} fill='orange' color='orange' />}
+            {showWestArrow && <ArrowBigLeft size={28} y={y - 35} fill='orange' color='orange' />}
+            {isAfterSwapTick && !isCurrent && isFocused && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">After Swap</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
     )
 }
-
+    
 const CustomTooltip = ({
     props,
     currencyA,
     currencyB,
 }: CustomTooltipProps) => {
+    const price0 = Number(props?.payload?.[0]?.payload.price0);
+    const price1 = Number(props?.payload?.[0]?.payload.price1);
+    const formattedPrice0 = price0 < 0.1 ? price0 : price0.toLocaleString();
+    const formattedPrice1 = price1 < 0.1 ? price1 : price1.toLocaleString();
+    
+    const tvlToken0 = String(props?.payload?.[0]?.payload.tvlToken0);
+    const tvlToken1 = String(props?.payload?.[0]?.payload.tvlToken1);
 
-    const price0 = props?.payload?.[0]?.payload.price0
-    const price1 = props?.payload?.[0]?.payload.price1
-    // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
-    // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
+    const isReversed = props?.payload?.[0]?.payload.isReversed;
 
     return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
         <div className="flex gap-4 justify-between">
             <div>{`${currencyA?.symbol} Price:`}</div>
-            <div>{`${price0 ? `${Number(price0).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-            })} ${currencyB?.symbol}` : ''}`}</div>
+            <div>{`${isReversed ? formattedPrice1 : formattedPrice0} ${currencyB?.symbol}`}</div>
         </div>
         <div className="flex gap-4 justify-between">
             <div>{`${currencyB?.symbol} Price:`}</div>
-            <div>{`${price1 ? `${Number(price1).toLocaleString(undefined, {
-                maximumSignificantDigits: 3,
-            })} ${currencyA?.symbol}` : ''}`}</div>
+            <div>{`${isReversed ? formattedPrice0 : formattedPrice1} ${currencyA?.symbol}`}</div>
         </div>
-        {/* {currentPrice && price0 && currentPrice > price1 ? <div className="flex gap-4 justify-between">
-            <div>{`${currencyA?.symbol} Locked: `}</div>
-            <div>{`${tvlToken0 ? formatNumber(tvlToken0) : ''} ${currencyA?.symbol}`}</div>
-        </div> : <div className="flex gap-4 justify-between">
-            <div>{`${currencyB?.symbol} Locked: `}</div>
-            <div>{`${tvlToken1 ? formatNumber(tvlToken1) : ''} ${currencyB?.symbol}`}</div>
-        </div>} */}
+        <div className="flex gap-4 justify-between">
+            <div>Amount:</div>
+            <div>{`${formatBalance(isReversed || isReversed === undefined ? tvlToken1 : tvlToken0)} ${currencyA?.symbol}`}</div>
+        </div>
     </div>
 }
 
-export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPrice, currentPrice, isSorted, zoom }: ChartProps) {
+export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPrice, currentPrice, isSorted = true, zoom }: ChartProps) {
 
     const [focusBar, setFocusBar] = useState<number | undefined>(undefined);
 
@@ -135,11 +144,26 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     let percent = 0
                     if (price === +Number(leftPrice).toFixed(8) || price === +Number(rightPrice).toFixed(8)) {
                         const currentPriceIdx = formattedData.findIndex((v: any) => v.isCurrent)
-                        const currentPriceRealIndex = formattedData[currentPriceIdx].index
+                        const currentPriceRealIndex = formattedData[currentPriceIdx]?.index
                         percent = (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
                     }
 
-                    return <CustomBar height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} />
+                    return (
+                        <CustomBar
+                            isFocused={Boolean(props.index === focusBar)}
+                            key={props.index}
+                            height={props.height}
+                            width={props.width}
+                            x={props.x}
+                            y={props.y}
+                            fill={props.fill}
+                            percent={percent}
+                            isCurrent={props.isCurrent}
+                            isAfterSwapTick={props.isAfterSwapTick}
+                            showEastArrow={props.showEastArrow}
+                            showWestArrow={props.showWestArrow}
+                        />
+                    );
                 }}
             >
                 {formattedData?.map((entry: any, index: number) => {
@@ -156,6 +180,11 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
                             fill = 'url(#colorUv)'
                         }
+                    } else if (entry.isAfterSwapRange) {
+                        fill = 'url(#colorUv)'
+                    }
+                    if (entry.isAfterSwapTick && !entry.isCurrent) {
+                        fill = 'orange'
                     }
 
                     return <Cell key={`cell-${index}`} fill={fill} />

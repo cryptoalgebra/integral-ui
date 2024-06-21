@@ -3,23 +3,7 @@ import { Currency, TickMath, Token, computePoolAddress, tickToPrice } from "@cry
 import { useState } from "react"
 import { Address } from "wagmi"
 import keyBy from 'lodash.keyby'
-
-interface TickProcessed {
-    liquidityActive: bigint;
-    tickIdx: number;
-    liquidityNet: bigint;
-    price0: string;
-    price1: string;
-    liquidityGross: bigint;
-}
-
-interface TicksResult {
-    ticksProcessed: TickProcessed[];
-    tickSpacing: number;
-    activeTickIdx: number;
-    token0: Token;
-    token1: Token;
-}
+import { TickProcessed, TicksResult } from "@/types/ticks-info"
 
 export function useInfoTickData() {
 

@@ -1,6 +1,7 @@
 export const SwapChartView = {
     CANDLES: 'CANDLES',
     LINE: 'LINE',
+    TICKS: 'TICKS',
 } as const
 
 export type SwapChartViewType = typeof SwapChartView[keyof typeof SwapChartView]

@@ -22,7 +22,7 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address, transact
                 <li className="flex group h-16 justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
                     {
                         txType === TransactionType.FARM && transaction.data.tokenId ?
-                        <FarmingPositionImg positionId={BigInt(transaction.data.tokenId)} size={10} />
+                        <FarmingPositionImg positionId={BigInt(transaction.data.tokenId)} className="w-10" />
                         :
                         
                             currencyB && currencyA ?

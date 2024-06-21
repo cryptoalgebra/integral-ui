@@ -250,16 +250,16 @@ export function useDerivedMintInfo(
     );
 
     const [addressA, addressB] = [
-        currencyA?.isNative ? undefined : token0?.address || '',
-        currencyB?.isNative ? undefined : token1?.address || '',
+        currencyA?.isNative ? undefined : currencyA?.address || '',
+        currencyB?.isNative ? undefined : currencyB?.address || '',
     ] as Address[];
 
-    const { data: token0Balance } = useBalance({
+    const { data: currencyABalance } = useBalance({
         address: account,
         token: addressA,
         watch: true,
     });
-    const { data: token1Balance } = useBalance({
+    const { data: currencyBBalance } = useBalance({
         address: account,
         token: addressB,
         watch: true,
@@ -267,17 +267,17 @@ export function useDerivedMintInfo(
 
     const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
         [Field.CURRENCY_A]:
-            currencyA && token0Balance
+            currencyA && currencyABalance
                 ? CurrencyAmount.fromRawAmount(
                       currencyA,
-                      token0Balance.value.toString()
+                      currencyABalance.value.toString()
                   )
                 : undefined,
         [Field.CURRENCY_B]:
-            currencyB && token1Balance
+            currencyB && currencyBBalance
                 ? CurrencyAmount.fromRawAmount(
                       currencyB,
-                      token1Balance.value.toString()
+                      currencyBBalance.value.toString()
                   )
                 : undefined,
     };
