@@ -1,11 +1,11 @@
-import { FARMING_CENTER } from '@/constants/addresses';
-import { farmingCenterABI } from '@/generated';
-import { getRewardsCalldata } from '@/utils/farming/getRewardsCalldata';
-import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransactionAwait } from '../common/useTransactionAwait';
-import { encodeFunctionData } from 'viem';
-import { Deposit } from '@/graphql/generated/graphql';
-import { TransactionType } from '@/state/pendingTransactionsStore';
+import { FARMING_CENTER } from "@/constants/addresses";
+import { farmingCenterABI } from "@/generated";
+import { getRewardsCalldata } from "@/utils/farming/getRewardsCalldata";
+import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { encodeFunctionData } from "viem";
+import { Deposit } from "@/graphql/generated/graphql";
+import { TransactionType } from "@/state/pendingTransactionsStore";
+import { useTransactionAwait } from "../common/useTransactionAwait";
 
 export function useFarmHarvest({
     tokenId,
@@ -34,20 +34,17 @@ export function useFarmHarvest({
     const { config } = usePrepareContractWrite({
         address: account && tokenId ? FARMING_CENTER : undefined,
         abi: farmingCenterABI,
-        functionName: 'multicall',
+        functionName: "multicall",
         args: [calldata],
     });
 
     const { data: data, writeAsync: onHarvest } = useContractWrite(config);
-    
-    const { isLoading, isSuccess } = useTransactionAwait(
-        data?.hash,
-        {
-            title: `Harvest Position #${tokenId}`,
-            tokenId: tokenId.toString(),
-            type: TransactionType.FARM
-        }
-    );
+
+    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+        title: `Farm Harvest`,
+        tokenId: tokenId.toString(),
+        type: TransactionType.FARM,
+    });
 
     return {
         isLoading,
@@ -87,7 +84,7 @@ export function useFarmHarvestAll(
 
             const calldata = encodeFunctionData({
                 abi: farmingCenterABI,
-                functionName: 'multicall',
+                functionName: "multicall",
                 args: [rewardsCalldata],
             });
             calldatas.push(calldata);
@@ -97,20 +94,17 @@ export function useFarmHarvestAll(
     const { config } = usePrepareContractWrite({
         address: FARMING_CENTER,
         abi: farmingCenterABI,
-        functionName: 'multicall',
+        functionName: "multicall",
         args: [calldatas],
     });
 
     const { data: data, writeAsync: onHarvestAll } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransactionAwait(
-        data?.hash,
-        {
-            title: `Harvest All Positions`,
-            type: TransactionType.FARM,
-            tokenId: "0",
-        }
-    );
+    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+        title: `Harvest All Positions`,
+        type: TransactionType.FARM,
+        tokenId: "0",
+    });
 
     return {
         isLoading,

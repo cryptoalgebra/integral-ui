@@ -1,14 +1,14 @@
-import { FARMING_CENTER } from '@/constants/addresses';
-import { farmingCenterABI } from '@/generated';
-import { Address, useContractWrite, usePrepareContractWrite } from 'wagmi';
-import { useTransactionAwait } from '../common/useTransactionAwait';
-import { encodeFunctionData } from 'viem';
-import { MaxUint128 } from '@cryptoalgebra/integral-sdk';
-import { useFarmCheckApprove } from './useFarmCheckApprove';
-import { useEffect, useState } from 'react';
-import { farmingClient } from '@/graphql/clients';
-import { Deposit } from '@/graphql/generated/graphql';
-import { TransactionType } from '@/state/pendingTransactionsStore';
+import { FARMING_CENTER } from "@/constants/addresses";
+import { farmingCenterABI } from "@/generated";
+import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { encodeFunctionData } from "viem";
+import { MaxUint128 } from "@cryptoalgebra/integral-sdk";
+import { useFarmCheckApprove } from "./useFarmCheckApprove";
+import { useEffect, useState } from "react";
+import { farmingClient } from "@/graphql/clients";
+import { Deposit } from "@/graphql/generated/graphql";
+import { TransactionType } from "@/state/pendingTransactionsStore";
+import { useTransactionAwait } from "../common/useTransactionAwait";
 
 export function useFarmStake({
     tokenId,
@@ -32,7 +32,7 @@ export function useFarmStake({
     const { config } = usePrepareContractWrite({
         address,
         abi: farmingCenterABI,
-        functionName: 'enterFarming',
+        functionName: "enterFarming",
         args: [
             {
                 rewardToken,
@@ -46,14 +46,11 @@ export function useFarmStake({
 
     const { data: data, writeAsync: onStake } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransactionAwait(
-        data?.hash,
-        {
-            title: `Stake Position #${tokenId}`,
-            tokenId: tokenId.toString(),
-            type: TransactionType.FARM
-        }
-    );
+    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+        title: `Farm Stake`,
+        tokenId: tokenId.toString(),
+        type: TransactionType.FARM,
+    });
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -62,17 +59,16 @@ export function useFarmStake({
         const interval: NodeJS.Timeout = setInterval(
             () =>
                 farmingClient.refetchQueries({
-                    include: ['Deposits'],
+                    include: ["Deposits"],
                     onQueryUpdated: (query, { result: diff }) => {
-                        const currentPos = diff.deposits.find(
-                            (deposit: Deposit) =>
-                                deposit.id.toString() === tokenId.toString()
-                        );
+                        const currentPos = diff.deposits.find((deposit: Deposit) => deposit.id.toString() === tokenId.toString());
                         if (!currentPos) return;
 
                         if (currentPos.eternalFarming !== null) {
-                            setIsQueryLoading(false);
-                            clearInterval(interval);
+                            query.refetch().then(() => {
+                                setIsQueryLoading(false);
+                                clearInterval(interval);
+                            });
                         } else {
                             query.refetch().then();
                         }
@@ -110,7 +106,7 @@ export function useFarmUnstake({
 
     const exitFarmingCalldata = encodeFunctionData({
         abi: farmingCenterABI,
-        functionName: 'exitFarming',
+        functionName: "exitFarming",
         args: [
             {
                 rewardToken,
@@ -124,39 +120,32 @@ export function useFarmUnstake({
 
     const rewardClaimCalldata = encodeFunctionData({
         abi: farmingCenterABI,
-        functionName: 'claimReward',
+        functionName: "claimReward",
         args: [rewardToken, account, BigInt(MaxUint128)],
     });
 
     const bonusRewardClaimCalldata = encodeFunctionData({
         abi: farmingCenterABI,
-        functionName: 'claimReward',
+        functionName: "claimReward",
         args: [bonusRewardToken, account, BigInt(MaxUint128)],
     });
 
-    const calldatas = [
-        exitFarmingCalldata,
-        rewardClaimCalldata,
-        bonusRewardClaimCalldata,
-    ];
+    const calldatas = [exitFarmingCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
 
     const { config } = usePrepareContractWrite({
         address: account && tokenId ? FARMING_CENTER : undefined,
         abi: farmingCenterABI,
-        functionName: 'multicall',
+        functionName: "multicall",
         args: [calldatas],
     });
 
     const { data: data, writeAsync: onUnstake } = useContractWrite(config);
 
-    const { isLoading, isSuccess } = useTransactionAwait(
-        data?.hash,
-        {
-            title: `Unstake Position #${tokenId}`,
-            tokenId: tokenId.toString(),
-            type: TransactionType.FARM
-        }
-    );
+    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+        title: `Farm Unstake`,
+        tokenId: tokenId.toString(),
+        type: TransactionType.FARM,
+    });
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -165,17 +154,16 @@ export function useFarmUnstake({
         const interval: NodeJS.Timeout = setInterval(
             () =>
                 farmingClient.refetchQueries({
-                    include: ['Deposits'],
+                    include: ["Deposits"],
                     onQueryUpdated: (query, { result: diff }) => {
-                        const currentPos = diff.deposits.find(
-                            (deposit: Deposit) =>
-                                deposit.id.toString() === tokenId.toString()
-                        );
+                        const currentPos = diff.deposits.find((deposit: Deposit) => deposit.id.toString() === tokenId.toString());
                         if (!currentPos) return;
 
                         if (currentPos.eternalFarming === null) {
-                            setIsQueryLoading(false);
-                            clearInterval(interval);
+                            query.refetch().then(() => {
+                                setIsQueryLoading(false);
+                                clearInterval(interval);
+                            });
                         } else {
                             query.refetch().then();
                         }
