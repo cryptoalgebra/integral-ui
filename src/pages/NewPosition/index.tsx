@@ -23,6 +23,7 @@ type NewPositionPageParams = Record<'pool', Address>;
 const NewPositionPage = () => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
+    /* token0 and token1 comes already sorted */
     const { data: token0 } = useAlgebraPoolToken0({
         address: poolAddress,
     });

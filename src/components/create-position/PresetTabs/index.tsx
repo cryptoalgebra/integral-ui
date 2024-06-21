@@ -114,7 +114,7 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
         }
     }
 
-    return <div className="flex h-fit bg-card rounded-3xl p-1">
+    return <div className="flex h-full gap-2 items-center bg-card rounded-3xl p-2 border border-card-border">
         {presets.map((range) => <Button
             variant={preset === range.type ? 'iconActive' : 'icon'}
             size={'sm'}

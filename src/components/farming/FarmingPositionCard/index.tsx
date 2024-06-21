@@ -23,7 +23,7 @@ const FarmingPositionCard = ({
                 className
             )}
         >
-            <FarmingPositionImg positionId={BigInt(position.id)} size={12} />
+            <FarmingPositionImg positionId={BigInt(position.id)} />
             <div className="flex flex-col">
                 <p>Position #{position.id}</p>
                 <div>
