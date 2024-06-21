@@ -6,12 +6,9 @@ export async function processTicks(
     currencyA: Currency,
     currencyB: Currency,
     tick: number,
-    ticksResult?: TicksResult,
-    tickAfterSwap?: number | null,
-    isReversed = false
+    ticksResult: TicksResult,
+    tickAfterSwap: number | null | undefined
 ) {
-    if (!ticksResult) return;
-
     const _data = await Promise.all(
         ticksResult.ticksProcessed.map(async (t, i) => {
             const currentTick = t.tickIdx;
@@ -68,7 +65,6 @@ export async function processTicks(
                 isCurrent: active,
                 isAfterSwapRange: afterSwapRange,
                 isAfterSwapTick: afterSwap,
-                isReversed,
                 activeLiquidity: parseFloat(t.liquidityActive.toString()),
                 price0: parseFloat(t.price0),
                 price1: parseFloat(t.price1),

@@ -38,16 +38,11 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
 
         processTicks(currencyA, currencyB, ticksResult.activeTickIdx, ticksResult, null)
             .then((data) => setProcessedData(data))
-            .catch(() => {
-                processTicks(currencyB, currencyA, ticksResult.activeTickIdx, ticksResult, null, true).then((reversedData) =>
-                    setProcessedData(reversedData)
-                );
-            });
     }, [ticksResult, currencyA, currencyB])
 
     useEffect(() => {
-
         if (preset === null) return
+
         switch (preset) {
             case Presets.FULL:
                 setZoom(10)
@@ -79,25 +74,18 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
         return slicedData.reverse()
     }, [processedData, zoom])
     
-    const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
+    const leftPrice = priceLower?.toSignificant(18)
 
-    const leftPrice = useMemo(() => {
-        return isSorted ? priceLower?.toSignificant(18) : priceUpper?.invert().toSignificant(18)
-    }, [isSorted, priceLower, priceUpper])
-
-    const rightPrice = useMemo(() => {
-        return isSorted ? priceUpper?.toSignificant(18) : priceLower?.invert().toSignificant(18)
-    }, [isSorted, priceLower, priceUpper])
+    const rightPrice = priceUpper?.toSignificant(18)
 
     return <div className="flex w-full h-full">
         {formattedData ?  <Chart 
             formattedData={formattedData} 
             leftPrice={leftPrice} 
             rightPrice={rightPrice} 
-            currentPrice={currentPrice} 
-            isSorted={isSorted} 
+            currentPrice={currentPrice}
             zoom={zoom} 
-            currencyA={currencyA} 
+            currencyA={currencyA}
             currencyB={currencyB}
          /> : <TicksChartLoader /> }
     </div>

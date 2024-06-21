@@ -12,8 +12,14 @@ interface TicksChartProps {
     zoom?: number;
 }
 
-const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
+const TicksChart = ({ currencyA: tokenA, currencyB: tokenB, zoom = 50 }: TicksChartProps) => {
     const [processedData, setProcessedData] = useState<any>(null);
+
+    /* sort tokens */
+    const [currencyA, currencyB] = useMemo(
+        () => (tokenA.wrapped.sortsBefore(tokenB.wrapped) ? [tokenA, tokenB] : [tokenB, tokenA]),
+        [tokenA, tokenB]
+    );
 
     const { tickAfterSwap, tick } = useDerivedSwapInfo();
 
@@ -30,13 +36,7 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
         if (!ticksResult || !ticksResult.ticksProcessed) return;
         if (!tick) return;
 
-        processTicks(currencyA, currencyB, tick, ticksResult, tickAfterSwap)
-            .then((data) => setProcessedData(data))
-            .catch(() => {
-                processTicks(currencyB, currencyA, tick, ticksResult, tickAfterSwap, true).then((reversedData) =>
-                    setProcessedData(reversedData)
-                );
-            });
+        processTicks(currencyA, currencyB, tick, ticksResult, tickAfterSwap).then((data) => setProcessedData(data));
     }, [ticksResult, tickAfterSwap, tick, currencyA, currencyB]);
 
     const formattedData = useMemo(() => {
@@ -50,10 +50,8 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
 
         slicedData.forEach((t: any) => (t.showWestArrow = false) || (t.showEastArrow = false));
 
-        const firstTick = slicedData.find((t: any, i: number) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && !t.isReversed);
-        const lastTick = [...slicedData]
-            .reverse()
-            .find((t: any, i: number) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick && t.isReversed);
+        const firstTick = slicedData.find((t: any, i: number) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick);
+        const lastTick = [...slicedData].reverse().find((t: any, i: number) => t.isAfterSwapRange && i === 0 && !t.isAfterSwapTick);
 
         if (firstTick) firstTick.showWestArrow = true;
 
@@ -63,7 +61,7 @@ const TicksChart = ({ currencyA, currencyB, zoom = 50 }: TicksChartProps) => {
     }, [processedData, zoom]);
 
     return (
-        <div className="flex w-full h-full mt-12">
+        <div className="flex w-full h-full mt-24">
             {formattedData ? (
                 <Chart formattedData={formattedData} zoom={zoom} currencyA={currencyA} currencyB={currencyB} />
             ) : (

@@ -19,8 +19,7 @@ import TicksZoomBar from "../TicksZoomBar";
 import { formatPrice } from "@/utils/common/formatPrice";
 import JSBI from "jsbi";
 
-const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
-
+const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency, isSorted: boolean = false) => {
     switch (chartPair) {
         case SwapChartPair.AB:
             return [
@@ -40,13 +39,13 @@ const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, curren
             ];
         case SwapChartPair.A:
             return [
-                <CurrencyLogo currency={currencyA} size={30} />,
-                `${currencyA.symbol}`
+                <CurrencyLogo currency={isSorted ? currencyB : currencyA} size={30} />,
+                `${isSorted ? currencyB.symbol : currencyA.symbol}`
             ];
         case SwapChartPair.B:
             return [
-                <CurrencyLogo currency={currencyB} size={30} />,
-                `${currencyB.symbol}`
+                <CurrencyLogo currency={isSorted ? currencyA : currencyB} size={30} />,
+                `${isSorted ? currencyA.symbol : currencyB.symbol}`
             ];
     }
 }
@@ -73,7 +72,17 @@ const SwapChart = () => {
 
     const { currencies, poolAddress: poolId } = useDerivedSwapInfo();
 
-    const [tokenA, tokenB] = [currencies.INPUT?.wrapped, currencies.OUTPUT?.wrapped];
+    const [currencyA, currencyB] = [currencies.INPUT?.wrapped, currencies.OUTPUT?.wrapped];
+
+    const [tokenA, tokenB, isSorted] = useMemo(
+        () =>
+            currencyA && currencyB && !currencyA.equals(currencyB)
+                ? currencyA.sortsBefore(currencyB)
+                    ? [currencyA, currencyB, false]
+                    : [currencyB, currencyA, true]
+                : [undefined, undefined, false],
+        [currencyA, currencyB]
+    );
 
     const mintInfo = useDerivedMintInfo(tokenA, tokenB, poolId, INITIAL_POOL_FEE, tokenA, undefined);
 
@@ -118,7 +127,7 @@ const SwapChart = () => {
     }, [chartSpan, chartPair, poolAddress, tokenAddress, poolAddress]);
 
     const formattedData = useMemo(() => {
-        if (!chartData || !tokenA || !tokenB) return;
+        if (!chartData || !currencyA || !currencyB) return;
 
         if (chartType === SwapChartView.CANDLES) {
             const isSorted = chartPair === SwapChartPair.AB;
@@ -135,7 +144,7 @@ const SwapChart = () => {
         }
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
-            const [token0Price] = chartPair === SwapChartPair.AB ? ["token0Price", "token1Price"] : ["token1Price", "token0Price"];
+            const [token0Price] = chartPair === SwapChartPair.AB && isSorted ? ["token1Price", "token0Price"] : chartPair === SwapChartPair.BA && !isSorted ? ["token1Price", "token0Price"] : ["token0Price", "token1Price"];
             return chartData.map((d: any) => {
                 return {
                     time: d.periodStartUnix,
@@ -150,7 +159,7 @@ const SwapChart = () => {
                 value: Number(d.priceUSD),
             };
         });
-    }, [chartType, chartData, tokenA, tokenB]);
+    }, [chartType, chartData, currencyA, currencyB, chartPair, isSorted]);
 
     const handleResize = useCallback(() => {
         if (chartCreated && chartRef?.current?.parentElement) {
@@ -247,17 +256,32 @@ const SwapChart = () => {
         if (!value) return '';
 
         if (chartPair === SwapChartPair.AB || chartPair === SwapChartPair.BA) {
-            return formatPrice(value, 2)
+            return formatPrice(value.toString(), 6)
         }
 
-        return formatPrice(value, 2)
+        return formatPrice(value.toString(), 6)
     }, [formattedData, chartPair])
 
-    const displayValueCurrency = chartPair === SwapChartPair.AB ? currencies.OUTPUT?.symbol : chartPair === SwapChartPair.BA ? currencies.INPUT?.symbol : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B ? '' : ''
+    const displayValueCurrency = 
+        chartPair === SwapChartPair.AB 
+            ? currencies.OUTPUT?.symbol 
+            : chartPair === SwapChartPair.BA 
+            ? currencies.INPUT?.symbol 
+            : "$";
+
+    const displayValueSecondCurrency = 
+        chartPair === SwapChartPair.AB 
+            ? currencies.INPUT?.symbol 
+            : chartPair === SwapChartPair.BA 
+            ? currencies.OUTPUT?.symbol 
+            : chartPair === SwapChartPair.A 
+            ? (isSorted ? currencies.OUTPUT?.symbol : currencies.INPUT?.symbol) 
+            : (isSorted ? currencies.INPUT?.symbol : currencies.OUTPUT?.symbol) 
+
 
     const crosshairMoveHandler = useCallback((param: any) => {
         if (param.point && param.seriesData.get(series)) {
-            setDisplayValued(formatPrice(param.seriesData.get(series).value, 2))
+            setDisplayValued(formatPrice(param.seriesData.get(series).value.toString(), 6))
             setDisplayDate(new Date(param.time * 1000).toLocaleDateString())
         } else {
             setDisplayDate(new Date().toLocaleDateString())
@@ -286,9 +310,9 @@ const SwapChart = () => {
             'Loading...'
         ];
 
-        return getTokenTitle(chartPair, currencies.INPUT, currencies.OUTPUT)
+        return getTokenTitle(chartPair, currencies.INPUT, currencies.OUTPUT, isSorted)
 
-    }, [currencies, chartPair]);
+    }, [currencies, chartPair, isSorted]);
 
     const pairSelectorList = useMemo(() => {
 
@@ -296,9 +320,9 @@ const SwapChart = () => {
 
         return Object.keys(SwapChartPair).filter(v => v !== chartPair).map((pair: any) => ({
             pair,
-            title: getTokenTitle(pair, currencies.INPUT!, currencies.OUTPUT!)
+            title: getTokenTitle(pair, currencies.INPUT!, currencies.OUTPUT!, isSorted)
         }))
-    }, [currencies.INPUT, currencies.OUTPUT, chartPair])
+    }, [currencies.INPUT, currencies.OUTPUT, chartPair, isSorted])
 
     if (!isPoolExists && !poolAddress || (mintInfo.pool && JSBI.equal(mintInfo.pool.liquidity, ZERO))) return null;
 
@@ -413,9 +437,12 @@ const SwapChart = () => {
 
                 <div className="absolute right-0 top-0 flex flex-col items-end w-full text-3xl text-right">
                     {chartCreated ? <>
-                        <div className="text-3xl font-bold">
-                            <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
-                            <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
+                        <div className="flex flex-col gap-0 text-3xl font-bold">
+                            <div className="flex gap-2 ml-auto">
+                                <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
+                                <span className="ml-0">{displayValueCurrency && displayValueCurrency}</span>
+                            </div>
+                            <span className="ml-2 text-sm font-normal">{displayValueSecondCurrency && `per ${displayValueSecondCurrency}`}</span>
                         </div>
                         <div className="text-[#b7b7b7] text-sm">
                             {displayValue ? displayDate : null}

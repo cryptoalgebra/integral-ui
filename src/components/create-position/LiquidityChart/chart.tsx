@@ -98,7 +98,7 @@ const CustomTooltip = ({
     </div>
 }
 
-export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPrice, currentPrice, isSorted, zoom }: ChartProps) {
+export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPrice, currentPrice, isSorted = true, zoom }: ChartProps) {
 
     const [focusBar, setFocusBar] = useState<number | undefined>(undefined);
 
