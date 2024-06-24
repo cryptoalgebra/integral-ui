@@ -20,12 +20,14 @@ import { cn } from "@/lib/utils";
 import {
   CUSTOM_POOL_DEPLOYER_BLANK,
   CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
+  CUSTOM_POOL_DEPLOYER_VOLUME_FEE,
 } from "@/constants/addresses";
 
 const POOL_DEPLOYER = {
   BASE: "Base",
   FEE_CHANGER: "Fee Changer",
   BLANK: "Blank",
+  VOLUME_FEE: "Volume Fee"
 };
 
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
@@ -34,6 +36,7 @@ const customPoolDeployerAddresses = {
   [POOL_DEPLOYER.BASE]: ADDRESS_ZERO as Address,
   [POOL_DEPLOYER.BLANK]: CUSTOM_POOL_DEPLOYER_BLANK,
   [POOL_DEPLOYER.FEE_CHANGER]: CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
+  [POOL_DEPLOYER.VOLUME_FEE]: CUSTOM_POOL_DEPLOYER_VOLUME_FEE
 };
 
 const CreatePoolForm = () => {
@@ -70,7 +73,7 @@ const CreatePoolForm = () => {
         }) as Address)
       : undefined;
 
-  const customPoolsAddresses = areCurrenciesSelected && !isSameToken ? [CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER].map(customPoolDeployer => computeCustomPoolAddress({
+  const customPoolsAddresses = areCurrenciesSelected && !isSameToken ? [CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER, CUSTOM_POOL_DEPLOYER_VOLUME_FEE].map(customPoolDeployer => computeCustomPoolAddress({
     tokenA: currencyA.wrapped,
     tokenB: currencyB.wrapped,
     customPoolDeployer
