@@ -79,20 +79,19 @@ const CreatePoolForm = () => {
     customPoolDeployer
   }) as Address) : []
 
-  const [poolState, pool] = usePool(poolAddress);
+  const [poolState] = usePool(poolAddress);
 
   // TODO
-  const [poolState0, pool0] = usePool(customPoolsAddresses[0])
-  const [poolState1, pool1] = usePool(customPoolsAddresses[1])
+  const [poolState0] = usePool(customPoolsAddresses[0])
+  const [poolState1] = usePool(customPoolsAddresses[1])
+  const [poolState2] = usePool(customPoolsAddresses[2])
 
   const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
   const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BLANK;
   const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.FEE_CHANGER;
+  const isPool2Exists = poolState2 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.VOLUME_FEE;
 
-  console.log(pool, pool0, pool1)
-
-
-  const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists
+  const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists || isPool2Exists
 
   const mintInfo = useDerivedMintInfo(
     currencyA ?? undefined,

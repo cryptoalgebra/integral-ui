@@ -35,7 +35,7 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
 
   const { data: poolDeployer, loading: isPoolDeployerLoading, error: isPoolDeployerError } = useCustomPoolDeployerQuery({
     variables: {
-      poolId: address
+      poolId: address?.toLowerCase() || ''
     }
   })
 
