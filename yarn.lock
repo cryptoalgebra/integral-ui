@@ -559,23 +559,6 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/custom-pools-sdk@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-sdk/-/custom-pools-sdk-1.0.4.tgz#01fad2a01e9917fa01e5a0d2c3b33346f6ddde2c"
-  integrity sha512-7caqNI+kCnQRee41DQOZAgscanwCtyCV/LsmnS9jC+U3cDrLEkpt44pEFA91k+WLn3qlu//n3IbZ231s3Mfggw==
-  dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/address" "^5.7.0"
-    "@ethersproject/solidity" "^5.7.0"
-    "@ethersproject/units" "^5.7.0"
-    big.js "^6.2.1"
-    decimal.js-light "^2.5.1"
-    jsbi "^3.2.5"
-    numeral "^2.0.6"
-    tiny-invariant "^1.3.1"
-    tiny-warning "^1.0.3"
-    toformat "^2.0.0"
-
 "@cryptoalgebra/custom-pools-sdk@^1.0.5":
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-sdk/-/custom-pools-sdk-1.0.5.tgz#f9f93b577ad7c06f587c99e46f248bb879b810f0"

@@ -109,7 +109,7 @@ const CreatePoolForm = () => {
         value: undefined,
       };
 
-    return NonfungiblePositionManager.createCallParameters(mintInfo.pool);
+    return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
   }, [mintInfo?.pool, poolDeployer]);
 
   const { config: createBasePoolConfig } =

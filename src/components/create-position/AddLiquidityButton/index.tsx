@@ -70,6 +70,7 @@ export const AddLiquidityButton = ({
             deadline: Date.now() + txDeadline,
             useNative,
             createPool: mintInfo.noLiquidity,
+            deployer: mintInfo.pool?.deployer
         });
     }, [mintInfo, account, txDeadline, useNative]);
 
