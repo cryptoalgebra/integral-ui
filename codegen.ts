@@ -4,8 +4,8 @@ const config: CodegenConfig = {
     overwrite: true,
     schema: [
         'https://api.studio.thegraph.com/proxy/50593/integral-v1-1/version/latest',
-        'https://api.thegraph.com/subgraphs/name/iliaazhel/goerli-blocks',
-        'https://api.thegraph.com/subgraphs/name/iliaazhel/farming-test',
+        'https://api.studio.thegraph.com/query/50593/goerli-blocks/version/latest',
+        'https://api.studio.thegraph.com/query/50593/farming-test/version/latest',
     ],
     documents: 'src/graphql/queries/!(*.d).{ts,tsx}',
     generates: {
