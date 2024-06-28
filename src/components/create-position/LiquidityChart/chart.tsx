@@ -50,7 +50,7 @@ const CustomBar = ({
             </defs>
             {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
             {isCurrent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
-            <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
+            <rect x={x} y={y} fill={fill} width={width > 0 ? width : 0} height={height} rx="4" />
         </g>
     )
 }
@@ -110,6 +110,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     setFocusBar(undefined);
                 }
             }}
+            className='[&>svg]:overflow-visible'
         >
             <Tooltip
                 cursor={false}
@@ -119,12 +120,17 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
             />
 
             <XAxis reversed={true} tick={(props) => {
+                const isSmallScreen = props.width < 600 && props.visibleTicksCount > 10
+                const isEdgeTick = (props.index >= 1 && props.index <= 2) || (props.index >= props.visibleTicksCount - 2 && props.index <= props.visibleTicksCount)
 
                 if (!props?.payload || props.index % 2 === 0) return <text></text>
 
-                return <text x={props.x} y={props.y + 20} fill="white" textAnchor="middle" fontSize={"12px"}
-                    width={"12px"} >{props.payload.value.toFixed(3)}</text>
-            }} dataKey={isSorted ? 'price0' : 'price1'} interval={6} offset={0} tickLine={false} tickFormatter={v => v.toFixed(3)} />
+                return (
+                    <text x={props.x} y={props.y + 20} fill="white" textAnchor="middle" fontSize={"12px"} width={"12px"}>
+                        {!isSmallScreen || isEdgeTick ? props.payload.value.toFixed(3) : ''}
+                    </text>
+                )
+            }} dataKey={isSorted ? 'price0' : 'price1'} interval={12} offset={0} tickLine={false} tickFormatter={v => v.toFixed(3)} />
 
             <Bar
                 dataKey="activeLiquidity"

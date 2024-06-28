@@ -6,5 +6,6 @@ export * from './algebraQuoterV2';
 export * from './algebraRouter';
 export * from './plugins';
 export * from './farming';
-export * from './tokens'
+export * from './tokens';
+export * from './algebraVirtualPool';
 

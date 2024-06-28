@@ -2,7 +2,7 @@ import { formatCurrency } from "./formatCurrency";
 
 export function formatAmount(amount: string, decimals = 3): string {
     const amountNum = Number(amount);
-    const minAmount = 1 / 10 ** (decimals || 3);
+    const minAmount = 1 / 10 ** decimals;
 
     if (amountNum === 0) return "0";
     if (amountNum < minAmount) return `< ${minAmount}`;
