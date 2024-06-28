@@ -61,8 +61,8 @@ export function useFarmingDepositRewardsEarned({ farming, positionId }: { farmin
     return {
         rewardEarned: formatAmount(formattedRewardEarned.toString(), 2),
         bonusRewardEarned: formatAmount(formattedBonusRewardEarned.toString(), 2),
-        rewardEarnedUSD,
-        bonusRewardEarnedUSD,
+        rewardEarnedUSD: formatAmount(rewardEarnedUSD.toString(), 4),
+        bonusRewardEarnedUSD: formatAmount(bonusRewardEarnedUSD.toString(), 4),
         totalEarned: formatAmount(formattedTotalEarned.toString(), 2),
         totalEarnedUSD,
         refetch: fetchDepositRewards,
