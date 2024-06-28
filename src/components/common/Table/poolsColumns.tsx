@@ -3,15 +3,13 @@ import { HeaderItem } from "./common";
 import { Address } from "wagmi";
 import CurrencyLogo from "../CurrencyLogo";
 import { TokenFieldsFragment } from "@/graphql/generated/graphql";
-import { DynamicFeePluginIcon } from "../PluginIcons";
 import { formatUSD } from "@/utils/common/formatUSD";
-import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FarmingPluginIcon } from "../PluginIcons";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { formatPercent } from "@/utils/common/formatPercent";
 import { ReactNode } from "react";
+import { customPoolDeployerTitles } from "@/constants/deployers.ts";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -30,6 +28,7 @@ interface Pool {
     farmApr: number;
     isMyPool: boolean;
     hasActiveFarming: boolean;
+    deployer: string;
 }
 
 const PoolPair = ({ pair, fee }: Pool) => {
@@ -53,17 +52,6 @@ const PoolPair = ({ pair, fee }: Pool) => {
             )}
 
             <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
-        </div>
-    );
-};
-
-const Plugins = ({ poolId }: { poolId: Address }) => {
-    const { dynamicFeePlugin, farmingPlugin } = usePoolPlugins(poolId);
-
-    return (
-        <div className="flex gap-2">
-            {dynamicFeePlugin && <DynamicFeePluginIcon />}
-            {farmingPlugin && <FarmingPluginIcon />}
         </div>
     );
 };
@@ -103,9 +91,9 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 .includes(value),
     },
     {
-        accessorKey: "plugins",
-        header: () => <HeaderItem>Plugins</HeaderItem>,
-        cell: ({ row }) => <Plugins poolId={row.original.id} />,
+        accessorKey: "deployer",
+        header: () => <HeaderItem>Deployer</HeaderItem>,
+        cell: ({ row }) => customPoolDeployerTitles[row.original.deployer],
         filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
     },
     {

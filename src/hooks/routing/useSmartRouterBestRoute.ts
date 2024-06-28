@@ -120,14 +120,14 @@ export function useSmartRouterBestRoute(
                 return undefined;
             }
 
-            const { value, calldata } = SwapRouter.swapCallParameters(bestTrade, {
+            const { value, calldata } = account ? SwapRouter.swapCallParameters(bestTrade, {
                 recipient: account,
                 slippageTolerance: new PercentBN(
                     BigInt(allowedSlippage.numerator.toString()),
                     BigInt(allowedSlippage.denominator.toString()),
                 ),
                 deadlineOrPreviousBlockhash: Date.now() + txDeadline * 1000
-            });
+            }) : { value: undefined, calldata: undefined };
 
             return {
                 bestTrade,

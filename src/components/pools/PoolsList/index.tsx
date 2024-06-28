@@ -31,7 +31,7 @@ const PoolsList = () => {
     const formattedPools = useMemo(() => {
         if (isLoading || !pools) return [];
 
-        return pools.pools.map(({ id, token0, token1, fee, totalValueLockedUSD, poolDayData }) => {
+        return pools.pools.map(({ id, token0, token1, fee, totalValueLockedUSD, deployer, poolDayData }) => {
             const currentPool = poolDayData[0];
             const lastDate = currentPool ? currentPool.date * 1000 : 0;
             const currentDate = new Date().getTime();
@@ -65,6 +65,7 @@ const PoolsList = () => {
                 avgApr,
                 isMyPool: Boolean(openPositions?.length),
                 hasActiveFarming: Boolean(activeFarming),
+                deployer: deployer.toLowerCase()
             };
         });
     }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR]);
