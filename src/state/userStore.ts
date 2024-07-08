@@ -9,11 +9,13 @@ interface UserState {
     slippage: Percent | "auto";
     isExpertMode: boolean;
     isMultihop: boolean;
+    isSplit: boolean;
     actions: {
         setTxDeadline: (txDeadline: number) => void;
         setSlippage: (slippage: Percent | "auto") => void;
         setIsExpertMode: (isExpertMode: boolean) => void;
         setIsMultihop: (isMultihop: boolean) => void;
+        setIsSplit: (isSplit: boolean) => void;
     }
 }
 
@@ -22,6 +24,7 @@ export const useUserState = create(persist<UserState>((set) => ({
     slippage: "auto",
     isExpertMode: false,
     isMultihop: true,
+    isSplit: true,
     importedTokens: {},
     actions: {
         setTxDeadline: (txDeadline) => set({
@@ -35,6 +38,9 @@ export const useUserState = create(persist<UserState>((set) => ({
         }),
         setIsMultihop: (isMultihop) => set({
             isMultihop
+        }),
+        setIsSplit: (isSplit) => set({
+            isSplit
         })
     }
 }), {

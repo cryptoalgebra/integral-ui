@@ -37,7 +37,7 @@ export function useSmartRouterBestRoute(
 ) {
     const queryClient = useQueryClient();
 
-    const { txDeadline } = useUserState()
+    const { txDeadline, isSplit, isMultihop } = useUserState()
 
     const { address: account } = useAccount();
 
@@ -90,6 +90,8 @@ export function useSmartRouterBestRoute(
             MAX_HOPS,
             MAX_SPLIT,
             ALLOWED_VERSIONS,
+            isSplit,
+            isMultihop,
         ],
         queryFn: async ({ signal }) => {
             if (!amount || !amount.currency || !outputCurrency || !deferQuotient) {
@@ -105,7 +107,7 @@ export function useSmartRouterBestRoute(
                 {
                     gasPriceWei: () => SmartRouter.publicClient.getGasPrice(),
                     maxHops: 2,
-                    maxSplits: 3,
+                    maxSplits: isSplit ? 3 : 0,
                     poolProvider,
                     quoteProvider: SmartRouter.quoteProvider,
                     quoterOptimization: true,

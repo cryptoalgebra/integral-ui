@@ -22,6 +22,7 @@ const Settings = () => {
             <SlippageTolerance />
             <TransactionDeadline />
             <Multihop />
+            <SplitTrade />
             <ExpertMode />
         </PopoverContent>
     </Popover>
@@ -176,6 +177,20 @@ const Multihop = () => {
             </div>
             <p className="whitespace-break-spaces">
                 Optimized trades across multiple liquidity pools.
+            </p>
+        </div>
+}
+
+const SplitTrade = () => {
+    const { isSplit, actions: { setIsSplit } } = useUserState();
+
+    return <div className="flex flex-col gap-2 max-w-[332px]">
+            <div className="flex justify-between items-center gap-2 text-md font-semibold">
+                <label htmlFor="split">Split trade</label>
+                <Switch id="split" checked={isSplit} onCheckedChange={setIsSplit} />
+            </div>
+            <p className="whitespace-break-spaces">
+                Split trades across identical pools with different plugins.
             </p>
         </div>
 }
