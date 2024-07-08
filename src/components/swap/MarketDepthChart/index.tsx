@@ -1,4 +1,5 @@
 import { MAX_UINT128 } from "@/constants/max-uint128";
+import { usePool } from "@/hooks/pools/usePool";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useDerivedSwapInfo} from "@/state/swapStore";
 import { formatCurrency } from "@/utils/common/formatCurrency";
@@ -24,9 +25,11 @@ interface MarketDepthChartProps {
     close: () => void;
 }
 
-const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthChartProps) => {
+const MarketDepthChart = ({ currencyA, currencyB, isOpen, close, poolAddress }: MarketDepthChartProps) => {
 
     const { tickAfterSwap } = useDerivedSwapInfo();
+
+    const [, pool] = usePool(poolAddress)
 
     const [hoveredIndex, setHoveredIndex] = useState<number>(NOT_SELECTED)
 
@@ -38,9 +41,9 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
     } = useInfoTickData()
 
     useEffect(() => {
-        if (!currencyA || !currencyB) return
-        fetchTicksSurroundingPrice(currencyA, currencyB)
-    }, [currencyA, currencyB])
+        if (!pool) return;
+        fetchTicksSurroundingPrice(pool)
+    }, [pool])
 
     useEffect(() => {
         if (!ticksResult || !ticksResult.ticksProcessed) return

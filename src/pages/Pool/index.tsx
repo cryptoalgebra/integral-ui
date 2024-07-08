@@ -158,9 +158,7 @@ const PoolPage = () => {
     };
 
     const positionsData = useMemo(() => {
-        console.log(filteredPositions, poolEntity, deposits)
         if (!filteredPositions || !poolEntity || !deposits) return [];
-
 
         return filteredPositions.map(({ positionId, position }, idx) => {
             const currentPosition = deposits.deposits.find(

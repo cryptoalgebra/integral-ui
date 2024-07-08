@@ -1,5 +1,5 @@
-import { TickFieldsFragment, useAllTicksLazyQuery, useSinglePoolLazyQuery } from "@/graphql/generated/graphql"
-import { Currency, TickMath, Token, computePoolAddress, tickToPrice } from "@cryptoalgebra/custom-pools-sdk"
+import { TickFieldsFragment, useAllTicksLazyQuery } from "@/graphql/generated/graphql"
+import { Pool, TickMath, Token, computeCustomPoolAddress, tickToPrice } from "@cryptoalgebra/custom-pools-sdk"
 import { useState } from "react"
 import { Address } from "wagmi"
 import keyBy from 'lodash.keyby'
@@ -29,8 +29,7 @@ export function useInfoTickData() {
     const [ticksResult, setTicksResult] = useState<TicksResult | null>(null)
     const [ticksLoading, setTicksLoading] = useState(false)
 
-    const [getPool] = useSinglePoolLazyQuery()
-    const [getAllTicks] = useAllTicksLazyQuery()
+    const [getAllTicks] = useAllTicksLazyQuery();
 
     async function fetchInitializedTicks(poolAddress: Address) {
         let surroundingTicks: TickFieldsFragment[] = []
@@ -41,7 +40,7 @@ export function useInfoTickData() {
 
             const { data: ticks } = await getAllTicks({
                 variables: {
-                    poolAddress,
+                    poolAddress: poolAddress.toLowerCase(),
                     skip
                 }
             })
@@ -61,34 +60,26 @@ export function useInfoTickData() {
         return { ticks: surroundingTicksResult, loading: false, error: false }
     }
 
-    async function fetchTicksSurroundingPrice(currencyA: Currency, currencyB: Currency) {
+    async function fetchTicksSurroundingPrice(pool: Pool) {
         setTicksLoading(true)
 
-        const poolId = computePoolAddress({
-            tokenA: currencyA.wrapped,
-            tokenB: currencyB.wrapped,
-        }).toLowerCase() as Address
-
-        const { data: pool } = await getPool({
-            variables: {
-                poolId
-            }
-        })
-
         try {
-
-            if (!pool?.pool) return
-
             const {
-                tick: poolCurrentTick,
+                tickCurrent: poolCurrentTick,
                 liquidity,
-                token0: { id: token0Address, decimals: token0Decimals },
-                token1: { id: token1Address, decimals: token1Decimals },
-            } = pool.pool
+                token0,
+                token1,
+            } = pool
 
-            const tickSpacing = Number(pool.pool.tickSpacing)
+            const poolId = computeCustomPoolAddress({
+                tokenA: token0,
+                tokenB: token1,
+                customPoolDeployer: pool.deployer,
+            }) as Address
 
-            const poolCurrentTickIdx = parseInt(poolCurrentTick)
+            const tickSpacing = Number(pool.tickSpacing)
+
+            const poolCurrentTickIdx = parseInt(poolCurrentTick.toString())
 
             const activeTickIdx = Math.floor(poolCurrentTickIdx / tickSpacing) * tickSpacing
 
@@ -105,9 +96,6 @@ export function useInfoTickData() {
 
             const tickIdxToInitializedTick = keyBy(initializedTicks, 'tickIdx')
 
-            const token0 = new Token(1, token0Address, parseInt(token0Decimals))
-            const token1 = new Token(1, token1Address, parseInt(token1Decimals))
-
             let activeTickIdxForPrice = activeTickIdx
             if (activeTickIdxForPrice < TickMath.MIN_TICK) {
                 activeTickIdxForPrice = TickMath.MIN_TICK
@@ -117,7 +105,7 @@ export function useInfoTickData() {
             }
 
             const activeTickProcessed = {
-                liquidityActive: BigInt(liquidity),
+                liquidityActive: BigInt(liquidity.toString()),
                 tickIdx: activeTickIdx,
                 liquidityNet: BigInt(0),
                 price0: tickToPrice(token0, token1, activeTickIdxForPrice).toFixed(PRICE_FIXED_DIGITS),

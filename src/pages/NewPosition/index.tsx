@@ -143,6 +143,7 @@ const NewPositionPage = () => {
                             <LiquidityChart
                                 currencyA={currencyA}
                                 currencyB={currencyB}
+                                pool={mintInfo.pool}
                                 currentPrice={
                                     price ? parseFloat(price) : undefined
                                 }

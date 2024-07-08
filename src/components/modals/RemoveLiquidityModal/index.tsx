@@ -87,7 +87,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(
         removeLiquidityData?.hash,
         {
-            title: 'Removing liquidity',
+            title: 'Remove liquidity',
             tokenA: position?.token0 as Address,
             tokenB: position?.token1 as Address,
             type: TransactionType.POOL

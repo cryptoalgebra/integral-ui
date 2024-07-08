@@ -10,6 +10,7 @@ import { MAX_UINT128 } from "@/constants/max-uint128";
 interface LiquidityChartProps {
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
+    pool: Pool | null | undefined;
     currentPrice: number | undefined;
     priceLower: Price<Token, Token> | undefined;
     priceUpper: Price<Token, Token> | undefined;
@@ -17,7 +18,7 @@ interface LiquidityChartProps {
 
 // const ZOOM_STEP = 5
 
-const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceUpper }: LiquidityChartProps) => {
+const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, priceUpper }: LiquidityChartProps) => {
 
     const { preset } = useMintState()
 
@@ -30,9 +31,9 @@ const LiquidityChart = ({ currencyA, currencyB, currentPrice, priceLower, priceU
     } = useInfoTickData()
 
     useEffect(() => {
-        if (!currencyA || !currencyB) return
-        fetchTicksSurroundingPrice(currencyA, currencyB)
-    }, [currencyA, currencyB])
+        if (!pool) return
+        fetchTicksSurroundingPrice(pool)
+    }, [pool])
 
     useEffect(() => {
         if (!ticksResult || !ticksResult.ticksProcessed) return
