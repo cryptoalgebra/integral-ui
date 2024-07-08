@@ -106,7 +106,7 @@ export function useSmartRouterBestRoute(
                 isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
                 {
                     gasPriceWei: () => SmartRouter.publicClient.getGasPrice(),
-                    maxHops: 2,
+                    maxHops: isMultihop ? 2 : 1,
                     maxSplits: isSplit ? 3 : 0,
                     poolProvider,
                     quoteProvider: SmartRouter.quoteProvider,
