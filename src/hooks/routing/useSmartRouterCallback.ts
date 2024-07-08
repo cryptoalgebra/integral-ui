@@ -7,8 +7,13 @@ import { ALGEBRA_ROUTER } from '@/constants/addresses';
 import { useTransactionAwait } from '../common/useTransactionAwait';
 import { TransactionType } from '@/state/pendingTransactionsStore';
 import {algebraRouterABI} from "@/abis";
+import { Currency } from '@cryptoalgebra/router-custom-pools';
+import { formatAmount } from '@/utils/common/formatAmount';
 
 export function useSmartRouterCallback(
+  currencyA: Currency | undefined,
+  currencyB: Currency | undefined,
+  amount: string | undefined,
   calldata: Address | undefined,
   value: string | undefined,
 ) {
@@ -22,8 +27,10 @@ export function useSmartRouterCallback(
   });
 
   const { isLoading } = useTransactionAwait(swapData?.hash, {
-    title: 'Swap',
-    type: TransactionType.SWAP
+    title: `Swap ${formatAmount(amount || '0', 6)} ${currencyA?.symbol}`,
+    type: TransactionType.SWAP,
+    tokenA: currencyA?.wrapped.address as Address,
+    tokenB: currencyB?.wrapped.address as Address,
   });
 
   return useMemo(

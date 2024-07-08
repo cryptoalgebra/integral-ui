@@ -74,12 +74,12 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo, 
     const parsedAmountA =
         independentField === SwapField.INPUT
             ? parsedAmount
-            : tryParseAmount(smartTrade?.inputAmount?.toSignificant(), smartTrade?.inputAmount?.currency);
+            : tryParseAmount(smartTrade?.inputAmount?.toFixed(), smartTrade?.inputAmount?.currency);
 
     const parsedAmountB =
         independentField === SwapField.OUTPUT
             ? parsedAmount
-            : tryParseAmount(smartTrade?.outputAmount?.toSignificant(), smartTrade?.outputAmount?.currency);
+            : tryParseAmount(smartTrade?.outputAmount?.toFixed(), smartTrade?.outputAmount?.currency);
 
     const parsedAmounts = useMemo(
         () =>

@@ -12,6 +12,7 @@ import { ArrowRight } from "lucide-react";
 import { Address } from "wagmi";
 import {ADDRESS_ZERO} from "@cryptoalgebra/custom-pools-sdk";
 import {CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER, CUSTOM_POOL_DEPLOYER_VOLUME_FEE } from "@/constants/addresses.ts";
+import { useCurrency } from '@/hooks/common/useCurrency';
 
 interface ISwapRouteModal {
     isOpen: boolean;
@@ -30,23 +31,26 @@ const customPoolDeployers = {
 
 const RoutePool = ({ pool }: { pool: { path: any[]; deployer: Address; percent: number } }) => {
     const [token0, token1] = [pool.path[0], pool.path[1]];
-    const deployer = customPoolDeployers[pool.deployer];
+    const currencyA = useCurrency(token0.wrapped.address, true);
+    const currencyB = useCurrency(token1.wrapped.address, true);
+
+    const deployer = customPoolDeployers[pool.deployer.toLowerCase()];
 
     return (
         <div className={'w-full flex items-center justify-between '}>
             <div className={'flex flex-col gap-2 items-center'}>
-                <CurrencyLogo currency={token0} size={20} />
-                <span className={'font-bold'}>{token0.symbol}</span>
+                <CurrencyLogo currency={currencyA} size={20} />
+                <span className={'font-bold'}>{currencyA?.symbol}</span>
             </div>
             <div className={'flex flex-col gap-2 items-center'}>
                 <ArrowRight size={'16px'} />
-                <span>{`${deployer} ${token0.symbol}/${token1.symbol}${
+                <span>{`${deployer} ${currencyA?.symbol}/${currencyB?.symbol}${
                     pool.percent < 100 ? ` (${pool.percent}%)` : ''
                 }`}</span>
             </div>
             <div className={'flex flex-col gap-2 items-center'}>
-                <CurrencyLogo currency={token1} size={20} />
-                <span className={'font-bold'}>{token1.symbol}</span>
+                <CurrencyLogo currency={currencyB} size={20} />
+                <span className={'font-bold'}>{currencyB?.symbol}</span>
             </div>
         </div>
     );
@@ -101,7 +105,7 @@ const SwapRouteModal = ({
                 </CredenzaHeader>
                 <CredenzaBody className={'flex flex-col gap-4'}>
                     {paths.map((pool: any) => (
-                        <RoutePool key={`route-pool-${pool.version}`} pool={pool} />
+                        <RoutePool key={`route-pool-${pool.deployer}`} pool={pool} />
                     ))}
                 </CredenzaBody>
                 <CredenzaClose asChild>

@@ -103,6 +103,9 @@ const SwapButton = ({ derivedSwap, smartTrade, isSmartTradeLoading, callOptions 
 
 
     const swapCallback = useSmartRouterCallback(
+        smartTrade?.inputAmount?.currency,
+        smartTrade?.outputAmount?.currency,
+        smartTrade?.inputAmount?.toFixed(),
         callOptions.calldata,
         callOptions.value,
     );

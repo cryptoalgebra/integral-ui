@@ -217,13 +217,13 @@ const CreatePoolForm = () => {
 
       <div className="text-left font-bold">
         <div>Plugin</div>
-        <div className="flex w-100 gap-4 my-2">
+        <div className="grid grid-cols-2 w-100 gap-4 my-2">
           {Object.entries(POOL_DEPLOYER).map(([, v]) => (
             <button
               key={v}
               onClick={() => handlePoolDeployerChange(v)}
               className={cn(
-                "px-3 py-1 rounded-lg border",
+                "px-3 py-2 rounded-lg border",
                 poolDeployer === v ? "border-blue-500" : "border-gray-600"
               )}
             >

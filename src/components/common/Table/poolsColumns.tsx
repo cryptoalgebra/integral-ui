@@ -92,9 +92,12 @@ export const poolsColumns: ColumnDef<Pool>[] = [
     },
     {
         accessorKey: "deployer",
-        header: () => <HeaderItem>Deployer</HeaderItem>,
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                Deployer
+            </HeaderItem>
+        ),
         cell: ({ row }) => customPoolDeployerTitles[row.original.deployer],
-        filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
     },
     {
         accessorKey: "tvlUSD",
