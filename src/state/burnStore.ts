@@ -46,11 +46,7 @@ export function useDerivedBurnInfo(
     const currency0 = useCurrency(position?.token0);
     const currency1 = useCurrency(position?.token1);
 
-    const poolId = currency0 && currency1 && position && computeCustomPoolAddress({
-        tokenA: currency0.wrapped,
-        tokenB: currency1.wrapped,
-        customPoolDeployer: position?.deployer
-    }) as Address
+    const poolId = position?.pool;
 
     const [, pool] = usePool(poolId);
 
