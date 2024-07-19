@@ -1,21 +1,14 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef } from 'react';
-import { Percent, TradeType } from '@cryptoalgebra/custom-pools-sdk';
-import {
-    Currency,
-    CurrencyAmount,
-    Percent as PercentBN,
-    PoolType,
-    SmartRouter,
-    SwapRouter,
-} from '@cryptoalgebra/router-custom-pools';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAccount, useBlockNumber } from 'wagmi';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef } from "react";
+import { Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent as PercentBN, PoolType, SmartRouter, SwapRouter } from "@cryptoalgebra/router-custom-pools";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAccount, useBlockNumber } from "wagmi";
 
-import {useUserSlippageToleranceWithDefault, useUserState} from '@/state/userStore';
+import { useUserSlippageToleranceWithDefault, useUserState } from "@/state/userStore";
 
-import useDebounce from '../common/useDebounce';
+import useDebounce from "../common/useDebounce";
 
-import { useCommonPools } from './useRoutingPools';
+import { useCommonPools } from "./useRoutingPools";
 import usePreviousValue from "@/hooks/uitls/usePreviousValue.ts";
 
 const REFRESH_TIMEOUT = 15_000;
@@ -33,11 +26,11 @@ export function useSmartRouterBestRoute(
     amount: CurrencyAmount<Currency> | undefined,
     outputCurrency: Currency | undefined,
     isExactIn: boolean,
-    isEnabled: boolean,
+    isEnabled: boolean
 ) {
     const queryClient = useQueryClient();
 
-    const { txDeadline, isSplit, isMultihop } = useUserState()
+    const { txDeadline, isSplit, isMultihop } = useUserState();
 
     const { address: account } = useAccount();
 
@@ -80,7 +73,7 @@ export function useSmartRouterBestRoute(
         refetch,
     } = useQuery({
         queryKey: [
-            'getBestRoute',
+            "getBestRoute",
             outputCurrency?.chainId,
             amount?.currency.symbol,
             outputCurrency?.symbol,
@@ -100,43 +93,54 @@ export function useSmartRouterBestRoute(
 
             const deferAmount = CurrencyAmount.fromRawAmount(amount.currency, deferQuotient);
 
-            const bestTrade = await SmartRouter.getBestTrade(
-                deferAmount,
-                outputCurrency,
-                isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
-                {
-                    gasPriceWei: () => SmartRouter.publicClient.getGasPrice(),
-                    maxHops: isMultihop ? 2 : 1,
-                    maxSplits: isSplit ? 3 : 0,
-                    poolProvider,
-                    quoteProvider: SmartRouter.quoteProvider,
-                    quoterOptimization: true,
-                    distributionPercent: 10,
-                    signal,
-                },
-            );
+            try {
+                const bestTrade = await SmartRouter.getBestTrade(
+                    deferAmount,
+                    outputCurrency,
+                    isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
+                    {
+                        gasPriceWei: () => SmartRouter.publicClient.getGasPrice(),
+                        maxHops: isMultihop ? 2 : 1,
+                        maxSplits: isSplit ? 3 : 0,
+                        poolProvider,
+                        quoteProvider: SmartRouter.quoteProvider,
+                        quoterOptimization: true,
+                        distributionPercent: 10,
+                        signal,
+                    }
+                );
 
-            console.log('BEST TRADE', bestTrade)
+                if (!bestTrade) {
+                    throw new Error("No trade found");
+                }
 
-            if (!bestTrade) {
-                return undefined;
+                console.log("BEST TRADE", bestTrade);
+
+                const { value, calldata } = account
+                    ? SwapRouter.swapCallParameters(bestTrade, {
+                          recipient: account,
+                          slippageTolerance: new PercentBN(
+                              BigInt(allowedSlippage.numerator.toString()),
+                              BigInt(allowedSlippage.denominator.toString())
+                          ),
+                          deadlineOrPreviousBlockhash: Date.now() + txDeadline * 1000,
+                      })
+                    : { value: undefined, calldata: undefined };
+
+                return {
+                    bestTrade,
+                    blockNumber,
+                    calldata,
+                    value,
+                };
+            } catch (error) {
+                return {
+                    bestTrade: undefined,
+                    blockNumber: undefined,
+                    calldata: undefined,
+                    value: undefined,
+                };
             }
-
-            const { value, calldata } = account ? SwapRouter.swapCallParameters(bestTrade, {
-                recipient: account,
-                slippageTolerance: new PercentBN(
-                    BigInt(allowedSlippage.numerator.toString()),
-                    BigInt(allowedSlippage.denominator.toString()),
-                ),
-                deadlineOrPreviousBlockhash: Date.now() + txDeadline * 1000
-            }) : { value: undefined, calldata: undefined };
-
-            return {
-                bestTrade,
-                blockNumber,
-                calldata,
-                value,
-            };
         },
         enabled: Boolean(amount && outputCurrency && deferQuotient && !loading && candidatePools && isEnabled),
         placeholderData: keepPreviousDataRef.current ? (prev: any) => prev : undefined,
@@ -152,14 +156,14 @@ export function useSmartRouterBestRoute(
         }
     }, [trade, keepPreviousDataRef]);
 
-    const isValidating = fetchStatus === 'fetching';
-    const isLoading = status === 'loading' || isPlaceholderData;
+    const isValidating = fetchStatus === "fetching";
+    const isLoading = status === "loading" || isPlaceholderData;
 
     const refresh = useCallback(async () => {
         await refreshPools();
         await queryClient.invalidateQueries({
-            queryKey: ['getBestRoute'],
-            refetchType: 'none',
+            queryKey: ["getBestRoute"],
+            refetchType: "none",
         });
         refetch();
     }, [refreshPools, queryClient, refetch]);

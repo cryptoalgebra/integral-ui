@@ -34,7 +34,7 @@ const RoutePool = ({ pool }: { pool: { path: any[]; deployer: Address; percent: 
     const currencyA = useCurrency(token0.wrapped.address, true);
     const currencyB = useCurrency(token1.wrapped.address, true);
 
-    const deployer = customPoolDeployers[pool.deployer.toLowerCase()];
+    const deployer = customPoolDeployers[pool.deployer?.toLowerCase()];
 
     return (
         <div className={'w-full flex items-center justify-between '}>
@@ -83,7 +83,7 @@ const SwapRouteModal = ({
         .reduce((acc, path, idx, arr) => {
             if (idx % 2 !== 0 || idx === arr.length - 1) {
                 acc[acc.length - 1].path.push(path);
-                acc[acc.length - 1].deployer = pools[acc.length - 1].deployer;
+                acc[acc.length - 1].deployer = pools[acc.length - 1]?.deployer;
                 acc[acc.length - 1].percent = percents[acc.length - 1];
             } else if (idx !== arr.length - 1) {
                 acc.push({ path: [path] });
