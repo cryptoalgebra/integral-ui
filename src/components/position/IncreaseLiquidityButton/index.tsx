@@ -14,11 +14,12 @@ import { TransactionType } from '@/state/pendingTransactionsStore';
 import { useUserState } from '@/state/userStore';
 import { ApprovalState } from '@/types/approve-state';
 import {
-    Currency,
-    Field,
-    NonfungiblePositionManager,
-    Percent,
-    ZERO,
+  ADDRESS_ZERO,
+  Currency,
+  Field,
+  NonfungiblePositionManager,
+  Percent,
+  ZERO,
 } from '@cryptoalgebra/scribe-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
@@ -75,6 +76,7 @@ export const IncreaseLiquidityButton = ({
                 ? ZERO_PERCENT
                 : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE,
             deadline: Date.now() + txDeadline,
+            deployer: ADDRESS_ZERO,
             useNative,
         });
     }, [mintInfo, account, tokenId, txDeadline, useNative]);
