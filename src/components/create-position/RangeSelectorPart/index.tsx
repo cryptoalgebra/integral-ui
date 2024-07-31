@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Price, Token } from "@cryptoalgebra/integral-sdk";
+import { Price, Token } from "@cryptoalgebra/scribe-sdk";
 import { useMintState } from "@/state/mintStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

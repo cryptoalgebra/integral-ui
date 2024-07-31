@@ -1,26 +1,26 @@
 import {
-    Currency,
-    CurrencyAmount,
-    Pool,
-    Position,
-    Price,
-    Token,
-} from '@cryptoalgebra/integral-sdk';
+  ADDRESS_ZERO,
+  Currency,
+  CurrencyAmount,
+  Pool,
+  Position,
+  Price,
+  Token,
+} from '@cryptoalgebra/scribe-sdk';
 
-import { ZERO } from '@cryptoalgebra/integral-sdk';
-import { InitialPoolFee } from '@cryptoalgebra/integral-sdk';
+import { ZERO } from '@cryptoalgebra/scribe-sdk';
 
-import { Bound, Field, Rounding } from '@cryptoalgebra/integral-sdk';
-import { tryParseAmount, tryParseTick } from '@cryptoalgebra/integral-sdk';
+import { Bound, Field, Rounding } from '@cryptoalgebra/scribe-sdk';
+import { tryParseAmount, tryParseTick } from '@cryptoalgebra/scribe-sdk';
 import {
     tickToPrice,
     priceToClosestTick,
     nearestUsableTick,
     encodeSqrtRatioX96,
     TickMath,
-} from '@cryptoalgebra/integral-sdk';
+} from '@cryptoalgebra/scribe-sdk';
 
-import { getTickToPrice } from '@cryptoalgebra/integral-sdk';
+import { getTickToPrice } from '@cryptoalgebra/scribe-sdk';
 
 import { useCallback, useMemo } from 'react';
 import { Address, useAccount, useBalance } from 'wagmi';
@@ -97,8 +97,8 @@ export interface IDerivedMintInfo {
     invertPrice: boolean;
     ticksAtLimit: { [bound in Bound]?: boolean | undefined };
     dynamicFee: number;
-    lowerPrice: any;
-    upperPrice: any;
+    lowerPrice: Price<Token, Token> | undefined;
+    upperPrice: Price<Token, Token> | undefined;
     tickSpacing: number;
 }
 
@@ -205,7 +205,7 @@ export function useDerivedMintInfo(
     currencyA?: Currency,
     currencyB?: Currency,
     poolAddress?: Address,
-    feeAmount?: InitialPoolFee,
+    feeAmount?: number,
     baseCurrency?: Currency,
     existingPosition?: Position
 ): IDerivedMintInfo {
@@ -353,6 +353,7 @@ export function useDerivedMintInfo(
                 tokenB,
                 feeAmount,
                 currentSqrt,
+                ADDRESS_ZERO,
                 0,
                 currentTick,
                 60,
@@ -445,8 +446,8 @@ export function useDerivedMintInfo(
     // specifies whether the lower and upper ticks is at the exteme bounds
     const ticksAtLimit = useMemo(
         () => ({
-            [Bound.LOWER]: feeAmount && tickLower === tickSpaceLimits.LOWER,
-            [Bound.UPPER]: feeAmount && tickUpper === tickSpaceLimits.UPPER,
+            [Bound.LOWER]: Boolean(feeAmount && tickLower === tickSpaceLimits.LOWER),
+            [Bound.UPPER]: Boolean(feeAmount && tickUpper === tickSpaceLimits.UPPER),
         }),
         [tickSpaceLimits, tickLower, tickUpper, feeAmount]
     );

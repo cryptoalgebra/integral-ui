@@ -1,6 +1,6 @@
 import { MAX_UINT128 } from "@/constants/max-uint128"
 import { useAlgebraPositionManagerOwnerOf, usePrepareAlgebraPositionManagerCollect } from "@/generated"
-import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/integral-sdk"
+import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/scribe-sdk"
 import { useMemo } from "react"
 import { Address } from "wagmi"
 

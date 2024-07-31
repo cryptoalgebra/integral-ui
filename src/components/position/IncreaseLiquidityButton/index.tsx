@@ -19,7 +19,7 @@ import {
     NonfungiblePositionManager,
     Percent,
     ZERO,
-} from '@cryptoalgebra/integral-sdk';
+} from '@cryptoalgebra/scribe-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
 import { useEffect, useMemo } from 'react';

@@ -5,7 +5,7 @@ import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { TradeState } from "@/types/trade-state";
 import { computeRealizedLPFeePercent, warningSeverity } from "@/utils/swap/prices";
-import { Currency, Percent, Trade, TradeType, unwrappedToken } from "@cryptoalgebra/integral-sdk";
+import { Currency, Percent, Trade, TradeType, unwrappedToken } from "@cryptoalgebra/scribe-sdk";
 import { ChevronDownIcon, ChevronRightIcon, ZapIcon } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 

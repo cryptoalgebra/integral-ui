@@ -6,7 +6,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { useFarmUnstake } from "@/hooks/farming/useFarmStake";
 import { useFarmingDepositRewardsEarned } from "@/hooks/farming/useFarmingDepositRewardsEarned";
 import { FormattedPosition } from "@/types/formatted-position";
-import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk";
 import { useAccount } from "wagmi";
 
 interface ClosedFarmingCardProps {

@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useUserState } from "@/state/userStore";
-import { Percent } from "@cryptoalgebra/integral-sdk";
+import { Percent } from "@cryptoalgebra/scribe-sdk";
 import { SettingsIcon } from "lucide-react";
 import { useState } from "react";
 

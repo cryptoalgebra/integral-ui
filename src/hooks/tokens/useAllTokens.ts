@@ -7,7 +7,7 @@ import {
     useAllTokensQuery,
 } from '@/graphql/generated/graphql';
 import { useTokensState } from '@/state/tokensStore';
-import { ADDRESS_ZERO } from '@cryptoalgebra/integral-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/scribe-sdk';
 import { useMemo } from 'react';
 import { Address } from 'viem';
 import { useChainId } from 'wagmi';

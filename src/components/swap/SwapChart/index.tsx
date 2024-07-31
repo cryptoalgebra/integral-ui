@@ -6,7 +6,7 @@ import { useSwapChart } from "@/hooks/swap/useSwapChart";
 import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { Currency } from "@cryptoalgebra/scribe-sdk";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Address } from "wagmi";

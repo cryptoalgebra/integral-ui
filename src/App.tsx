@@ -10,11 +10,11 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const holeskyChain = defineChain({
-  id: 17000,
-  network: 'holesky',
-  name: 'Holesky',
-  nativeCurrency: { name: 'Holesky Ether', symbol: 'ETH', decimals: 18 },
+const scrollChain = defineChain({
+  id: 534352,
+  network: 'scroll',
+  name: 'Scroll',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
       http: [import.meta.env.VITE_INFURA_RPC],
@@ -25,34 +25,27 @@ const holeskyChain = defineChain({
   },
   blockExplorers: {
     etherscan: {
-      name: 'Etherscan',
-      url: 'https://holesky.etherscan.io',
+      name: 'Scrollscan',
+      url: 'https://scrollscan.com',
     },
     default: {
-      name: 'Etherscan',
-      url: 'https://holesky.etherscan.io',
+      name: 'Scrollscan',
+      url: 'https://scrollscan.com',
     },
   },
-  contracts: {
-    multicall3: {
-      address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 77,
-    },
-  },
-  testnet: true,
 })
 
-const chains = [holeskyChain]
+const chains = [scrollChain]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
   wagmiConfig, 
   projectId, 
-  chains, 
+  chains,
   chainImages: {
-    17000: ETHLogo
+    534352: ETHLogo
   },
-  defaultChain: holeskyChain,
+  defaultChain: scrollChain,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

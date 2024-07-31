@@ -1,5 +1,12 @@
 import { TickFieldsFragment, useAllTicksLazyQuery, useSinglePoolLazyQuery } from "@/graphql/generated/graphql"
-import { Currency, TickMath, Token, computePoolAddress, tickToPrice } from "@cryptoalgebra/integral-sdk"
+import {
+  Currency,
+  TickMath,
+  Token,
+  computeCustomPoolAddress,
+  tickToPrice,
+  ADDRESS_ZERO
+} from "@cryptoalgebra/scribe-sdk"
 import { useState } from "react"
 import { Address } from "wagmi"
 import keyBy from 'lodash.keyby'
@@ -64,9 +71,10 @@ export function useInfoTickData() {
     async function fetchTicksSurroundingPrice(currencyA: Currency, currencyB: Currency) {
         setTicksLoading(true)
 
-        const poolId = computePoolAddress({
+        const poolId = computeCustomPoolAddress({
             tokenA: currencyA.wrapped,
             tokenB: currencyB.wrapped,
+            customPoolDeployer: ADDRESS_ZERO,
         }).toLowerCase() as Address
 
         const { data: pool } = await getPool({

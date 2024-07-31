@@ -1,4 +1,4 @@
-import { Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/scribe-sdk"
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"
@@ -38,7 +38,7 @@ function computeAllRoutes(
 
         const { liquidity, price, tick, fee } = pool.pool
 
-        const newPool = new Pool(tokenA, tokenB, +fee as unknown as 100, price, liquidity, Number(tick), DEFAULT_TICK_SPACING)
+        const newPool = new Pool(tokenA, tokenB, +fee as unknown as 100, price, ADDRESS_ZERO, liquidity, Number(tick), DEFAULT_TICK_SPACING)
 
         if (!newPool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(newPool, pathPool))) continue
 

@@ -1,6 +1,6 @@
 import { useAlgebraPoolLiquidity } from "@/generated"
 import { useNativePriceQuery, usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql"
-import { Position } from "@cryptoalgebra/integral-sdk"
+import { Position } from "@cryptoalgebra/scribe-sdk"
 import { Address } from "wagmi"
 
 export function usePositionAPR(

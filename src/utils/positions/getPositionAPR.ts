@@ -1,5 +1,5 @@
 import { getAlgebraPool } from "@/generated"
-import { Position } from "@cryptoalgebra/integral-sdk"
+import { Position } from "@cryptoalgebra/scribe-sdk"
 import { PoolFeeDataFieldsFragment, PoolFieldsFragment } from "@/graphql/generated/graphql"
 import { Address } from "wagmi"
 

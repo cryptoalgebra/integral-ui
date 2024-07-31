@@ -1,4 +1,4 @@
-import { Currency, Token, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { Currency, Token, computeCustomPoolAddress, ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk"
 import { useEffect, useMemo, useState } from "react"
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
 import { Address } from "wagmi"
@@ -28,9 +28,10 @@ export function useSwapPools(
 
         async function getPools() {
 
-            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => computePoolAddress({
+            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => computeCustomPoolAddress({
                 tokenA,
-                tokenB
+                tokenB,
+                customPoolDeployer: ADDRESS_ZERO
             }) as Address)
 
             const poolsData = await getMultiplePools({

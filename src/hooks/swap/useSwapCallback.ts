@@ -1,5 +1,5 @@
 import { formatBalance } from '@/utils/common/formatBalance';
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/scribe-sdk";
 import { Address, useAccount, useContractWrite } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated";

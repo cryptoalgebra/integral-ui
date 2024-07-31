@@ -5,7 +5,7 @@ import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestT
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance"
 import { SwapField, SwapFieldType } from "@/types/swap-field"
 import { TradeStateType } from "@/types/trade-state"
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, TickMath, Trade, TradeType, computePoolAddress } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, Currency, CurrencyAmount, Percent, TickMath, Trade, TradeType, computeCustomPoolAddress } from "@cryptoalgebra/scribe-sdk"
 import JSBI from "jsbi"
 import { useCallback, useMemo } from "react"
 import { parseUnits } from "viem"
@@ -198,9 +198,10 @@ export function useDerivedSwapInfo(): {
 
     const isWrap = currencies.INPUT && currencies.OUTPUT && currencies.INPUT.wrapped.equals(currencies.OUTPUT.wrapped)
 
-    const poolAddress = isWrap ? undefined : currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computePoolAddress({
+    const poolAddress = isWrap ? undefined : currencies[SwapField.INPUT] && currencies[SwapField.OUTPUT] && computeCustomPoolAddress({
         tokenA: currencies[SwapField.INPUT]!.wrapped,
-        tokenB: currencies[SwapField.OUTPUT]!.wrapped
+        tokenB: currencies[SwapField.OUTPUT]!.wrapped,
+        customPoolDeployer: ADDRESS_ZERO,
     }).toLowerCase() as Address
 
     const { data: globalState } = useAlgebraPoolGlobalState({

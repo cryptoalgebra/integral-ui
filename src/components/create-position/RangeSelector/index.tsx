@@ -1,5 +1,5 @@
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { Bound, Currency, Price, Token } from "@cryptoalgebra/integral-sdk";
+import { Bound, Currency, Price, Token } from "@cryptoalgebra/scribe-sdk";
 import { useMemo } from 'react';
 import RangeSelectorPart from "../RangeSelectorPart";
 

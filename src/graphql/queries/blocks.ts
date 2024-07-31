@@ -1,11 +1,5 @@
 import { gql } from "@apollo/client"
 
-export const BLOCK_FRAGMENT = gql`
-    fragment BlockFields on Block {
-        number
-        timestamp
-    }
-`
 
 export const GET_BLOCKS = (timestamps: string[]) => {
     let queryString = 'query blocks {'

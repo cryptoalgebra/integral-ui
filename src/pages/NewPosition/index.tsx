@@ -10,7 +10,7 @@ import {
     useMintState,
     useRangeHopCallbacks,
 } from '@/state/mintStore';
-import { Bound, INITIAL_POOL_FEE } from '@cryptoalgebra/integral-sdk';
+import { Bound } from '@cryptoalgebra/scribe-sdk';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'wagmi';
@@ -38,7 +38,7 @@ const NewPositionPage = () => {
         currencyA ?? undefined,
         currencyB ?? undefined,
         poolAddress,
-        INITIAL_POOL_FEE,
+        100,
         currencyA ?? undefined,
         undefined
     );

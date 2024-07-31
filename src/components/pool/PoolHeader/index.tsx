@@ -3,7 +3,7 @@ import PageTitle from '@/components/common/PageTitle';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrency } from '@/hooks/common/useCurrency';
 import { formatPercent } from '@/utils/common/formatPercent';
-import { Pool } from '@cryptoalgebra/integral-sdk';
+import { Pool } from '@cryptoalgebra/scribe-sdk';
 import { Address } from 'viem';
 
 interface PoolHeaderProps {

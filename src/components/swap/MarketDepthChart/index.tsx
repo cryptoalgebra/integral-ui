@@ -2,7 +2,7 @@ import { MAX_UINT128 } from "@/constants/max-uint128";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useDerivedSwapInfo} from "@/state/swapStore";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk"
+import { ADDRESS_ZERO, CurrencyAmount, Pool, TickMath, Token } from "@cryptoalgebra/scribe-sdk"
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "wagmi";
@@ -67,7 +67,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close }: MarketDepthCh
                     ]
                     const pool =
                         currencyA && currencyB
-                            ? new Pool(currencyA.wrapped, currencyB.wrapped, INITIAL_POOL_FEE, sqrtPriceX96, t.liquidityActive.toString(), t.tickIdx, ticksResult.tickSpacing, mockTicks)
+                            ? new Pool(currencyA.wrapped, currencyB.wrapped, 100, sqrtPriceX96, ADDRESS_ZERO, t.liquidityActive.toString(), t.tickIdx, ticksResult.tickSpacing, mockTicks)
                             : undefined
 
                     const nextSqrtX96 = ticksResult.ticksProcessed[i - 1]

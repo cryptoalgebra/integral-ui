@@ -1,6 +1,5 @@
 import { useAlgebraPoolGlobalState, useAlgebraPoolLiquidity, useAlgebraPoolTickSpacing, useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
-import { InitialPoolFee } from "@cryptoalgebra/integral-sdk";
-import { Pool } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO, Pool } from "@cryptoalgebra/scribe-sdk";
 import { Address } from "wagmi";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";
@@ -50,7 +49,7 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
     if (globalState[0] === 0n || !token0 || !token1) return [PoolState.NOT_EXISTS, null]
 
     try {
-      return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2] as InitialPoolFee, globalState[0].toString(), Number(liquidity), globalState[1], tickSpacing)]
+      return [PoolState.EXISTS, new Pool(token0.wrapped, token1.wrapped, globalState[2], globalState[0].toString(), ADDRESS_ZERO, Number(liquidity), globalState[1], tickSpacing)]
     } catch (error) {
       return [PoolState.NOT_EXISTS, null]
     }

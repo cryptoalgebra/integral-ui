@@ -4,10 +4,9 @@ import { useEffect, useMemo } from 'react';
 import { SwapField } from '@/types/swap-field';
 import {
     ADDRESS_ZERO,
-    INITIAL_POOL_FEE,
     NonfungiblePositionManager,
-    computePoolAddress,
-} from '@cryptoalgebra/integral-sdk';
+    computeCustomPoolAddress,
+} from '@cryptoalgebra/scribe-sdk';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
 import { Address, useContractWrite } from 'wagmi';
@@ -36,9 +35,10 @@ const CreatePoolForm = () => {
 
     const poolAddress =
         areCurrenciesSelected && !isSameToken
-            ? (computePoolAddress({
+            ? (computeCustomPoolAddress({
                   tokenA: currencyA.wrapped,
                   tokenB: currencyB.wrapped,
+                  customPoolDeployer: ADDRESS_ZERO
               }) as Address)
             : undefined;
 
@@ -50,7 +50,7 @@ const CreatePoolForm = () => {
         currencyA ?? undefined,
         currencyB ?? undefined,
         poolAddress ?? undefined,
-        INITIAL_POOL_FEE,
+        100,
         currencyA ?? undefined,
         undefined
     );
