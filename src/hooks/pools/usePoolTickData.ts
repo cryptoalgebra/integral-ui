@@ -3,9 +3,8 @@ import {
   Currency,
   TickMath,
   Token,
-  computeCustomPoolAddress,
+  computePoolAddress,
   tickToPrice,
-  ADDRESS_ZERO
 } from "@cryptoalgebra/scribe-sdk"
 import { useState } from "react"
 import { Address } from "wagmi"
@@ -71,10 +70,9 @@ export function useInfoTickData() {
     async function fetchTicksSurroundingPrice(currencyA: Currency, currencyB: Currency) {
         setTicksLoading(true)
 
-        const poolId = computeCustomPoolAddress({
+        const poolId = computePoolAddress({
             tokenA: currencyA.wrapped,
             tokenB: currencyB.wrapped,
-            customPoolDeployer: ADDRESS_ZERO,
         }).toLowerCase() as Address
 
         const { data: pool } = await getPool({

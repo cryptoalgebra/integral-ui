@@ -5,7 +5,7 @@ import { SwapField } from '@/types/swap-field';
 import {
     ADDRESS_ZERO,
     NonfungiblePositionManager,
-    computeCustomPoolAddress,
+    computePoolAddress,
 } from '@cryptoalgebra/scribe-sdk';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
@@ -35,10 +35,9 @@ const CreatePoolForm = () => {
 
     const poolAddress =
         areCurrenciesSelected && !isSameToken
-            ? (computeCustomPoolAddress({
+            ? (computePoolAddress({
                   tokenA: currencyA.wrapped,
                   tokenB: currencyB.wrapped,
-                  customPoolDeployer: ADDRESS_ZERO
               }) as Address)
             : undefined;
 

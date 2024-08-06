@@ -4,7 +4,7 @@ import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
 import { useAlgebraPositionManagerBalanceOf } from '@/generated';
 import { farmingClient } from '@/graphql/clients';
 import { useDepositsQuery } from '@/graphql/generated/graphql';
-import { Token, computeCustomPoolAddress, ADDRESS_ZERO } from '@cryptoalgebra/scribe-sdk';
+import { Token, computePoolAddress } from '@cryptoalgebra/scribe-sdk';
 import { useMemo } from 'react';
 import { Address, useAccount, useContractReads } from 'wagmi';
 
@@ -60,25 +60,24 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                     const tokenId = tokenIds[i];
                     const result = call.result as any;
 
-                    const pool = computeCustomPoolAddress({
+                    const pool = computePoolAddress({
                         tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
                         tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
-                        customPoolDeployer: ADDRESS_ZERO,
                     }) as Address;
 
                     return {
                         tokenId,
-                        feeGrowthInside0LastX128: result[7],
-                        feeGrowthInside1LastX128: result[8],
-                        liquidity: result[6],
+                        feeGrowthInside0LastX128: result[8],
+                        feeGrowthInside1LastX128: result[9],
+                        liquidity: result[7],
                         nonce: result[0],
                         operator: result[1],
-                        tickLower: result[4],
-                        tickUpper: result[5],
+                        tickLower: result[5],
+                        tickUpper: result[6],
                         token0: result[2],
                         token1: result[3],
-                        tokensOwed0: result[9],
-                        tokensOwed1: result[10],
+                        tokensOwed0: result[10],
+                        tokensOwed1: result[11],
                         pool,
                     };
                 });

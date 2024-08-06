@@ -8,9 +8,8 @@ import {
   CurrencyAmount,
   Percent,
   Position,
-  computeCustomPoolAddress,
+  computePoolAddress,
   unwrappedToken,
-  ADDRESS_ZERO
 } from "@cryptoalgebra/scribe-sdk";
 import { useCallback, useMemo } from "react";
 import { Address, useAccount } from "wagmi";
@@ -54,10 +53,9 @@ export function useDerivedBurnInfo(
     const currency0 = useCurrency(position?.token0);
     const currency1 = useCurrency(position?.token1);
 
-    const poolId = currency0 && currency1 && computeCustomPoolAddress({
+    const poolId = currency0 && currency1 && computePoolAddress({
         tokenA: currency0.wrapped,
         tokenB: currency1.wrapped,
-        customPoolDeployer: ADDRESS_ZERO,
     }) as Address
 
     const [, pool] = usePool(poolId);
