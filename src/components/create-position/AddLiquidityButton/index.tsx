@@ -18,7 +18,7 @@ import {
   NonfungiblePositionManager,
   Field,
   ZERO, ADDRESS_ZERO,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 import { useWeb3Modal, useWeb3ModalState } from '@web3modal/wagmi/react';
 import JSBI from 'jsbi';
 import { useMemo } from 'react';

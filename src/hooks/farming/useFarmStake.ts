@@ -2,7 +2,7 @@ import { FARMING_CENTER } from "@/constants/addresses";
 import { farmingCenterABI } from "@/generated";
 import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { encodeFunctionData } from "viem";
-import { MaxUint128 } from "@cryptoalgebra/scribe-sdk";
+import { MaxUint128 } from "@cryptoalgebra/circuit-sdk";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { useEffect, useState } from "react";
 import { farmingClient } from "@/graphql/clients";

@@ -1,4 +1,4 @@
-import { Currency, Token, computePoolAddress } from "@cryptoalgebra/scribe-sdk"
+import { Currency, Token, computePoolAddress } from "@cryptoalgebra/circuit-sdk"
 import { useEffect, useMemo, useState } from "react"
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
 import { Address } from "wagmi"

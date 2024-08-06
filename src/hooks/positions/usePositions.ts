@@ -4,7 +4,7 @@ import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
 import { useAlgebraPositionManagerBalanceOf } from '@/generated';
 import { farmingClient } from '@/graphql/clients';
 import { useDepositsQuery } from '@/graphql/generated/graphql';
-import { Token, computePoolAddress } from '@cryptoalgebra/scribe-sdk';
+import { Token, computePoolAddress } from '@cryptoalgebra/circuit-sdk';
 import { useMemo } from 'react';
 import { Address, useAccount, useContractReads } from 'wagmi';
 

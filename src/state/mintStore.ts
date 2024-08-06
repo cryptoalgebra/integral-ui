@@ -6,21 +6,21 @@ import {
   Position,
   Price,
   Token,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 
-import { ZERO } from '@cryptoalgebra/scribe-sdk';
+import { ZERO } from '@cryptoalgebra/circuit-sdk';
 
-import { Bound, Field, Rounding } from '@cryptoalgebra/scribe-sdk';
-import { tryParseAmount, tryParseTick } from '@cryptoalgebra/scribe-sdk';
+import { Bound, Field, Rounding } from '@cryptoalgebra/circuit-sdk';
+import { tryParseAmount, tryParseTick } from '@cryptoalgebra/circuit-sdk';
 import {
     tickToPrice,
     priceToClosestTick,
     nearestUsableTick,
     encodeSqrtRatioX96,
     TickMath,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 
-import { getTickToPrice } from '@cryptoalgebra/scribe-sdk';
+import { getTickToPrice } from '@cryptoalgebra/circuit-sdk';
 
 import { useCallback, useMemo } from 'react';
 import { Address, useAccount, useBalance } from 'wagmi';

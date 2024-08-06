@@ -1,5 +1,5 @@
 import { formatBalance } from '@/utils/common/formatBalance';
-import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/scribe-sdk";
+import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/circuit-sdk";
 import { useNeedAllowance } from "./useNeedAllowance";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 import { useMemo } from "react";

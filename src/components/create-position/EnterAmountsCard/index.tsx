@@ -1,7 +1,7 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { Currency, CurrencyAmount } from "@cryptoalgebra/scribe-sdk";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/circuit-sdk";
 import { useCallback, useMemo } from "react";
 import { Address, useAccount, useBalance } from "wagmi";
 

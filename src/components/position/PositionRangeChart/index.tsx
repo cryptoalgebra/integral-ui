@@ -1,5 +1,5 @@
 import LiquidityChart from "@/components/create-position/LiquidityChart"
-import { Pool, Position, tickToPrice } from "@cryptoalgebra/scribe-sdk"
+import { Pool, Position, tickToPrice } from "@cryptoalgebra/circuit-sdk"
 
 interface PositionRangeChartProps {
     pool: Pool;

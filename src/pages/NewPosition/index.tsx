@@ -10,7 +10,7 @@ import {
     useMintState,
     useRangeHopCallbacks,
 } from '@/state/mintStore';
-import { Bound } from '@cryptoalgebra/scribe-sdk';
+import { Bound } from '@cryptoalgebra/circuit-sdk';
 import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'wagmi';

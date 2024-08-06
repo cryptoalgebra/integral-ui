@@ -1,5 +1,5 @@
 import { useUserState } from "@/state/userStore";
-import { Currency, Percent, SwapRouter, Trade, TradeType } from "@cryptoalgebra/scribe-sdk";
+import { Currency, Percent, SwapRouter, Trade, TradeType } from "@cryptoalgebra/circuit-sdk";
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 

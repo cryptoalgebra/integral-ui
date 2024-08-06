@@ -10,7 +10,7 @@ import {
     CurrencyAmount,
     maxAmountSpend,
     tryParseAmount,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 import { useCallback, useMemo } from 'react';
 import TokenCard from '../TokenCard';
 import { ChevronsUpDownIcon } from 'lucide-react';

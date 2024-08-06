@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Route, Trade, TradeType } from "@cryptoalgebra/scribe-sdk";
+import { Currency, CurrencyAmount, Route, Trade, TradeType } from "@cryptoalgebra/circuit-sdk";
 import { useMemo } from "react";
 import { useAllRoutes } from "./useAllRoutes";
 import { TradeState, TradeStateType } from "@/types/trade-state";

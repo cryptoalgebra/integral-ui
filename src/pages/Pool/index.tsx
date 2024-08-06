@@ -19,7 +19,7 @@ import { FormattedPosition } from '@/types/formatted-position';
 import { getPositionAPR } from '@/utils/positions/getPositionAPR';
 import { getPositionFees } from '@/utils/positions/getPositionFees';
 import { formatAmount } from '@/utils/common/formatAmount';
-import { Position, ZERO } from '@cryptoalgebra/scribe-sdk';
+import { Position, ZERO } from '@cryptoalgebra/circuit-sdk';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { MoveRightIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';

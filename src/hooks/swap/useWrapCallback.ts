@@ -1,6 +1,6 @@
 import { WNATIVE_EXTENDED } from "@/constants/routing";
 import { usePrepareWrappedNativeDeposit, usePrepareWrappedNativeWithdraw } from "@/generated";
-import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/scribe-sdk";
+import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/circuit-sdk";
 import { useMemo } from "react";
 import { Address, useAccount, useBalance, useChainId, useContractWrite } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";

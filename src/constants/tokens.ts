@@ -1,4 +1,4 @@
-import { Token } from "@cryptoalgebra/scribe-sdk";
+import { Token } from "@cryptoalgebra/circuit-sdk";
 import { DEFAULT_CHAIN_ID } from "./default-chain-id";
 
 export const STABLECOINS = {

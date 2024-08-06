@@ -11,9 +11,9 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
 const scrollChain = defineChain({
-  id: 534352,
-  network: 'scroll',
-  name: 'Scroll',
+  id: 48900,
+  network: 'zircuit',
+  name: 'Zircuit',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
@@ -25,12 +25,12 @@ const scrollChain = defineChain({
   },
   blockExplorers: {
     etherscan: {
-      name: 'Scrollscan',
-      url: 'https://scrollscan.com',
+      name: 'ZircuitScan',
+      url: 'https://explorer.zircuit.com',
     },
     default: {
-      name: 'Scrollscan',
-      url: 'https://scrollscan.com',
+      name: 'ZircuitScan',
+      url: 'https://explorer.zircuit.com',
     },
   },
 })
@@ -43,7 +43,7 @@ createWeb3Modal({
   projectId, 
   chains,
   chainImages: {
-    534352: ETHLogo
+    48900: ETHLogo
   },
   defaultChain: scrollChain,
   themeVariables: {

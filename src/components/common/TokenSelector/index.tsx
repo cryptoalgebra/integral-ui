@@ -14,7 +14,7 @@ import {
     Currency,
     ExtendedNative,
     Token,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 import { useTokensState } from '@/state/tokensStore';
 import { Copy } from 'lucide-react';
 import { cn } from '@/lib/utils';

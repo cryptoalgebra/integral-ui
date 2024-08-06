@@ -1,6 +1,6 @@
 import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
-import { Currency,  Field, } from "@cryptoalgebra/scribe-sdk";
+import { Currency,  Field, } from "@cryptoalgebra/circuit-sdk";
 import { useEffect, useMemo } from "react";
 import EnterAmountCard from "../EnterAmountsCard";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";

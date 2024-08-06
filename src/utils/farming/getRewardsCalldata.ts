@@ -1,5 +1,5 @@
 import { farmingCenterABI } from '@/generated';
-import { MaxUint128 } from '@cryptoalgebra/scribe-sdk';
+import { MaxUint128 } from '@cryptoalgebra/circuit-sdk';
 import { Address, encodeFunctionData } from 'viem';
 import { isSameRewards } from './isSameRewards';
 

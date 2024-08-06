@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Fraction, Percent, Trade, TradeType } from "@cryptoalgebra/scribe-sdk"
+import { Currency, CurrencyAmount, Fraction, Percent, Trade, TradeType } from "@cryptoalgebra/circuit-sdk"
 import JSBI from "jsbi"
 
 export const ONE_BIPS = new Percent(JSBI.BigInt(1), JSBI.BigInt(10000))

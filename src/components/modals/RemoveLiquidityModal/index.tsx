@@ -10,7 +10,7 @@ import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
-import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/scribe-sdk";
+import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/circuit-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Address, useAccount, useContractWrite } from "wagmi";
 

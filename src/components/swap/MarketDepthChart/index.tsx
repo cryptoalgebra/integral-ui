@@ -2,7 +2,7 @@ import { MAX_UINT128 } from "@/constants/max-uint128";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useDerivedSwapInfo} from "@/state/swapStore";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { ADDRESS_ZERO, CurrencyAmount, Pool, TickMath, Token } from "@cryptoalgebra/scribe-sdk"
+import { ADDRESS_ZERO, CurrencyAmount, Pool, TickMath, Token } from "@cryptoalgebra/circuit-sdk"
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "wagmi";

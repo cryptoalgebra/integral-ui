@@ -10,7 +10,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { useAccount } from "wagmi";
 import { useFarmHarvestAll } from "@/hooks/farming/useFarmHarvest";
 import Loader from "@/components/common/Loader";
-import { ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/circuit-sdk";
 import { useFarmingAPR } from "@/hooks/farming/useFarmingAPR";
 import { useFarmingUserTVL } from "@/hooks/farming/useFarmingUserTVL";
 import { useFarmingRewardRates } from "@/hooks/farming/useFarmingRewardRates";

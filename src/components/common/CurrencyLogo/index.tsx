@@ -1,4 +1,4 @@
-import { Currency } from "@cryptoalgebra/scribe-sdk";
+import { Currency } from "@cryptoalgebra/circuit-sdk";
 import React from "react";
 import { Address } from "wagmi";
 import USDTLogo from '@/assets/tokens/usdt.png'

@@ -1,5 +1,5 @@
 import { useAlgebraPositionManagerFarmingApprovals } from '@/generated';
-import { ADDRESS_ZERO } from '@cryptoalgebra/scribe-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/circuit-sdk';
 import { useEffect, useState } from 'react';
 
 export function useFarmCheckApprove(tokenId: bigint) {

@@ -6,7 +6,7 @@ import {
     ADDRESS_ZERO,
     NonfungiblePositionManager,
     computePoolAddress,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 import { usePrepareAlgebraPositionManagerMulticall } from '@/generated';
 import { useTransactionAwait } from '@/hooks/common/useTransactionAwait';
 import { Address, useContractWrite } from 'wagmi';

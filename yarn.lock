@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/scribe-sdk@^2.0.0":
+"@cryptoalgebra/circuit-sdk@^2.0.0":
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/scribe-sdk/-/scribe-sdk-2.0.0.tgz#dc88c8c7b014bc71e32e3fe5c869637567dcb1dc"
-  integrity sha512-BnDcFboBGFKkH1Jeq6OVOI/So2x8heRTb6BGeyFJgkyMnYuFjJwuvR9o7SsWul+sMJqoh74UDWaIJSxE6xR06Q==
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/circuit-sdk/-/circuit-sdk-2.0.0.tgz#662a3a1d22592a686865474ea23e4db0bcf3c7e2"
+  integrity sha512-X1hVAIPM9rvvRpAjoxe4dCeOOSLEYz6oQu7X52OLAiZQwVuNZRV/8uZ89heo4F9X7DctjX+dAlTJiqyq4TqmTQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Farming } from "@/types/farming-info";
-import { ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/circuit-sdk";
 import { useFarmHarvest } from "@/hooks/farming/useFarmHarvest";
 import { useFarmUnstake } from "@/hooks/farming/useFarmStake";
 import { useAccount } from "wagmi";

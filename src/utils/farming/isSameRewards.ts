@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO } from '@cryptoalgebra/scribe-sdk';
+import { ADDRESS_ZERO } from '@cryptoalgebra/circuit-sdk';
 import { Address } from 'viem';
 
 export const isSameRewards = (

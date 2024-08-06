@@ -4,7 +4,7 @@ import {
     Currency,
     CurrencyAmount,
     encodeRouteToPath,
-} from '@cryptoalgebra/scribe-sdk';
+} from '@cryptoalgebra/circuit-sdk';
 import { useMemo } from 'react';
 import { useContractReads } from 'wagmi';
 import { useAllRoutes } from './useAllRoutes';

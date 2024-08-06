@@ -1,5 +1,5 @@
 import { useAlgebraPoolGlobalState, useAlgebraPoolLiquidity, useAlgebraPoolTickSpacing, useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
-import { ADDRESS_ZERO, Pool } from "@cryptoalgebra/scribe-sdk";
+import { ADDRESS_ZERO, Pool } from "@cryptoalgebra/circuit-sdk";
 import { Address } from "wagmi";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";
