@@ -2,7 +2,13 @@ import { Button } from "@/components/ui/button";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { SwapField } from "@/types/swap-field";
-import { computePoolAddress, computeCustomPoolAddress, NonfungiblePositionManager, ADDRESS_ZERO, INITIAL_POOL_FEE } from '@cryptoalgebra/custom-pools-sdk'
+import {
+  computePoolAddress,
+  computeCustomPoolAddress,
+  NonfungiblePositionManager,
+  ADDRESS_ZERO,
+  INITIAL_POOL_FEE,
+} from "@cryptoalgebra/custom-pools-sdk";
 import {
   usePrepareAlgebraCustomPoolDeployerCreateCustomPool,
   usePrepareAlgebraPositionManagerMulticall,
@@ -20,23 +26,18 @@ import { cn } from "@/lib/utils";
 import {
   CUSTOM_POOL_DEPLOYER_BLANK,
   CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
-  CUSTOM_POOL_DEPLOYER_VOLUME_FEE,
 } from "@/constants/addresses";
 
 const POOL_DEPLOYER = {
-  BASE: "Base",
   FEE_CHANGER: "Fee Changer",
   BLANK: "Blank",
-  VOLUME_FEE: "Volume Fee"
 };
 
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
 
 const customPoolDeployerAddresses = {
-  [POOL_DEPLOYER.BASE]: ADDRESS_ZERO as Address,
   [POOL_DEPLOYER.BLANK]: CUSTOM_POOL_DEPLOYER_BLANK,
   [POOL_DEPLOYER.FEE_CHANGER]: CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
-  [POOL_DEPLOYER.VOLUME_FEE]: CUSTOM_POOL_DEPLOYER_VOLUME_FEE
 };
 
 const CreatePoolForm = () => {
@@ -54,7 +55,7 @@ const CreatePoolForm = () => {
   } = useMintState();
 
   const [poolDeployer, setPoolDeployer] = useState<PoolDeployerType>(
-    POOL_DEPLOYER.BASE
+    POOL_DEPLOYER.BLANK
   );
 
   const currencyA = currencies[SwapField.INPUT];
@@ -73,25 +74,30 @@ const CreatePoolForm = () => {
         }) as Address)
       : undefined;
 
-  const customPoolsAddresses = areCurrenciesSelected && !isSameToken ? [CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER, CUSTOM_POOL_DEPLOYER_VOLUME_FEE].map(customPoolDeployer => computeCustomPoolAddress({
-    tokenA: currencyA.wrapped,
-    tokenB: currencyB.wrapped,
-    customPoolDeployer
-  }) as Address) : []
+  const customPoolsAddresses =
+    areCurrenciesSelected && !isSameToken
+      ? [CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER].map(
+          (customPoolDeployer) =>
+            computeCustomPoolAddress({
+              tokenA: currencyA.wrapped,
+              tokenB: currencyB.wrapped,
+              customPoolDeployer,
+            }) as Address
+        )
+      : [];
 
   const [poolState] = usePool(poolAddress);
 
   // TODO
-  const [poolState0] = usePool(customPoolsAddresses[0])
-  const [poolState1] = usePool(customPoolsAddresses[1])
-  const [poolState2] = usePool(customPoolsAddresses[2])
+  const [poolState0] = usePool(customPoolsAddresses[0]);
 
-  const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
-  const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BLANK;
-  const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.FEE_CHANGER;
-  const isPool2Exists = poolState2 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.VOLUME_FEE;
+  const isPoolExists =
+    poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BLANK;
+  const isPool0Exists =
+    poolState0 === PoolState.EXISTS &&
+    poolDeployer === POOL_DEPLOYER.FEE_CHANGER;
 
-  const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists || isPool2Exists
+  const isSelectedCustomPoolExists = isPoolExists || isPool0Exists;
 
   const mintInfo = useDerivedMintInfo(
     currencyA ?? undefined,
@@ -109,7 +115,10 @@ const CreatePoolForm = () => {
         value: undefined,
       };
 
-    return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
+    return NonfungiblePositionManager.createCallParameters(
+      mintInfo.pool,
+      customPoolDeployerAddresses[poolDeployer]
+    );
   }, [mintInfo?.pool, poolDeployer]);
 
   const { config: createBasePoolConfig } =
@@ -135,12 +144,13 @@ const CreatePoolForm = () => {
     "/pools"
   );
 
-  const isCustomPoolDeployerReady =
-    account && mintInfo.pool && poolDeployer !== POOL_DEPLOYER.BASE;
+  const isCustomPoolDeployerReady = account && mintInfo.pool;
 
   const { config: createCustomPoolConfig } =
     usePrepareAlgebraCustomPoolDeployerCreateCustomPool({
-      address: isCustomPoolDeployerReady ? customPoolDeployerAddresses[poolDeployer] : undefined,
+      address: isCustomPoolDeployerReady
+        ? customPoolDeployerAddresses[poolDeployer]
+        : undefined,
       args: isCustomPoolDeployerReady
         ? [
             customPoolDeployerAddresses[poolDeployer],
@@ -186,17 +196,13 @@ const CreatePoolForm = () => {
   };
 
   const handleCreatePool = () => {
-    if (poolDeployer === POOL_DEPLOYER.BASE) {
-      if (!createBasePool) return;
-      createBasePool();
-    }
     if (!createCustomPool) return;
     createCustomPool();
   };
 
   const isDisabled = Boolean(
     isLoading ||
-    isSelectedCustomPoolExists ||
+      isSelectedCustomPoolExists ||
       !startPriceTypedValue ||
       !areCurrenciesSelected ||
       isSameToken
@@ -249,15 +255,13 @@ const CreatePoolForm = () => {
         )}
       </Button>
 
-      {poolDeployer !== POOL_DEPLOYER.BASE && (
-        <Button
-          disabled={isDisabled}
-          onClick={() => createBasePool && createBasePool()}
-          className="mt-2"
-        >
-          { isBasePoolLoading ? <Loader /> : 'Initialize' }
-        </Button>
-      )}
+      <Button
+        disabled={isDisabled}
+        onClick={() => createBasePool && createBasePool()}
+        className="mt-2"
+      >
+        {isBasePoolLoading ? <Loader /> : "Initialize"}
+      </Button>
     </div>
   );
 };
