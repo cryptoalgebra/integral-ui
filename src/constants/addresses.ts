@@ -30,7 +30,7 @@ export const FARMING_CENTER: Address =
 // Custom pools
 
 export const CUSTOM_POOL_DEPLOYER_FEE_CHANGER: Address =
-  "0x98604e2e3a486a19e3da48695c950bdf54aa6acd";
+  "0xD10e35b2524043A1BF180c8C932FF15354812191";
 
 export const CUSTOM_POOL_DEPLOYER_BLANK: Address =
-  "0xff7cffcff7667273f5bff5db362469f4ba4a26d3";
+  "0x9198b06527C9ee50E760609270ab222B76Ae66dc";
