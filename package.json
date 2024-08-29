@@ -13,7 +13,7 @@
     },
     "dependencies": {
         "@apollo/client": "^3.8.4",
-        "@cryptoalgebra/custom-pools-sdk": "^1.0.5",
+        "@cryptoalgebra/custom-pools-sdk": "npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.0.0",
         "@cryptoalgebra/router-custom-pools-and-sliding-fee": "1.1.0",
         "@radix-ui/react-avatar": "^1.0.4",
         "@radix-ui/react-dialog": "^1.0.5",
