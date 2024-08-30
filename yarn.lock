@@ -593,10 +593,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools-and-sliding-fee/-/router-custom-pools-and-sliding-fee-1.1.0.tgz#ee706336f26daafb390a0bb57c8daaa5a86ecfc8"
-  integrity sha512-lOHX1Zsy5sCdqjgj1QXF853soN5rHskiRqCT+H2Sjp8w6SDx1tuwCMY2gzBQf1jM5fR9RCNFcU9BRia83a18rA==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools-and-sliding-fee/-/router-custom-pools-and-sliding-fee-1.1.2.tgz#a49a7b5913eb1295b2a1bd11dc039798f4401b2d"
+  integrity sha512-1YCAvOj+OptoTHDMAKiG2/DTQKYtVEj3Okj02mjHkeLUTpQxfKGHdkp2sVjmnFOOExGFhy1ItwD3FCauC8KqZQ==
   dependencies:
     "@cryptoalgebra/custom-pools-sdk" "^1.0.5"
     "@pancakeswap/sdk" "5.7.6"
