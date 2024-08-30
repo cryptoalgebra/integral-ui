@@ -11,6 +11,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ArrowRight } from "lucide-react";
 import { Address } from "wagmi";
 import {
+  CUSTOM_POOL_BASE,
   CUSTOM_POOL_DEPLOYER_BLANK,
   CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
 } from "@/constants/addresses.ts";
@@ -30,6 +31,7 @@ interface ISwapRouteModal {
 }
 
 const customPoolDeployers = {
+  [CUSTOM_POOL_BASE]: "Base",
   [CUSTOM_POOL_DEPLOYER_BLANK]: "Blank",
   [CUSTOM_POOL_DEPLOYER_FEE_CHANGER]: "Fee Changer",
 };

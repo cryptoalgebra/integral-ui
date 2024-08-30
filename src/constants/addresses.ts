@@ -1,3 +1,4 @@
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
 export const POOL_INIT_CODE_HASH: Address =
@@ -34,3 +35,5 @@ export const CUSTOM_POOL_DEPLOYER_FEE_CHANGER: Address =
 
 export const CUSTOM_POOL_DEPLOYER_BLANK: Address =
   "0x9198b06527c9ee50e760609270ab222b76ae66dc";
+
+export const CUSTOM_POOL_BASE: Address = ADDRESS_ZERO;

@@ -26,9 +26,11 @@ import { cn } from "@/lib/utils";
 import {
   CUSTOM_POOL_DEPLOYER_BLANK,
   CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
+  CUSTOM_POOL_BASE,
 } from "@/constants/addresses";
 
 const POOL_DEPLOYER = {
+  BASE: "Base",
   FEE_CHANGER: "Fee Changer",
   BLANK: "Blank",
 };
@@ -36,6 +38,7 @@ const POOL_DEPLOYER = {
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
 
 const customPoolDeployerAddresses = {
+  [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE,
   [POOL_DEPLOYER.BLANK]: CUSTOM_POOL_DEPLOYER_BLANK,
   [POOL_DEPLOYER.FEE_CHANGER]: CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
 };
@@ -55,7 +58,7 @@ const CreatePoolForm = () => {
   } = useMintState();
 
   const [poolDeployer, setPoolDeployer] = useState<PoolDeployerType>(
-    POOL_DEPLOYER.BLANK
+    POOL_DEPLOYER.BASE
   );
 
   const currencyA = currencies[SwapField.INPUT];
@@ -90,14 +93,18 @@ const CreatePoolForm = () => {
 
   // TODO
   const [poolState0] = usePool(customPoolsAddresses[0]);
+  const [poolState1] = usePool(customPoolsAddresses[1]);
 
   const isPoolExists =
-    poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BLANK;
+    poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
   const isPool0Exists =
-    poolState0 === PoolState.EXISTS &&
+    poolState0 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BLANK;
+  const isPool1Exists =
+    poolState1 === PoolState.EXISTS &&
     poolDeployer === POOL_DEPLOYER.FEE_CHANGER;
 
-  const isSelectedCustomPoolExists = isPoolExists || isPool0Exists;
+  const isSelectedCustomPoolExists =
+    isPoolExists || isPool0Exists || isPool1Exists;
 
   const mintInfo = useDerivedMintInfo(
     currencyA ?? undefined,
@@ -144,7 +151,8 @@ const CreatePoolForm = () => {
     "/pools"
   );
 
-  const isCustomPoolDeployerReady = account && mintInfo.pool;
+  const isCustomPoolDeployerReady =
+    account && mintInfo.pool && poolDeployer !== POOL_DEPLOYER.BASE;
 
   const { config: createCustomPoolConfig } =
     usePrepareAlgebraCustomPoolDeployerCreateCustomPool({
@@ -196,6 +204,10 @@ const CreatePoolForm = () => {
   };
 
   const handleCreatePool = () => {
+    if (poolDeployer === POOL_DEPLOYER.BASE) {
+      if (!createBasePool) return;
+      createBasePool();
+    }
     if (!createCustomPool) return;
     createCustomPool();
   };
@@ -255,13 +267,15 @@ const CreatePoolForm = () => {
         )}
       </Button>
 
-      <Button
-        disabled={isDisabled}
-        onClick={() => createBasePool && createBasePool()}
-        className="mt-2"
-      >
-        {isBasePoolLoading ? <Loader /> : "Initialize"}
-      </Button>
+      {poolDeployer !== POOL_DEPLOYER.BASE && (
+        <Button
+          disabled={isDisabled}
+          onClick={() => createBasePool && createBasePool()}
+          className="mt-2"
+        >
+          {isBasePoolLoading ? <Loader /> : "Initialize"}
+        </Button>
+      )}
     </div>
   );
 };
