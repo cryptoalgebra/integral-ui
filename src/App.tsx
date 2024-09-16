@@ -12,7 +12,7 @@ import { MULTICALL3_ADDRESS } from './constants/addresses'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const holeskyChain = defineChain({
+export const defaultChain = defineChain({
   id: DEFAULT_CHAIN_ID,
   network: 'holesky',
   name: 'Holesky',
@@ -44,7 +44,7 @@ const holeskyChain = defineChain({
   testnet: true,
 })
 
-const chains = [holeskyChain]
+const chains = [defaultChain]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -54,7 +54,7 @@ createWeb3Modal({
   chainImages: {
     [DEFAULT_CHAIN_ID]: ETHLogo
   },
-  defaultChain: holeskyChain,
+  defaultChain: defaultChain,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }
