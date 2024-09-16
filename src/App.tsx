@@ -7,11 +7,13 @@ import Layout from "@/components/common/Layout"
 import { defineChain } from "viem"
 
 import ETHLogo from '@/assets/tokens/ether.svg'
+import { DEFAULT_CHAIN_ID } from './constants/default-chain-id'
+import { MULTICALL3_ADDRESS } from './constants/addresses'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
 const holeskyChain = defineChain({
-  id: 17000,
+  id: DEFAULT_CHAIN_ID,
   network: 'holesky',
   name: 'Holesky',
   nativeCurrency: { name: 'Holesky Ether', symbol: 'ETH', decimals: 18 },
@@ -35,7 +37,7 @@ const holeskyChain = defineChain({
   },
   contracts: {
     multicall3: {
-      address: '0xca11bde05977b3631167028862be2a173976ca11',
+      address: MULTICALL3_ADDRESS,
       blockCreated: 77,
     },
   },
@@ -50,7 +52,7 @@ createWeb3Modal({
   projectId, 
   chains, 
   chainImages: {
-    17000: ETHLogo
+    [DEFAULT_CHAIN_ID]: ETHLogo
   },
   defaultChain: holeskyChain,
   themeVariables: {
