@@ -5,7 +5,7 @@ import {
   Token,
   computePoolAddress,
   tickToPrice,
-} from "@cryptoalgebra/scribe-sdk"
+} from "@cryptoalgebra/sdk"
 import { useState } from "react"
 import { Address } from "wagmi"
 import keyBy from 'lodash.keyby'

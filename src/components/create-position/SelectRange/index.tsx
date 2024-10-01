@@ -1,5 +1,5 @@
 import { IDerivedMintInfo, useMintState, useRangeHopCallbacks, useMintActionHandlers } from "@/state/mintStore";
-import { Bound, Currency } from "@cryptoalgebra/scribe-sdk";
+import { Bound, Currency } from "@cryptoalgebra/sdk";
 import { useMemo } from "react";
 import RangeSelector from "../RangeSelector";
 

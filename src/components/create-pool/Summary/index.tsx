@@ -2,7 +2,7 @@ import CurrencyLogo from '@/components/common/CurrencyLogo';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSingleTokenQuery } from '@/graphql/generated/graphql';
 import { useMintState } from '@/state/mintStore';
-import { Currency } from '@cryptoalgebra/scribe-sdk';
+import { Currency } from '@cryptoalgebra/sdk';
 import { useEffect, useState } from 'react';
 import { Address } from 'viem';
 

@@ -3,8 +3,8 @@ import {
     Currency,
     ExtendedNative,
     WNATIVE
-} from '@cryptoalgebra/scribe-sdk';
-import { ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk";
+} from '@cryptoalgebra/sdk';
+import { ADDRESS_ZERO } from "@cryptoalgebra/sdk";
 import { DEFAULT_CHAIN_ID, DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
 import { useAlgebraToken } from "./useAlgebraToken";
 

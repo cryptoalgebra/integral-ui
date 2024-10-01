@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount } from "@cryptoalgebra/scribe-sdk";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/sdk";
 import { erc20ABI, useAccount, useContractRead } from "wagmi";
 
 export function useNeedAllowance(currency: Currency | null | undefined, amount: CurrencyAmount<Currency> | undefined, spender: Account | undefined) {

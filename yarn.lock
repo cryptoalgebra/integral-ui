@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/scribe-sdk@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/scribe-sdk/-/scribe-sdk-2.0.0.tgz#dc88c8c7b014bc71e32e3fe5c869637567dcb1dc"
-  integrity sha512-BnDcFboBGFKkH1Jeq6OVOI/So2x8heRTb6BGeyFJgkyMnYuFjJwuvR9o7SsWul+sMJqoh74UDWaIJSxE6xR06Q==
+"@cryptoalgebra/sdk@npm:@cryptoalgebra/monark-sdk@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/monark-sdk/-/monark-sdk-1.1.0.tgz#2825a22270991faa1c7655f51224c31f8c9a97ed"
+  integrity sha512-gH4rIqyMf/UpBWyA5XNqLQgs8DtSlCRJUZ0sGw7S7O94Hwg7LACgaaWPkTH1PViDcrSbVbFR/mikHeTDvXuZUw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -3636,9 +3636,9 @@ base64-js@^1.3.1:
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
 big.js@^6.2.1:
-  version "6.2.1"
-  resolved "https://registry.yarnpkg.com/big.js/-/big.js-6.2.1.tgz#7205ce763efb17c2e41f26f121c420c6a7c2744f"
-  integrity sha512-bCtHMwL9LeDIozFn+oNhhFoq+yQ3BNdnsLSASUxLciOb1vgvpHsIO1dsENiGMgbb4SkP5TrzWzRiLddn8ahVOQ==
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/big.js/-/big.js-6.2.2.tgz#be3bb9ac834558b53b099deef2a1d06ac6368e1a"
+  integrity sha512-y/ie+Faknx7sZA5MfGA2xKlu0GDv8RWrXGsmlteyJQ2lvoKv9GBK/fpRMc2qlSoBAgNxrixICFCBefIq8WCQpQ==
 
 bigint-buffer@^1.1.5:
   version "1.1.5"

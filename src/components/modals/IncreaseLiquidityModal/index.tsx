@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { IDerivedMintInfo } from '@/state/mintStore';
 import { ManageLiquidity } from '@/types/manage-liquidity';
-import { Currency } from '@cryptoalgebra/scribe-sdk';
+import { Currency } from '@cryptoalgebra/sdk';
 import { useState } from 'react';
 
 interface IncreaseLiquidityModalProps {

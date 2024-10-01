@@ -8,7 +8,7 @@ import {
     CredenzaTitle,
     CredenzaTrigger,
 } from '@/components/ui/credenza';
-import { Currency } from '@cryptoalgebra/scribe-sdk';
+import { Currency } from '@cryptoalgebra/sdk';
 
 interface ITokenSelectorModal {
     isOpen: boolean;

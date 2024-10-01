@@ -10,7 +10,7 @@ import {
   Position,
   computePoolAddress,
   unwrappedToken,
-} from "@cryptoalgebra/scribe-sdk";
+} from "@cryptoalgebra/sdk";
 import { useCallback, useMemo } from "react";
 import { Address, useAccount } from "wagmi";
 import { create } from "zustand";

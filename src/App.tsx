@@ -6,15 +6,15 @@ import { WagmiConfig } from 'wagmi'
 import Layout from "@/components/common/Layout"
 import { defineChain } from "viem"
 
-import ETHLogo from '@/assets/tokens/ether.svg'
+import WBTCLogo from '@/assets/tokens/wbtc.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const scrollChain = defineChain({
-  id: 534352,
-  network: 'scroll',
-  name: 'Scroll',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+const rootstockChain = defineChain({
+  id: 30,
+  network: 'rootstock',
+  name: 'Rootstock',
+  nativeCurrency: { name: 'RBTC', symbol: 'RBTC', decimals: 18 },
   rpcUrls: {
     default: {
       http: [import.meta.env.VITE_INFURA_RPC],
@@ -25,17 +25,17 @@ const scrollChain = defineChain({
   },
   blockExplorers: {
     etherscan: {
-      name: 'Scrollscan',
-      url: 'https://scrollscan.com',
+      name: 'RootScan',
+      url: 'https://explorer.rootstock.io',
     },
     default: {
-      name: 'Scrollscan',
-      url: 'https://scrollscan.com',
+      name: 'RootScan',
+      url: 'https://explorer.rootstock.io',
     },
   },
 })
 
-const chains = [scrollChain]
+const chains = [rootstockChain]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -43,9 +43,9 @@ createWeb3Modal({
   projectId, 
   chains,
   chainImages: {
-    534352: ETHLogo
+    30: WBTCLogo
   },
-  defaultChain: scrollChain,
+  defaultChain: rootstockChain,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

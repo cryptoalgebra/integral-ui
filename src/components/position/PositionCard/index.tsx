@@ -3,7 +3,7 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import { Position } from '@cryptoalgebra/scribe-sdk';
+import { Position } from '@cryptoalgebra/sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';

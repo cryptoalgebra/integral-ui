@@ -1,5 +1,5 @@
 import deepMerge from 'lodash.merge';
-import { Percent } from "@cryptoalgebra/scribe-sdk";
+import { Percent } from "@cryptoalgebra/sdk";
 import { useMemo } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";

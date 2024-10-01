@@ -1,4 +1,4 @@
-import { WNATIVE, Token, ChainId } from "@cryptoalgebra/scribe-sdk"
+import { WNATIVE, Token, ChainId } from "@cryptoalgebra/sdk"
 import { STABLECOINS } from "./tokens"
 
 type ChainTokenList = {
@@ -15,5 +15,5 @@ const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(
 
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     ...WNATIVE_ONLY,
-    [ChainId.ScrollMainnet]: [...WNATIVE_ONLY[ChainId.ScrollMainnet], STABLECOINS.USDT]
+    [ChainId.Rootstock]: [...WNATIVE_ONLY[ChainId.Rootstock], STABLECOINS.USDT]
 }

@@ -1,5 +1,5 @@
 import { BASES_TO_CHECK_TRADES_AGAINST } from "@/constants/routing"
-import { Currency, Token } from "@cryptoalgebra/scribe-sdk"
+import { Currency, Token } from "@cryptoalgebra/sdk"
 import { useMemo } from "react"
 import { useChainId } from "wagmi"
 

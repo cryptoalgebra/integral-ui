@@ -1,6 +1,6 @@
 import { MAX_UINT128 } from "@/constants/max-uint128";
 import { getAlgebraPositionManager } from "@/generated";
-import { CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/scribe-sdk";
+import { CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/sdk";
 
 export async function getPositionFees(pool: Pool, positionId: number) {
 

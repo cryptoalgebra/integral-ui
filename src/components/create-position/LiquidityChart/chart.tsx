@@ -1,7 +1,7 @@
 // import { formatNumber } from "app/functions"
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from 'recharts'
 import { useState } from 'react'
-import { Currency } from "@cryptoalgebra/scribe-sdk";
+import { Currency } from "@cryptoalgebra/sdk";
 
 interface CustomBarProps {
     x: number;

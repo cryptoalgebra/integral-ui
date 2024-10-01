@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO, Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/scribe-sdk"
+import { ADDRESS_ZERO, Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/sdk"
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"

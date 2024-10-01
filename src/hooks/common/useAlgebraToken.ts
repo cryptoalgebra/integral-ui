@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 import { Address, useToken } from "wagmi"
-import { Token } from "@cryptoalgebra/scribe-sdk"
-import { ExtendedNative } from "@cryptoalgebra/scribe-sdk"
-import { ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk"
+import { Token } from "@cryptoalgebra/sdk"
+import { ExtendedNative } from "@cryptoalgebra/sdk"
+import { ADDRESS_ZERO } from "@cryptoalgebra/sdk"
 import { DEFAULT_CHAIN_ID, DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id"
 
 export function useAlgebraToken(address: Address | undefined) {

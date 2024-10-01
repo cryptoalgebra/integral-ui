@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Currency } from "@cryptoalgebra/scribe-sdk";
+import { Currency } from "@cryptoalgebra/sdk";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
 import { PresetProfits, Presets, PresetsArgs } from "@/types/presets";
 import { Button } from "@/components/ui/button";

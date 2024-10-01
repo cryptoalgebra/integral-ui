@@ -1,7 +1,7 @@
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useMintState } from "@/state/mintStore";
 import { Presets } from "@/types/presets";
-import { CurrencyAmount, Pool, Token, TickMath, Price, Currency, ADDRESS_ZERO } from "@cryptoalgebra/scribe-sdk";
+import { CurrencyAmount, Pool, Token, TickMath, Price, Currency, ADDRESS_ZERO } from "@cryptoalgebra/sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
 import { Skeleton } from "@/components/ui/skeleton";
