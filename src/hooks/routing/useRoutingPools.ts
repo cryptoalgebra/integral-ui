@@ -99,6 +99,7 @@ export function useCommonPools(
     dataUpdatedAt: v3PoolsUpdatedAt,
   } = useV3CandidatePools(currencyA, currencyB, { blockNumber, enabled });
 
+
   const poolsData: [any[], number] | undefined = useMemo(
     () =>
       (!v3Loading || v3Pools) && (allowInconsistentBlock || !!v3BlockNumber)

@@ -4,9 +4,9 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronDownIcon, ZapIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   SmartRouter,
   SmartRouterTrade,
@@ -14,6 +14,9 @@ import {
 } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import SwapRouteModal from "@/components/modals/SwapRouteModal";
 import { Button } from "@/components/ui/button.tsx";
+import { getAlgebraBasePlugin, getAlgebraPool } from "@/generated";
+import { ALGEBRA_ROUTER } from "@/constants/addresses";
+import { MAX_UINT128 } from "@/constants/max-uint128";
 
 const SwapParams = ({
   derivedSwap,
@@ -25,6 +28,7 @@ const SwapParams = ({
   isSmartTradeLoading: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [slidingFee, setSlidingFee] = useState<number>();
 
   const { allowedSlippage, currencies, poolAddress } = derivedSwap;
   const { typedValue } = useSwapState();
@@ -39,21 +43,79 @@ const SwapParams = ({
 
   const { dynamicFeePlugin } = usePoolPlugins(poolAddress);
 
-  const combinedFee = useMemo(() => {
-    if (!smartTrade) return undefined;
+  useEffect(() => {
 
-    const fees = smartTrade.routes.flatMap((routes: any) =>
-      routes.pools.flatMap((pool: any) => pool.fee)
-    );
+    if (!smartTrade) return undefined
+    
+    async function getFees () {
 
-    let p = 100;
+      const fees = []
 
-    for (const fee of fees) {
-      p *= 1 - Number(fee) / 1_000_000;
+      for (const route of smartTrade.routes) {
+
+        const splits = [];
+      
+        for (let idx = 0; idx < Math.ceil(route.path.length / 2); idx++) {
+          splits[idx] = [route.path[idx], route.path[idx + 1]];
+        }
+      
+        for (let idx = 0; idx < route.pools.length; idx++) {
+  
+          const pool = route.pools[idx]
+          const split = splits[idx]
+          const amountIn = route.amountInList?.[idx] || 0n
+          const amountOut = route.amountOutList?.[idx] || 0n
+
+          if (pool.type !== 1) continue
+
+          const isZeroToOne = split[0].wrapped.sortsBefore(split[1].wrapped)
+  
+          const poolContract = getAlgebraPool({
+            address: pool.address
+          })
+  
+          const plugin = await poolContract.read.plugin()
+
+          const pluginContract = getAlgebraBasePlugin({
+            address: plugin
+          })
+
+          const beforeSwap = await pluginContract.simulate.beforeSwap([
+            ALGEBRA_ROUTER,
+            ADDRESS_ZERO,
+            isZeroToOne,
+            smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
+            MAX_UINT128,
+            false,
+            '0x'
+          ], { account: pool.address })
+
+          
+          const [, overrideFee, pluginFee] = beforeSwap.result || ['', 0, 0]
+  
+          if (overrideFee) {
+            fees.push(overrideFee + pluginFee)
+          } else {
+            fees.push(pool.fee + pluginFee)
+          }
+
+        }
+  
+      }
+
+      let p = 100;
+
+      for (const fee of fees) {
+        p *= 1 - Number(fee) / 1_000_000;
+      }
+  
+      setSlidingFee(100 - p)
+
     }
 
-    return 100 - p;
-  }, [smartTrade]);
+    getFees()
+
+  }, [smartTrade])
 
   const priceImpact = useMemo(() => {
     if (!smartTrade) return undefined;
@@ -76,7 +138,7 @@ const SwapParams = ({
           className="flex items-center w-full text-md mb-1 text-center text-white bg-card-dark py-1 px-3 rounded-lg"
           onClick={() => toggleExpanded(!isExpanded)}
         >
-          {combinedFee && (
+          {slidingFee ? (
             <div className="rounded select-none pointer px-1.5 py-1 flex items-center relative">
               {dynamicFeePlugin && (
                 <ZapIcon
@@ -87,9 +149,11 @@ const SwapParams = ({
                   size={16}
                 />
               )}
-              <span>{`${combinedFee?.toFixed(3)}% fee`}</span>
+              <span>{`${slidingFee?.toFixed(3)}% fee`}</span>
             </div>
-          )}
+          ) : <div className="rounded select-none px-1.5 py-1 flex items-center relative">
+            <Loader size={16} />   
+          </div>}
           <div className={`ml-auto duration-300 ${isExpanded && "rotate-180"}`}>
             <ChevronDownIcon strokeWidth={2} size={16} />
           </div>
@@ -108,6 +172,7 @@ const SwapParams = ({
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 routes={smartTrade?.routes}
+                tradeType={smartTrade?.tradeType}
               >
                 <Button size={"sm"} onClick={() => setIsOpen(true)}>
                   Show

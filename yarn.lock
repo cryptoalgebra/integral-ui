@@ -559,10 +559,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/custom-pools-sdk@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-sdk/-/custom-pools-sdk-1.0.5.tgz#f9f93b577ad7c06f587c99e46f248bb879b810f0"
-  integrity sha512-5lrjjgpSRShZHZFZcCZE+4ZDbx3mna84/q0iud0M+ccjSwPwdr5I+ipLqgza51x8BbaKmmzUwM2BU6fmcWg6SA==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-and-sliding-fee-sdk/-/custom-pools-and-sliding-fee-sdk-1.1.2.tgz#b5828a46c62baefa9534a31f24d7d1a807859475"
+  integrity sha512-73lrru+dJkUfQDO1DYOkJSnb1IhLw6augB1a4TypwlOcSfggYi4gJwuotGSowofGiY6hkyD6Glr9d1prijU54g==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -576,29 +576,12 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-and-sliding-fee-sdk/-/custom-pools-and-sliding-fee-sdk-1.0.0.tgz#8ee764a4d29404db567c102875559cb81176a282"
-  integrity sha512-Flj30wDgx85/luzTeXs3c8O7BuPKKpaEWBB0W6cC/VZycT5rK6GBkVWMiwCmCRSPcn4CvAh5dUep0N4wEW4XVg==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools-and-sliding-fee/-/router-custom-pools-and-sliding-fee-1.2.2.tgz#0c91c8a978d3995e424dc94230711820b0a24e1f"
+  integrity sha512-6VWl5a3lpigXpNaNydukw908O7QVRJ6jVKWztMfdi+urOOTl1MNihM5+W3ZoBveS3X+SxmkB7cvycDupWS83AA==
   dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/address" "^5.7.0"
-    "@ethersproject/solidity" "^5.7.0"
-    "@ethersproject/units" "^5.7.0"
-    big.js "^6.2.1"
-    decimal.js-light "^2.5.1"
-    jsbi "^3.2.5"
-    numeral "^2.0.6"
-    tiny-invariant "^1.3.1"
-    tiny-warning "^1.0.3"
-    toformat "^2.0.0"
-
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools-and-sliding-fee/-/router-custom-pools-and-sliding-fee-1.1.3.tgz#a62dac218cd4bf5b842c726e09d04235da2d1eac"
-  integrity sha512-G8z5Tx5Q581LvGYjsm+kkBz61SNCLMg0da7Fl8jKdqAS6vec56tsG9IQfC+vlD7jVn1M0yokgwnA0nrZYWnOTA==
-  dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "^1.0.5"
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.1.2"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"
