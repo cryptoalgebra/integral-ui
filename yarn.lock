@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/sdk@npm:@cryptoalgebra/monark-sdk@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/monark-sdk/-/monark-sdk-1.1.0.tgz#2825a22270991faa1c7655f51224c31f8c9a97ed"
-  integrity sha512-gH4rIqyMf/UpBWyA5XNqLQgs8DtSlCRJUZ0sGw7S7O94Hwg7LACgaaWPkTH1PViDcrSbVbFR/mikHeTDvXuZUw==
+"@cryptoalgebra/sdk@npm:@cryptoalgebra/monark-sdk@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/monark-sdk/-/monark-sdk-1.1.1.tgz#205737fc68eda8babfe6c18420bcc37e5d069b28"
+  integrity sha512-s02BaHXPRJmeRY6d56B3F9Ce1iQFJCxeARJoZF22DZ63tgK2PBtCrsW7/R+Yz+aMeP5T82dEpAch0UD8NTiNXQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
