@@ -49,7 +49,7 @@ const SwapParams = ({
     
     async function getFees () {
 
-      const fees = []
+      const fees: number[] = []
 
       for (const route of smartTrade.routes) {
 
@@ -80,24 +80,33 @@ const SwapParams = ({
             address: plugin
           })
 
-          const beforeSwap = await pluginContract.simulate.beforeSwap([
-            ALGEBRA_ROUTER,
-            ADDRESS_ZERO,
-            isZeroToOne,
-            smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
-            MAX_UINT128,
-            false,
-            '0x'
-          ], { account: pool.address })
+          let beforeSwap: [string, number, number]
 
-          
-          const [, overrideFee, pluginFee] = beforeSwap.result || ['', 0, 0]
+          try {
+
+            beforeSwap = await pluginContract.simulate.beforeSwap([
+              ALGEBRA_ROUTER,
+              ADDRESS_ZERO,
+              isZeroToOne,
+              smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
+              MAX_UINT128,
+              false,
+              '0x'
+            ], { account: pool.address }).then(v => v.result as [string, number, number])
+
+          } catch (error) {
+            beforeSwap = ['', 0, 0]
+          }
+
+          const [, overrideFee, pluginFee] = beforeSwap || ['', 0, 0]
   
           if (overrideFee) {
             fees.push(overrideFee + pluginFee)
           } else {
             fees.push(pool.fee + pluginFee)
           }
+
+          fees[fees.length - 1] = fees[fees.length - 1] * route.percent / 100
 
         }
   
@@ -149,7 +158,7 @@ const SwapParams = ({
                   size={16}
                 />
               )}
-              <span>{`${slidingFee?.toFixed(3)}% fee`}</span>
+              <span>{`${slidingFee?.toFixed(4)}% fee`}</span>
             </div>
           ) : <div className="rounded select-none px-1.5 py-1 flex items-center relative">
             <Loader size={16} />   

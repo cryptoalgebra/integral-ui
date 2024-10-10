@@ -171,6 +171,8 @@ const CreatePoolForm = () => {
       enabled: Boolean(isCustomPoolDeployerReady),
     });
 
+    console.log('createCustomPoolConfig', isCustomPoolDeployerReady, customPoolDeployerAddresses[poolDeployer])
+
   const { data: createCustomPoolData, write: createCustomPool } =
     useContractWrite(createCustomPoolConfig);
 

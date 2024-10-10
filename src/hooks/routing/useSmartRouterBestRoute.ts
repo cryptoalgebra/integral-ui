@@ -132,7 +132,7 @@ export function useSmartRouterBestRoute(
             poolProvider,
             quoteProvider: SmartRouter.quoteProvider,
             quoterOptimization: true,
-            distributionPercent: 100,
+            distributionPercent: 10,
             signal,
           }
         );
