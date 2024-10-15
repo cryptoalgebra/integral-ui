@@ -4,12 +4,12 @@ import dayjs from 'dayjs'
 import { getBlocksFromTimestamps } from "@/graphql/utils/getBlocksFromTimestamps"
 
 const mainnetInfoClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3',
+    uri: 'https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV',
     cache: new InMemoryCache(),
 });
 
 const mainnetBlocksClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+    uri: 'https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC',
     cache: new InMemoryCache()
 })
 
