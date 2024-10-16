@@ -7,6 +7,7 @@ import WBTCLogo from '@/assets/tokens/wbtc.svg'
 import EtherLogo from '@/assets/tokens/ether.svg'
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { USDC_ADDRESS, USDT_ADDRESS, WBTC_ADDRESS, WNATIVE_ADDRESS } from "@/constants/addresses";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
@@ -16,22 +17,22 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: {
+    [WNATIVE_ADDRESS]: {
         symbol: 'ETH',
         logo: EtherLogo
     },
-    ['0x7d98346b3b000c55904918e3d9e2fc3f94683b01']: {
+    [USDT_ADDRESS]: {
         symbol: 'USDT',
         logo: USDTLogo
     },
-    ['0x9dad8a1f64692adeb74aca26129e0f16897ff4bb']: {
-        symbol: 'WBTC',
-        logo: WBTCLogo
-    },
-    ['0x6581e59a1c8da66ed0d313a0d4029dce2f746cc5']: {
+    [USDC_ADDRESS]: {
         symbol: 'USDC',
         logo: USDCLogo
-    }
+    },
+    [WBTC_ADDRESS]: {
+      symbol: 'WBTC',
+      logo: WBTCLogo
+  },
 }
 
 

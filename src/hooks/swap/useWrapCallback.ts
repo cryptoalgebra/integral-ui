@@ -1,11 +1,12 @@
 import { WNATIVE_EXTENDED } from "@/constants/routing";
 import { usePrepareWrappedNativeDeposit, usePrepareWrappedNativeWithdraw } from "@/generated";
-import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/integral-sdk";
+import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { Address, useAccount, useBalance, useChainId, useContractWrite } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { WNATIVE_ADDRESS } from "@/constants/addresses";
 
 export const WrapType = {
     NOT_APPLICABLE: 'NOT_APPLICABLE',
@@ -27,7 +28,7 @@ export default function useWrapCallback(
     const inputAmount = useMemo(() => tryParseAmount(typedValue, inputCurrency), [inputCurrency, typedValue])
 
     const { config: wrapConfig } = usePrepareWrappedNativeDeposit({
-        address: WNATIVE[chainId].address as Address,
+        address: WNATIVE_ADDRESS as Address,
         value: inputAmount ? BigInt(inputAmount.quotient.toString()) : undefined
     })
 
@@ -37,13 +38,13 @@ export default function useWrapCallback(
         wrapData?.hash,
         { 
             title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL}`,
-            tokenA: WNATIVE[chainId].address as Address,
+            tokenA: WNATIVE_ADDRESS as Address,
             type: TransactionType.SWAP
         }
     )
 
     const { config: unwrapConfig } = usePrepareWrappedNativeWithdraw({
-        address: WNATIVE[chainId].address as Address,
+        address: WNATIVE_ADDRESS as Address,
         args: inputAmount ? [BigInt(inputAmount.quotient.toString())] : undefined
     })
 
@@ -53,7 +54,7 @@ export default function useWrapCallback(
         unwrapData?.hash,
         { 
             title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL}`,
-            tokenA: WNATIVE[chainId].address as Address,
+            tokenA: WNATIVE_ADDRESS as Address,
             type: TransactionType.SWAP,
         }
     )   

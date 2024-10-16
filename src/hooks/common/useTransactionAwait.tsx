@@ -1,3 +1,4 @@
+import { defaultChain } from '@/App';
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
 import { TransactionInfo, usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
@@ -10,7 +11,7 @@ export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     hash ? (
         <ToastAction altText="View on explorer" asChild>
             <Link
-                to={`https://holesky.etherscan.io/tx/${hash}`}
+                to={`${defaultChain.blockExplorers.default.url}/tx/${hash}`}
                 target={'_blank'}
                 className="border-none gap-2 hover:bg-transparent hover:text-blue-400"
             >

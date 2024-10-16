@@ -26,3 +26,18 @@ export const ALGEBRA_ETERNAL_FARMING: Address =
 
 export const FARMING_CENTER: Address =
     '0x37A4950b4ea0C46596404895c5027B088B0e70e7';
+
+export const WNATIVE_ADDRESS: Address =
+    '0x94373a4919b3240d86ea41593d5eba789fef3848';
+
+export const USDT_ADDRESS: Address =
+    '0x7d98346b3b000c55904918e3d9e2fc3f94683b01';
+
+export const USDC_ADDRESS: Address =
+    '0x6581e59a1c8da66ed0d313a0d4029dce2f746cc5';
+
+export const WBTC_ADDRESS: Address =
+    '0x9dad8a1f64692adeb74aca26129e0f16897ff4bb';
+
+export const MULTICALL3_ADDRESS: Address =
+    '0xca11bde05977b3631167028862be2a173976ca11';
