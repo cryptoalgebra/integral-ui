@@ -438,6 +438,11 @@ export const algebraPositionManagerABI = [
         "internalType": "uint160",
         "name": "sqrtPriceX96",
         "type": "uint160"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
     "name": "createAndInitializePoolIfNecessary",
@@ -1395,4 +1400,4 @@ export const algebraPositionManagerABI = [
     "stateMutability": "payable",
     "type": "receive"
   }
-] as const
+] as const;

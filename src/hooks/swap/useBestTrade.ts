@@ -52,14 +52,14 @@ export function useBestTradeExactIn(
                 if (currentBest.amountOut === null) {
                     return {
                         bestRoute: routes[i],
-                        amountOut: result[0],
+                        amountOut: result[0][result[0].length - 1],
                         fee: result[5],
                         priceAfterSwap: result[2]
                     }
                 } else if (currentBest.amountOut < result[0]) {
                     return {
                         bestRoute: routes[i],
-                        amountOut: result[0],
+                        amountOut: result[0][result[0].length - 1],
                         fee: result[5],
                         priceAfterSwap: result[2]
                     }
@@ -146,14 +146,14 @@ export function useBestTradeExactOut(
                 if (currentBest.amountIn === null) {
                     return {
                         bestRoute: routes[i],
-                        amountIn: result[1],
+                        amountIn: result[1][result[1].length - 1],
                         fee: result[5],
                         priceAfterSwap: result[2]
                     }
                 } else if (currentBest.amountIn > result[0]) {
                     return {
                         bestRoute: routes[i],
-                        amountIn: result[1],
+                        amountIn: result[1][result[1].length - 1],
                         fee: result[5],
                         priceAfterSwap: result[2]
                     }

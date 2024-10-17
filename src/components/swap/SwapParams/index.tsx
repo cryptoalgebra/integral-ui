@@ -1,13 +1,16 @@
 import Loader from "@/components/common/Loader";
+import { ALGEBRA_ROUTER } from "@/constants/addresses";
+import { MAX_UINT128 } from "@/constants/max-uint128";
+import { getAlgebraBasePlugin, getAlgebraPool } from "@/generated";
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { TradeState } from "@/types/trade-state";
 import { computeRealizedLPFeePercent, warningSeverity } from "@/utils/swap/prices";
-import { Currency, Percent, Trade, TradeType, unwrappedToken } from "@cryptoalgebra/sdk";
+import { ADDRESS_ZERO, computePoolAddress, Currency, Percent, Trade, TradeType, unwrappedToken } from "@cryptoalgebra/sdk";
 import { ChevronDownIcon, ChevronRightIcon, ZapIcon } from "lucide-react";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 const SwapParams = () => {
 
@@ -17,21 +20,76 @@ const SwapParams = () => {
     const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
     const [isExpanded, toggleExpanded] = useState(false);
+    const [slidingFee, setSlidingFee] = useState<number>();
 
     const { dynamicFeePlugin } = usePoolPlugins(poolAddress)
 
-    const adaptiveFee = useMemo(() => {
+    useEffect(() => {
 
-        if (!tradeState.fee) return;
+        if (!trade || !tradeState.fee) return undefined
 
-        let p = 100;
+        async function getFees () {
 
-        for (const fee of tradeState.fee) {
-            p = p * (1 - Number(fee) / 1_000_000);
+            const fees = [];
+
+            for (const route of trade.swaps) {
+                
+                for (const pool of route.route.pools) {
+                    
+                    const address = computePoolAddress({
+                        tokenA: pool.token0,
+                        tokenB: pool.token1
+                    })
+
+                    const poolContract = getAlgebraPool({
+                        address
+                    })
+
+                    const plugin = await poolContract.read.plugin()
+
+                    const pluginContract = getAlgebraBasePlugin({
+                        address: plugin
+                    })
+
+                    let beforeSwap: [string, number, number]
+
+                    try {
+                      beforeSwap = await pluginContract.simulate.beforeSwap([
+                        ALGEBRA_ROUTER,
+                        ADDRESS_ZERO,
+                        isZeroToOne,
+                        trade.tradeType === TradeType.EXACT_INPUT ? trade?.inputAmount : trade?.outputAmount,
+                        MAX_UINT128,
+                        false,
+                        '0x'
+                      ], { account: address }).then(v => v.result as [string, number, number])
+                    } catch (error) {
+                      beforeSwap = ['', 0, 0]
+                    }
+                    const [, overrideFee, pluginFee] = beforeSwap || ['', 0, 0]
+  
+                    if (overrideFee) {
+                      fees.push(overrideFee + pluginFee)
+                    } else {
+                      fees.push(pool.fee + pluginFee)
+                    }
+                }
+    
+            }
+
+            let p = 100;
+            for (const fee of fees) {
+              p *= 1 - Number(fee) / 1_000_000;
+            }
+        
+            setSlidingFee(100 - p)
+
         }
 
-        return 100 - p;
-    }, [tradeState.fee]);
+        getFees()
+
+    }, [trade, tradeState.fee])
+
 
     const { realizedLPFee, priceImpact } = useMemo(() => {
         if (!trade) return { realizedLPFee: undefined, priceImpact: undefined };
@@ -50,11 +108,11 @@ const SwapParams = () => {
         <div className="rounded text-white">
             <div className="flex justify-between">
                 <button className="flex items-center w-full text-md mb-1 text-center text-white bg-card-dark py-1 px-3 rounded-lg" onClick={() => toggleExpanded(!isExpanded)}>
-                    {adaptiveFee && (
+                    {slidingFee && (
                         <div className="rounded select-none pointer px-1.5 py-1 flex items-center relative">
                             {dynamicFeePlugin && <ZapIcon className="mr-2" strokeWidth={1} stroke="white" fill="white" size={16} />}
                             <span>
-                                {`${adaptiveFee?.toFixed(3)}% fee`}
+                                {`${slidingFee?.toFixed(4)}% fee`}
                             </span>
                         </div>
                     )}

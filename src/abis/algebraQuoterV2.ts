@@ -98,14 +98,14 @@ export const algebraQuoterV2ABI = [
     "name": "quoteExactInput",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "amountOutList",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "amountInList",
+        "type": "uint256[]"
       },
       {
         "internalType": "uint160[]",
@@ -218,14 +218,14 @@ export const algebraQuoterV2ABI = [
     "name": "quoteExactOutput",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "amountOut",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "amountOutList",
+        "type": "uint256[]"
       },
       {
-        "internalType": "uint256",
-        "name": "amountIn",
-        "type": "uint256"
+        "internalType": "uint256[]",
+        "name": "amountInList",
+        "type": "uint256[]"
       },
       {
         "internalType": "uint160[]",
@@ -322,4 +322,4 @@ export const algebraQuoterV2ABI = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-] as const
+] as const;
