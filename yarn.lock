@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/sdk@npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-and-sliding-fee-sdk/-/custom-pools-and-sliding-fee-sdk-1.2.0.tgz#6e67e024295e9c9ede6f5fb4d1a0f3f4bad289f5"
-  integrity sha512-Z8lXraEd2Kh5NosYrBWl+CXQ1PTd/UvLjOh42eW6mqqwOcs7lfIMjrqHXJNlD3/yQ4GY+mqrs14YCk8w+PudpA==
+"@cryptoalgebra/sdk@npm:@cryptoalgebra/tac-sdk":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/tac-sdk/-/tac-sdk-1.0.0.tgz#fdad87c86be3b45cf2a3923f849c036bd7725116"
+  integrity sha512-UROFVZ/qFdExTrbjIpy4JCCWxS27wQl82372eDu3izxZlPJ47P7rNCp6CHIt8gTU9L0NhjbtJyiQ/4aoM1YJJQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -3683,9 +3683,9 @@ bl@^5.0.0:
     readable-stream "^3.4.0"
 
 bn.js@^4.11.9:
-  version "4.12.0"
-  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.0.tgz#775b3f278efbb9718eec7361f483fb36fbbfea88"
-  integrity sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==
+  version "4.12.1"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.12.1.tgz#215741fe3c9dba2d7e12c001d0cfdbae43975ba7"
+  integrity sha512-k8TVBiPkPJT9uHLdOKfFpqcfprwBFOAAXXozRubr7R7PfIuKvQlzcI4M0pALeqXN09vdaMbUdUj+pass+uULAg==
 
 bn.js@^5.1.1, bn.js@^5.2.0, bn.js@^5.2.1:
   version "5.2.1"

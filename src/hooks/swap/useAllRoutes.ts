@@ -1,8 +1,9 @@
 import { ADDRESS_ZERO, Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/sdk"
 import { useMemo } from "react"
-import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"
 import { useUserState } from "@/state/userStore"
+import { usePool } from "../pools/usePool"
+import { tacPools } from "@/components/pools/PoolsList"
 
 
 /**
@@ -74,7 +75,23 @@ export function useAllRoutes(
 
     const chainId = useChainId()
 
-    const { pools, loading: poolsLoading } = useSwapPools(currencyIn, currencyOut)
+    const [, pool] = usePool(tacPools[0] as Address)
+
+    const { pools, loading: poolsLoading } = {
+        pools: pool && [
+            {
+                pool: {
+                    address: tacPools[0] as Address,
+                    liquidity: pool.liquidity.toString(),
+                    price: pool.sqrtRatioX96.toString(),
+                    tick: pool.tickCurrent.toString(),
+                    fee: pool.fee.toString(),
+                },
+                tokens: [pool.token0, pool.token1] as [Token, Token],
+            },
+        ],
+        loading: !pool,
+    };
 
     const { isMultihop } = useUserState();
 

@@ -1,14 +1,9 @@
-import { algebraQuoterV2ABI } from '@/abis';
-import { ALGEBRA_QUOTER_V2 } from '@/constants/addresses';
-import {
-    Currency,
-    CurrencyAmount,
-    encodeRouteToPath,
-} from '@cryptoalgebra/sdk';
-import { useMemo } from 'react';
-import { useContractReads } from 'wagmi';
-import { useAllRoutes } from './useAllRoutes';
-
+import { algebraQuoterV2ABI } from "@/abis";
+import { ALGEBRA_QUOTER_V2 } from "@/constants/addresses";
+import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/sdk";
+import { useMemo } from "react";
+import { useContractReads } from "wagmi";
+import { useAllRoutes } from "./useAllRoutes";
 export function useQuotesResults({
     exactInput,
     amountIn,
@@ -38,9 +33,9 @@ export function useQuotesResults({
                 ? `0x${amountOut.quotient.toString(16)}`
                 : undefined,
         ]);
-    }, [amountIn, amountOut, routes, exactInput]);
+    }, [amountIn?.quotient.toString(), currencyOut, routes, exactInput]);
 
-    const functionName = exactInput ? 'quoteExactInput' : 'quoteExactOutput';
+    const functionName = exactInput ? "quoteExactInput" : "quoteExactOutput";
 
     const {
         data: quotesResults,
@@ -53,8 +48,8 @@ export function useQuotesResults({
             functionName: functionName,
             args: quote,
         })),
-        watch: true,
-        cacheTime: 5_000
+        watch: false,
+        cacheTime: 5_000,
     });
 
     return {

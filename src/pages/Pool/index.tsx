@@ -158,10 +158,10 @@ const PoolPage = () => {
     };
 
     const positionsData = useMemo(() => {
-        if (!filteredPositions || !poolEntity || !deposits) return [];
+        if (!filteredPositions || !poolEntity) return [];
 
         return filteredPositions.map(({ positionId, position }, idx) => {
-            const currentPosition = deposits.deposits.find(
+            const currentPosition = deposits?.deposits?.find(
                 (deposit) => Number(deposit.id) === Number(positionId)
             );
             return {

@@ -35,10 +35,10 @@ export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: '',
     [SwapField.INPUT]: {
-        currencyId: ADDRESS_ZERO
+        currencyId: STABLECOINS.TON.address as Address
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS.USDT.address as Account
+        currencyId: STABLECOINS.X.address as Address
     },
     wasInverted: false,
     lastFocusedField: SwapField.INPUT,

@@ -18,7 +18,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
         if (amountToApprove.currency.isNative) return ApprovalState.APPROVED
 
         return needAllowance ? ApprovalState.NOT_APPROVED : ApprovalState.APPROVED
-    }, [amountToApprove, needAllowance, spender])
+    }, [amountToApprove?.quotient.toString(), needAllowance, spender])
 
     const { config } = usePrepareContractWrite({
         address: amountToApprove ? (amountToApprove.currency.wrapped.address as Address) : undefined,
@@ -55,7 +55,7 @@ export function useApproveCallbackFromTrade(
 ) {
     const amountToApprove = useMemo(
         () => (trade && trade.inputAmount.currency.isToken ? trade.maximumAmountIn(allowedSlippage) : undefined),
-        [trade, allowedSlippage]
+        [trade?.inputAmount.quotient.toString(), allowedSlippage]
     )
     return useApprove(amountToApprove, ALGEBRA_ROUTER)
 }

@@ -96,7 +96,7 @@ export function useBestTradeExactIn(
             priceAfterSwap,
             refetch
         }
-    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch])
+    }, [amountIn?.quotient.toString(), currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch])
 
     return trade
 }
