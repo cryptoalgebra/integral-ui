@@ -1,5 +1,5 @@
 export interface FormattedPosition {
-    id: number;
+    id: string;
     outOfRange: boolean;
     range: string;
     liquidityUSD: number;

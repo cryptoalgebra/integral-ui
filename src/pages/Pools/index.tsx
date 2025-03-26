@@ -1,16 +1,16 @@
-import PageContainer from '@/components/common/PageContainer';
-import PageTitle from '@/components/common/PageTitle';
-import PoolsList from '@/components/pools/PoolsList';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import PageContainer from "@/components/common/PageContainer";
+import PageTitle from "@/components/common/PageTitle";
+import PoolsList from "@/components/pools/PoolsList";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const PoolsPage = () => {
     return (
         <PageContainer>
             <div className="w-full flex justify-between">
-                <PageTitle title={'Pools'} showSettings={false} />
-                <Link to={'create'}>
-                    <Button className="whitespace-nowrap" size={'md'}>
+                <PageTitle title={"Pools"} showSettings={false} />
+                <Link to={"create"}>
+                    <Button className="whitespace-nowrap" size={"md"}>
                         Create Pool
                     </Button>
                 </Link>

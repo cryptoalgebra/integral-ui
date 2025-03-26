@@ -1,16 +1,10 @@
-import {
-    DEFAULT_NATIVE_NAME,
-    DEFAULT_NATIVE_SYMBOL,
-} from '@/constants/default-chain-id';
-import {
-    TokenFieldsFragment,
-    useAllTokensQuery,
-} from '@/graphql/generated/graphql';
-import { useTokensState } from '@/state/tokensStore';
-import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
-import { useMemo } from 'react';
-import { Address } from 'viem';
-import { useChainId } from 'wagmi';
+import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
+import { TokenFieldsFragment, useAllTokensQuery } from "@/graphql/generated/graphql";
+import { useTokensState } from "@/state/tokensStore";
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { useMemo } from "react";
+import { Address } from "viem";
+import { useChainId } from "wagmi";
 
 export function useAllTokens(showNativeToken: boolean = true) {
     const chainId = useChainId();
@@ -23,7 +17,7 @@ export function useAllTokens(showNativeToken: boolean = true) {
 
     const mergedTokens = useMemo(() => {
         const tokens = new Map<Address, TokenFieldsFragment>();
-        
+
         if (!allTokens) {
             const _importedTokens = Object.values(importedTokens[chainId] || []);
             for (const token of _importedTokens) {
@@ -44,9 +38,7 @@ export function useAllTokens(showNativeToken: boolean = true) {
                 derivedMatic: 1,
             });
 
-        for (const token of allTokens.tokens.filter(
-            (token) => !tokensBlackList.includes(token.id as Address)
-        )) {
+        for (const token of allTokens.tokens.filter((token) => !tokensBlackList.includes(token.id as Address))) {
             tokens.set(token.id.toLowerCase() as Address, { ...token });
         }
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 import { Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useMintState } from "@/state/mintStore";
 import { Button } from "@/components/ui/button";
@@ -30,8 +30,8 @@ const RangeSelectorPart = ({
     disabled,
     title,
 }: RangeSelectorPartProps) => {
-    const [localUSDValue, setLocalUSDValue] = useState('');
-    const [localTokenValue, setLocalTokenValue] = useState('');
+    const [localUSDValue, setLocalUSDValue] = useState("");
+    const [localTokenValue, setLocalTokenValue] = useState("");
 
     const {
         initialTokenPrice,
@@ -53,54 +53,55 @@ const RangeSelectorPart = ({
     useEffect(() => {
         if (value) {
             setLocalTokenValue(value);
-            if (value === '∞') {
+            if (value === "∞") {
                 setLocalUSDValue(value);
                 return;
             }
-        } else if (value === '') {
-            setLocalTokenValue('');
-            setLocalUSDValue('');
+        } else if (value === "") {
+            setLocalTokenValue("");
+            setLocalUSDValue("");
         }
     }, [initialTokenPrice, value]);
 
     useEffect(() => {
-        return () => updateSelectedPreset(null) 
-    }, [])
+        return () => updateSelectedPreset(null);
+    }, []);
 
     return (
         <div>
-             <div className="font-bold text-xs mb-3">{title.toUpperCase()}</div>
+            <div className="font-bold text-xs mb-3">{title.toUpperCase()}</div>
             <div className="flex relative">
-                <Button 
-                    variant={'ghost'}
-                    size={'sm'}
-                    onClick={handleDecrement} 
+                <Button
+                    variant={"ghost"}
+                    size={"sm"}
+                    onClick={handleDecrement}
                     disabled={decrementDisabled || disabled}
-                    className="border border-card-border rounded-xl rounded-r-none"    
+                    className="border border-card-border rounded-xl rounded-r-none"
                 >
                     -
                 </Button>
 
                 <Input
-                    type={'text'}
+                    type={"text"}
                     value={localTokenValue}
                     id={title}
                     onBlur={handleOnBlur}
                     disabled={disabled || locked}
-                    onUserInput={v => {
-                        setLocalTokenValue(v)
-                        updateSelectedPreset(null)
+                    onUserInput={(v) => {
+                        setLocalTokenValue(v);
+                        updateSelectedPreset(null);
                     }}
-                    placeholder={'0.00'}
+                    placeholder={"0.00"}
                     className="w-full bg-card-dark border-y border-x-0 border-card-border rounded-none text-sm h-[36px]"
                 />
 
-                <Button 
-                    variant={'ghost'}
-                  size={'sm'}
-                    onClick={handleIncrement} 
-                    disabled={incrementDisabled || disabled} 
-                    className="border border-card-border rounded-xl rounded-l-none">
+                <Button
+                    variant={"ghost"}
+                    size={"sm"}
+                    onClick={handleIncrement}
+                    disabled={incrementDisabled || disabled}
+                    className="border border-card-border rounded-xl rounded-l-none"
+                >
                     +
                 </Button>
             </div>

@@ -1,95 +1,94 @@
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client"
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
-import dayjs from 'dayjs'
-import { getBlocksFromTimestamps } from "@/graphql/utils/getBlocksFromTimestamps"
+import dayjs from "dayjs";
+import { getBlocksFromTimestamps } from "@/graphql/utils/getBlocksFromTimestamps";
 
 const mainnetInfoClient = new ApolloClient({
-    uri: 'https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV',
+    uri: "https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV",
     cache: new InMemoryCache(),
 });
 
 const mainnetBlocksClient = new ApolloClient({
-    uri: 'https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC',
-    cache: new InMemoryCache()
-})
+    uri: "https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC",
+    cache: new InMemoryCache(),
+});
 
 const CHART_STEPS = {
     day: 3600,
     week: 3600,
     month: 3600 * 24,
-}
+};
 
 export function useSwapChart() {
-
-    async function fetchPoolPriceData(address: string, span: 'day' | 'week' | 'month') {
-        return fetchPriceData(address, span, 'pool')
+    async function fetchPoolPriceData(address: string, span: "day" | "week" | "month") {
+        return fetchPriceData(address, span, "pool");
     }
 
-    async function fetchTokenPriceData(address: string, span: 'day' | 'week' | 'month') {
-        return fetchPriceData(address, span, 'token')
+    async function fetchTokenPriceData(address: string, span: "day" | "week" | "month") {
+        return fetchPriceData(address, span, "token");
     }
 
     async function fetchPriceData(
         address: string,
-        span: 'day' | 'week' | 'month',
+        span: "day" | "week" | "month",
         field: string
     ): Promise<{
-        data: any[]
-        error: boolean
+        data: any[];
+        error: boolean;
     }> {
         // start and end bounds
 
-        const utcCurrentTime = dayjs()
+        const utcCurrentTime = dayjs();
 
-        const startTimestamp = utcCurrentTime.subtract(1, span).startOf('hour').unix()
+        const startTimestamp = utcCurrentTime.subtract(1, span).startOf("hour").unix();
 
-        const fetchEntity = span === 'day' || span === 'week' ? 'Hour' : 'Day'
+        const fetchEntity = span === "day" || span === "week" ? "Hour" : "Day";
 
-        const timestamp = span === 'day' || span === 'week' ? 'periodStartUnix' : 'date'
+        const timestamp = span === "day" || span === "week" ? "periodStartUnix" : "date";
 
         try {
-            const endTimestamp = utcCurrentTime.unix()
+            const endTimestamp = utcCurrentTime.unix();
 
             if (!startTimestamp) {
-                console.log('Error constructing price start timestamp')
+                console.log("Error constructing price start timestamp");
                 return {
                     data: [],
                     error: false,
-                }
+                };
             }
 
-            const timestamps: any = []
-            let time = startTimestamp
+            const timestamps: any = [];
+            let time = startTimestamp;
             while (time <= endTimestamp) {
-                timestamps.push(time)
-                time += CHART_STEPS[span]
+                timestamps.push(time);
+                time += CHART_STEPS[span];
             }
 
             if (timestamps.length === 0) {
                 return {
                     data: [],
                     error: false,
-                }
+                };
             }
 
-            const blocks = await getBlocksFromTimestamps(timestamps, mainnetBlocksClient, 500)
+            const blocks = await getBlocksFromTimestamps(timestamps, mainnetBlocksClient, 500);
             if (!blocks || blocks.length === 0) {
-                console.log('Error fetching blocks')
+                console.log("Error fetching blocks");
                 return {
                     data: [],
                     error: false,
-                }
+                };
             }
 
             let data: {
-                periodStartUnix: number
-                high: string
-                low: string
-                open: string
-                close: string
-            }[] = []
-            let skip = 0
-            let allFound = false
+                periodStartUnix: number;
+                high: string;
+                low: string;
+                open: string;
+                close: string;
+            }[] = [];
+            let skip = 0;
+            let allFound = false;
             while (!allFound) {
                 const {
                     data: priceData,
@@ -110,11 +109,12 @@ export function useSwapChart() {
                             low
                             open
                             close
-                            ${field === 'pool'
-                            ? `token0Price
+                            ${
+                                field === "pool"
+                                    ? `token0Price
                             token1Price`
-                            : 'priceUSD'
-                        }
+                                    : "priceUSD"
+                            }
                           }
                         }
                       `,
@@ -123,38 +123,37 @@ export function useSwapChart() {
                         startTime: startTimestamp,
                         skip,
                     },
-                    fetchPolicy: 'no-cache',
-                })
+                    fetchPolicy: "no-cache",
+                });
 
                 if (!loading) {
-                    skip += 100
+                    skip += 100;
                     if ((priceData && priceData[`${field}${fetchEntity}Datas`].length < 100) || errors) {
-                        allFound = true
+                        allFound = true;
                     }
                     if (priceData) {
-                        data = data.concat(priceData[`${field}${fetchEntity}Datas`])
+                        data = data.concat(priceData[`${field}${fetchEntity}Datas`]);
                     }
                 }
             }
 
-            const periods = data.map((v) => v.periodStartUnix)
+            const periods = data.map((v) => v.periodStartUnix);
 
             return {
                 data: data.filter((v, idx) => !periods.includes(v.periodStartUnix, idx + 1)),
                 error: false,
-            }
+            };
         } catch (e) {
-            console.log(e)
+            console.log(e);
             return {
                 data: [],
                 error: true,
-            }
+            };
         }
     }
 
-
     return {
-        fetchPoolPriceData, fetchTokenPriceData
-    }
-
+        fetchPoolPriceData,
+        fetchTokenPriceData,
+    };
 }

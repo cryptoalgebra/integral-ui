@@ -1,12 +1,11 @@
 import { useRouteError } from "react-router-dom";
 
-interface RouteError { 
-    statusText: string; 
-    message: string; 
+interface RouteError {
+    statusText: string;
+    message: string;
 }
 
 const Page404 = () => {
-
     const error = useRouteError() as RouteError;
 
     console.error(error);
@@ -20,7 +19,6 @@ const Page404 = () => {
             </p>
         </div>
     );
-
-}
+};
 
 export default Page404;

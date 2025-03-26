@@ -6,22 +6,18 @@ import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding
 import { useEffect, useState } from "react";
 
 export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
-
-    const [overrideFees, setOverrideFees] = useState<{ 
-        fee: number | undefined; 
-        fees: number[][]
+    const [overrideFees, setOverrideFees] = useState<{
+        fee: number | undefined;
+        fees: number[][];
     }>({ fee: undefined, fees: [] });
-    
-    useEffect(() => {
 
-        if (!smartTrade) return undefined
+    useEffect(() => {
+        if (!smartTrade) return undefined;
 
         async function getFees() {
-
-            const fees: number[][] = []
+            const fees: number[][] = [];
 
             for (const route of smartTrade.routes) {
-
                 const splits = [];
                 const splitFees = [];
 
@@ -30,58 +26,58 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
                 }
 
                 for (let idx = 0; idx < route.pools.length; idx++) {
+                    const pool = route.pools[idx];
+                    const split = splits[idx];
+                    const amountIn = route.amountInList?.[idx] || 0n;
+                    const amountOut = route.amountOutList?.[idx] || 0n;
 
-                    const pool = route.pools[idx]
-                    const split = splits[idx]
-                    const amountIn = route.amountInList?.[idx] || 0n
-                    const amountOut = route.amountOutList?.[idx] || 0n
+                    if (pool.type !== 1) continue;
 
-                    if (pool.type !== 1) continue
-
-                    const isZeroToOne = split[0].wrapped.sortsBefore(split[1].wrapped)
+                    const isZeroToOne = split[0].wrapped.sortsBefore(split[1].wrapped);
 
                     const poolContract = getAlgebraPool({
-                        address: pool.address
-                    })
+                        address: pool.address,
+                    });
 
-                    const plugin = await poolContract.read.plugin()
+                    const plugin = await poolContract.read.plugin();
 
                     const pluginContract = getAlgebraBasePlugin({
-                        address: plugin
-                    })
+                        address: plugin,
+                    });
 
-                    let beforeSwap: [string, number, number]
+                    let beforeSwap: [string, number, number];
 
                     try {
-
-                        beforeSwap = await pluginContract.simulate.beforeSwap([
-                            ALGEBRA_ROUTER,
-                            ADDRESS_ZERO,
-                            isZeroToOne,
-                            smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
-                            MAX_UINT128,
-                            false,
-                            '0x'
-                        ], { account: pool.address }).then(v => v.result as [string, number, number])
-
+                        beforeSwap = await pluginContract.simulate
+                            .beforeSwap(
+                                [
+                                    ALGEBRA_ROUTER,
+                                    ADDRESS_ZERO,
+                                    isZeroToOne,
+                                    smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
+                                    MAX_UINT128,
+                                    false,
+                                    "0x",
+                                ],
+                                { account: pool.address }
+                            )
+                            .then((v) => v.result as [string, number, number]);
                     } catch (error) {
-                        beforeSwap = ['', 0, 0]
+                        beforeSwap = ["", 0, 0];
                     }
 
-                    const [, overrideFee, pluginFee] = beforeSwap || ['', 0, 0]
+                    const [, overrideFee, pluginFee] = beforeSwap || ["", 0, 0];
 
                     if (overrideFee) {
-                        splitFees.push(overrideFee + pluginFee)
+                        splitFees.push(overrideFee + pluginFee);
                     } else {
-                        splitFees.push(Number(route.feeList?.[idx] || 0) + pluginFee)
+                        splitFees.push(Number(route.feeList?.[idx] || 0) + pluginFee);
                     }
 
-                    splitFees[splitFees.length - 1] = splitFees[splitFees.length - 1] * route.percent / 100
+                    splitFees[splitFees.length - 1] = (splitFees[splitFees.length - 1] * route.percent) / 100;
 
                     fees.push(splitFees);
-
                 }
-
             }
 
             let p = 100;
@@ -92,16 +88,12 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
 
             setOverrideFees({
                 fee: 100 - p,
-                fees
-            })
-
+                fees,
+            });
         }
 
-        getFees()
+        getFees();
+    }, [smartTrade]);
 
-    }, [smartTrade])
-
-
-    return overrideFees
-
+    return overrideFees;
 }

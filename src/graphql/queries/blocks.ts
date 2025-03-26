@@ -1,20 +1,21 @@
-import { gql } from "@apollo/client"
+import { gql } from "@apollo/client";
 
 export const BLOCK_FRAGMENT = gql`
     fragment BlockFields on Block {
         number
         timestamp
     }
-`
+`;
 
 export const GET_BLOCKS = (timestamps: string[]) => {
-    let queryString = 'query blocks {'
+    let queryString = "query blocks {";
     queryString += timestamps.map((timestamp) => {
-        return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${timestamp + 600
-            } }) {
+        return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${
+            timestamp + 600
+        } }) {
             number
-          }`
-    })
-    queryString += '}'
-    return gql(queryString)
-}
+          }`;
+    });
+    queryString += "}";
+    return gql(queryString);
+};

@@ -1,6 +1,6 @@
 import { Address } from "wagmi";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface PoolPlugins {
     dynamicFeePlugin: boolean;
@@ -13,19 +13,21 @@ interface PoolsState {
     setPluginsForPool: (poolId: Address, plugins: PoolPlugins) => void;
 }
 
-export const usePoolsStore = create(persist<PoolsState>((set, get) => ({
-    pluginsForPools: {},
-    setPluginsForPool: (poolId: Address, plugins: PoolPlugins) => set({
-        pluginsForPools: {
-            ...get().pluginsForPools,
-            [poolId.toLowerCase()]: plugins
+export const usePoolsStore = create(
+    persist<PoolsState>(
+        (set, get) => ({
+            pluginsForPools: {},
+            setPluginsForPool: (poolId: Address, plugins: PoolPlugins) =>
+                set({
+                    pluginsForPools: {
+                        ...get().pluginsForPools,
+                        [poolId.toLowerCase()]: plugins,
+                    },
+                }),
+        }),
+        {
+            name: "pools-plugins",
+            storage: createJSONStorage(() => sessionStorage),
         }
-    })
-}), {
-    name: 'pools-plugins',
-    storage: createJSONStorage(() => sessionStorage)
-})
-)
-
-
-
+    )
+);

@@ -1,5 +1,5 @@
-import { ContractConfig, defineConfig } from '@wagmi/cli';
-import { actions, react } from '@wagmi/cli/plugins';
+import { ContractConfig, defineConfig } from "@wagmi/cli";
+import { actions, react } from "@wagmi/cli/plugins";
 import {
     ALGEBRA_ETERNAL_FARMING,
     ALGEBRA_FACTORY,
@@ -9,7 +9,7 @@ import {
     ALGEBRA_ROUTER,
     FARMING_CENTER,
     ALGEBRA_LIMIT_ORDER_PLUGIN,
-} from './src/constants/addresses';
+} from "./src/constants/addresses";
 import {
     algebraFactoryABI,
     algebraPoolABI,
@@ -22,70 +22,70 @@ import {
     farmingCenterABI,
     wNativeABI,
     algebraCustomPoolDeployerABI,
-    algebraLimitOrderPluginABI
-} from './src/abis';
+    algebraLimitOrderPluginABI,
+} from "./src/abis";
 
 const contracts: ContractConfig[] = [
     {
         address: ALGEBRA_FACTORY,
         abi: algebraFactoryABI,
-        name: 'AlgebraFactory',
+        name: "AlgebraFactory",
     },
     {
         abi: algebraPoolABI,
-        name: 'AlgebraPool',
+        name: "AlgebraPool",
     },
     {
         abi: algebraBasePluginABI,
-        name: 'AlgebraBasePlugin',
+        name: "AlgebraBasePlugin",
     },
     {
         address: ALGEBRA_POSITION_MANAGER,
         abi: algebraPositionManagerABI,
-        name: 'AlgebraPositionManager',
+        name: "AlgebraPositionManager",
     },
     {
         address: ALGEBRA_QUOTER,
         abi: algebraQuoterABI,
-        name: 'AlgebraQuoter',
+        name: "AlgebraQuoter",
     },
     {
         address: ALGEBRA_QUOTER_V2,
         abi: algebraQuoterV2ABI,
-        name: 'AlgerbaQuoterV2',
+        name: "AlgerbaQuoterV2",
     },
     {
         address: ALGEBRA_ROUTER,
         abi: algebraRouterABI,
-        name: 'AlgebraRouter',
+        name: "AlgebraRouter",
     },
     {
         address: ALGEBRA_ETERNAL_FARMING,
         abi: algebraEternalFarmingABI,
-        name: 'AlgebraEternalFarming',
+        name: "AlgebraEternalFarming",
     },
     {
         address: FARMING_CENTER,
         abi: farmingCenterABI,
-        name: 'FarmingCenter',
+        name: "FarmingCenter",
     },
     {
         address: ALGEBRA_LIMIT_ORDER_PLUGIN,
         abi: algebraLimitOrderPluginABI,
-        name: 'AlgebraLimitOrderPlugin'
+        name: "AlgebraLimitOrderPlugin",
     },
     {
         abi: algebraCustomPoolDeployerABI,
-        name: 'AlgebraCustomPoolDeployer'
+        name: "AlgebraCustomPoolDeployer",
     },
     {
         abi: wNativeABI,
-        name: 'WrappedNative'
+        name: "WrappedNative",
     },
 ];
 
 export default defineConfig({
-    out: 'src/generated.ts',
+    out: "src/generated.ts",
     contracts,
     plugins: [
         actions({

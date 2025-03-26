@@ -1,7 +1,7 @@
-import { farmingCenterABI } from '@/generated';
-import { MaxUint128 } from '@cryptoalgebra/custom-pools-sdk';
-import { Address, encodeFunctionData } from 'viem';
-import { isSameRewards } from './isSameRewards';
+import { farmingCenterABI } from "@/generated";
+import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
+import { Address, encodeFunctionData } from "viem";
+import { isSameRewards } from "./isSameRewards";
 
 export function getRewardsCalldata({
     rewardToken,
@@ -20,7 +20,7 @@ export function getRewardsCalldata({
 }): Address[] {
     const collectRewardsCalldata = encodeFunctionData({
         abi: farmingCenterABI,
-        functionName: 'collectRewards',
+        functionName: "collectRewards",
         args: [
             {
                 rewardToken,
@@ -34,13 +34,13 @@ export function getRewardsCalldata({
 
     const rewardClaimCalldata = encodeFunctionData({
         abi: farmingCenterABI,
-        functionName: 'claimReward',
+        functionName: "claimReward",
         args: [rewardToken, account, BigInt(MaxUint128)],
     });
 
     const bonusRewardClaimCalldata = encodeFunctionData({
         abi: farmingCenterABI,
-        functionName: 'claimReward',
+        functionName: "claimReward",
         args: [bonusRewardToken, account, BigInt(MaxUint128)],
     });
 
@@ -49,11 +49,7 @@ export function getRewardsCalldata({
     const isSameReward = isSameRewards(rewardToken, bonusRewardToken);
 
     if (isSameReward) {
-        calldata = [
-            collectRewardsCalldata,
-            rewardClaimCalldata,
-            bonusRewardClaimCalldata,
-        ];
+        calldata = [collectRewardsCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
     } else {
         calldata = [collectRewardsCalldata, rewardClaimCalldata];
     }

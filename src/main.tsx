@@ -1,37 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import {
-    createBrowserRouter,
-    Navigate,
-    RouterProvider,
-} from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
-import App from './App.tsx';
+import App from "./App.tsx";
 
-import './index.css';
+import "./index.css";
 
-import SwapPage from '@/pages/Swap';
-import Page404 from '@/pages/Page404';
-import PoolsPage from '@/pages/Pools';
-import PoolPage from '@/pages/Pool';
-import NewPositionPage from '@/pages/NewPosition';
-import CreatePoolPage from '@/pages/CreatePool/index.tsx';
+import SwapPage from "@/pages/Swap";
+import Page404 from "@/pages/Page404";
+import PoolsPage from "@/pages/Pools";
+import PoolPage from "@/pages/Pool";
+import NewPositionPage from "@/pages/NewPosition";
+import CreatePoolPage from "@/pages/CreatePool/index.tsx";
 
-import { ApolloProvider } from '@apollo/client';
-import { infoClient } from './graphql/clients/index.tsx';
-import { SwapPageView } from './pages/Swap/types.ts';
+import { ApolloProvider } from "@apollo/client";
+import { infoClient } from "./graphql/clients/index.tsx";
+import { SwapPageView } from "./pages/Swap/types.ts";
 
 const router = createBrowserRouter([
     {
-        path: '/',
-        element: <Navigate replace to={'/swap'} />,
+        path: "/",
+        element: <Navigate replace to={"/swap"} />,
         errorElement: <Page404 />,
     },
     {
-        path: '/swap',
+        path: "/swap",
         element: (
             <App>
                 <SwapPage type={SwapPageView.SWAP} />
@@ -39,15 +35,15 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: '/limit-order',
+        path: "/limit-order",
         element: (
-            <App> 
-                <SwapPage type={SwapPageView.LIMIT_ORDER} /> 
+            <App>
+                <SwapPage type={SwapPageView.LIMIT_ORDER} />
             </App>
         ),
     },
     {
-        path: '/pools',
+        path: "/pools",
         element: (
             <App>
                 <PoolsPage />
@@ -55,7 +51,7 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: '/pools/create',
+        path: "/pools/create",
         element: (
             <App>
                 <CreatePoolPage />
@@ -63,7 +59,7 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: '/pool/:pool',
+        path: "/pool/:pool",
         element: (
             <App>
                 <PoolPage />
@@ -71,7 +67,7 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: '/pool/:pool/new-position',
+        path: "/pool/:pool/new-position",
         element: (
             <App>
                 <NewPositionPage />
@@ -82,7 +78,7 @@ const router = createBrowserRouter([
 
 const queryClient = new QueryClient();
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <QueryClientProvider client={queryClient}>
             <ApolloProvider client={infoClient}>

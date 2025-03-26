@@ -1,5 +1,5 @@
-import { getFarmingCenter } from '@/generated';
-import { Address } from 'viem';
+import { getFarmingCenter } from "@/generated";
+import { Address } from "viem";
 
 export async function getFarmingRewards({
     rewardToken,

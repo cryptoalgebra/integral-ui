@@ -1,2 +1,2 @@
-export * from './algebraEternalFarming';
-export * from './farmingCenter';
+export * from "./algebraEternalFarming";
+export * from "./farmingCenter";

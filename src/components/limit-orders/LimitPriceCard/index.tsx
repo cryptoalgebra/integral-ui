@@ -5,7 +5,6 @@ import { LimitOrderDirection, LimitOrderDirectionType } from "@/types/limit-orde
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useState } from "react";
 
-
 interface LimitPriceCardProps {
     currency: Currency | undefined;
     otherCurrency: Currency | undefined;
@@ -19,13 +18,25 @@ interface LimitPriceCardProps {
     setToMarketPrice: (invert: boolean) => void;
 }
 
-const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minusDisabled, disabled, invertTick, setSellPrice, tickStep, setToMarketPrice }: LimitPriceCardProps) => {
-    
+const LimitPriceCard = ({
+    currency,
+    otherCurrency,
+    sellPrice,
+    plusDisabled,
+    minusDisabled,
+    disabled,
+    invertTick,
+    setSellPrice,
+    tickStep,
+    setToMarketPrice,
+}: LimitPriceCardProps) => {
     const [limitOrderType, setLimitOrderType] = useState<LimitOrderDirectionType>(LimitOrderDirection.SELL);
 
     const [localPrice, setLocalPrice] = useState("");
 
-    const { actions: { limitOrderPriceFocused } } = useSwapState()
+    const {
+        actions: { limitOrderPriceFocused },
+    } = useSwapState();
 
     const handleOnBlur = useCallback(() => {
         setSellPrice(localPrice);
@@ -45,17 +56,25 @@ const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minu
     }, [sellPrice]);
 
     useEffect(() => {
-        setToMarketPrice(Boolean(limitOrderType))
-    }, [currency, otherCurrency])
+        setToMarketPrice(Boolean(limitOrderType));
+    }, [currency, otherCurrency]);
 
     return (
         <div className={`flex flex-col gap-4 bg-card-dark p-3 rounded-2xl ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
                 <div className="text-sm font-semibold">
-                    {currency ? limitOrderType === LimitOrderDirection.SELL ? `Sell ${currency?.symbol} at rate` : `Buy ${otherCurrency?.symbol} at rate` : '' }
+                    {currency
+                        ? limitOrderType === LimitOrderDirection.SELL
+                            ? `Sell ${currency?.symbol} at rate`
+                            : `Buy ${otherCurrency?.symbol} at rate`
+                        : ""}
                 </div>
                 <div className="flex gap-4">
-                    <button className="text-sm font-semibold text-[#63b4ff]" disabled={disabled} onClick={() => setToMarketPrice(Boolean(limitOrderType))}>
+                    <button
+                        className="text-sm font-semibold text-[#63b4ff]"
+                        disabled={disabled}
+                        onClick={() => setToMarketPrice(Boolean(limitOrderType))}
+                    >
                         Set to market
                     </button>
                     {otherCurrency ? (
@@ -67,7 +86,11 @@ const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minu
                                 invertTick(localPrice);
                             }}
                         >
-                            {limitOrderType === LimitOrderDirection.SELL ? <div>{`Buy ${otherCurrency?.symbol}`}</div> : <div>{`Sell ${currency?.symbol}`}</div>}
+                            {limitOrderType === LimitOrderDirection.SELL ? (
+                                <div>{`Buy ${otherCurrency?.symbol}`}</div>
+                            ) : (
+                                <div>{`Sell ${currency?.symbol}`}</div>
+                            )}
                         </button>
                     ) : null}
                 </div>
@@ -79,23 +102,32 @@ const LimitPriceCard = ({ currency, otherCurrency, sellPrice, plusDisabled, minu
                     onBlur={handleOnBlur}
                     onInput={handleInput}
                     disabled={disabled}
-                    onUserInput={v => setLocalPrice(v)}
-                    className={`text-left border-none text-xl font-bold p-0`} 
-                    placeholder={'0.0'}
+                    onUserInput={(v) => setLocalPrice(v)}
+                    className={`text-left border-none text-xl font-bold p-0`}
+                    placeholder={"0.0"}
                     maxDecimals={limitOrderType === LimitOrderDirection.SELL ? otherCurrency?.decimals : currency?.decimals}
                 />
                 <div className="flex gap-2">
-                    <Button size={'icon'} className="w-[25px] h-[25px] bg-[#262a3a] rounded-full" disabled={plusDisabled || disabled} onClick={() => tickStep(1)}>
+                    <Button
+                        size={"icon"}
+                        className="w-[25px] h-[25px] bg-[#262a3a] rounded-full"
+                        disabled={plusDisabled || disabled}
+                        onClick={() => tickStep(1)}
+                    >
                         +
                     </Button>
-                    <Button size={'icon'} className="w-[25px] h-[25px] bg-[#262a3a] rounded-full" disabled={minusDisabled || disabled} onClick={() => tickStep(-1)}>
+                    <Button
+                        size={"icon"}
+                        className="w-[25px] h-[25px] bg-[#262a3a] rounded-full"
+                        disabled={minusDisabled || disabled}
+                        onClick={() => tickStep(-1)}
+                    >
                         -
                     </Button>
                 </div>
             </div>
         </div>
     );
+};
 
-}
-
-export default LimitPriceCard
+export default LimitPriceCard;

@@ -1,53 +1,42 @@
-import { TokenFieldsFragment } from '@/graphql/generated/graphql';
-import { useAlgebraToken } from '@/hooks/common/useAlgebraToken';
-import { useCurrency } from '@/hooks/common/useCurrency';
-import useDebounce from '@/hooks/common/useDebounce';
-import { useFuse } from '@/hooks/common/useFuse';
-import { useAllTokens } from '@/hooks/tokens/useAllTokens';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FixedSizeList } from 'react-window';
-import { Address, isAddress } from 'viem';
-import { useAccount, useBalance } from 'wagmi';
-import CurrencyLogo from '../CurrencyLogo';
-import {
-    ADDRESS_ZERO,
-    Currency,
-    ExtendedNative,
-    Token,
-} from '@cryptoalgebra/custom-pools-sdk';
-import { useTokensState } from '@/state/tokensStore';
-import { Copy } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { formatBalance } from '@/utils/common/formatBalance';
+import { TokenFieldsFragment } from "@/graphql/generated/graphql";
+import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
+import { useCurrency } from "@/hooks/common/useCurrency";
+import useDebounce from "@/hooks/common/useDebounce";
+import { useFuse } from "@/hooks/common/useFuse";
+import { useAllTokens } from "@/hooks/tokens/useAllTokens";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FixedSizeList } from "react-window";
+import { Address, isAddress } from "viem";
+import { useAccount, useBalance } from "wagmi";
+import CurrencyLogo from "../CurrencyLogo";
+import { ADDRESS_ZERO, Currency, ExtendedNative, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { useTokensState } from "@/state/tokensStore";
+import { Copy } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { formatBalance } from "@/utils/common/formatBalance";
 
 const TokenSelectorView = {
-    DEFAULT_LIST: 'DEFAULT_LIST',
-    IMPORT_TOKEN: 'IMPORT_TOKEN',
-    NOT_FOUND: 'NOT_FOUND',
+    DEFAULT_LIST: "DEFAULT_LIST",
+    IMPORT_TOKEN: "IMPORT_TOKEN",
+    NOT_FOUND: "NOT_FOUND",
 };
 
-type TokenSelectorViewType =
-    (typeof TokenSelectorView)[keyof typeof TokenSelectorView];
+type TokenSelectorViewType = (typeof TokenSelectorView)[keyof typeof TokenSelectorView];
 
 const Search = ({
     data,
     onSearch,
 }: {
     data: TokenFieldsFragment[];
-    onSearch: (
-        matchedTokens: TokenFieldsFragment[],
-        importToken: Token | undefined
-    ) => void;
+    onSearch: (matchedTokens: TokenFieldsFragment[], importToken: Token | undefined) => void;
 }) => {
     const [query, setQuery] = useState<Address | string | undefined>(undefined);
     const debouncedQuery = useDebounce(query, 200);
-    const tokenEntity = useAlgebraToken(
-        debouncedQuery && isAddress(debouncedQuery) ? debouncedQuery : undefined
-    );
+    const tokenEntity = useAlgebraToken(debouncedQuery && isAddress(debouncedQuery) ? debouncedQuery : undefined);
 
     const fuseOptions = useMemo(
         () => ({
-            keys: ['id', 'symbol', 'name'],
+            keys: ["id", "symbol", "name"],
             threshold: 0,
         }),
         []
@@ -67,10 +56,7 @@ const Search = ({
     }, [query, search]);
 
     useEffect(() => {
-        onSearch(
-            result,
-            tokenEntity instanceof ExtendedNative ? undefined : tokenEntity
-        );
+        onSearch(result, tokenEntity instanceof ExtendedNative ? undefined : tokenEntity);
     }, [result, tokenEntity, pattern, onSearch]);
 
     return (
@@ -84,9 +70,7 @@ const Search = ({
     );
 };
 
-const LoadingRow = () => (
-    <div className="w-full mb-4 h-[60px] text-left bg-card rounded-2xl animate-pulse"></div>
-);
+const LoadingRow = () => <div className="w-full mb-4 h-[60px] text-left bg-card rounded-2xl animate-pulse"></div>;
 
 const TokenRow = ({
     account,
@@ -109,15 +93,14 @@ const TokenRow = ({
     });
 
     const balanceString = useMemo(() => {
-        if (isLoading || !balance) return 'Loading...';
+        if (isLoading || !balance) return "Loading...";
 
         return formatBalance(balance.formatted);
     }, [balance, isLoading]);
 
     const lock = otherCurrency?.isNative
         ? token.id === ADDRESS_ZERO
-        : token.id.toLowerCase() ===
-          otherCurrency?.wrapped.address.toLowerCase();
+        : token.id.toLowerCase() === otherCurrency?.wrapped.address.toLowerCase();
 
     const [isCopied, setIsCopied] = useState(false);
 
@@ -146,7 +129,7 @@ const TokenRow = ({
                         <button
                             className={cn(
                                 'relative duration-75 hover:text-white/70 after:absolute after:text-xs after:left-5 after:top-1 after:content-["Copied"] after:duration-100',
-                                isCopied ? 'after:block' : 'after:hidden'
+                                isCopied ? "after:block" : "after:hidden"
                             )}
                             onClick={handleCopy}
                         >
@@ -156,24 +139,12 @@ const TokenRow = ({
                     <div className="text-sm">{token.name}</div>
                 </div>
             </div>
-            <div>
-                {isLoading
-                    ? 'Loading...'
-                    : balance
-                    ? balanceString
-                    : ''}
-            </div>
+            <div>{isLoading ? "Loading..." : balance ? balanceString : ""}</div>
         </button>
     );
 };
 
-const ImportTokenRow = ({
-    token,
-    onImport,
-}: {
-    token: Token;
-    onImport: (token: Token) => void;
-}) => (
+const ImportTokenRow = ({ token, onImport }: { token: Token; onImport: (token: Token) => void }) => (
     <div className="flex justify-between w-full text-left">
         <div className="flex items-center gap-4">
             <div>
@@ -204,9 +175,7 @@ export const TokenSelector = ({
 }) => {
     const { address: account } = useAccount();
 
-    const [selectorView, setSelectorView] = useState<TokenSelectorViewType>(
-        TokenSelectorView.DEFAULT_LIST
-    );
+    const [selectorView, setSelectorView] = useState<TokenSelectorViewType>(TokenSelectorView.DEFAULT_LIST);
 
     const {
         actions: { importToken },
@@ -214,20 +183,12 @@ export const TokenSelector = ({
 
     const { tokens, isLoading } = useAllTokens(showNativeToken);
 
-    const [matchedTokens, setMatchedTokens] = useState<TokenFieldsFragment[]>(
-        []
-    );
+    const [matchedTokens, setMatchedTokens] = useState<TokenFieldsFragment[]>([]);
     const [tokenForImport, setTokenForImport] = useState<Token>();
 
-    const filteredTokens = useMemo(
-        () => (matchedTokens.length ? matchedTokens : tokens),
-        [tokens, matchedTokens]
-    );
+    const filteredTokens = useMemo(() => (matchedTokens.length ? matchedTokens : tokens), [tokens, matchedTokens]);
 
-    const handleSearch = (
-        matchedTokens: TokenFieldsFragment[],
-        importToken: Token | undefined
-    ) => {
+    const handleSearch = (matchedTokens: TokenFieldsFragment[], importToken: Token | undefined) => {
         if (matchedTokens.length) {
             setMatchedTokens(matchedTokens);
             setSelectorView(TokenSelectorView.DEFAULT_LIST);
@@ -240,69 +201,38 @@ export const TokenSelector = ({
     };
 
     const handleImport = (token: Token) => {
-        importToken(
-            token.address as Address,
-            token.symbol || 'Unknown',
-            token.name || 'Unknown',
-            token.decimals,
-            token.chainId
-        );
+        importToken(token.address as Address, token.symbol || "Unknown", token.name || "Unknown", token.decimals, token.chainId);
         setSelectorView(TokenSelectorView.DEFAULT_LIST);
         setTokenForImport(undefined);
     };
 
     const Row = useCallback(
-        ({
-            data,
-            index,
-            style,
-        }: {
-            data: TokenFieldsFragment[];
-            index: number;
-            style: React.CSSProperties;
-        }) => {
+        ({ data, index, style }: { data: TokenFieldsFragment[]; index: number; style: React.CSSProperties }) => {
             const token = data[index];
 
             if (!token) return null;
 
-            return (
-                <TokenRow
-                    account={account}
-                    onSelect={onSelect}
-                    token={token}
-                    otherCurrency={otherCurrency}
-                    style={style}
-                />
-            );
+            return <TokenRow account={account} onSelect={onSelect} token={token} otherCurrency={otherCurrency} style={style} />;
         },
         [account, onSelect, otherCurrency]
     );
 
-    const itemKey = useCallback(
-        (index: number, data: TokenFieldsFragment[]) => {
-            const currency = data[index];
-            return currency.name;
-        },
-        []
-    );
+    const itemKey = useCallback((index: number, data: TokenFieldsFragment[]) => {
+        const currency = data[index];
+        return currency.name;
+    }, []);
 
     return (
         <div className="flex flex-col gap-6 pt-2">
             <Search data={tokens} onSearch={handleSearch} />
             {selectorView === TokenSelectorView.DEFAULT_LIST ? (
                 isLoading ? (
-                    <FixedSizeList
-                        height={304}
-                        itemData={[]}
-                        itemCount={4}
-                        itemSize={76}
-                        width={'100%'}
-                    >
+                    <FixedSizeList height={304} itemData={[]} itemCount={4} itemSize={76} width={"100%"}>
                         {LoadingRow}
                     </FixedSizeList>
                 ) : (
                     <FixedSizeList
-                        width={'100%'}
+                        width={"100%"}
                         height={304}
                         itemData={filteredTokens}
                         itemCount={filteredTokens.length}
@@ -312,16 +242,10 @@ export const TokenSelector = ({
                         {Row}
                     </FixedSizeList>
                 )
-            ) : selectorView === TokenSelectorView.IMPORT_TOKEN &&
-              tokenForImport ? (
-                <ImportTokenRow
-                    token={tokenForImport}
-                    onImport={handleImport}
-                />
+            ) : selectorView === TokenSelectorView.IMPORT_TOKEN && tokenForImport ? (
+                <ImportTokenRow token={tokenForImport} onImport={handleImport} />
             ) : (
-                <div className="flex items-center justify-center h-[304px]">
-                    Token not found
-                </div>
+                <div className="flex items-center justify-center h-[304px]">Token not found</div>
             )}
         </div>
     );

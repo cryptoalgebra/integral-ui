@@ -1,20 +1,16 @@
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from '@/components/ui/hover-card';
-import TokenRatio from '../TokenRatio';
-import { Currency } from '@cryptoalgebra/custom-pools-sdk';
-import { IDerivedMintInfo } from '@/state/mintStore';
-import { usePositionAPR } from '@/hooks/positions/usePositionAPR';
-import { getPoolAPR } from '@/utils/pool/getPoolAPR';
-import AddLiquidityButton from '../AddLiquidityButton';
-import { Address } from 'viem';
-import { useEffect, useState } from 'react';
-import EnterAmounts from '../EnterAmounts';
-import IncreaseLiquidityButton from '@/components/position/IncreaseLiquidityButton';
-import { ManageLiquidity } from '@/types/manage-liquidity';
-import { useParams } from 'react-router-dom';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import TokenRatio from "../TokenRatio";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { IDerivedMintInfo } from "@/state/mintStore";
+import { usePositionAPR } from "@/hooks/positions/usePositionAPR";
+import { getPoolAPR } from "@/utils/pool/getPoolAPR";
+import AddLiquidityButton from "../AddLiquidityButton";
+import { Address } from "viem";
+import { useEffect, useState } from "react";
+import EnterAmounts from "../EnterAmounts";
+import IncreaseLiquidityButton from "@/components/position/IncreaseLiquidityButton";
+import { ManageLiquidity } from "@/types/manage-liquidity";
+import { useParams } from "react-router-dom";
 
 interface AmountsSectionProps {
     tokenId?: number;
@@ -25,16 +21,9 @@ interface AmountsSectionProps {
     handleCloseModal?: () => void;
 }
 
-type NewPositionPageParams = Record<'pool', Address>;
+type NewPositionPageParams = Record<"pool", Address>;
 
-const AmountsSection = ({
-    tokenId,
-    currencyA,
-    currencyB,
-    mintInfo,
-    manageLiquidity,
-    handleCloseModal,
-}: AmountsSectionProps) => {
+const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidity, handleCloseModal }: AmountsSectionProps) => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
     const [poolAPR, setPoolAPR] = useState<number>();
@@ -47,11 +36,7 @@ const AmountsSection = ({
 
     return (
         <>
-            <EnterAmounts
-                currencyA={currencyA}
-                currencyB={currencyB}
-                mintInfo={mintInfo}
-            />
+            <EnterAmounts currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
             <HoverCard>
                 <HoverCardTrigger>
                     <TokenRatio mintInfo={mintInfo} />
@@ -64,18 +49,12 @@ const AmountsSection = ({
             </HoverCard>
             <div className="flex justify-between bg-card-dark p-2 px-3 rounded-xl">
                 <div>
-                    <div className="text-xs font-bold">
-                        ESTIMATED POSITION APR
-                    </div>
-                    <div className="text-lg font-bold text-green-500">
-                        {apr ? `${apr.toFixed(2)}%` : 0}
-                    </div>
+                    <div className="text-xs font-bold">ESTIMATED POSITION APR</div>
+                    <div className="text-lg font-bold text-green-500">{apr ? `${apr.toFixed(2)}%` : 0}</div>
                 </div>
                 <div className="text-right">
                     <div className="text-xs font-bold">POOL APR</div>
-                    <div className="text-lg font-bold text-cyan-500">
-                        {poolAPR !== undefined ? `${poolAPR}%` : null}
-                    </div>
+                    <div className="text-lg font-bold text-cyan-500">{poolAPR !== undefined ? `${poolAPR}%` : null}</div>
                 </div>
             </div>
             {manageLiquidity === ManageLiquidity.INCREASE && (
@@ -88,12 +67,7 @@ const AmountsSection = ({
                 />
             )}
             {manageLiquidity === ManageLiquidity.ADD && (
-                <AddLiquidityButton
-                    baseCurrency={currencyA}
-                    quoteCurrency={currencyB}
-                    mintInfo={mintInfo}
-                    poolAddress={poolAddress}
-                />
+                <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} poolAddress={poolAddress} />
             )}
         </>
     );

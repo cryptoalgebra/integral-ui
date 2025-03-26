@@ -2,16 +2,14 @@ import { useAlgebraPositionManagerTokenUri } from "@/generated";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef } from "react";
 
-export const FarmingPositionImg = ({ positionId, size, className }: { positionId: bigint, size: number, className?: string }) => {
+export const FarmingPositionImg = ({ positionId, size, className }: { positionId: bigint; size: number; className?: string }) => {
     const { data: uri } = useAlgebraPositionManagerTokenUri({
         args: [positionId],
     });
 
     const imgRef = useRef<any>();
 
-    const json =
-        uri &&
-        JSON.parse(atob(uri.slice('data:application/json;base64,'.length)));
+    const json = uri && JSON.parse(atob(uri.slice("data:application/json;base64,".length)));
 
     useEffect(() => {
         if (!imgRef?.current || !json) return;
@@ -23,18 +21,10 @@ export const FarmingPositionImg = ({ positionId, size, className }: { positionId
         <div
             className={cn("rounded-full flex items-center justify-center overflow-hidden", className, `w-${size}`)}
             style={{
-                background:
-                    'linear-gradient(181.1deg, #686EFF 0.93%, #141520 99.07%)',
+                background: "linear-gradient(181.1deg, #686EFF 0.93%, #141520 99.07%)",
             }}
         >
-            {json ? (
-                <img
-                    ref={imgRef}
-                    className="scale-[2]"
-                />
-            ) : (
-                <p>{positionId.toString()}</p>
-            )}
+            {json ? <img ref={imgRef} className="scale-[2]" /> : <p>{positionId.toString()}</p>}
         </div>
-    )
-}
+    );
+};

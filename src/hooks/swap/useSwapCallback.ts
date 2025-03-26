@@ -1,4 +1,4 @@
-import { formatBalance } from '@/utils/common/formatBalance';
+import { formatBalance } from "@/utils/common/formatBalance";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { Address, useAccount, useContractWrite } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
@@ -10,20 +10,20 @@ import { ApprovalStateType } from "@/types/approve-state";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 
 interface SwapCallEstimate {
-    calldata: string
-    value: bigint
+    calldata: string;
+    value: bigint;
 }
 
 interface SuccessfulCall extends SwapCallEstimate {
-    calldata: string
-    value: bigint
-    gasEstimate: bigint
+    calldata: string;
+    value: bigint;
+    gasEstimate: bigint;
 }
 
 interface FailedCall extends SwapCallEstimate {
-    calldata: string
-    value: bigint
-    error: Error
+    calldata: string;
+    value: bigint;
+    error: Error;
 }
 
 export function useSwapCallback(
@@ -31,118 +31,104 @@ export function useSwapCallback(
     allowedSlippage: Percent,
     approvalState: ApprovalStateType
 ) {
+    const { address: account } = useAccount();
 
-    const { address: account } = useAccount()
+    const [bestCall, setBestCall] = useState<any>();
 
-    const [bestCall, setBestCall] = useState<any>()
-
-    const swapCalldata = useSwapCallArguments(trade, allowedSlippage)
+    const swapCalldata = useSwapCallArguments(trade, allowedSlippage);
 
     useEffect(() => {
-
         async function findBestCall() {
+            if (!swapCalldata || !account) return;
 
-            if (!swapCalldata || !account) return
+            setBestCall(undefined);
 
-            setBestCall(undefined)
+            const algebraRouter = getAlgebraRouter({});
 
-            const algebraRouter = getAlgebraRouter({})
+            const calls = await Promise.all(
+                swapCalldata.map(({ calldata, value: _value }) => {
+                    const value = BigInt(_value);
 
-            const calls = await Promise.all(swapCalldata.map(({ calldata, value: _value }) => {
-
-                const value = BigInt(_value)
-
-                return algebraRouter.estimateGas.multicall([
-                    calldata
-                ], {
-                    account,
-                    value,
-                }).then(gasEstimate => ({
-                    calldata,
-                    value,
-                    gasEstimate
-                })).catch(gasError => {
-
-                    return algebraRouter.simulate.multicall([
-                        calldata
-                    ], {
-                        account,
-                        value
-                    }).then(() => ({
-                        calldata,
-                        value,
-                        error: new Error(`Unexpected issue with estimating the gas. Please try again. ${gasError}`)
-                    })).catch(callError => ({
-                        calldata,
-                        value,
-                        error: new Error(callError)
-                    }))
-
+                    return algebraRouter.estimateGas
+                        .multicall([calldata], {
+                            account,
+                            value,
+                        })
+                        .then((gasEstimate) => ({
+                            calldata,
+                            value,
+                            gasEstimate,
+                        }))
+                        .catch((gasError) => {
+                            return algebraRouter.simulate
+                                .multicall([calldata], {
+                                    account,
+                                    value,
+                                })
+                                .then(() => ({
+                                    calldata,
+                                    value,
+                                    error: new Error(`Unexpected issue with estimating the gas. Please try again. ${gasError}`),
+                                }))
+                                .catch((callError) => ({
+                                    calldata,
+                                    value,
+                                    error: new Error(callError),
+                                }));
+                        });
                 })
-
-            }))
+            );
 
             let bestCallOption: SuccessfulCall | SwapCallEstimate | undefined = calls.find(
-                (el, ix, list): el is SuccessfulCall =>
-                    'gasEstimate' in el && (ix === list.length - 1 || 'gasEstimate' in list[ix + 1])
-            )
+                (el, ix, list): el is SuccessfulCall => "gasEstimate" in el && (ix === list.length - 1 || "gasEstimate" in list[ix + 1])
+            );
 
             if (!bestCallOption) {
-                const errorCalls = calls.filter((call): call is FailedCall => 'error' in call)
-                if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
-                const firstNoErrorCall = calls.find<any>(
-                    (call): call is any => !('error' in call)
-                )
-                if (!firstNoErrorCall) throw new Error('Unexpected error. Could not estimate gas for the swap.')
-                bestCallOption = firstNoErrorCall
+                const errorCalls = calls.filter((call): call is FailedCall => "error" in call);
+                if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error;
+                const firstNoErrorCall = calls.find<any>((call): call is any => !("error" in call));
+                if (!firstNoErrorCall) throw new Error("Unexpected error. Could not estimate gas for the swap.");
+                bestCallOption = firstNoErrorCall;
             }
 
-            setBestCall(bestCallOption)
-
+            setBestCall(bestCallOption);
         }
 
-        swapCalldata && findBestCall()
-
-    }, [swapCalldata, approvalState, account])
-
+        swapCalldata && findBestCall();
+    }, [swapCalldata, approvalState, account]);
 
     const { config: swapConfig } = usePrepareAlgebraRouterMulticall({
         args: bestCall && [bestCall.calldata],
         value: BigInt(bestCall?.value || 0),
         enabled: Boolean(bestCall),
-        gas: bestCall ? bestCall.gasEstimate * (10000n + 2000n) / 10000n : undefined
-    })
+        gas: bestCall ? (bestCall.gasEstimate * (10000n + 2000n)) / 10000n : undefined,
+    });
 
-    const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig)
+    const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig);
 
-    const { isLoading, isSuccess } = useTransactionAwait(
-        swapData?.hash,
-        {
-            title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
-            tokenA: trade?.inputAmount.currency.wrapped.address as Address,
-            tokenB: trade?.outputAmount.currency.wrapped.address as Address,
-            type: TransactionType.SWAP
-        }
-    )
+    const { isLoading, isSuccess } = useTransactionAwait(swapData?.hash, {
+        title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
+        tokenA: trade?.inputAmount.currency.wrapped.address as Address,
+        tokenB: trade?.outputAmount.currency.wrapped.address as Address,
+        type: TransactionType.SWAP,
+    });
 
     return useMemo(() => {
-
-        if (!trade) return {
-            state: SwapCallbackState.INVALID,
-            callback: null,
-            error: "No trade was found",
-            isLoading: false,
-            isSuccess: false
-        }
+        if (!trade)
+            return {
+                state: SwapCallbackState.INVALID,
+                callback: null,
+                error: "No trade was found",
+                isLoading: false,
+                isSuccess: false,
+            };
 
         return {
             state: SwapCallbackState.VALID,
             callback: swapCallback,
             error: null,
             isLoading,
-            isSuccess
-        }
-
-    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig, isSuccess])
-
+            isSuccess,
+        };
+    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig, isSuccess]);
 }

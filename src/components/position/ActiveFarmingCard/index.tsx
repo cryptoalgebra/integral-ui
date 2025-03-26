@@ -1,24 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Farming } from '@/types/farming-info';
-import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
-import { useFarmHarvest } from '@/hooks/farming/useFarmHarvest';
-import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
-import { useAccount } from 'wagmi';
-import { getFarmingRewards } from '@/utils/farming/getFarmingRewards';
-import { Button } from '@/components/ui/button';
-import Loader from '@/components/common/Loader';
-import { Deposit } from '@/graphql/generated/graphql';
-import { useRewardEarnedUSD } from '@/hooks/farming/useRewardEarnedUSD';
+import { useEffect, useState } from "react";
+import { Farming } from "@/types/farming-info";
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { useFarmHarvest } from "@/hooks/farming/useFarmHarvest";
+import { useFarmUnstake } from "@/hooks/farming/useFarmStake";
+import { useAccount } from "wagmi";
+import { getFarmingRewards } from "@/utils/farming/getFarmingRewards";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/common/Loader";
+import { Deposit } from "@/graphql/generated/graphql";
+import { useRewardEarnedUSD } from "@/hooks/farming/useRewardEarnedUSD";
 
 interface ActiveFarmingCardProps {
     farming: Farming;
     selectedPosition: Deposit;
 }
 
-const ActiveFarmingCard = ({
-    farming,
-    selectedPosition,
-}: ActiveFarmingCardProps) => {
+const ActiveFarmingCard = ({ farming, selectedPosition }: ActiveFarmingCardProps) => {
     const { address: account } = useAccount();
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
@@ -45,11 +42,7 @@ const ActiveFarmingCard = ({
         account: account ?? ADDRESS_ZERO,
     };
 
-    const {
-        onHarvest,
-        isLoading: isHarvesting,
-        isSuccess: isHarvested,
-    } = useFarmHarvest(farmingArgs);
+    const { onHarvest, isLoading: isHarvesting, isSuccess: isHarvested } = useFarmHarvest(farmingArgs);
 
     const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
 
@@ -79,24 +72,15 @@ const ActiveFarmingCard = ({
                 <div className="text-left">
                     <div className="font-bold text-xs">EARNED REWARDS</div>
                     <div className="font-semibold text-2xl">
-                        <span className="text-cyan-300 drop-shadow-cyan">
-                            ${farmingRewards}
-                        </span>
+                        <span className="text-cyan-300 drop-shadow-cyan">${farmingRewards}</span>
                     </div>
                 </div>
-                <Button
-                    size={'md'}
-                    disabled={isHarvesting || isUnstaking}
-                    onClick={handleHarvest}
-                >
-                    {isHarvesting ? <Loader /> : 'Collect'}
+                <Button size={"md"} disabled={isHarvesting || isUnstaking} onClick={handleHarvest}>
+                    {isHarvesting ? <Loader /> : "Collect"}
                 </Button>
             </div>
-            <Button
-                onClick={handleUnstake}
-                disabled={isUnstaking || isHarvesting}
-            >
-                {isUnstaking ? <Loader /> : 'Exit from farming'}
+            <Button onClick={handleUnstake} disabled={isUnstaking || isHarvesting}>
+                {isUnstaking ? <Loader /> : "Exit from farming"}
             </Button>
         </div>
     );

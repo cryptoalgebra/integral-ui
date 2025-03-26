@@ -1,10 +1,10 @@
-import TokenCard from '@/components/swap/TokenCard';
-import { IDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mintStore';
-import { useSwapActionHandlers } from '@/state/swapStore';
-import { SwapField } from '@/types/swap-field';
-import { Currency } from '@cryptoalgebra/custom-pools-sdk';
-import { ChevronsUpDownIcon } from 'lucide-react';
-import { useCallback } from 'react';
+import TokenCard from "@/components/swap/TokenCard";
+import { IDerivedMintInfo, useMintActionHandlers, useMintState } from "@/state/mintStore";
+import { useSwapActionHandlers } from "@/state/swapStore";
+import { SwapField } from "@/types/swap-field";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { ChevronsUpDownIcon } from "lucide-react";
+import { useCallback } from "react";
 
 interface ISelectPair {
     mintInfo: IDerivedMintInfo;
@@ -13,8 +13,7 @@ interface ISelectPair {
 }
 
 const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
-    const { onCurrencySelection, onSwitchTokens } =
-        useSwapActionHandlers();
+    const { onCurrencySelection, onSwitchTokens } = useSwapActionHandlers();
 
     const { onStartPriceInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
@@ -46,7 +45,7 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
             <TokenCard
                 disabled
                 showBalance={false}
-                value={'1'}
+                value={"1"}
                 currency={currencyA}
                 otherCurrency={currencyB}
                 handleTokenSelection={handleInputSelect}
@@ -67,7 +66,6 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
                 otherCurrency={currencyA}
                 handleValueChange={handleTypeInput}
             />
-
         </div>
     );
 };

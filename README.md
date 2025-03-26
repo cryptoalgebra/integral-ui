@@ -4,8 +4,8 @@
 
 To launch the application locally:
 
-```yarn```
+`yarn`
 
-```yarn codegen && yarn wagmi-generate```
+`yarn codegen && yarn wagmi-generate`
 
-```yarn dev```
+`yarn dev`

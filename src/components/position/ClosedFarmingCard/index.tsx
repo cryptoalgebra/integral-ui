@@ -1,20 +1,17 @@
-import Loader from '@/components/common/Loader';
-import { Button } from '@/components/ui/button';
-import { EternalFarming } from '@/graphql/generated/graphql';
-import { useFarmUnstake } from '@/hooks/farming/useFarmStake';
-import { FormattedPosition } from '@/types/formatted-position';
-import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
-import { useAccount } from 'wagmi';
+import Loader from "@/components/common/Loader";
+import { Button } from "@/components/ui/button";
+import { EternalFarming } from "@/graphql/generated/graphql";
+import { useFarmUnstake } from "@/hooks/farming/useFarmStake";
+import { FormattedPosition } from "@/types/formatted-position";
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { useAccount } from "wagmi";
 
 interface ClosedFarmingCardProps {
     positionInEndedFarming: EternalFarming;
     selectedPosition: FormattedPosition;
 }
 
-const ClosedFarmingCard = ({
-    positionInEndedFarming,
-    selectedPosition,
-}: ClosedFarmingCardProps) => {
+const ClosedFarmingCard = ({ positionInEndedFarming, selectedPosition }: ClosedFarmingCardProps) => {
     const { address: account } = useAccount();
 
     const farmingArgs = {
@@ -30,7 +27,7 @@ const ClosedFarmingCard = ({
 
     return (
         <Button disabled={isUnstaking} onClick={onUnstake}>
-            {isUnstaking ? <Loader /> : 'Exit from farming'}
+            {isUnstaking ? <Loader /> : "Exit from farming"}
         </Button>
     );
 };

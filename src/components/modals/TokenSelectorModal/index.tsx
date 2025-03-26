@@ -1,4 +1,4 @@
-import { TokenSelector } from '@/components/common/TokenSelector';
+import { TokenSelector } from "@/components/common/TokenSelector";
 import {
     Credenza,
     CredenzaBody,
@@ -7,8 +7,8 @@ import {
     CredenzaHeader,
     CredenzaTitle,
     CredenzaTrigger,
-} from '@/components/ui/credenza';
-import { Currency } from '@cryptoalgebra/custom-pools-sdk';
+} from "@/components/ui/credenza";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 interface ITokenSelectorModal {
     isOpen: boolean;
@@ -19,14 +19,7 @@ interface ITokenSelectorModal {
     showNativeToken?: boolean;
 }
 
-const TokenSelectorModal = ({
-    isOpen,
-    setIsOpen,
-    onSelect,
-    otherCurrency,
-    children,
-    showNativeToken,
-}: ITokenSelectorModal) => {
+const TokenSelectorModal = ({ isOpen, setIsOpen, onSelect, otherCurrency, children, showNativeToken }: ITokenSelectorModal) => {
     return (
         <Credenza open={isOpen}>
             <CredenzaTrigger asChild>{children}</CredenzaTrigger>
@@ -39,11 +32,7 @@ const TokenSelectorModal = ({
                     <CredenzaTitle>Select a token</CredenzaTitle>
                 </CredenzaHeader>
                 <CredenzaBody>
-                    <TokenSelector
-                        showNativeToken={showNativeToken}
-                        onSelect={onSelect}
-                        otherCurrency={otherCurrency}
-                    />
+                    <TokenSelector showNativeToken={showNativeToken} onSelect={onSelect} otherCurrency={otherCurrency} />
                 </CredenzaBody>
                 <CredenzaClose asChild>
                     <button

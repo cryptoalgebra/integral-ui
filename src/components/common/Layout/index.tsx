@@ -1,5 +1,5 @@
-import { Toaster } from '@/components/ui/toaster';
-import Header from '../Header';
+import { Toaster } from "@/components/ui/toaster";
+import Header from "../Header";
 
 interface LayoutProps {
     children: React.ReactNode;

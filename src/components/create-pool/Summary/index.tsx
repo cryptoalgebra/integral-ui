@@ -1,10 +1,10 @@
-import CurrencyLogo from '@/components/common/CurrencyLogo';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useSingleTokenQuery } from '@/graphql/generated/graphql';
-import { useMintState } from '@/state/mintStore';
-import { Currency } from '@cryptoalgebra/custom-pools-sdk';
-import { useEffect, useState } from 'react';
-import { Address } from 'viem';
+import CurrencyLogo from "@/components/common/CurrencyLogo";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSingleTokenQuery } from "@/graphql/generated/graphql";
+import { useMintState } from "@/state/mintStore";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { useEffect, useState } from "react";
+import { Address } from "viem";
 
 interface ISummary {
     currencyA: Currency | undefined;
@@ -33,16 +33,12 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
     });
     useEffect(() => {
         if (!singleToken0?.token || !singleToken1?.token) return;
-        if (
-            Number(singleToken0.token.derivedMatic) === 0 ||
-            Number(singleToken1.token.derivedMatic) === 0
-        ) {
+        if (Number(singleToken0.token.derivedMatic) === 0 || Number(singleToken1.token.derivedMatic) === 0) {
             setSuggestedPrice(0);
             return;
         }
 
-        const suggstdPrice =
-            singleToken1.token.derivedMatic / singleToken0.token.derivedMatic;
+        const suggstdPrice = singleToken1.token.derivedMatic / singleToken0.token.derivedMatic;
         const filteredSuggstdPrice = Number(suggstdPrice.toFixed(4));
 
         setSuggestedPrice(filteredSuggstdPrice);
@@ -53,11 +49,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
             <div className="flex items-center gap-4 ml-2 justify-between">
                 <div className="flex">
                     <CurrencyLogo currency={currencyA} size={30} />
-                    <CurrencyLogo
-                        currency={currencyB}
-                        size={30}
-                        className="-ml-2"
-                    />
+                    <CurrencyLogo currency={currencyB} size={30} className="-ml-2" />
                 </div>
 
                 {currencyA && currencyB ? (
@@ -66,15 +58,11 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
                     <Skeleton className="h-[20px] w-[90px] bg-card" />
                 )}
 
-                <div>
-                    {`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${
-                        currencyB?.symbol
-                    }`}
-                </div>
+                <div>{`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${currencyB?.symbol}`}</div>
             </div>
             {suggestedPrice > 0 && (
                 <div className="text-left ml-2 flex justify-between">
-                    <p className="opacity-50">Suggested price:</p>  
+                    <p className="opacity-50">Suggested price:</p>
                     <p className="opacity-50">{` 1 ${currencyA?.symbol} = ${suggestedPrice} ${currencyB?.symbol}`}</p>
                 </div>
             )}

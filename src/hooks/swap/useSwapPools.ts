@@ -1,15 +1,9 @@
-import { 
-    ADDRESS_ZERO, 
-    Currency, 
-    Token, 
-    computeCustomPoolAddress, 
-    computePoolAddress
-} from "@cryptoalgebra/custom-pools-sdk"
-import { useEffect, useMemo, useState } from "react"
-import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
-import { Address } from "wagmi"
-import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql"
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
+import { ADDRESS_ZERO, Currency, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { useEffect, useMemo, useState } from "react";
+import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
+import { Address } from "wagmi";
+import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
+import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -21,39 +15,49 @@ export function useSwapPools(
     currencyOut?: Currency,
     deployer?: Address
 ): {
-    pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string, fee: string, deployer: string, token0: TokenFieldsFragment, token1: TokenFieldsFragment } }[]
-    loading: boolean
+    pools: {
+        tokens: [Token, Token];
+        pool: {
+            address: Address;
+            liquidity: string;
+            price: string;
+            tick: string;
+            fee: string;
+            deployer: string;
+            token0: TokenFieldsFragment;
+            token1: TokenFieldsFragment;
+        };
+    }[];
+    loading: boolean;
 } {
+    const [existingPools, setExistingPools] = useState<any[]>();
 
-    const [existingPools, setExistingPools] = useState<any[]>()
+    const allCurrencyCombinations = useAllCurrencyCombinations(currencyIn, currencyOut);
 
-    const allCurrencyCombinations = useAllCurrencyCombinations(currencyIn, currencyOut)
-
-    const [getMultiplePools] = useMultiplePoolsLazyQuery()
+    const [getMultiplePools] = useMultiplePoolsLazyQuery();
 
     useEffect(() => {
-
         async function getPools() {
+            const useBasePool = !deployer || deployer === ADDRESS_ZERO;
 
-            const useBasePool = !deployer || deployer === ADDRESS_ZERO
-
-            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => useBasePool ?
-                computePoolAddress({
-                    tokenA,
-                    tokenB,
-                })
-                : computeCustomPoolAddress({
-                    tokenA,
-                    tokenB,
-                    customPoolDeployer: deployer
-                })
+            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) =>
+                useBasePool
+                    ? computePoolAddress({
+                          tokenA,
+                          tokenB,
+                      })
+                    : computeCustomPoolAddress({
+                          tokenA,
+                          tokenB,
+                          customPoolDeployer: deployer,
+                      })
             );
 
             const poolsData = await getMultiplePools({
                 variables: {
-                    poolIds: poolsAddresses.map(address => address.toLowerCase())
-                }
-            })
+                    poolIds: poolsAddresses.map((address) => address.toLowerCase()),
+                },
+            });
 
             // const poolsLiquidities = await Promise.allSettled(poolsAddresses.map(address => getAlgebraPool({
             //     address
@@ -63,35 +67,45 @@ export function useSwapPools(
             //     address
             // }).read.globalState()))
 
-            const pools = poolsData.data && poolsData.data.pools.map(pool => ({ address: pool.id, liquidity: pool.liquidity, price: pool.sqrtPrice, tick: pool.tick, fee: pool.fee, deployer: pool.deployer, token0: pool.token0, token1: pool.token1 }))
+            const pools =
+                poolsData.data &&
+                poolsData.data.pools.map((pool) => ({
+                    address: pool.id,
+                    liquidity: pool.liquidity,
+                    price: pool.sqrtPrice,
+                    tick: pool.tick,
+                    fee: pool.fee,
+                    deployer: pool.deployer,
+                    token0: pool.token0,
+                    token1: pool.token1,
+                }));
 
-            setExistingPools(pools)
-
+            setExistingPools(pools);
         }
 
-        Boolean(allCurrencyCombinations.length) && getPools()
-
-    }, [allCurrencyCombinations, deployer])
+        Boolean(allCurrencyCombinations.length) && getPools();
+    }, [allCurrencyCombinations, deployer]);
 
     return useMemo(() => {
+        if (!existingPools)
+            return {
+                pools: [],
+                loading: true,
+            };
 
-        if (!existingPools) return {
-            pools: [],
-            loading: true
-        }
-        
         return {
-            pools: existingPools.map((pool) => ({
-                tokens: [
-                    new Token(DEFAULT_CHAIN_ID, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name),
-                    new Token(DEFAULT_CHAIN_ID, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name)
-                ] as [Token, Token],
-                pool: pool
-            }))
+            pools: existingPools
+                .map((pool) => ({
+                    tokens: [
+                        new Token(DEFAULT_CHAIN_ID, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name),
+                        new Token(DEFAULT_CHAIN_ID, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name),
+                    ] as [Token, Token],
+                    pool: pool,
+                }))
                 .filter(({ pool }) => {
-                    return pool
+                    return pool;
                 }),
-            loading: false
-        }
-    }, [existingPools, deployer])
+            loading: false,
+        };
+    }, [existingPools, deployer]);
 }

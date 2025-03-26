@@ -1,17 +1,17 @@
-import { ToastAction } from '@/components/ui/toast';
-import { useToast } from '@/components/ui/use-toast';
-import { TransactionInfo, usePendingTransactionsStore } from '@/state/pendingTransactionsStore';
-import { ExternalLinkIcon } from 'lucide-react';
-import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Address, useAccount, useWaitForTransaction } from 'wagmi';
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
+import { TransactionInfo, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
+import { ExternalLinkIcon } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Address, useAccount, useWaitForTransaction } from "wagmi";
 
 export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     hash ? (
         <ToastAction altText="View on explorer" asChild>
             <Link
                 to={`https://basescan.org/tx/${hash}`}
-                target={'_blank'}
+                target={"_blank"}
                 className="border-none gap-2 hover:bg-transparent hover:text-blue-400"
             >
                 View on explorer
@@ -22,18 +22,16 @@ export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
         <></>
     );
 
-export function useTransactionAwait(
-    hash: Address | undefined,
-    transactionInfo: TransactionInfo,
-    redirectPath?: string,
-) {
+export function useTransactionAwait(hash: Address | undefined, transactionInfo: TransactionInfo, redirectPath?: string) {
     const { toast } = useToast();
 
     const navigate = useNavigate();
 
     const { address: account } = useAccount();
 
-    const { actions: { addPendingTransaction, updatePendingTransaction } } = usePendingTransactionsStore();
+    const {
+        actions: { addPendingTransaction, updatePendingTransaction },
+    } = usePendingTransactionsStore();
 
     const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
         hash,
@@ -43,7 +41,7 @@ export function useTransactionAwait(
         if (isLoading && hash && account) {
             toast({
                 title: transactionInfo.title,
-                description: transactionInfo.description || 'Transaction was sent',
+                description: transactionInfo.description || "Transaction was sent",
                 action: <ViewTxOnExplorer hash={hash} />,
             });
             addPendingTransaction(account, hash);
@@ -55,7 +53,7 @@ export function useTransactionAwait(
         if (isError && hash) {
             toast({
                 title: transactionInfo.title,
-                description: transactionInfo.description || 'Transaction failed',
+                description: transactionInfo.description || "Transaction failed",
                 action: <ViewTxOnExplorer hash={hash} />,
             });
         }
@@ -65,7 +63,7 @@ export function useTransactionAwait(
         if (isSuccess && hash) {
             toast({
                 title: transactionInfo.title,
-                description: transactionInfo.description || 'Transaction confirmed',
+                description: transactionInfo.description || "Transaction confirmed",
                 action: <ViewTxOnExplorer hash={hash} />,
             });
             if (redirectPath) {

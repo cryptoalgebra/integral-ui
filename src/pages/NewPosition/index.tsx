@@ -1,217 +1,54 @@
-import PageContainer from '@/components/common/PageContainer';
-import PageTitle from '@/components/common/PageTitle';
-import LiquidityChart from '@/components/create-position/LiquidityChart';
-import RangeSelector from '@/components/create-position/RangeSelector';
-import PresetTabs from '@/components/create-position/PresetTabs';
-import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from '@/generated';
-import {
-    useDerivedMintInfo,
-    useMintActionHandlers,
-    useMintState,
-    useRangeHopCallbacks,
-} from '@/state/mintStore';
-import { Bound, INITIAL_POOL_FEE, nearestUsableTick, TickMath } from '@cryptoalgebra/custom-pools-sdk';
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Address } from 'wagmi';
-import AmountsSection from '@/components/create-position/AmountsSection';
-import { ManageLiquidity } from '@/types/manage-liquidity';
-import { useCurrency } from '@/hooks/common/useCurrency';
-import { Switch } from '@/components/ui/switch';
+import PageContainer from "@/components/common/PageContainer";
+import PageTitle from "@/components/common/PageTitle";
+import { useParams } from "react-router-dom";
+import { Address } from "wagmi";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { CreateAutomatedPosition } from "./CreateAutomatedPosition";
+import { CreateManualPosition } from "./CreateManualPosition";
+import { cn } from "@/lib/utils";
+import { useALMVaultsByPool } from "@/hooks/alm/useALMVaults";
 
-type NewPositionPageParams = Record<'pool', Address>;
+type NewPositionPageParams = Record<"pool", Address>;
 
 const NewPositionPage = () => {
+    const [isALM, setIsALM] = useState<boolean | null>(null);
+
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
-    const { data: token0 } = useAlgebraPoolToken0({
-        address: poolAddress,
-    });
-
-    const { data: token1 } = useAlgebraPoolToken1({
-        address: poolAddress,
-    });
-
-    const [currencyIdA, setCurrencyIdA] = useState("");
-    const [currencyIdB, setCurrencyIdB] = useState("");
+    const { vaults } = useALMVaultsByPool(poolAddress);
 
     useEffect(() => {
-        if (token0 && token1) {
-            setCurrencyIdA(token0);
-            setCurrencyIdB(token1);
+        if (vaults && vaults.length > 0) {
+            setIsALM(false);
         }
-    }, [token0, token1]);
-
-    const currencyA = useCurrency(currencyIdA as Address, true);
-    const currencyB = useCurrency(currencyIdB as Address, true);
-
-    const [wasManuallyToggled, setWasManuallyToggled] = useState(false);
-
-    const isSorted = currencyA && currencyB && currencyA.wrapped.sortsBefore(currencyB.wrapped);
-
-    const mintInfo = useDerivedMintInfo(
-        currencyA ?? undefined,
-        currencyB ?? undefined,
-        poolAddress,
-        INITIAL_POOL_FEE,
-        currencyA ?? undefined,
-        undefined
-    );
-
-    const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } =
-        mintInfo.pricesAtTicks;
-
-    const hidePresets = mintInfo.pool ? 
-        mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MAX_TICK, mintInfo.pool.tickSpacing) ||
-        mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MIN_TICK, mintInfo.pool.tickSpacing)
-    : false
-
-    const price = useMemo(() => {
-        if (!mintInfo.price) return;
-
-        return mintInfo.invertPrice
-            ? mintInfo.price.invert().toSignificant(5)
-            : mintInfo.price.toSignificant(5);
-    }, [mintInfo]);
-
-    const currentPrice = useMemo(() => {
-        if (!mintInfo.price) return;
-
-        if (Number(price) <= 0.0001) {
-            return `< 0.0001 ${currencyB?.symbol}`;
-        } else {
-            return `${price} ${currencyB?.symbol}`;
-        }
-    }, [mintInfo.price, price]);
-
-    const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } =
-        useMemo(() => {
-            return mintInfo.ticks;
-        }, [mintInfo]);
-
-    const {
-        getDecrementLower,
-        getIncrementLower,
-        getDecrementUpper,
-        getIncrementUpper,
-    } = useRangeHopCallbacks(
-        currencyA ?? undefined,
-        currencyB ?? undefined,
-        mintInfo.tickSpacing,
-        tickLower,
-        tickUpper,
-        mintInfo.pool
-    );
-
-    const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(
-        mintInfo.noLiquidity
-    );
-
-    const { startPriceTypedValue } = useMintState();
-
-    const handleCurrencySwap = () => {
-        setCurrencyIdA(currencyIdB);
-        setCurrencyIdB(currencyIdA);
-    };
-
-    const handleCurrencyToggle = () => {
-        setWasManuallyToggled(!wasManuallyToggled);
-        if (!mintInfo.ticksAtLimit[Bound.LOWER] && !mintInfo.ticksAtLimit[Bound.UPPER]) {
-            onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? "");
-            onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? "");
-        }
-        handleCurrencySwap();
-    };
-
-    useEffect(() => {
-        return () => {
-            onLeftRangeInput('');
-            onRightRangeInput('');
-        };
-    }, []);
+    }, [vaults]);
 
     return (
         <PageContainer>
-            <PageTitle title={'Create Position'}>
-                <div className="flex gap-2 pt-2">
-                    {isSorted ? currencyA?.symbol : currencyB?.symbol}
-                    <Switch
-                        id="currency-toggle"
-                        checked={wasManuallyToggled}
-                        onCheckedChange={handleCurrencyToggle}
-                    />
-                    {isSorted ? currencyB?.symbol : currencyA?.symbol}
+            <PageTitle title={"Create Position"}>
+                <div className="grid grid-cols-2 items-center border border-primary-button rounded-full">
+                    <Button
+                        onClick={() => setIsALM(false)}
+                        size={"sm"}
+                        className={cn("w-full", isALM ? "bg-transparent text-black" : "hover:bg-primary-button")}
+                    >
+                        Manually
+                    </Button>
+                    <Button
+                        onClick={() => setIsALM(true)}
+                        size={"sm"}
+                        disabled={isALM === null}
+                        className={cn(
+                            "w-full disabled:cursor-not-allowed disabled:pointer-events-auto disabled:hover:bg-transparent",
+                            !isALM ? "bg-transparent text-black" : "hover:bg-primary-button"
+                        )}
+                    >
+                        Automated
+                    </Button>
                 </div>
             </PageTitle>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16 text-left">
-                <div className="col-span-2">
-                    <div className="flex items-center justify-between w-full mb-6">
-                        <h2 className="font-semibold text-2xl text-left">
-                            1. Select Range
-                        </h2>
-                        { !hidePresets && <PresetTabs
-                            currencyA={currencyA}
-                            currencyB={currencyB}
-                            mintInfo={mintInfo}
-                        /> }
-                    </div>
-
-                    <div className="flex flex-col w-full">
-                        <div className="w-full px-8 py-6 bg-card text-left rounded-3xl border border-card-border">
-                            <div className="flex w-full flex-col md:flex-row gap-4">
-                                <RangeSelector
-                                    priceLower={priceLower}
-                                    priceUpper={priceUpper}
-                                    getDecrementLower={getDecrementLower}
-                                    getIncrementLower={getIncrementLower}
-                                    getDecrementUpper={getDecrementUpper}
-                                    getIncrementUpper={getIncrementUpper}
-                                    onLeftRangeInput={onLeftRangeInput}
-                                    onRightRangeInput={onRightRangeInput}
-                                    currencyA={currencyA}
-                                    currencyB={currencyB}
-                                    mintInfo={mintInfo}
-                                    disabled={
-                                        !startPriceTypedValue && !mintInfo.price
-                                    }
-                                />
-                                <div className="md:ml-auto md:text-right">
-                                    <div className="font-bold text-xs mb-3">
-                                        CURRENT PRICE
-                                    </div>
-                                    <div className="font-bold text-xl">{`${currentPrice}`}</div>
-                                </div>
-                            </div>
-
-                            <LiquidityChart
-                                currencyA={currencyA}
-                                currencyB={currencyB}
-                                pool={mintInfo.pool}
-                                currentPrice={
-                                    price ? parseFloat(price) : undefined
-                                }
-                                priceLower={priceLower}
-                                priceUpper={priceUpper}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col">
-                    <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">
-                        2. Enter Amounts
-                    </h2>
-                    <div className="flex flex-col w-full h-full gap-2 bg-card border border-card-border rounded-3xl p-2">
-                        <AmountsSection
-                            currencyA={currencyA}
-                            currencyB={currencyB}
-                            mintInfo={mintInfo}
-                            manageLiquidity={ManageLiquidity.ADD}
-                        />
-                    </div>
-                </div>
-            </div>
+            {isALM ? <CreateAutomatedPosition vaults={vaults} /> : <CreateManualPosition poolAddress={poolAddress} />}
         </PageContainer>
     );
 };

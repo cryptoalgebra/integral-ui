@@ -17,78 +17,59 @@ import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
 
 interface IFixBrokenPool {
-    currencyIn?: Currency,
-    currencyOut?: Currency,
-    deployer?: Address,
+    currencyIn?: Currency;
+    currencyOut?: Currency;
+    deployer?: Address;
 }
 
 const DEFAULT_SLIPPAGE = new Percent(50, 10_000);
 
 const Notification = ({ tick }: { tick?: number }) => (
     <div className="py-2 bg-red-200 text-red-500 border border-red-600 rounded-lg">{`Pool is on edge tick: ${tick}`}</div>
-)
+);
 
-const FixBrokenPool = ({
-    currencyIn,
-    currencyOut,
-    deployer,
-}: IFixBrokenPool) => {
-
+const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) => {
     const { selectedNetworkId } = useWeb3ModalState();
 
     const { address: account } = useAccount();
 
-    const currencyAmount = useMemo(() => currencyIn ?
-        CurrencyAmount.fromRawAmount(currencyIn, 10 ** Math.floor(currencyIn.decimals / 2)) :
-        undefined
-    , [currencyIn])
+    const currencyAmount = useMemo(
+        () => (currencyIn ? CurrencyAmount.fromRawAmount(currencyIn, 10 ** Math.floor(currencyIn.decimals / 2)) : undefined),
+        [currencyIn]
+    );
 
-    const exactInSwap = useBestTradeExactIn(
-        currencyAmount,
-        currencyOut,
-        deployer
-    )
+    const exactInSwap = useBestTradeExactIn(currencyAmount, currencyOut, deployer);
 
     const givenPool = useMemo(() => {
-
-        const routePools = exactInSwap?.trade?.route.pools
+        const routePools = exactInSwap?.trade?.route.pools;
 
         if (!routePools) return undefined;
 
         if (routePools.length > 1) {
-            throw new Error('[FIX POOL] Rotue path is longer than 1')
+            throw new Error("[FIX POOL] Rotue path is longer than 1");
         }
 
-        return routePools[0]
+        return routePools[0];
+    }, [exactInSwap]);
 
-    }, [exactInSwap])
-
-    const isBroken = givenPool && (
-        givenPool.tickCurrent <= TickMath.MIN_TICK + givenPool.tickSpacing ||
-        givenPool.tickCurrent >= TickMath.MAX_TICK - givenPool.tickSpacing
-    );
+    const isBroken =
+        givenPool &&
+        (givenPool.tickCurrent <= TickMath.MIN_TICK + givenPool.tickSpacing ||
+            givenPool.tickCurrent >= TickMath.MAX_TICK - givenPool.tickSpacing);
 
     const trade = isBroken && exactInSwap?.trade ? exactInSwap.trade : undefined;
 
     const { data: inputBalance } = useBalance({
         address: account,
-        token: currencyIn?.isNative ? undefined : currencyIn?.address as Address,
-        cacheTime: 10_000
+        token: currencyIn?.isNative ? undefined : (currencyIn?.address as Address),
+        cacheTime: 10_000,
     });
 
-    const { approvalState, approvalCallback } = useApproveCallbackFromTrade(
-        trade,
-        DEFAULT_SLIPPAGE
-    );
+    const { approvalState, approvalCallback } = useApproveCallbackFromTrade(trade, DEFAULT_SLIPPAGE);
 
-    const showApproveFlow = approvalState === ApprovalState.NOT_APPROVED ||
-        approvalState === ApprovalState.PENDING;
+    const showApproveFlow = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
 
-    const swapCallback = useSwapCallback(
-        trade,
-        DEFAULT_SLIPPAGE,
-        approvalState
-    );
+    const swapCallback = useSwapCallback(trade, DEFAULT_SLIPPAGE, approvalState);
 
     const { callback, isLoading: isSwapLoading } = swapCallback;
 
@@ -103,19 +84,9 @@ const FixBrokenPool = ({
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
 
-    const insufficientBalance = inputBalance && trade ? trade.inputAmount.greaterThan(
-        inputBalance.value.toString()
-    ) : undefined
+    const insufficientBalance = inputBalance && trade ? trade.inputAmount.greaterThan(inputBalance.value.toString()) : undefined;
 
-
-    if (
-        !isBroken ||
-        isWrongChain ||
-        !account ||
-        !currencyIn ||
-        !currencyOut ||
-        !deployer
-    ) {
+    if (!isBroken || isWrongChain || !account || !currencyIn || !currencyOut || !deployer) {
         return null;
     }
 
@@ -123,26 +94,16 @@ const FixBrokenPool = ({
         return (
             <>
                 <Notification tick={givenPool?.tickCurrent} />
-                <Button disabled>
-                    {isSwapLoading ? (
-                        <Loader />
-                    ) : (
-                        `Insufficient ${currencyIn.symbol} amount to fix`
-                    )}
-                </Button>
+                <Button disabled>{isSwapLoading ? <Loader /> : `Insufficient ${currencyIn.symbol} amount to fix`}</Button>
             </>
         );
     }
-
 
     if (showApproveFlow) {
         return (
             <>
                 <Notification tick={givenPool?.tickCurrent} />
-                <Button
-                    disabled={approvalState !== ApprovalState.NOT_APPROVED}
-                    onClick={() => approvalCallback && approvalCallback()}
-                >
+                <Button disabled={approvalState !== ApprovalState.NOT_APPROVED} onClick={() => approvalCallback && approvalCallback()}>
                     {approvalState === ApprovalState.PENDING ? (
                         <Loader />
                     ) : approvalState === ApprovalState.APPROVED ? (
@@ -158,18 +119,11 @@ const FixBrokenPool = ({
     return (
         <>
             <Notification tick={givenPool?.tickCurrent} />
-            <Button
-                onClick={() => handleSwap()}
-                disabled={isSwapLoading}
-            >
-                {isSwapLoading ? (
-                    <Loader />
-                ) : (
-                    "Fix Pool"
-                )}
+            <Button onClick={() => handleSwap()} disabled={isSwapLoading}>
+                {isSwapLoading ? <Loader /> : "Fix Pool"}
             </Button>
         </>
     );
-}
+};
 
 export default FixBrokenPool;

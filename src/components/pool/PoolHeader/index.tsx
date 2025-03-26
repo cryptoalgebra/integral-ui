@@ -1,10 +1,10 @@
-import CurrencyLogo from '@/components/common/CurrencyLogo';
-import PageTitle from '@/components/common/PageTitle';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useCurrency } from '@/hooks/common/useCurrency';
-import { formatPercent } from '@/utils/common/formatPercent';
-import { Pool } from '@cryptoalgebra/custom-pools-sdk';
-import { Address } from 'viem';
+import CurrencyLogo from "@/components/common/CurrencyLogo";
+import PageTitle from "@/components/common/PageTitle";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrency } from "@/hooks/common/useCurrency";
+import { formatPercent } from "@/utils/common/formatPercent";
+import { Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { Address } from "viem";
 
 interface PoolHeaderProps {
     pool: Pool | null;
@@ -22,11 +22,7 @@ const PoolHeader = ({ pool }: PoolHeaderProps) => {
         <div className="flex w-full gap-8">
             <div className="flex">
                 <CurrencyLogo currency={currencyA} size={40} />
-                <CurrencyLogo
-                    currency={currencyB}
-                    size={40}
-                    className="-ml-2"
-                />
+                <CurrencyLogo currency={currencyB} size={40} className="-ml-2" />
             </div>
 
             {currencyA && currencyB ? (

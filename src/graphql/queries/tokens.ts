@@ -8,15 +8,15 @@ export const TOKEN_FRAGMENT = gql`
         decimals
         derivedMatic
     }
-`
+`;
 
 export const SINGLE_TOKEN = gql`
-    query SingleToken($tokenId: ID!){
+    query SingleToken($tokenId: ID!) {
         token(id: $tokenId) {
             ...TokenFields
         }
     }
-`
+`;
 
 export const ALL_TOKENS = gql`
     query AllTokens {
@@ -24,4 +24,4 @@ export const ALL_TOKENS = gql`
             ...TokenFields
         }
     }
-`
+`;

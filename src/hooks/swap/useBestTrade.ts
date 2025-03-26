@@ -7,7 +7,6 @@ import { TradeState, TradeStateType } from "@/types/trade-state";
 import { useAllRoutes } from "./useAllRoutes";
 import { useQuotesResults } from "./useQuotesResults";
 
-
 // const DEFAULT_GAS_QUOTE = 2_000_000
 
 /**
@@ -19,9 +18,13 @@ export function useBestTradeExactIn(
     amountIn?: CurrencyAmount<Currency>,
     currencyOut?: Currency,
     deployer?: Address
-): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null; fee?: bigint[] | null, priceAfterSwap?: bigint[] | null } {
-
-    const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, deployer)
+): {
+    state: TradeStateType;
+    trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null;
+    fee?: bigint[] | null;
+    priceAfterSwap?: bigint[] | null;
+} {
+    const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, deployer);
 
     const {
         data: quotesResults,
@@ -38,54 +41,63 @@ export function useBestTradeExactIn(
             return {
                 state: TradeState.INVALID,
                 trade: null,
-                refetch
-            }
+                refetch,
+            };
         }
 
         if (routesLoading || isQuotesLoading) {
             return {
                 state: TradeState.LOADING,
                 trade: null,
-            }
+            };
         }
 
         const { bestRoute, amountOut, fee, priceAfterSwap } = (quotesResults || []).reduce(
-            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountOut: any | null; fee: bigint[] | null, priceAfterSwap: bigint[] | null }, { result }: any, i) => {
-                if (!result) return currentBest
+            (
+                currentBest: {
+                    bestRoute: Route<Currency, Currency> | null;
+                    amountOut: any | null;
+                    fee: bigint[] | null;
+                    priceAfterSwap: bigint[] | null;
+                },
+                { result }: any,
+                i
+            ) => {
+                if (!result) return currentBest;
 
                 if (currentBest.amountOut === null) {
                     return {
                         bestRoute: routes[i],
                         amountOut: result[0][result[0].length - 1],
                         fee: result[5],
-                        priceAfterSwap: result[2]
-                    }
+                        priceAfterSwap: result[2],
+                    };
                 } else if (currentBest.amountOut < result[0]) {
                     return {
                         bestRoute: routes[i],
                         amountOut: result[0][result[0].length - 1],
                         fee: result[5],
-                        priceAfterSwap: result[2]
-                    }
+                        priceAfterSwap: result[2],
+                    };
                 }
 
-                return currentBest
+                return currentBest;
             },
             {
                 bestRoute: null,
                 amountOut: null,
                 fee: null,
-                priceAfterSwap: null
+                priceAfterSwap: null,
             }
-        )
+        );
 
         if (!bestRoute || !amountOut) {
             return {
                 state: TradeState.NO_ROUTE_FOUND,
                 trade: null,
                 fee: null,
-                priceAfterSwap: null
-            }
+                priceAfterSwap: null,
+            };
         }
 
         return {
@@ -98,11 +110,11 @@ export function useBestTradeExactIn(
                 outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()),
             }),
             priceAfterSwap,
-            refetch
-        }
-    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch])
+            refetch,
+        };
+    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
 
-    return trade
+    return trade;
 }
 
 /**
@@ -113,9 +125,13 @@ export function useBestTradeExactIn(
 export function useBestTradeExactOut(
     currencyIn?: Currency,
     amountOut?: CurrencyAmount<Currency>
-): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null; fee?: bigint[] | null, priceAfterSwap?: bigint[] | null } {
-
-    const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency)
+): {
+    state: TradeStateType;
+    trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null;
+    fee?: bigint[] | null;
+    priceAfterSwap?: bigint[] | null;
+} {
+    const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
     const {
         data: quotesResults,
@@ -140,46 +156,55 @@ export function useBestTradeExactOut(
             return {
                 state: TradeState.LOADING,
                 trade: null,
-            }
+            };
         }
 
         const { bestRoute, amountIn, fee, priceAfterSwap } = (quotesResults || []).reduce(
-            (currentBest: { bestRoute: Route<Currency, Currency> | null; amountIn: any | null; fee: bigint[] | null, priceAfterSwap: bigint[] | null }, { result }: any, i) => {
-                if (!result) return currentBest
+            (
+                currentBest: {
+                    bestRoute: Route<Currency, Currency> | null;
+                    amountIn: any | null;
+                    fee: bigint[] | null;
+                    priceAfterSwap: bigint[] | null;
+                },
+                { result }: any,
+                i
+            ) => {
+                if (!result) return currentBest;
 
                 if (currentBest.amountIn === null) {
                     return {
                         bestRoute: routes[i],
                         amountIn: result[1][result[1].length - 1],
                         fee: result[5],
-                        priceAfterSwap: result[2]
-                    }
+                        priceAfterSwap: result[2],
+                    };
                 } else if (currentBest.amountIn > result[0]) {
                     return {
                         bestRoute: routes[i],
                         amountIn: result[1][result[1].length - 1],
                         fee: result[5],
-                        priceAfterSwap: result[2]
-                    }
+                        priceAfterSwap: result[2],
+                    };
                 }
 
-                return currentBest
+                return currentBest;
             },
             {
                 bestRoute: null,
                 amountIn: null,
                 fee: null,
-                priceAfterSwap: null
+                priceAfterSwap: null,
             }
-        )
+        );
 
         if (!bestRoute || !amountIn) {
             return {
                 state: TradeState.NO_ROUTE_FOUND,
                 trade: null,
                 fee: null,
-                priceAfterSwap
-            }
+                priceAfterSwap,
+            };
         }
 
         return {
@@ -192,10 +217,9 @@ export function useBestTradeExactOut(
                 outputAmount: amountOut,
             }),
             priceAfterSwap,
-            refetch
-        }
-    }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading, refetch])
+            refetch,
+        };
+    }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
 
-
-    return trade
+    return trade;
 }

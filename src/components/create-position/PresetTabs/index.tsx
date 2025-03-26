@@ -19,7 +19,7 @@ const stablecoinsPreset = [
         risk: PresetProfits.VERY_LOW,
         profit: PresetProfits.HIGH,
     },
-]
+];
 
 const commonPresets = [
     {
@@ -54,41 +54,31 @@ const commonPresets = [
         risk: PresetProfits.VERY_LOW,
         profit: PresetProfits.VERY_LOW,
     },
-]
+];
 
 const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
-
     const {
         preset,
-        actions: {
-            updateSelectedPreset,
-            setFullRange,
-        },
+        actions: { updateSelectedPreset, setFullRange },
     } = useMintState();
 
-    const {
-        onLeftRangeInput,
-        onRightRangeInput,
-    } = useMintActionHandlers(mintInfo.noLiquidity);
+    const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
     const isStablecoinPair = useMemo(() => {
         if (!currencyA || !currencyB) return false;
 
         // const stablecoins = [USDC.address, USDT.address, DAI.address];
-        const stablecoins = ['', ''];
+        const stablecoins = ["", ""];
 
         return (
-            stablecoins.includes(currencyA.wrapped.address.toLowerCase()) &&
-            stablecoins.includes(currencyB.wrapped.address.toLowerCase())
+            stablecoins.includes(currencyA.wrapped.address.toLowerCase()) && stablecoins.includes(currencyB.wrapped.address.toLowerCase())
         );
     }, [currencyA, currencyB]);
 
     const price = useMemo(() => {
         if (!mintInfo.price) return;
 
-        return mintInfo.invertPrice
-            ? mintInfo.price.invert()
-            : mintInfo.price;
+        return mintInfo.invertPrice ? mintInfo.price.invert() : mintInfo.price;
     }, [mintInfo]);
 
     function handlePresetRangeSelection(preset: any | null) {
@@ -100,48 +90,40 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
             setFullRange();
         } else if (preset) {
             const minPrice = mintInfo.invertPrice
-            ? price.invert().asFraction.multiply(new Percent(preset.min, 100))
-            : price.asFraction.multiply(new Percent(preset.min, 100));
-          const maxPrice = mintInfo.invertPrice
-            ? price.invert().asFraction.multiply(new Percent(preset.max, 100))
-            : price.asFraction.multiply(new Percent(preset.max, 100));
-    
-          const sqrtPriceMin = encodeSqrtRatioX96(minPrice.numerator, minPrice.denominator);
-          const sqrtPriceMax = encodeSqrtRatioX96(maxPrice.numerator, maxPrice.denominator);
-    
-          const minPriceTick = TickMath.getTickAtSqrtRatio(sqrtPriceMin);
-          const maxPriceTick = TickMath.getTickAtSqrtRatio(sqrtPriceMax);
-    
-          let priceAtMinTick;
-          let priceAtMaxTick;
-    
-          if (currencyA && currencyB) {
-            const baseToken = mintInfo.invertPrice ? currencyB.wrapped : currencyA.wrapped;
-            const quoteToken = mintInfo.invertPrice ? currencyA.wrapped : currencyB.wrapped;
-    
-            priceAtMinTick = tickToPrice(baseToken, quoteToken, mintInfo.invertPrice ? maxPriceTick : minPriceTick);
-            priceAtMaxTick = tickToPrice(baseToken, quoteToken, mintInfo.invertPrice ? minPriceTick : maxPriceTick);
-          }
-    
-          if (priceAtMinTick && priceAtMaxTick) {
-            onLeftRangeInput(
-              mintInfo.invertPrice
-                  ? priceAtMinTick.invert().toSignificant()
-                  : priceAtMinTick.toSignificant()
-            );
-            onRightRangeInput(
-                mintInfo.invertPrice
-                  ? priceAtMaxTick.invert().toSignificant()
-                  : priceAtMaxTick.toSignificant()
-            );
-          }
+                ? price.invert().asFraction.multiply(new Percent(preset.min, 100))
+                : price.asFraction.multiply(new Percent(preset.min, 100));
+            const maxPrice = mintInfo.invertPrice
+                ? price.invert().asFraction.multiply(new Percent(preset.max, 100))
+                : price.asFraction.multiply(new Percent(preset.max, 100));
+
+            const sqrtPriceMin = encodeSqrtRatioX96(minPrice.numerator, minPrice.denominator);
+            const sqrtPriceMax = encodeSqrtRatioX96(maxPrice.numerator, maxPrice.denominator);
+
+            const minPriceTick = TickMath.getTickAtSqrtRatio(sqrtPriceMin);
+            const maxPriceTick = TickMath.getTickAtSqrtRatio(sqrtPriceMax);
+
+            let priceAtMinTick;
+            let priceAtMaxTick;
+
+            if (currencyA && currencyB) {
+                const baseToken = mintInfo.invertPrice ? currencyB.wrapped : currencyA.wrapped;
+                const quoteToken = mintInfo.invertPrice ? currencyA.wrapped : currencyB.wrapped;
+
+                priceAtMinTick = tickToPrice(baseToken, quoteToken, mintInfo.invertPrice ? maxPriceTick : minPriceTick);
+                priceAtMaxTick = tickToPrice(baseToken, quoteToken, mintInfo.invertPrice ? minPriceTick : maxPriceTick);
+            }
+
+            if (priceAtMinTick && priceAtMaxTick) {
+                onLeftRangeInput(mintInfo.invertPrice ? priceAtMinTick.invert().toSignificant() : priceAtMinTick.toSignificant());
+                onRightRangeInput(mintInfo.invertPrice ? priceAtMaxTick.invert().toSignificant() : priceAtMaxTick.toSignificant());
+            }
         } else {
-            onLeftRangeInput("")
-            onRightRangeInput("")
+            onLeftRangeInput("");
+            onRightRangeInput("");
         }
     }
 
-    const presets = isStablecoinPair ? stablecoinsPreset : commonPresets
+    const presets = isStablecoinPair ? stablecoinsPreset : commonPresets;
 
     function onPresetSelect(range: PresetsArgs) {
         if (preset == range.type) {
@@ -151,14 +133,20 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
         }
     }
 
-    return <div className="flex h-fit bg-card rounded-3xl p-1">
-        {presets.map((range) => <Button
-            variant={preset === range.type ? 'iconActive' : 'icon'}
-            size={'sm'}
-            key={`preset-range-${range.title}`}
-            onClick={() => onPresetSelect(range)}
-        >{range.title}</Button>)}
-    </div>
-}
+    return (
+        <div className="flex h-fit bg-card rounded-3xl p-1">
+            {presets.map((range) => (
+                <Button
+                    variant={preset === range.type ? "iconActive" : "icon"}
+                    size={"sm"}
+                    key={`preset-range-${range.title}`}
+                    onClick={() => onPresetSelect(range)}
+                >
+                    {range.title}
+                </Button>
+            ))}
+        </div>
+    );
+};
 
-export default PresetTabs
+export default PresetTabs;

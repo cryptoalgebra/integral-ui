@@ -13,29 +13,18 @@ interface SelectRangeProps {
     backStep: number;
 }
 
-const SelectRange = ({ currencyA,
-    currencyB,
-    mintInfo, }: SelectRangeProps) => {
-
-    const {
-        startPriceTypedValue,
-    } = useMintState();
+const SelectRange = ({ currencyA, currencyB, mintInfo }: SelectRangeProps) => {
+    const { startPriceTypedValue } = useMintState();
 
     const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
         return mintInfo.ticks;
     }, [mintInfo]);
 
-    const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } =
-        useMemo(() => {
-            return mintInfo.pricesAtTicks;
-        }, [mintInfo]);
+    const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = useMemo(() => {
+        return mintInfo.pricesAtTicks;
+    }, [mintInfo]);
 
-    const {
-        getDecrementLower,
-        getIncrementLower,
-        getDecrementUpper,
-        getIncrementUpper,
-    } = useRangeHopCallbacks(
+    const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper } = useRangeHopCallbacks(
         currencyA ?? undefined,
         currencyB ?? undefined,
         mintInfo.tickSpacing,
@@ -44,9 +33,7 @@ const SelectRange = ({ currencyA,
         mintInfo.pool
     );
 
-    const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(
-        mintInfo.noLiquidity
-    );
+    const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
     // const tokenA = (currencyA ?? undefined)?.wrapped;
     // const tokenB = (currencyB ?? undefined)?.wrapped;
@@ -71,7 +58,6 @@ const SelectRange = ({ currencyA,
     //         : mintInfo.price.toSignificant(5);
     // }, [mintInfo]);
 
-
     return (
         <div className="flex flex-col">
             <div className="mb-1">
@@ -90,15 +76,10 @@ const SelectRange = ({ currencyA,
                     disabled={!startPriceTypedValue && !mintInfo.price}
                 />
             </div>
-            {mintInfo.outOfRange && (
-                <div>Out of range</div>
-            )}
-            {mintInfo.invalidRange && (
-                <div>Invalid range</div>
-            )}
+            {mintInfo.outOfRange && <div>Out of range</div>}
+            {mintInfo.invalidRange && <div>Invalid range</div>}
         </div>
     );
+};
 
-}
-
-export default SelectRange
+export default SelectRange;

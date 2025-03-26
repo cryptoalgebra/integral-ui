@@ -1,12 +1,12 @@
-import { algebraPositionManagerABI } from '@/abis';
-import { ALGEBRA_POSITION_MANAGER } from '@/constants/addresses';
-import { DEFAULT_CHAIN_ID } from '@/constants/default-chain-id';
-import { useAlgebraPositionManagerBalanceOf } from '@/generated';
-import { farmingClient } from '@/graphql/clients';
-import { useDepositsQuery } from '@/graphql/generated/graphql';
-import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from '@cryptoalgebra/custom-pools-sdk';
-import { useMemo } from 'react';
-import { Address, useAccount, useContractReads } from 'wagmi';
+import { algebraPositionManagerABI } from "@/abis";
+import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
+import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { useAlgebraPositionManagerBalanceOf } from "@/generated";
+import { farmingClient } from "@/graphql/clients";
+import { useDepositsQuery } from "@/graphql/generated/graphql";
+import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { useMemo } from "react";
+import { Address, useAccount, useContractReads } from "wagmi";
 
 export interface PositionFromTokenId {
     tokenId: number;
@@ -30,22 +30,19 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
     positions: PositionFromTokenId[] | undefined;
     refetch: () => void;
 } {
-    const inputs = useMemo(
-        () => (tokenIds ? tokenIds.map((tokenId) => tokenId) : []),
-        [tokenIds]
-    );
+    const inputs = useMemo(() => (tokenIds ? tokenIds.map((tokenId) => tokenId) : []), [tokenIds]);
 
     const {
         data: results,
         isLoading,
         isError,
         error,
-        refetch
+        refetch,
     } = useContractReads({
         contracts: inputs.map((x) => ({
             address: ALGEBRA_POSITION_MANAGER,
             abi: algebraPositionManagerABI,
-            functionName: 'positions',
+            functionName: "positions",
             args: [[Number(x)]],
         })),
         cacheTime: 10_000,
@@ -55,22 +52,25 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
 
     const positions = useMemo(() => {
         if (!isLoading && !isError && tokenIds && !error) {
-
             return results
                 ?.filter((v) => !v.error)
                 .map((call, i) => {
                     const tokenId = tokenIds[i];
                     const result = call.result as any;
-                    const isBasePool = result[4] === ADDRESS_ZERO
+                    const isBasePool = result[4] === ADDRESS_ZERO;
 
-                    const pool = (isBasePool ? computePoolAddress({
-                        tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
-                        tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
-                    }) : computeCustomPoolAddress({
-                        tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
-                        tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
-                        customPoolDeployer: result[4]
-                    }) ) as Address;
+                    const pool = (
+                        isBasePool
+                            ? computePoolAddress({
+                                  tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
+                                  tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
+                              })
+                            : computeCustomPoolAddress({
+                                  tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
+                                  tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
+                                  customPoolDeployer: result[4],
+                              })
+                    ) as Address;
 
                     return {
                         tokenId,
@@ -97,7 +97,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         return {
             isLoading,
             positions,
-            refetch
+            refetch,
         };
     }, [isLoading, positions, refetch]);
 }
@@ -105,11 +105,10 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
 export function usePositions() {
     const { address: account } = useAccount();
 
-    const { data: balanceResult, isLoading: balanceLoading } =
-        useAlgebraPositionManagerBalanceOf({
-            args: account ? [account] : undefined,
-            cacheTime: 10_000,
-        });
+    const { data: balanceResult, isLoading: balanceLoading } = useAlgebraPositionManagerBalanceOf({
+        args: account ? [account] : undefined,
+        cacheTime: 10_000,
+    });
 
     const tokenIdsArgs: [Address, number][] = useMemo(() => {
         if (!balanceResult || !account) return [];
@@ -123,16 +122,15 @@ export function usePositions() {
         return tokenRequests;
     }, [account, balanceResult]);
 
-    const { data: tokenIdResults, isLoading: someTokenIdsLoading } =
-        useContractReads({
-            contracts: tokenIdsArgs.map((args) => ({
-                address: ALGEBRA_POSITION_MANAGER,
-                abi: algebraPositionManagerABI,
-                functionName: 'tokenOfOwnerByIndex',
-                args,
-            })),
-            cacheTime: 10_000,
-        });
+    const { data: tokenIdResults, isLoading: someTokenIdsLoading } = useContractReads({
+        contracts: tokenIdsArgs.map((args) => ({
+            address: ALGEBRA_POSITION_MANAGER,
+            abi: algebraPositionManagerABI,
+            functionName: "tokenOfOwnerByIndex",
+            args,
+        })),
+        cacheTime: 10_000,
+    });
 
     const tokenIds = useMemo(() => {
         if (account) {
@@ -144,13 +142,12 @@ export function usePositions() {
         return [];
     }, [account, tokenIdResults]);
 
-    const { positions, isLoading: positionsLoading, refetch } =
-        usePositionsFromTokenIds(tokenIds);
+    const { positions, isLoading: positionsLoading, refetch } = usePositionsFromTokenIds(tokenIds);
 
     return {
         loading: someTokenIdsLoading || balanceLoading || positionsLoading,
         positions,
-        refetch
+        refetch,
     };
 }
 
@@ -170,7 +167,7 @@ export function usePosition(tokenId: string | number | undefined): {
         return {
             loading: isLoading,
             position: positions?.[0],
-            refetch
+            refetch,
         };
     }, [isLoading, positions, refetch]);
 }
@@ -189,13 +186,9 @@ export function usePositionInFarming(tokenId: string | number | undefined) {
     });
 
     if (!deposits) return;
-    const openedPositions = deposits.deposits.filter(
-        (deposit) => deposit.eternalFarming !== null
-    );
+    const openedPositions = deposits.deposits.filter((deposit) => deposit.eternalFarming !== null);
 
-    const positionInFarming = openedPositions.find(
-        (deposit) => Number(deposit.id) === Number(tokenId)
-    );
+    const positionInFarming = openedPositions.find((deposit) => Number(deposit.id) === Number(tokenId));
 
     if (!positionInFarming) return;
     return positionInFarming;

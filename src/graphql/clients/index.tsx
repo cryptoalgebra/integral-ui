@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export const infoClient = new ApolloClient({
     uri: import.meta.env.VITE_INFO_GRAPH,

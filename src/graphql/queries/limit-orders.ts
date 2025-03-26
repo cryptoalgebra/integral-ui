@@ -7,7 +7,7 @@ export const EPOCH_FRAGMENT = gql`
         filled
         totalLiquidity
     }
-`
+`;
 
 export const LIMIT_ORDER_FRAGMENT = gql`
     fragment LimitOrderFields on LimitOrder {
@@ -24,13 +24,13 @@ export const LIMIT_ORDER_FRAGMENT = gql`
         tickUpper
         zeroToOne
         killed
-}
-`
+    }
+`;
 
 export const LIMIT_ORDERS_LIST = gql`
     query LimitOrdersList($account: Bytes) {
-        limitOrders (where: { owner: $account }) {
+        limitOrders(where: { owner: $account }) {
             ...LimitOrderFields
         }
     }
-`
+`;

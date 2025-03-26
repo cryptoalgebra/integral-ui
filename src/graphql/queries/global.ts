@@ -5,7 +5,7 @@ export const BUNDLE_FRAGMENT = gql`
         id
         maticPriceUSD
     }
-`
+`;
 
 export const NATIVE_PRICE = gql`
     query NativePrice {
@@ -13,5 +13,4 @@ export const NATIVE_PRICE = gql`
             ...BundleFields
         }
     }
-`
-
+`;

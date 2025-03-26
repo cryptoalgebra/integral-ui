@@ -1,12 +1,12 @@
-import CurrencyLogo from '@/components/common/CurrencyLogo';
-import TokenSelectorModal from '@/components/modals/TokenSelectorModal';
-import { Input } from '@/components/ui/input';
-import { formatBalance } from '@/utils/common/formatBalance';
-import { formatUSD } from '@/utils/common/formatUSD';
-import { Currency, Percent } from '@cryptoalgebra/custom-pools-sdk';
-import { ChevronRight } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
-import { Address, useAccount, useBalance } from 'wagmi';
+import CurrencyLogo from "@/components/common/CurrencyLogo";
+import TokenSelectorModal from "@/components/modals/TokenSelectorModal";
+import { Input } from "@/components/ui/input";
+import { formatBalance } from "@/utils/common/formatBalance";
+import { formatUSD } from "@/utils/common/formatUSD";
+import { Currency, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { ChevronRight } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Address, useAccount, useBalance } from "wagmi";
 
 interface TokenSwapCardProps {
     handleTokenSelection: (currency: Currency) => void;
@@ -42,20 +42,18 @@ const TokenCard = ({
 
     const { data: balance, isLoading } = useBalance({
         address: account,
-        token: currency?.isNative
-            ? undefined
-            : (currency?.wrapped.address as Address),
+        token: currency?.isNative ? undefined : (currency?.wrapped.address as Address),
         watch: true,
     });
 
     const balanceString = useMemo(() => {
-        if (isLoading || !balance) return 'Loading...';
+        if (isLoading || !balance) return "Loading...";
 
         return formatBalance(balance.formatted);
     }, [balance, isLoading]);
 
     const handleInput = useCallback((value: string) => {
-        if (value === '.') value = '0.';
+        if (value === ".") value = "0.";
         handleValueChange?.(value);
     }, []);
 
@@ -79,14 +77,12 @@ const TokenCard = ({
                         onClick={() => setIsOpen(true)}
                     >
                         <CurrencyLogo currency={currency} size={32} />
-                        <span className="font-bold text-lg">
-                            {currency ? currency.symbol : 'Select a token'}
-                        </span>
+                        <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
                         <ChevronRight size={16} />
                     </button>
                 </TokenSelectorModal>
                 {currency && account && (
-                    <div className={'flex text-sm whitespace-nowrap'}>
+                    <div className={"flex text-sm whitespace-nowrap"}>
                         {showBalance && (
                             <div>
                                 <span className="font-semibold">Balance: </span>
@@ -94,10 +90,7 @@ const TokenCard = ({
                             </div>
                         )}
                         {showMaxButton && (
-                            <button
-                                className="ml-2 text-[#63b4ff]"
-                                onClick={handleMaxValue}
-                            >
+                            <button className="ml-2 text-[#63b4ff]" onClick={handleMaxValue}>
                                 Max
                             </button>
                         )}
@@ -108,19 +101,15 @@ const TokenCard = ({
             <div className="flex flex-col items-end w-full">
                 <Input
                     disabled={disabled}
-                    type={'text'}
+                    type={"text"}
                     value={value}
                     id={`amount-${currency?.symbol}`}
                     onUserInput={(v) => handleInput(v)}
                     className={`text-right border-none text-xl font-bold w-9/12 p-0 disabled:cursor-default disabled:text-black`}
-                    placeholder={'0.0'}
+                    placeholder={"0.0"}
                     maxDecimals={currency?.decimals}
                 />
-                {showBalance && (
-                    <div className="text-sm">
-                        {fiatValue && formatUSD.format(fiatValue)}
-                    </div>
-                )}
+                {showBalance && <div className="text-sm">{fiatValue && formatUSD.format(fiatValue)}</div>}
             </div>
         </div>
     );

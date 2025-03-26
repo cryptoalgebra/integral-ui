@@ -1,11 +1,11 @@
-import { create } from 'zustand';
-import { PositionsStatus } from '@/types/position-filter-status';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import deepMerge from 'lodash.merge';
+import { create } from "zustand";
+import { PositionsStatus } from "@/types/position-filter-status";
+import { createJSONStorage, persist } from "zustand/middleware";
+import deepMerge from "lodash.merge";
 
-type FilteredPositions = {
+type FilteredPositions = Partial<{
     [key in PositionsStatus]: boolean;
-};
+}>;
 
 interface FilterStore {
     filterStatus: FilteredPositions;
@@ -28,8 +28,7 @@ export const usePositionFilterStore = create(
                     set((state) => ({
                         filterStatus: {
                             ...state.filterStatus,
-                            [positionStatus]:
-                                !state.filterStatus[positionStatus],
+                            [positionStatus]: !state.filterStatus[positionStatus],
                         },
                     }));
                 },
@@ -44,10 +43,9 @@ export const usePositionFilterStore = create(
             },
         }),
         {
-            name: 'position-filter-storage',
+            name: "position-filter-storage",
             storage: createJSONStorage(() => localStorage),
-            merge: (persistedState, currentState) =>
-                deepMerge(currentState, persistedState),
+            merge: (persistedState, currentState) => deepMerge(currentState, persistedState),
         }
     )
 );

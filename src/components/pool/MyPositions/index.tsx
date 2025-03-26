@@ -1,20 +1,16 @@
-import { myPositionsColumns } from '@/components/common/Table/myPositionsColumns';
-import { Address } from 'wagmi';
-import { FormattedPosition } from '@/types/formatted-position';
-import MyPositionsTable from '@/components/common/Table/myPositionsTable';
+import { myPositionsColumns } from "@/components/common/Table/myPositionsColumns";
+import { Address } from "wagmi";
+import { FormattedPosition } from "@/types/formatted-position";
+import MyPositionsTable from "@/components/common/Table/myPositionsTable";
 
 interface MyPositionsProps {
     positions: FormattedPosition[];
     poolId: Address | undefined;
-    selectedPosition: number | undefined;
-    selectPosition: (positionId: number | null) => void;
+    selectedPosition: string | undefined;
+    selectPosition: (positionId: string | null) => void;
 }
 
-const MyPositions = ({
-    positions,
-    selectedPosition,
-    selectPosition,
-}: MyPositionsProps) => {
+const MyPositions = ({ positions, selectedPosition, selectPosition }: MyPositionsProps) => {
     return (
         <div className="flex flex-col min-h-[377px] pb-8 bg-card border border-card-border/60 rounded-3xl">
             <MyPositionsTable

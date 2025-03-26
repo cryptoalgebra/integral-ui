@@ -1,31 +1,25 @@
-import {
-    useAlgebraPoolGlobalState,
-    useAlgebraPoolPlugin,
-    useAlgebraBasePluginIncentive,
-} from '@/generated';
-import { usePoolsStore } from '@/state/poolsStore';
-import { ADDRESS_ZERO } from '@cryptoalgebra/custom-pools-sdk';
-import { useEffect } from 'react';
-import { Address } from 'wagmi';
+import { useAlgebraPoolGlobalState, useAlgebraPoolPlugin, useAlgebraBasePluginIncentive } from "@/generated";
+import { usePoolsStore } from "@/state/poolsStore";
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { useEffect } from "react";
+import { Address } from "wagmi";
 
 export function usePoolPlugins(poolId: Address | undefined) {
     const { pluginsForPools, setPluginsForPool } = usePoolsStore();
 
     const skipFetch = Boolean(poolId && pluginsForPools[poolId]);
 
-    const { data: globalState, isLoading: globalStateLoading } =
-        useAlgebraPoolGlobalState({
-            address: skipFetch ? undefined : poolId,
-        });
+    const { data: globalState, isLoading: globalStateLoading } = useAlgebraPoolGlobalState({
+        address: skipFetch ? undefined : poolId,
+    });
 
     const { data: plugin, isLoading: pluginLoading } = useAlgebraPoolPlugin({
         address: skipFetch ? undefined : poolId,
     });
 
-    const { data: hasFarmingPlugin, isLoading: farmingLoading } =
-        useAlgebraBasePluginIncentive({
-            address: skipFetch ? undefined : plugin,
-        });
+    const { data: hasFarmingPlugin, isLoading: farmingLoading } = useAlgebraBasePluginIncentive({
+        address: skipFetch ? undefined : plugin,
+    });
 
     // const { data: hasLimitOrderPlugin, isLoading: limitLoading } =
     //     useAlgebraBasePluginLimitOrderPlugin({

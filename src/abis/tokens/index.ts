@@ -1,1 +1,1 @@
-export * from './wNative'
+export * from "./wNative";
