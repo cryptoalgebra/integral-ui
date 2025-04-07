@@ -1,4 +1,4 @@
-export const DEFAULT_CHAIN_ID = 0x4268
-export const DEFAULT_CHAIN_NAME = 'Holesky'
-export const DEFAULT_NATIVE_SYMBOL = 'ETH'
-export const DEFAULT_NATIVE_NAME = 'Ether'
+export const DEFAULT_CHAIN_ID = 0xdede
+export const DEFAULT_CHAIN_NAME = 'Sonic'
+export const DEFAULT_NATIVE_SYMBOL = 'S'
+export const DEFAULT_NATIVE_NAME = 'Sonic'
