@@ -10,33 +10,34 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const seiTestnet = defineChain({
-  id: 1328,
-  network: 'sei-testnet',
-  name: 'SEI Test',
-  nativeCurrency: { name: 'SEI', symbol: 'SEI', decimals: 18 },
+export const sei = defineChain({
+  id: 1329,
+  name: 'Sei Network',
+  network: 'sei',
+  nativeCurrency: { name: 'Sei', symbol: 'SEI', decimals: 18 },
   rpcUrls: {
     default: {
-      http: [import.meta.env.VITE_INFURA_RPC],
+      http: ['https://evm-rpc.sei-apis.com/'],
+      webSocket: ['wss://evm-ws.sei-apis.com/'],
     },
     public: {
-      http: [import.meta.env.VITE_INFURA_RPC],
-    },
+      http: ['https://evm-rpc.sei-apis.com/'],
+      webSocket: ['wss://evm-ws.sei-apis.com/'],
+    }
   },
   blockExplorers: {
-    etherscan: {
-      name: 'SeiScan',
-      url: 'https://seitrace.com',
-    },
     default: {
-      name: 'SeiScan',
+      name: 'Seitrace',
       url: 'https://seitrace.com',
     },
   },
-  testnet: true,
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    },
+  },
 })
-
-const chains = [seiTestnet]
+const chains = [sei]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -44,9 +45,9 @@ createWeb3Modal({
   projectId, 
   chains,
   chainImages: {
-    1328: ETHLogo
+    1329: ETHLogo
   },
-  defaultChain: seiTestnet,
+  defaultChain: sei,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

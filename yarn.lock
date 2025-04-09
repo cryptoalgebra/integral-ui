@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/sdk@npm:@cryptoalgebra/yaka-sdk@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/yaka-sdk/-/yaka-sdk-1.0.1.tgz#21b571ef92f7fd976dcb6c5f1422f7d1ae27ea3b"
-  integrity sha512-bKl+k0P2d3fspBQtARFYGqEw+7sjk9yycgqN2c/WfSe+cZ0QFs3LCJXNpEn0Lehp1C9gc+1T4CV8HAKEEhVFHw==
+"@cryptoalgebra/sdk@npm:@cryptoalgebra/yaka-sdk@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/yaka-sdk/-/yaka-sdk-1.1.0.tgz#badc28fc384b79a765855197bb8bccfef0b4ba4a"
+  integrity sha512-p2uTVUmaMR2Q2SDygn9Dqdj0ly39u/Q+pb6whYgwdvaQGGroKnH6bxHxPqkKEB+cLpq5edPfhNXqJtkeZgar1w==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

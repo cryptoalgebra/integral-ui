@@ -3,9 +3,9 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
     overwrite: true,
     schema: [
-        'https://api.goldsky.com/api/public/project_cm79vkebsihxh01uv7u15c50m/subgraphs/analytics/v0.0.1/gn',
-        'https://api.goldsky.com/api/public/project_cm79vkebsihxh01uv7u15c50m/subgraphs/blocks/v0.0.1/gn',
-        'https://api.goldsky.com/api/public/project_cm79vkebsihxh01uv7u15c50m/subgraphs/farms/v0.0.1/gn',
+        'https://gateway.thegraph.com/api/[api-key]/subgraphs/id/AjxyFsoqQasd54hz7groCv5PCzjYifwV7oUcK5CCHk8t',
+        'https://gateway.thegraph.com/api/[api-key]/subgraphs/id/75iGcPhADaVXLzkfmSnd55QdhLbSmgtwxNZBb5Ko13MV',
+        'https://gateway.thegraph.com/api/[api-key]/subgraphs/id/CpHNhKtEugksaNtzeww8Fik4axocMD3CqRkde76Ueiru',
     ],
     documents: 'src/graphql/queries/!(*.d).{ts,tsx}',
     generates: {
