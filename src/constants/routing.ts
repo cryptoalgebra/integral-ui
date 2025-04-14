@@ -1,19 +1,17 @@
-import { WNATIVE, Token, ChainId } from "@cryptoalgebra/sdk"
-import { STABLECOINS } from "./tokens"
+import { WNATIVE, Token, ChainId } from "@cryptoalgebra/sdk";
+import { TOKENS } from "./tokens";
 
 type ChainTokenList = {
-    readonly [chainId: number]: Token[]
-}
+    readonly [chainId: number]: Token[];
+};
 
 export const WNATIVE_EXTENDED: { [chainId: number]: Token } = {
-    ...WNATIVE
-}
+    ...WNATIVE,
+};
 
-const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(
-    Object.entries(WNATIVE_EXTENDED).map(([key, value]) => [key, [value]])
-)
+const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(Object.entries(WNATIVE_EXTENDED).map(([key, value]) => [key, [value]]));
 
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     ...WNATIVE_ONLY,
-    [ChainId.TAC]: [...WNATIVE_ONLY[ChainId.TAC], STABLECOINS.TON]
-}
+    [ChainId.TAC]: [...WNATIVE_ONLY[ChainId.TAC], TOKENS.TON],
+};

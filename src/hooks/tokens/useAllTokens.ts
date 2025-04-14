@@ -1,6 +1,5 @@
 import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
-import { STABLECOINS } from "@/constants/tokens";
-import { TokenFieldsFragment } from "@/graphql/generated/graphql";
+import { TokenFieldsFragment, useAllTokensQuery } from "@/graphql/generated/graphql";
 import { useTokensState } from "@/state/tokensStore";
 import { ADDRESS_ZERO } from "@cryptoalgebra/sdk";
 import { useMemo } from "react";
@@ -10,14 +9,7 @@ import { useChainId } from "wagmi";
 export function useAllTokens(showNativeToken: boolean = true) {
     const chainId = useChainId();
 
-    // const { data: allTokens, loading } = useAllTokensQuery();
-
-    const { data: allTokens, loading } = {
-        data: {
-            tokens: STABLECOINS,
-        },
-        loading: false,
-    };
+    const { data: allTokens, loading } = useAllTokensQuery();
 
     const { importedTokens } = useTokensState();
 
@@ -46,10 +38,10 @@ export function useAllTokens(showNativeToken: boolean = true) {
                 derivedMatic: 1,
             });
 
-        for (const token of Object.values(allTokens.tokens).filter((token) => !tokensBlackList.includes(token.address as Address))) {
-            tokens.set(token.address.toLowerCase() as Address, {
+        for (const token of Object.values(allTokens.tokens).filter((token) => !tokensBlackList.includes(token.id as Address))) {
+            tokens.set(token.id.toLowerCase() as Address, {
                 ...token,
-                id: token.address,
+                id: token.id,
                 derivedMatic: 0,
                 symbol: token.symbol as string,
                 name: token.name as string,
@@ -66,7 +58,7 @@ export function useAllTokens(showNativeToken: boolean = true) {
         }
 
         return [...tokens].map(([, token]) => ({ ...token }));
-    }, [importedTokens, tokensBlackList, chainId, showNativeToken]);
+    }, [importedTokens, tokensBlackList, chainId, showNativeToken, allTokens]);
 
     return useMemo(
         () => ({

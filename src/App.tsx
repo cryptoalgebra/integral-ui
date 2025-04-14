@@ -5,8 +5,6 @@ import "./App.css";
 import { Chain, WagmiConfig } from "wagmi";
 import Layout from "@/components/common/Layout";
 
-import ETHLogo from "@/assets/tokens/ether.svg";
-
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 const tac: Chain = {
@@ -39,7 +37,7 @@ createWeb3Modal({
     projectId,
     chains,
     chainImages: {
-        2390: ETHLogo,
+        2390: "https://avatars.githubusercontent.com/u/187664190?s=200&v=4",
     },
     defaultChain: tac,
     themeVariables: {

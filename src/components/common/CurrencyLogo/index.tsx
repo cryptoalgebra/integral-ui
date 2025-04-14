@@ -1,61 +1,75 @@
 import { Currency } from "@cryptoalgebra/sdk";
 import React from "react";
 import { Address } from "wagmi";
-import USDTLogo from '@/assets/tokens/usdt.png'
-import USDCLogo from '@/assets/tokens/usdc.svg'
-import WBTCLogo from '@/assets/tokens/wbtc.svg'
-import EtherLogo from '@/assets/tokens/ether.svg'
+import WBTCLogo from "@/assets/tokens/wbtc.svg";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TOKENS } from "@/constants/tokens";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
     size: number;
     className?: string;
-    style?: React.CSSProperties
+    style?: React.CSSProperties;
 }
-
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: {
-        symbol: 'ETH',
-        logo: EtherLogo
+    [TOKENS.TON.address.toLowerCase()]: {
+        symbol: "TON",
+        logo: "https://cache.tonapi.io/imgproxy/0boBDKrVQY502vqLLXqwwZTS87PyqSQq0hke-x11lqs/rs:fill:200:200:1/g:no/aHR0cHM6Ly90b25jby5pby9zdGF0aWMvdG9rZW4vVE9OX1RPS0VOLndlYnA.webp",
     },
-    ['0x7d98346b3b000c55904918e3d9e2fc3f94683b01']: {
-        symbol: 'USDT',
-        logo: USDTLogo
+    [TOKENS.X.address.toLowerCase()]: {
+        symbol: "X",
+        logo: "https://xempire.io/token/x.png",
     },
-    ['0x9dad8a1f64692adeb74aca26129e0f16897ff4bb']: {
-        symbol: 'WBTC',
-        logo: WBTCLogo
+    [TOKENS.durev.address.toLowerCase()]: {
+        symbol: "durev",
+        logo: "https://durev.xyz/images/256-b.png",
     },
-    ['0x6581e59a1c8da66ed0d313a0d4029dce2f746cc5']: {
-        symbol: 'USDC',
-        logo: USDCLogo
-    }
-}
-
+    ["0x10253594A832f967994b44f33411940533302ACb".toLowerCase()]: {
+        symbol: "WTAC",
+        logo: "https://avatars.githubusercontent.com/u/187664190?s=200&v=4",
+    },
+};
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
-
-    if (!currency) return <Skeleton className={cn(`flex rounded-full bg-card-dark`, className)} style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }} />
+    if (!currency)
+        return (
+            <Skeleton
+                className={cn(`flex rounded-full bg-card-dark`, className)}
+                style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}
+            />
+        );
 
     const address = currency.wrapped.address.toLowerCase() as Address;
 
-    const classString = cn(`w-[${size}px] h-[${size}px] min-w-[${size}px] min-h-[${size}px] bg-card-dark rounded-full`, className)
+    const classString = cn(`w-[${size}px] h-[${size}px] min-w-[${size}px] min-h-[${size}px] bg-card-dark rounded-full`, className);
 
     if (address in specialTokens) {
-        return <img src={specialTokens[address].logo} alt={specialTokens[address].symbol} width={size} height={size} className={classString} style={style} />
+        return (
+            <img
+                src={specialTokens[address.toLowerCase() as Address].logo}
+                alt={specialTokens[address.toLowerCase() as Address].symbol}
+                width={size}
+                height={size}
+                className={classString}
+                style={style}
+            />
+        );
     }
 
     if (currency.isNative) {
-        return <img src={WBTCLogo} alt={'ETH'} width={size} height={size} className={classString} style={style} />
+        return <img src={WBTCLogo} alt={"ETH"} width={size} height={size} className={classString} style={style} />;
     }
 
-    return <div className={`${classString} flex items-center justify-center bg-white text-black`} style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}>
-        {currency.symbol?.slice(0, 2)}
-    </div>
-
-}
+    return (
+        <div
+            className={`${classString} flex items-center justify-center bg-white text-black`}
+            style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}
+        >
+            {currency.symbol?.slice(0, 2)}
+        </div>
+    );
+};
 
 export default CurrencyLogo;
