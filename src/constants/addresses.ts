@@ -64,3 +64,7 @@ export const CUSTOM_POOL_BASE: Record<number, Address> = {
 export const CUSTOM_POOL_DEPLOYER_ALM: Record<number, Address> = {
     [ChainId.Base]: "0x05f3bd357d47d159ac7d33f9dbaacfc65d31976d",
 };
+
+export const CUSTOM_POOL_DEPLOYER_AI: Record<number, Address> = {
+    [ChainId.Base]: "0x8af296FcA616376aBbB3Ac78bD319bfbe4aF5503",
+};
