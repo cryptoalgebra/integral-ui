@@ -196,7 +196,7 @@ const CreatePoolForm = () => {
 
     return () => {
       selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-      selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address as Account);
+      selectCurrency(SwapField.OUTPUT, STABLECOINS.USDC.address as Account);
       typeStartPriceInput("");
     };
   }, []);

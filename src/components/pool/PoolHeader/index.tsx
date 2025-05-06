@@ -30,9 +30,7 @@ const PoolHeader = ({ pool }: PoolHeaderProps) => {
             </div>
 
             {currencyA && currencyB ? (
-                <PageTitle title={`${currencyA.symbol} / ${currencyB.symbol}`}>
-                    <span className="hidden sm:inline px-3 py-2 bg-muted-primary text-primary-text font-semibold rounded-2xl">{`${poolFee}`}</span>
-                </PageTitle>
+                <PageTitle title={`${currencyA.symbol} / ${currencyB.symbol}`}/>
             ) : (
                 <Skeleton className="w-[200px] h-[40px] bg-card" />
             )}

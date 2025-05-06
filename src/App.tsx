@@ -10,39 +10,39 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const holeskyChain = defineChain({
-  id: 17000,
-  network: 'holesky',
-  name: 'Holesky',
-  nativeCurrency: { name: 'Holesky Ether', symbol: 'ETH', decimals: 18 },
+const monadTestnetChain = defineChain({
+  id: 10_143,
+  name: 'Monad Testnet',
+  network: 'monad-testnet',
+  nativeCurrency: {
+    name: 'Testnet MON Token',
+    symbol: 'MON',
+    decimals: 18,
+  },
   rpcUrls: {
     default: {
-      http: [import.meta.env.VITE_INFURA_RPC],
+      http: ['https://testnet-rpc.monad.xyz'],
     },
     public: {
-      http: [import.meta.env.VITE_INFURA_RPC],
+      http: ['https://testnet-rpc.monad.xyz'],
     },
   },
   blockExplorers: {
-    etherscan: {
-      name: 'Etherscan',
-      url: 'https://holesky.etherscan.io',
-    },
     default: {
-      name: 'Etherscan',
-      url: 'https://holesky.etherscan.io',
+      name: 'Monad Testnet explorer',
+      url: 'https://testnet.monadexplorer.com',
     },
   },
   contracts: {
     multicall3: {
-      address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 77,
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 251449,
     },
   },
   testnet: true,
 })
 
-const chains = [holeskyChain]
+const chains = [monadTestnetChain]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -50,9 +50,9 @@ createWeb3Modal({
   projectId, 
   chains, 
   chainImages: {
-    17000: ETHLogo
+    10_143: ETHLogo
   },
-  defaultChain: holeskyChain,
+  defaultChain: monadTestnetChain,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

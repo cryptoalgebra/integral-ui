@@ -1,4 +1,4 @@
-import { Percent } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Percent } from "@cryptoalgebra/router";
 
 export const ONE_BIPS = new Percent(BigInt(1), BigInt(10000));
 export const BIPS_BASE = BigInt(10000);

@@ -23,7 +23,7 @@ import {
   Route,
   Currency,
   Pool,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import { useAlgebraPoolPlugin, usePrepareAlgebraBasePluginBeforeSwap } from "@/generated"
 import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
 

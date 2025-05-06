@@ -17,7 +17,7 @@ import { Address, useAccount } from "wagmi";
 import {
   SmartRouter,
   SmartRouterTrade,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import { TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useSmartRouterCallback } from "@/hooks/routing/useSmartRouterCallback.ts";
 

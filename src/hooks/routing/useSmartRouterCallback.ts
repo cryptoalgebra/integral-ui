@@ -7,7 +7,7 @@ import { ALGEBRA_ROUTER } from "@/constants/addresses";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { algebraRouterABI } from "@/abis";
-import { Currency } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Currency } from "@cryptoalgebra/router";
 import { formatAmount } from "@/utils/common/formatAmount";
 
 export function useSmartRouterCallback(

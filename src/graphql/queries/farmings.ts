@@ -27,7 +27,6 @@ export const DEPOSITS = gql`
             liquidity
             owner
             pool
-            rangeLength
         }
     }
 `;

@@ -6,7 +6,7 @@ import PageTitle from "@/components/common/PageTitle";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 import { useDerivedSwapInfo } from "@/state/swapStore.ts";
 import { useSmartRouterBestRoute } from "@/hooks/routing/useSmartRouterBestRoute.ts";
-import { Currency as CurrencyBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Currency as CurrencyBN } from "@cryptoalgebra/router";
 // import {useSmartRouterCallback} from "@/hooks/routing/useSmartRouterCallback.ts";
 
 const SwapPage = () => {

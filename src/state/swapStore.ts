@@ -24,7 +24,7 @@ import {
 import {
   Currency as CurrencyBN,
   CurrencyAmount as CurrencyAmountBN,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import JSBI from "jsbi";
 import { useCallback, useMemo } from "react";
 import { parseUnits } from "viem";
@@ -80,7 +80,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
     currencyId: ADDRESS_ZERO,
   },
   [SwapField.OUTPUT]: {
-    currencyId: STABLECOINS.USDT.address as Account,
+    currencyId: STABLECOINS.USDC.address as Account,
   },
   wasInverted: false,
   lastFocusedField: SwapField.INPUT,

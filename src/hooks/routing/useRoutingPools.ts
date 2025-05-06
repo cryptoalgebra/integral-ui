@@ -3,7 +3,7 @@ import {
   Currency,
   OnChainProvider,
   SmartRouter,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import { useQuery } from "@tanstack/react-query";
 
 export interface V3PoolsHookParams {

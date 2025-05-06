@@ -13,8 +13,8 @@
     },
     "dependencies": {
         "@apollo/client": "^3.8.4",
-        "@cryptoalgebra/custom-pools-sdk": "npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.2.0",
-        "@cryptoalgebra/router-custom-pools-and-sliding-fee": "1.3.5",
+        "@cryptoalgebra/custom-pools-sdk": "npm:@cryptoalgebra/primex-integral-sdk@1.1.0",
+        "@cryptoalgebra/router": "npm:@cryptoalgebra/router-primex-integral@1.0.0",
         "@radix-ui/react-avatar": "^1.0.4",
         "@radix-ui/react-dialog": "^1.0.5",
         "@radix-ui/react-hover-card": "^1.0.7",
@@ -78,5 +78,6 @@
         "tailwindcss": "^3.3.3",
         "typescript": "^5.0.2",
         "vite": "^4.4.5"
-    }
+    },
+    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

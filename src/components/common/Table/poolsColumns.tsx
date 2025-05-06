@@ -31,7 +31,7 @@ interface Pool {
     deployer: string;
 }
 
-const PoolPair = ({ pair, fee }: Pool) => {
+const PoolPair = ({ pair }: Pool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -51,7 +51,6 @@ const PoolPair = ({ pair, fee }: Pool) => {
                 <Skeleton className="h-[20px] w-[90px] bg-card" />
             )}
 
-            <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
         </div>
     );
 };

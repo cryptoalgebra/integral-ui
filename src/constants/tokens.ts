@@ -2,5 +2,5 @@ import { Token } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_CHAIN_ID } from "./default-chain-id";
 
 export const STABLECOINS = {
-    USDT: new Token(DEFAULT_CHAIN_ID, '0x7d98346b3b000c55904918e3d9e2fc3f94683b01', 6, 'USDT', 'USDT')
+    USDC: new Token(DEFAULT_CHAIN_ID, '0xf817257fed379853cDe0fa4F97AB987181B1E5Ea', 6, 'USDC', 'USDC')
 }
