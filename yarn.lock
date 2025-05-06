@@ -559,10 +559,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/primex-integral-sdk@1.1.0":
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/blackhole-sdk@1.1.0":
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/primex-integral-sdk/-/primex-integral-sdk-1.1.0.tgz#dd891e539a5f5a9beba0743114c9c0e6d327fa04"
-  integrity sha512-Mr/Co1JDBfY6xVlph6gOXYK67MuSsrXg4ADVsbXq96JkDgfNw1iTV8UnzKrQSBYRWxY2h8m5Et6RI4NmOTw7Qg==
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/blackhole-sdk/-/blackhole-sdk-1.1.0.tgz#69a15a3b716deb14710d788040fa702e7cdd75b7"
+  integrity sha512-T+ZmBZr0Fh8KET5gFXtiUeG+0LfwQza/2/lHRRXyUlYrAESc0imzJAjndwQv35S/rydX5K3KT4hfJRSqXcjgIg==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -576,12 +576,12 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router@npm:@cryptoalgebra/router-primex-integral@1.0.0":
+"@cryptoalgebra/router@npm:@cryptoalgebra/router-blackhole@1.0.0":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-primex-integral/-/router-primex-integral-1.0.0.tgz#44585ffe6ce3c295e6c8b19656033a6ec8d885f5"
-  integrity sha512-Ub2D3UgNJsQ9t3IAs42TU8Tb2wDnaItNVHEvxrmKQHq8rSVxAMzV/3sKWl6rcn4tioRUd13/5mgUGPFhXrZHJQ==
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-blackhole/-/router-blackhole-1.0.0.tgz#9b21c39a73cbf74927a4d5d359d12bfb1da01eba"
+  integrity sha512-8hug4eBYUDc7p4dxdb6g/mEsSCzpSvTVfY6yZjKS96eaVQZwIa3arHnPJi41XFDVudQI+cheeDJPqqFzipghMg==
   dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/primex-integral-sdk@1.1.0"
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/blackhole-sdk@1.1.0"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"

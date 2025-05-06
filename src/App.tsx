@@ -10,39 +10,35 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const monadTestnetChain = defineChain({
-  id: 10_143,
-  name: 'Monad Testnet',
-  network: 'monad-testnet',
+const avaxFujiChain = defineChain({
+  id: 43_113,
+  name: 'Avalanche Fuji',
+  network: 'avax-fuji',
   nativeCurrency: {
-    name: 'Testnet MON Token',
-    symbol: 'MON',
     decimals: 18,
+    name: 'Avalanche Fuji',
+    symbol: 'AVAX',
   },
   rpcUrls: {
-    default: {
-      http: ['https://testnet-rpc.monad.xyz'],
-    },
-    public: {
-      http: ['https://testnet-rpc.monad.xyz'],
-    },
+    default: { http: ['https://api.avax-test.network/ext/bc/C/rpc'] },
+    public: { http: ['https://api.avax-test.network/ext/bc/C/rpc'] },
   },
   blockExplorers: {
     default: {
-      name: 'Monad Testnet explorer',
-      url: 'https://testnet.monadexplorer.com',
+      name: 'SnowTrace',
+      url: 'https://testnet.snowtrace.io',
     },
   },
   contracts: {
     multicall3: {
-      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
-      blockCreated: 251449,
+      address: '0xca11bde05977b3631167028862be2a173976ca11',
+      blockCreated: 7096959,
     },
   },
   testnet: true,
 })
 
-const chains = [monadTestnetChain]
+const chains = [avaxFujiChain]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -50,9 +46,9 @@ createWeb3Modal({
   projectId, 
   chains, 
   chainImages: {
-    10_143: ETHLogo
+    43_113: ETHLogo
   },
-  defaultChain: monadTestnetChain,
+  defaultChain: avaxFujiChain,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }
