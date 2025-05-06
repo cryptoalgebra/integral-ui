@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/sdk@npm:@cryptoalgebra/atlantis-on-sonic-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/atlantis-on-sonic-sdk/-/atlantis-on-sonic-sdk-1.0.0.tgz#05cc2d5f23d1a5f0a7e478e20b139152f34b06eb"
-  integrity sha512-W8pYuyZgs+rem9z/Bw6JBttIVgWNMCQ/PP1swSTADcXgMbXz3tzMJHSluHkHiFFeCJRUzv6BmMH/chzNsQS2AA==
+"@cryptoalgebra/sdk@npm:@cryptoalgebra/atlantis-on-sonic-sdk@1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/atlantis-on-sonic-sdk/-/atlantis-on-sonic-sdk-1.1.1.tgz#b5e180addfa19c684c6a9e84300230fbf346563b"
+  integrity sha512-Jl5WtEdNdZFTJ9waEz9oLs1rrCZB1EeoqDySMv1gi/VD1xV6YTEtrNgSes+C9BDMf8po2md/skLQ6VXwYCObrA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

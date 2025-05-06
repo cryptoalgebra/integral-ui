@@ -29,7 +29,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: 'WBTC',
         logo: WBTCLogo
     },
-    ['0x6581e59a1c8da66ed0d313a0d4029dce2f746cc5']: {
+    ['0x29219dd400f2bf60e5a23d13be72b486d4038894']: {
         symbol: 'USDC',
         logo: USDCLogo
     }
