@@ -16,7 +16,7 @@ import { useCallback, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { SmartRouterTrade } from "@cryptoalgebra/router";
 
 const SwapPair = ({
   derivedSwap,

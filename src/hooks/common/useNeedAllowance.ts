@@ -2,7 +2,7 @@ import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
 import {
   Currency as CurrencyBN,
   CurrencyAmount as CurrencyAmountBN,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import { erc20ABI, useAccount, useContractRead } from "wagmi";
 
 export function useNeedAllowance(

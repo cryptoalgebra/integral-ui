@@ -10,39 +10,36 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const holeskyChain = defineChain({
-  id: 17000,
-  network: 'holesky',
-  name: 'Holesky',
-  nativeCurrency: { name: 'Holesky Ether', symbol: 'ETH', decimals: 18 },
+export const baseSepolia = defineChain({
+  id: 84532,
+  network: 'base-sepolia',
+  name: 'Base Sepolia',
+  nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
-      http: [import.meta.env.VITE_INFURA_RPC],
+      http: ['https://sepolia.base.org'],
     },
     public: {
-      http: [import.meta.env.VITE_INFURA_RPC],
+      http: ['https://sepolia.base.org'],
     },
   },
   blockExplorers: {
-    etherscan: {
-      name: 'Etherscan',
-      url: 'https://holesky.etherscan.io',
-    },
     default: {
-      name: 'Etherscan',
-      url: 'https://holesky.etherscan.io',
+      name: 'Basescan',
+      url: 'https://sepolia.basescan.org',
+      apiUrl: 'https://api-sepolia.basescan.org/api',
     },
   },
   contracts: {
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 77,
+      blockCreated: 1059647,
     },
   },
   testnet: true,
 })
 
-const chains = [holeskyChain]
+const chains = [baseSepolia]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -50,9 +47,9 @@ createWeb3Modal({
   projectId, 
   chains, 
   chainImages: {
-    17000: ETHLogo
+    84532: ETHLogo
   },
-  defaultChain: holeskyChain,
+  defaultChain: baseSepolia,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }

@@ -24,7 +24,7 @@ import {
 import {
   Currency as CurrencyBN,
   CurrencyAmount as CurrencyAmountBN,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import JSBI from "jsbi";
 import { useCallback, useMemo } from "react";
 import { parseUnits } from "viem";

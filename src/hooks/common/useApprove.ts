@@ -12,7 +12,7 @@ import {
   Percent as PercentBN,
   SmartRouter,
   SmartRouterTrade,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import {
   Address,
   erc20ABI,

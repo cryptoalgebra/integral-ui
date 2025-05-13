@@ -21,7 +21,7 @@ import {
   Route,
   Currency,
   Pool,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 
 interface ISwapRouteModal {
   isOpen: boolean;

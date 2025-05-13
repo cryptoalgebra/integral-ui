@@ -13,7 +13,7 @@ import {
   PoolType,
   SmartRouter,
   SwapRouter,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
 

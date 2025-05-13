@@ -11,7 +11,7 @@ import {
   SmartRouter,
   SmartRouterTrade,
   Percent as PercentBN,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+} from "@cryptoalgebra/router";
 import SwapRouteModal from "@/components/modals/SwapRouteModal";
 import { Button } from "@/components/ui/button.tsx";
 
