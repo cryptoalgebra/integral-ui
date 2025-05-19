@@ -554,10 +554,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/sdk@npm:@cryptoalgebra/custom-pools-and-sliding-fee-sdk@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/custom-pools-and-sliding-fee-sdk/-/custom-pools-and-sliding-fee-sdk-1.2.0.tgz#6e67e024295e9c9ede6f5fb4d1a0f3f4bad289f5"
-  integrity sha512-Z8lXraEd2Kh5NosYrBWl+CXQ1PTd/UvLjOh42eW6mqqwOcs7lfIMjrqHXJNlD3/yQ4GY+mqrs14YCk8w+PudpA==
+"@cryptoalgebra/sdk@npm:@cryptoalgebra/satsuma-sdk@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/satsuma-sdk/-/satsuma-sdk-1.0.0.tgz#0b5296fec2f3073436b597871fe8deb1718b531e"
+  integrity sha512-Nvsy1G4nO/s1O6VyOmTNYdsqIvH3hs5kPuVELtHEqyz8+FfWkg1M6Jic2cH9edfXAXH2VIZdkhOg2MSiChE3vw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

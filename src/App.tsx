@@ -3,14 +3,36 @@ import './styles/_colors.css'
 import './App.css'
 
 import { WagmiConfig } from 'wagmi'
-import Layout from "@/components/common/Layout"
-import { holesky } from "viem/chains"
+import { defineChain } from 'viem'
 
-import ETHLogo from '@/assets/tokens/ether.svg'
+import Layout from "@/components/common/Layout"
+import BTCLogo from '@/assets/tokens/wbtc.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-const chains = [holesky]
+export const citreaTestnet = defineChain({
+  id: 5115,
+  name: 'Citrea Testnet',
+  network: 'citrea-testnet',
+  nativeCurrency: { name: 'cBTC', symbol: 'cBTC', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.citrea.xyz'],
+    },
+    public: {
+      http: ['https://rpc.testnet.citrea.xyz'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Citrea Explorer',
+      url: 'https://explorer.testnet.citrea.xyz',
+    },
+  },
+  testnet: true,
+})
+
+const chains = [citreaTestnet]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -18,9 +40,9 @@ createWeb3Modal({
   projectId, 
   chains,
   chainImages: {
-    17000: ETHLogo
+    5115: BTCLogo
   },
-  defaultChain: holesky,
+  defaultChain: citreaTestnet,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }
