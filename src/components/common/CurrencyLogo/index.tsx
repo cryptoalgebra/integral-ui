@@ -17,7 +17,7 @@ interface CurrencyLogoProps {
 
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: {
+    ['0xbd833b6ecc30caeabf81db18bb0f1e00c6997e7a']: {
         symbol: 'ETH',
         logo: EtherLogo
     },
@@ -49,7 +49,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
     }
 
     if (currency.isNative) {
-        return <img src={WBTCLogo} alt={'cBTC'} width={size} height={size} className={classString} style={style} />
+        return <img src={EtherLogo} alt={'ANKR'} width={size} height={size} className={classString} style={style} />
     }
 
     return <div className={`${classString} flex items-center justify-center bg-white text-black`} style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}>

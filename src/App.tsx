@@ -6,33 +6,33 @@ import { WagmiConfig } from 'wagmi'
 import { defineChain } from 'viem'
 
 import Layout from "@/components/common/Layout"
-import BTCLogo from '@/assets/tokens/wbtc.svg'
+import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-export const citreaTestnet = defineChain({
-  id: 5115,
-  name: 'Citrea Testnet',
-  network: 'citrea-testnet',
-  nativeCurrency: { name: 'cBTC', symbol: 'cBTC', decimals: 18 },
+export const neuraTestnet = defineChain({
+  id: 267,
+  name: 'Neura Testnet',
+  network: 'neura-testnet',
+  nativeCurrency: { name: 'ANKR', symbol: 'ANKR', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://rpc.testnet.citrea.xyz'],
+      http: ['https://testnet.rpc.neuraprotocol.io'],
     },
     public: {
-      http: ['https://rpc.testnet.citrea.xyz'],
+      http: ['https://testnet.rpc.neuraprotocol.io'],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Citrea Explorer',
-      url: 'https://explorer.testnet.citrea.xyz',
+      name: 'Neura Explorer',
+      url: 'https://testnet-blockscout.infra.neuraprotocol.io/',
     },
   },
   testnet: true,
 })
 
-const chains = [citreaTestnet]
+const chains = [neuraTestnet]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -40,9 +40,9 @@ createWeb3Modal({
   projectId, 
   chains,
   chainImages: {
-    5115: BTCLogo
+    267: ETHLogo
   },
-  defaultChain: citreaTestnet,
+  defaultChain: neuraTestnet,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }
