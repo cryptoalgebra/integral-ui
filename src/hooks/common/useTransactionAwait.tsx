@@ -10,7 +10,7 @@ export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     hash ? (
         <ToastAction altText="View on explorer" asChild>
             <Link
-                to={`https://testnet-blockscout.infra.neuraprotocol.io/tx/${hash}`}
+                to={`https://www.hyperscan.com/tx/${hash}`}
                 target={'_blank'}
                 className="border-none gap-2 hover:bg-transparent hover:text-blue-400"
             >

@@ -15,5 +15,5 @@ const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(
 
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     ...WNATIVE_ONLY,
-    [ChainId.NeuraTestnet]: [...WNATIVE_ONLY[ChainId.NeuraTestnet], STABLECOINS.USDT]
+    [ChainId.HyperMainnet]: [...WNATIVE_ONLY[ChainId.HyperMainnet], STABLECOINS.USDT]
 }

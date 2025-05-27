@@ -10,29 +10,29 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-export const neuraTestnet = defineChain({
-  id: 267,
-  name: 'Neura Testnet',
-  network: 'neura-testnet',
-  nativeCurrency: { name: 'ANKR', symbol: 'ANKR', decimals: 18 },
+export const hyperEvmMainnet = defineChain({
+  id: 999,
+  name: 'HyperEVM',
+  network: 'hyper-evm-mainnet',
+  nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://testnet.rpc.neuraprotocol.io'],
+      http: ['https://rpc.hyperlend.finance'],
     },
     public: {
-      http: ['https://testnet.rpc.neuraprotocol.io'],
+      http: ['https://rpc.hyperlend.finance'],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Neura Explorer',
-      url: 'https://testnet-blockscout.infra.neuraprotocol.io/',
+      name: 'Hyper Scan',
+      url: 'https://www.hyperscan.com/',
     },
   },
   testnet: true,
 })
 
-const chains = [neuraTestnet]
+const chains = [hyperEvmMainnet]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -40,9 +40,9 @@ createWeb3Modal({
   projectId, 
   chains,
   chainImages: {
-    267: ETHLogo
+    999: ETHLogo
   },
-  defaultChain: neuraTestnet,
+  defaultChain: hyperEvmMainnet,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }
