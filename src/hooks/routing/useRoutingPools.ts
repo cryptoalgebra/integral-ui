@@ -49,11 +49,14 @@ export function useV3CandidatePools(
     useQuery({
       queryKey: ["v3_candidate_pools", key],
       queryFn: async () => {
+
+        const chainId = currencyA?.chainId as 8453 | 84532
+
         const pools = await SmartRouter.getV3CandidatePools({
           currencyA,
           currencyB,
-          onChainProvider: (() => SmartRouter.publicClient) as OnChainProvider,
-          subgraphProvider: () => SmartRouter.v3SubgraphClient,
+          onChainProvider: (() => SmartRouter.publicClient[chainId]) as OnChainProvider,
+          subgraphProvider: () => SmartRouter.v3SubgraphClient[chainId],
           blockNumber: options?.blockNumber,
         });
         return {

@@ -121,16 +121,19 @@ export function useSmartRouterBestRoute(
       );
 
       try {
+
+        const chainId = amount.currency.chainId as 8453 | 84532
+
         const bestTrade = await SmartRouter.getBestTrade(
           deferAmount,
           outputCurrency,
           isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
           {
-            gasPriceWei: () => SmartRouter.publicClient.getGasPrice(),
+            gasPriceWei: () => SmartRouter.publicClient[chainId].getGasPrice(),
             maxHops: isMultihop ? 2 : 1,
             maxSplits: isSplit ? 3 : 0,
             poolProvider,
-            quoteProvider: SmartRouter.quoteProvider,
+            quoteProvider: SmartRouter.quoteProvider[chainId],
             quoterOptimization: true,
             distributionPercent: 100,
             signal,
