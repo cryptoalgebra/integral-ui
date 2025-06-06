@@ -122,7 +122,7 @@ export function useSmartRouterBestRoute(
 
       try {
 
-        const chainId = amount.currency.chainId as 8453 | 84532
+        const chainId = amount.currency.chainId as 2020
 
         const bestTrade = await SmartRouter.getBestTrade(
           deferAmount,

@@ -559,10 +559,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/hydrex-sdk@1.0.0":
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/katana-sdk@1.0.0":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/hydrex-sdk/-/hydrex-sdk-1.0.0.tgz#a39c966cc89b9a48e51ca09316248f1fbc568c3f"
-  integrity sha512-dF2PfvVUhf2NKFc8pjDYkDvOcUh2BlG1C4nueCaiQ8vXIGHMKD2YBrydN74xTlX6yI7iUtMecfeQAR9wltW11A==
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/katana-sdk/-/katana-sdk-1.0.0.tgz#d9754fadc7eaed48f88e7fb1ffa1d7b387f7ddc2"
+  integrity sha512-zBZMJPH71LutJg1EJI25hlCXKypq9knE5BoonZg1cjak9JVXC6oNG3VuOpw/WvT5CExd5tsw/I7TT/H6UdTueA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -576,12 +576,12 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router@npm:@cryptoalgebra/hydrex-router@1.0.0":
+"@cryptoalgebra/router@npm:@cryptoalgebra/katana-router@1.0.0":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/hydrex-router/-/hydrex-router-1.0.0.tgz#0590b55108344559cb23760390a31f04a17ff0f8"
-  integrity sha512-MoMdIsUDlaDStGtIfZP0y9HdcXtiybyNKp5PIIcck+8ADsPmlT75dlLz+mVspJGYAF3529329SArhEAUPOeFIQ==
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/katana-router/-/katana-router-1.0.0.tgz#5b1287fb6de1e6b24de842f428bfdd1e68978c49"
+  integrity sha512-vxo/0Vr84m86PFMI4GQrPLK2pJD7GxC8UBr9WNudH1ScD7BCO1cij8OuSKy+rgSOdFDGGBzKv5oK/F9KRbhO7g==
   dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/hydrex-sdk@1.0.0"
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/katana-sdk@1.0.0"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"

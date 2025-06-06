@@ -50,7 +50,7 @@ export function useV3CandidatePools(
       queryKey: ["v3_candidate_pools", key],
       queryFn: async () => {
 
-        const chainId = currencyA?.chainId as 8453 | 84532
+        const chainId = currencyA?.chainId as 2020
 
         const pools = await SmartRouter.getV3CandidatePools({
           currencyA,

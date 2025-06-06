@@ -10,36 +10,34 @@ import ETHLogo from '@/assets/tokens/ether.svg'
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
-export const baseSepolia = defineChain({
-  id: 84532,
-  network: 'base-sepolia',
-  name: 'Base Sepolia',
-  nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+export const ronin = defineChain({
+  id: 2020,
+  name: 'Ronin',
+  network: 'ronin',
+  nativeCurrency: { name: 'RON', symbol: 'RON', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://sepolia.base.org'],
+      http: ['https://api.roninchain.com/rpc'],
     },
     public: {
-      http: ['https://sepolia.base.org'],
+      http: ['https://api.roninchain.com/rpc'],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Basescan',
-      url: 'https://sepolia.basescan.org',
-      apiUrl: 'https://api-sepolia.basescan.org/api',
+      name: 'Ronin Explorer',
+      url: 'https://app.roninchain.com',
     },
   },
   contracts: {
     multicall3: {
       address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 1059647,
+      blockCreated: 26023535,
     },
   },
-  testnet: true,
 })
 
-const chains = [baseSepolia]
+const chains = [ronin]
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata: { name: 'Algebra Integral', description: 'DEX Engine', url: 'https://integral.algebra.finance', icons: [''] } })
 
 createWeb3Modal({ 
@@ -47,9 +45,9 @@ createWeb3Modal({
   projectId, 
   chains, 
   chainImages: {
-    84532: ETHLogo
+    2020: ETHLogo
   },
-  defaultChain: baseSepolia,
+  defaultChain: ronin,
   themeVariables: {
     '--w3m-accent': '#2797ff'
   }
