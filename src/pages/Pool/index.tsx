@@ -88,7 +88,6 @@ const PoolPage = () => {
 
     useEffect(() => {
         async function getPositionsFees() {
-            console.log("gettin");
             const fees = await Promise.all(filteredPositions.map(({ positionId, position }) => getPositionFees(position.pool, positionId)));
             setPositionsFees(fees);
         }

@@ -559,10 +559,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/alm-sdk@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.0.tgz#064c234f826ce9b8821e6642715ec2d249908ddd"
-  integrity sha512-ipryml63B3RrHczkEbOYqlibepJ026VzJHMAzWD564BTY1xKsFwOgd561+3iDMHfOSVIYfaemiOH6VUT8ywspg==
+"@cryptoalgebra/alm-sdk@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.1.tgz#350d903eb14261f49ed63357ebd0b5d667ace039"
+  integrity sha512-Hy7OftPwJK+IXhi+n1rzS7gyaAe7pZ6g84pRv0O5BoG/HGCUE4Scoff46qoytUNrOj1NUJez2EreUD+srJfVcA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/abstract-signer" "^5.6.2"

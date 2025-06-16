@@ -7,12 +7,13 @@ import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
-import { ChainId, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { deposit, depositNativeToken, SupportedChainId, SupportedDex, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useCallback, useEffect, useState } from "react";
 import { Address, useAccount, useChainId } from "wagmi";
 import { useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
+import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
 
 const dex = SupportedDex.CLAMM;
 
@@ -24,6 +25,8 @@ interface AddAutomatedLiquidityButtonProps {
 
 export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutomatedLiquidityButtonProps) => {
     const { address: account } = useAccount();
+
+    const slippage = useUserSlippageToleranceWithDefault(new Percent(50, 1_000));
     const chainId = useChainId();
 
     const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolId as Address, account);
@@ -64,7 +67,8 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    dex
+                    dex,
+                    Number(slippage.toSignificant(4))
                 );
             } else {
                 tx = await deposit(
@@ -73,7 +77,8 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    dex
+                    dex,
+                    Number(slippage.toSignificant(4))
                 );
             }
 
@@ -83,7 +88,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
         } finally {
             setIsPending(false);
         }
-    }, [vault, amount?.quotient.toString(), account, provider, useNative]);
+    }, [vault, amount?.quotient.toString(), account, provider, useNative, slippage.quotient.toString()]);
 
     const { isLoading: isAddingLiquidityLoading, isSuccess } = useTransactionAwait(
         txHash,

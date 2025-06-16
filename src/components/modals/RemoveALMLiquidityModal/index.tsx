@@ -4,13 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { UserALMVault, useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
+import { useApprove } from "@/hooks/common/useApprove";
+import { useCurrency } from "@/hooks/common/useCurrency";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useBurnActionHandlers, useBurnState } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { SupportedDex, withdrawNativeToken, withdraw } from "@cryptoalgebra/alm-sdk";
+import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
+import { ApprovalState } from "@/types/approve-state";
+import {
+    algebraVaultDecimals,
+    SupportedChainId,
+    SupportedDex,
+    VAULT_DEPOSIT_GUARD,
+    withdrawNativeToken,
+    withdrawWithSlippage,
+} from "@cryptoalgebra/alm-sdk";
+import { CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useState } from "react";
-import { Address, useAccount } from "wagmi";
+import { parseUnits } from "viem";
+import { Address, useAccount, useChainId } from "wagmi";
+import { BigNumber } from "ethers";
 
 interface RemoveALMLiquidityModalProps {
     userVault: UserALMVault | undefined;
@@ -19,10 +33,12 @@ interface RemoveALMLiquidityModalProps {
 
 const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityModalProps) => {
     const [sliderValue, setSliderValue] = useState([50]);
+    const slippage = useUserSlippageToleranceWithDefault(new Percent(50, 1_000));
 
     const { address: account } = useAccount();
-
+    const chainId = useChainId();
     const { percent } = useBurnState();
+    const percentSDK = new Percent(percent, 100);
     const percentMultiplier = percent / 100;
 
     const { onPercentSelect } = useBurnActionHandlers();
@@ -34,23 +50,50 @@ const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityM
 
     const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolAddress, account);
 
+    const vaultLpToken = useCurrency(vault?.id as Address);
+    const lpShareToWithdraw =
+        userVault &&
+        vaultLpToken &&
+        CurrencyAmount.fromRawAmount(vaultLpToken, parseUnits(userVault.shares, algebraVaultDecimals).toString()).multiply(percentSDK);
+
+    const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
+        lpShareToWithdraw,
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][SupportedDex.CLAMM] as Address
+    );
+
+    const isApprovePending = approvalStateA === ApprovalState.PENDING;
+    const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
+
     const provider = useEthersSigner();
 
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<Address | undefined>();
 
     const callback = useCallback(async () => {
-        if (!vault || !percent || !account || !provider) return;
+        if (!vault || !percent || !account || !provider || !lpShareToWithdraw) return;
         setIsPending(true);
 
-        const shareToWithdraw = Number(userVault.shares) * percentMultiplier;
-
+        const shareToWithdraw = BigNumber.from(lpShareToWithdraw.quotient.toString());
         try {
             let tx;
-            if (useNative) {
-                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, SupportedDex.CLAMM);
+            if (!useNative) {
+                tx = await withdrawNativeToken(
+                    account,
+                    shareToWithdraw,
+                    vault.id,
+                    provider,
+                    SupportedDex.CLAMM,
+                    Number(slippage.toSignificant(4))
+                );
             } else {
-                tx = await withdraw(account, shareToWithdraw, vault.id, provider, SupportedDex.CLAMM);
+                tx = await withdrawWithSlippage(
+                    account,
+                    shareToWithdraw,
+                    vault.id,
+                    provider,
+                    SupportedDex.CLAMM,
+                    Number(slippage.toSignificant(4))
+                );
             }
 
             setTxHash(tx.hash as Address);
@@ -59,7 +102,17 @@ const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityM
         } finally {
             setIsPending(false);
         }
-    }, [vault, percent, account, provider, userVault?.shares, percentMultiplier, useNative]);
+    }, [
+        vault,
+        percent,
+        account,
+        provider,
+        userVault?.shares,
+        percentMultiplier,
+        useNative,
+        lpShareToWithdraw?.quotient.toString(),
+        slippage.quotient.toString(),
+    ]);
 
     const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(txHash, {
         title: "Remove ALM liquidity",
@@ -130,9 +183,15 @@ const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityM
                         token1={token1}
                     />
 
-                    <Button disabled={isDisabled} onClick={callback}>
-                        {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
-                    </Button>
+                    {showApproveA ? (
+                        <Button disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
+                            {isApprovePending ? <Loader /> : `Approve ${vaultLpToken?.symbol}`}
+                        </Button>
+                    ) : (
+                        <Button disabled={isDisabled} onClick={callback}>
+                            {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
+                        </Button>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

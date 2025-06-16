@@ -21,7 +21,6 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
 
     const { formatted: currencyAPriceUSD } = useUSDCPrice(vaults?.[0]?.token0);
     const { formatted: currencyBPriceUSD } = useUSDCPrice(vaults?.[0]?.token1);
-
     const {
         data: userVaults,
         isLoading,
@@ -47,12 +46,14 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
                     true
                 );
 
-                if (shares === "0") continue;
+                if (shares.toString() === "0") continue;
 
                 const formattedUserAmounts = [
                     formatUnits(userAmount0.toBigInt(), vault.token0.decimals),
                     formatUnits(userAmount1.toBigInt(), vault.token1.decimals),
                 ];
+
+                const formattedShares = formatUnits(shares.toBigInt(), 18);
 
                 const { pnl, roi } = await calculateUserDepositTokenPNL(
                     account,
@@ -68,7 +69,7 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
                 userALMVaults.push({
                     amount0: formattedUserAmounts[0],
                     amount1: formattedUserAmounts[1],
-                    shares,
+                    shares: formattedShares,
                     amountsUsd: Number(formattedUserAmounts[0]) * currencyAPriceUSD + Number(formattedUserAmounts[1]) * currencyBPriceUSD,
                     vault: vault,
                     pnl,
