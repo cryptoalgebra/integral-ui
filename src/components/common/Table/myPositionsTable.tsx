@@ -72,7 +72,7 @@ const MyPositionsTable = <TData, TValue>({
 
     const almPositions = data.filter((pos: any) => pos.isALM);
 
-    const noActivePositions = filterStatus.Open && activePositions.length === 0;
+    const noActivePositions = filterStatus.Open && activePositions.length === 0 && almPositions.length === 0;
     const noFarmingPositions = filterStatus.OnFarming && farmingPositions.length === 0;
     const noClosedPositions = filterStatus.Closed && closedPositions.length === 0;
 

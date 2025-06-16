@@ -48,7 +48,7 @@ const NewPositionPage = () => {
                     </Button>
                 </div>
             </PageTitle>
-            {isALM ? <CreateAutomatedPosition vaults={vaults} /> : <CreateManualPosition poolAddress={poolAddress} />}
+            {isALM ? <CreateAutomatedPosition poolId={poolAddress} vaults={vaults} /> : <CreateManualPosition poolAddress={poolAddress} />}
         </PageContainer>
     );
 };

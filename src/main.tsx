@@ -19,6 +19,7 @@ import CreatePoolPage from "@/pages/CreatePool/index.tsx";
 import { ApolloProvider } from "@apollo/client";
 import { infoClient } from "./graphql/clients/index.tsx";
 import { SwapPageView } from "./pages/Swap/types.ts";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 const router = createBrowserRouter([
     {
@@ -81,7 +82,7 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-            <ApolloProvider client={infoClient}>
+            <ApolloProvider client={infoClient[ChainId.Base]}>
                 <RouterProvider router={router} />
             </ApolloProvider>
         </QueryClientProvider>

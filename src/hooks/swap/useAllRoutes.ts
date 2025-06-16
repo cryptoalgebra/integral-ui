@@ -31,19 +31,33 @@ function computeAllRoutes(
     if (!tokenIn || !tokenOut) throw new Error("Missing tokenIn/tokenOut");
 
     for (const pool of pools) {
-        const [tokenA, tokenB] = pool.tokens;
+        try {
+            const [tokenA, tokenB] = pool.tokens;
 
-        const { liquidity, price, tick, fee, deployer } = pool.pool;
+            const { liquidity, price, tick, fee, deployer } = pool.pool;
 
-        const newPool = new Pool(tokenA, tokenB, +fee, price, deployer, liquidity, Number(tick), DEFAULT_TICK_SPACING);
+            const newPool = new Pool(tokenA, tokenB, +fee, price, deployer, liquidity, Number(tick), DEFAULT_TICK_SPACING);
 
-        if (!newPool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(newPool, pathPool))) continue;
+            if (!newPool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(newPool, pathPool))) continue;
 
-        const outputToken = newPool.token0.equals(tokenIn) ? newPool.token1 : newPool.token0;
-        if (outputToken.equals(tokenOut)) {
-            allPaths.push(new Route([...currentPath, newPool], startCurrencyIn, currencyOut));
-        } else if (maxHops > 1) {
-            computeAllRoutes(outputToken, currencyOut, pools, chainId, [...currentPath, newPool], allPaths, startCurrencyIn, maxHops - 1);
+            const outputToken = newPool.token0.equals(tokenIn) ? newPool.token1 : newPool.token0;
+            if (outputToken.equals(tokenOut)) {
+                allPaths.push(new Route([...currentPath, newPool], startCurrencyIn, currencyOut));
+            } else if (maxHops > 1) {
+                computeAllRoutes(
+                    outputToken,
+                    currencyOut,
+                    pools,
+                    chainId,
+                    [...currentPath, newPool],
+                    allPaths,
+                    startCurrencyIn,
+                    maxHops - 1
+                );
+            }
+        } catch (e) {
+            console.error(e);
+            continue;
         }
     }
 

@@ -73,8 +73,8 @@ export default function useWrapCallback(
                 inputError: sufficientBalance
                     ? undefined
                     : hasInputAmount
-                    ? `Insufficient ${DEFAULT_NATIVE_SYMBOL} balance`
-                    : `Enter ${DEFAULT_NATIVE_SYMBOL} amount`,
+                    ? `Insufficient ${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
+                    : `Enter ${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
             };
         } else if (weth.equals(inputCurrency) && outputCurrency.isNative) {
             return {
@@ -84,8 +84,8 @@ export default function useWrapCallback(
                 inputError: sufficientBalance
                     ? undefined
                     : hasInputAmount
-                    ? `Insufficient W${DEFAULT_NATIVE_SYMBOL} balance`
-                    : `Enter W${DEFAULT_NATIVE_SYMBOL} amount`,
+                    ? `Insufficient W${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
+                    : `Enter W${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
             };
         } else {
             return NOT_APPLICABLE;

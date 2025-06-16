@@ -50,14 +50,16 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
         type: TransactionType.POOL,
     });
 
-    const collectedFees = positionFeesUSD === "$0" && !zeroRewards ? "< $0.001" : positionFeesUSD;
-
     return (
         <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">
             <div className="text-left">
                 <div className="font-bold text-xs">EARNED FEES</div>
                 <div className="font-semibold text-2xl">
-                    {collectedFees ? <span className="text-cyan-300">{collectedFees}</span> : <Skeleton className="w-[100px] h-[30px]" />}
+                    {positionFeesUSD ? (
+                        <span className="text-cyan-300">{positionFeesUSD}</span>
+                    ) : (
+                        <Skeleton className="w-[100px] h-[30px]" />
+                    )}
                 </div>
             </div>
             <Button size={"md"} disabled={!collect || zeroRewards || isLoading} onClick={() => collect && collect()}>

@@ -3,7 +3,6 @@ import { usePosition, usePositionInFarming } from "@/hooks/positions/usePosition
 import { INITIAL_POOL_FEE, Position } from "@cryptoalgebra/custom-pools-sdk";
 import PositionNFT from "../PositionNFT";
 import { FormattedPosition } from "@/types/formatted-position";
-import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import PositionRangeChart from "../PositionRangeChart";
 import TokenRatio from "@/components/create-position/TokenRatio";
@@ -16,6 +15,7 @@ import ActiveFarmingCard from "../ActiveFarmingCard";
 import ClosedFarmingCard from "../ClosedFarmingCard";
 import { IncreaseLiquidityModal } from "@/components/modals/IncreaseLiquidityModal";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { formatAmount } from "@/utils/common/formatAmount";
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -51,9 +51,9 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
 
     const [positionLiquidityUSD, positionFeesUSD, positionAPR] = selectedPosition
         ? [
-              formatUSD.format(selectedPosition.liquidityUSD),
-              formatUSD.format(selectedPosition.feesUSD),
-              `${selectedPosition.apr.toFixed(2)}%`,
+              `$${formatAmount(selectedPosition.liquidityUSD, 2)}`,
+              `$${formatAmount(Number(selectedPosition.feesUSD), 2)}`,
+              `${formatAmount(selectedPosition.apr, 2)}%`,
           ]
         : [];
 
@@ -97,8 +97,8 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
 
             {positionEntity && (
                 <div className="flex justify-between font-semibold">
-                    <div>{`${positionEntity.amount0.toFixed(2)} ${currencyA?.symbol}`}</div>
-                    <div>{`${positionEntity.amount1.toFixed(2)} ${currencyB?.symbol}`}</div>
+                    <div>{`${formatAmount(positionEntity.amount0.toSignificant(24), 6)} ${currencyA?.symbol}`}</div>
+                    <div>{`${formatAmount(positionEntity.amount1.toSignificant(24), 6)} ${currencyB?.symbol}`}</div>
                 </div>
             )}
             {pool && positionEntity && <PositionRangeChart pool={pool} position={positionEntity} />}

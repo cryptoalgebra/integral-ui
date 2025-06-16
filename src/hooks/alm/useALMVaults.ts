@@ -1,4 +1,4 @@
-import { getVaultsByPool, SupportedDex, IchiVault, getExtendedIchiVaultInfo } from "@cryptoalgebra/alm-sdk";
+import { getVaultsByPool, SupportedDex, AlgebraVault, getExtendedAlgebraVault } from "@cryptoalgebra/alm-sdk";
 import useSWR from "swr";
 import { useEthersProvider } from "../common/useEthersProvider";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
@@ -6,8 +6,9 @@ import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "../common/useCurrency";
 import { Address, formatUnits } from "viem";
 import { useChainId } from "wagmi";
+import { useUSDCPrice } from "../common/useUSDCValue";
 
-export interface ExtendedVault extends Omit<IchiVault, "tokenA" | "tokenB"> {
+export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     name: string;
     apr: number;
     amount0: string;
@@ -33,45 +34,48 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
 
     const provider = useEthersProvider();
 
-    const currencyAPriceUSD = 1900;
-    const currencyBPriceUSD = 1;
+    const { formatted: currencyAPriceUSD } = useUSDCPrice(currencyA);
+    const { formatted: currencyBPriceUSD } = useUSDCPrice(currencyB);
 
-    const { data: vaults, isLoading } = useSWR(["vaults", poolAddress, provider, currencyA, currencyB, chainId], async () => {
-        if (!provider || !currencyA || !currencyB || !poolAddress) {
-            throw new Error("No provider");
+    const { data: vaults, isLoading } = useSWR(
+        ["vaults", poolAddress, provider, currencyA, currencyB, chainId, currencyAPriceUSD, currencyBPriceUSD],
+        async () => {
+            if (!provider || !currencyA || !currencyB || !poolAddress) {
+                throw new Error("No provider");
+            }
+
+            const dex = SupportedDex.CLAMM;
+
+            const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId, SupportedDex.CLAMM);
+
+            const vaultsData = await Promise.all(
+                vaultAddresses.map(async (vault) => {
+                    const data = await getExtendedAlgebraVault(vault, dex, chainId, provider, currencyA.decimals, currencyB.decimals);
+
+                    const amount0 = formatUnits(data.amount0, currencyA.decimals);
+                    const amount1 = formatUnits(data.amount1, currencyB.decimals);
+
+                    const tvlUsd = Number(amount0) * currencyAPriceUSD + Number(amount1) * currencyBPriceUSD;
+
+                    const depositToken = data.allowTokenA ? currencyA : currencyB;
+
+                    return {
+                        ...data,
+                        name: `ALM-${depositToken.symbol}`,
+                        apr: data.apr || 0,
+                        tvlUsd,
+                        amount0,
+                        amount1,
+                        token0: currencyA,
+                        token1: currencyB,
+                        depositToken,
+                    };
+                })
+            );
+
+            return vaultsData;
         }
-
-        const dex = SupportedDex.CLAMM;
-
-        const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId, SupportedDex.CLAMM);
-
-        const vaultsData = await Promise.all(
-            vaultAddresses.map(async (vault) => {
-                const data = await getExtendedIchiVaultInfo(vault, dex, chainId, provider, currencyA.decimals, currencyB.decimals);
-
-                const amount0 = formatUnits(data.amount0, currencyA.decimals);
-                const amount1 = formatUnits(data.amount1, currencyB.decimals);
-
-                const tvlUsd = Number(amount0) * currencyAPriceUSD + Number(amount1) * currencyBPriceUSD;
-
-                const depositToken = data.allowTokenA ? currencyA : currencyB;
-
-                return {
-                    ...data,
-                    name: `ALM-${depositToken.symbol}`,
-                    apr: data.apr || 0,
-                    tvlUsd,
-                    amount0,
-                    amount1,
-                    token0: currencyA,
-                    token1: currencyB,
-                    depositToken,
-                };
-            })
-        );
-
-        return vaultsData;
-    });
+    );
 
     return { vaults, isLoading };
 }

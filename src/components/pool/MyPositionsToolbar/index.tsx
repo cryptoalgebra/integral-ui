@@ -14,7 +14,7 @@ interface MyPositionsToolbar {
 
 const MyPositionsToolbar = ({ positionsData, poolId }: MyPositionsToolbar) => {
     const [myLiquidityUSD, myFeesUSD] = positionsData
-        ? positionsData.reduce((acc, { liquidityUSD, feesUSD }) => [acc[0] + liquidityUSD, acc[1] + feesUSD], [0, 0])
+        ? positionsData.reduce((acc, { liquidityUSD, feesUSD }) => [acc[0] + liquidityUSD, acc[1] + Number(feesUSD)], [0, 0])
         : [];
 
     return (

@@ -1,3 +1,3 @@
-import { Address } from "viem";
-
-export const ALM_POOLS: Address[] = ["0x47e8ca40666102ac217286e51660a4e6e6d7f9a3"].map((address) => address.toLowerCase() as Address);
+export const blacklistedPools = ["0x60680Db4244a0Ed3589ccd48D878d1AbfcC88D54", "0x7456ae73e1325766af64b8c0b5c4ec2f12e5f948"].map(
+    (address) => address.toLowerCase()
+);

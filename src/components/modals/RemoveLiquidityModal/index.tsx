@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
-import { farmingClient } from "@/graphql/clients";
 import { Deposit } from "@/graphql/generated/graphql";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
+import { useClients } from "@/hooks/graphql/useClients";
 import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -32,6 +32,8 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     const { percent } = useBurnState();
 
     const { onPercentSelect } = useBurnActionHandlers();
+
+    const { farmingClient } = useClients();
 
     const derivedInfo = useDerivedBurnInfo(position, true);
 

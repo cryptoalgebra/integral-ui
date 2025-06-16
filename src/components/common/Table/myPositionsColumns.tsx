@@ -1,13 +1,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { HeaderItem } from "./common";
-import { formatUSD } from "@/utils/common/formatUSD";
+import { formatAmount } from "@/utils/common/formatAmount";
 
 interface MyPosition {
     id: string;
     outOfRange: boolean;
     range: string;
     liquidityUSD: number;
-    feesUSD: number;
+    feesUSD: number | null;
     apr: number;
 }
 
@@ -24,7 +24,7 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
                 Liquidity
             </HeaderItem>
         ),
-        cell: ({ getValue }) => formatUSD.format(getValue() as number),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
     },
     {
         accessorKey: "feesUSD",
@@ -33,7 +33,9 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
                 Fees
             </HeaderItem>
         ),
-        cell: ({ getValue }) => formatUSD.format(getValue() as number),
+        cell: ({ getValue }) => {
+            return typeof getValue() === "number" ? `$${formatAmount(getValue() as number, 2)}` : " ";
+        },
     },
     {
         accessorKey: "outOfRange",
@@ -61,6 +63,6 @@ export const myPositionsColumns: ColumnDef<MyPosition>[] = [
                 APR
             </HeaderItem>
         ),
-        cell: ({ getValue }) => `${(getValue() as number)?.toFixed(2)}%`,
+        cell: ({ getValue }) => `${formatAmount(getValue() as number, 2)}%`,
     },
 ];

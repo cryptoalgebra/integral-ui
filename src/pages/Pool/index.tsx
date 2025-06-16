@@ -150,7 +150,7 @@ const PoolPage = () => {
                         outOfRange: false,
                         range: "ALM Managed",
                         liquidityUSD: vault.amountsUsd,
-                        feesUSD: 0,
+                        feesUSD: null,
                         apr: Math.abs(vault.vault.apr),
                         inFarming: false,
                     } as FormattedPosition)
@@ -182,7 +182,11 @@ const PoolPage = () => {
         return positionsData.find(({ id }) => Number(id) === Number(selectedPositionId));
     }, [selectedPositionId, positionsData]);
 
-    const noPositions = (!positionsLoading || !isFarmingLoading || !areDepositsLoading) && positionsData.length === 0 && poolEntity;
+    const noPositions =
+        (!positionsLoading || !isFarmingLoading || !areDepositsLoading || !areUserVaultsLoading) &&
+        positionsData.length === 0 &&
+        (userVaults?.length === 0 || !userVaults) &&
+        poolEntity;
 
     return (
         <PageContainer>
@@ -221,7 +225,7 @@ const PoolPage = () => {
 
                 <div className="flex flex-col gap-8 w-full h-full">
                     <PositionCard farming={farmingInfo} closedFarmings={closedFarmings} selectedPosition={selectedPosition} />
-                    <ALMPositionCard userVault={userVaults?.find((v) => v.vault.name === selectedPositionId)} />
+                    <ALMPositionCard poolAddress={poolId} userVault={userVaults?.find((v) => v.vault.name === selectedPositionId)} />
                 </div>
             </div>
         </PageContainer>

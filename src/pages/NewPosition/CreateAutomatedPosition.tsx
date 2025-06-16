@@ -3,14 +3,16 @@ import AddAutomatedLiquidityButton from "@/components/create-position/AddAutomat
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import { ExtendedVault } from "@/hooks/alm/useALMVaults";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
+import { formatAmount } from "@/utils/common/formatAmount";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useState, useEffect } from "react";
 
 interface CreateAutomatedPositionProps {
     vaults?: ExtendedVault[];
+    poolId?: string;
 }
 
-export function CreateAutomatedPosition({ vaults }: CreateAutomatedPositionProps) {
+export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPositionProps) {
     const [selectedVault, setSelectedVault] = useState<ExtendedVault>();
     const { typedValue } = useMintState();
 
@@ -63,22 +65,17 @@ export function CreateAutomatedPosition({ vaults }: CreateAutomatedPositionProps
                                         <CurrencyLogo currency={vault.depositToken} size={30} /> {vault.depositToken?.symbol}
                                     </div>
                                     <div className="flex flex-col items-start">
-                                        <span className="font-semibold">{Math.abs(vault.apr).toFixed(2)}%</span>
+                                        <span className="font-semibold">{formatAmount(vault.apr, 2)}%</span>
                                         <span className="text-sm">APR Range</span>
                                     </div>
                                     <div className="flex flex-col items-start">
-                                        <span className="font-semibold">${vault.tvlUsd.toFixed(2)}</span>
+                                        <span className="font-semibold">${formatAmount(vault.tvlUsd, 2)}</span>
                                         <span className="text-sm">TVL</span>
                                     </div>
                                 </label>
                             ))}
                         </fieldset>
                     </form>
-
-                    {/* <img
-                        alt="ichi-strategy"
-                        src="https://docs.ichi.org/~gitbook/image?url=https%3A%2F%2F1172929898-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FOUojwAvkzrENCQOkhMq6%252Fuploads%252Fwp6zE7EaX39OBZr9SDT4%252Fimage.png%3Falt%3Dmedia%26token%3D4e677895-df0c-4834-bef6-28a403e99abd&width=768&dpr=4&quality=100&sign=8cf81481&sv=2"
-                    /> */}
                 </div>
             </div>
 
@@ -91,7 +88,7 @@ export function CreateAutomatedPosition({ vaults }: CreateAutomatedPositionProps
                         value={typedValue}
                         handleChange={(value) => onFieldAInput(value)}
                     />
-                    <AddAutomatedLiquidityButton vault={selectedVault} amount={parsedAmountA} />
+                    <AddAutomatedLiquidityButton vault={selectedVault} amount={parsedAmountA} poolId={poolId} />
                 </div>
             </div>
         </div>

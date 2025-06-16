@@ -8,7 +8,6 @@ import {
     NonfungiblePositionManager,
     ADDRESS_ZERO,
     INITIAL_POOL_FEE,
-    ChainId,
 } from "@cryptoalgebra/custom-pools-sdk";
 import { usePrepareAlgebraCustomPoolDeployerCreateCustomPool, usePrepareAlgebraPositionManagerMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -21,21 +20,17 @@ import SelectPair from "../SelectPair";
 import { STABLECOINS } from "@/constants/tokens";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { cn } from "@/lib/utils";
-import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 
 import FixBrokenPool from "../FixBrokenPool";
 
 const POOL_DEPLOYER = {
     BASE: "Base",
     LIMIT_ORDER: "Limit Order",
+    ALM: "ALM",
 };
 
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
-
-const customPoolDeployerAddresses = {
-    [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE[ChainId.Base],
-    [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[ChainId.Base],
-};
 
 const CreatePoolForm = () => {
     const { address: account } = useAccount();
@@ -62,6 +57,15 @@ const CreatePoolForm = () => {
 
     const isSameToken = areCurrenciesSelected && currencyA.wrapped.equals(currencyB.wrapped);
 
+    const customPoolDeployerAddresses = useMemo(
+        () => ({
+            [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE[chainid],
+            [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid],
+            [POOL_DEPLOYER.ALM]: CUSTOM_POOL_DEPLOYER_ALM[chainid],
+        }),
+        [chainid]
+    );
+
     const poolAddress =
         areCurrenciesSelected && !isSameToken
             ? (computePoolAddress({
@@ -72,25 +76,29 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid]].map(
-                  (customPoolDeployer) =>
-                      computeCustomPoolAddress({
-                          tokenA: currencyA.wrapped,
-                          tokenB: currencyB.wrapped,
-                          customPoolDeployer,
-                      }) as Address
-              )
+            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid], CUSTOM_POOL_DEPLOYER_ALM[chainid]]
+                  .filter((deployer): deployer is Address => deployer !== undefined)
+                  .map(
+                      (customPoolDeployer) =>
+                          computeCustomPoolAddress({
+                              tokenA: currencyA.wrapped,
+                              tokenB: currencyB.wrapped,
+                              customPoolDeployer,
+                          }) as Address
+                  )
             : [];
 
     const [poolState] = usePool(poolAddress);
 
     // TODO
     const [poolState0] = usePool(customPoolsAddresses[0]);
+    const [poolState1] = usePool(customPoolsAddresses[1]);
 
     const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
     const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.LIMIT_ORDER;
+    const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.ALM;
 
-    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists;
+    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists;
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,

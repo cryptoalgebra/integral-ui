@@ -1,13 +1,14 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
+import "dotenv/config";
 
 const config: CodegenConfig = {
     overwrite: true,
     schema: [
-        "https://api.studio.thegraph.com/query/50593/clamm-analytics/version/latest ",
-        "https://api.studio.thegraph.com/query/50593/clamm-blocks/version/latest",
-        "https://api.studio.thegraph.com/query/50593/clamm-farms/version/latest",
-        "https://api.studio.thegraph.com/query/50593/clamm-limits/version/latest",
-    ],
+        process.env.VITE_INFO_GRAPH,
+        process.env.VITE_LIMIT_ORDERS_GRAPH,
+        process.env.VITE_BLOCKS_GRAPH,
+        process.env.VITE_FARMING_GRAPH,
+    ] as string[],
     documents: "src/graphql/queries/!(*.d).{ts,tsx}",
     generates: {
         "src/graphql/generated/graphql.tsx": {

@@ -15,7 +15,7 @@ const LimitOrdersList = () => {
 
     const [tab, setTab] = useState(0);
 
-    const { limitOrderClient } = useClients();
+    const { limitOrderClient, infoClient } = useClients();
 
     const { data: limitOrders, loading: isLimitOrdersLoading } = useLimitOrdersListQuery({
         client: limitOrderClient,
@@ -29,10 +29,11 @@ const LimitOrdersList = () => {
         variables: {
             poolIds: limitOrders && limitOrders.limitOrders.map(({ pool }: any) => pool),
         },
+        client: infoClient,
     });
 
     const formattedLimitOrders = useMemo(() => {
-        if (!limitOrders || !poolForLimitOrders) return [];
+        if (!limitOrders || !poolForLimitOrders?.pools) return [];
 
         const pools: { [key: string]: Pool } = poolForLimitOrders.pools.reduce(
             (acc, { id, token0, token1, sqrtPrice, liquidity, tick, tickSpacing }) => ({
@@ -51,94 +52,112 @@ const LimitOrdersList = () => {
             {}
         );
 
-        return limitOrders.limitOrders.map(
-            ({
-                liquidity,
-                initialLiquidity,
-                killedLiquidity,
-                owner,
-                tickLower,
-                tickUpper,
-                zeroToOne,
-                epoch,
-                pool: poolId,
-                killed,
-            }: any) => {
-                const pool = pools[poolId];
-
-                const liquidityForPosition = epoch.filled ? BigInt(initialLiquidity) - BigInt(killedLiquidity) : liquidity;
-
-                const positionLO = new Position({
-                    pool,
-                    liquidity: Number(liquidityForPosition),
-                    tickLower: Number(tickLower),
-                    tickUpper: Number(tickUpper),
-                });
-
-                const { amount0: amount0LO, amount1: amount1LO, token0PriceLower } = positionLO;
-
-                const { amount0: amount0Max, amount1: amount1Max } = new Position({
-                    pool: new Pool(
-                        pool.token0,
-                        pool.token1,
-                        pool.fee,
-                        zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO,
-                        CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
-                        pool.liquidity,
-                        zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
-                        pool.tickSpacing
-                    ),
-                    liquidity: Number(liquidityForPosition),
-                    tickLower: Number(tickLower),
-                    tickUpper: Number(tickUpper),
-                });
-
-                const amount0 = zeroToOne ? amount0LO : amount1LO;
-
-                const isClosed = Number(liquidity) === 0;
-
-                return {
-                    epoch,
-                    zeroToOne,
-                    isClosed,
+        return limitOrders.limitOrders
+            .map(
+                ({
                     liquidity,
                     initialLiquidity,
+                    killedLiquidity,
                     owner,
+                    tickLower,
+                    tickUpper,
+                    zeroToOne,
+                    epoch,
+                    pool: poolId,
                     killed,
-                    ticks: {
+                    placeTimestamp,
+                    closeTimestamp,
+                }: any) => {
+                    const pool = pools[poolId];
+
+                    if (!pool) return null;
+
+                    const liquidityForPosition = epoch.filled ? BigInt(initialLiquidity) - BigInt(killedLiquidity) : liquidity;
+
+                    const positionLO = new Position({
+                        pool,
+                        liquidity: Number(liquidityForPosition),
                         tickLower: Number(tickLower),
                         tickUpper: Number(tickUpper),
-                        tickCurrent: pool.tickCurrent,
-                        isClosed,
-                        killed,
-                        isFilled: epoch.filled,
+                    });
+
+                    const { token0PriceLower, token0PriceUpper } = positionLO;
+
+                    const { amount0: amount0Max, amount1: amount1Max } = new Position({
+                        pool: new Pool(
+                            pool.token0,
+                            pool.token1,
+                            pool.fee,
+                            zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO,
+                            CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                            pool.liquidity,
+                            zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
+                            pool.tickSpacing
+                        ),
+                        liquidity: Number(liquidityForPosition),
+                        tickLower: Number(tickLower),
+                        tickUpper: Number(tickUpper),
+                    });
+
+                    const buyAmount = zeroToOne ? amount1Max : amount0Max;
+
+                    const minBuyRate = zeroToOne ? token0PriceLower : token0PriceLower.invert();
+                    const minSellRate = zeroToOne ? token0PriceLower.invert() : token0PriceLower;
+
+                    const maxSellRate = zeroToOne ? token0PriceUpper.invert() : token0PriceUpper;
+
+                    const maxSellAmount = maxSellRate.quote(buyAmount);
+                    const minSellAmount = minSellRate.quote(buyAmount);
+                    const sellAmount = maxSellAmount.add(minSellAmount).divide(2);
+
+                    const isClosed = Number(liquidity) === 0;
+
+                    return {
+                        epoch,
                         zeroToOne,
-                    },
-                    rates: {
-                        buy: {
-                            token: zeroToOne ? pool.token0 : pool.token1,
-                            rate: zeroToOne ? token0PriceLower : token0PriceLower.invert(),
+                        isClosed,
+                        liquidity,
+                        initialLiquidity,
+                        owner,
+                        killed,
+                        positionLO,
+                        time:
+                            Number(closeTimestamp) > 0 ? new Date(Number(closeTimestamp) * 1000) : new Date(Number(placeTimestamp) * 1000),
+                        ticks: {
+                            tickLower: Number(tickLower),
+                            tickUpper: Number(tickUpper),
+                            tickCurrent: pool.tickCurrent,
+                            isClosed,
+                            killed,
+                            isFilled: epoch.filled,
+                            zeroToOne,
                         },
-                        sell: {
-                            token: zeroToOne ? pool.token1 : pool.token0,
-                            rate: zeroToOne ? token0PriceLower.invert() : token0PriceLower,
+                        rates: {
+                            buy: {
+                                token: zeroToOne ? pool.token0 : pool.token1,
+                                rate: minBuyRate,
+                            },
+                            sell: {
+                                token: zeroToOne ? pool.token1 : pool.token0,
+                                rate: minSellRate,
+                            },
                         },
-                    },
-                    amounts: {
-                        buy: {
-                            token: zeroToOne ? pool.token1 : pool.token0,
-                            amount: zeroToOne ? amount1Max : amount0Max,
+                        amounts: {
+                            buy: {
+                                token: zeroToOne ? pool.token1 : pool.token0,
+                                amount: buyAmount,
+                            },
+                            sell: {
+                                token: zeroToOne ? pool.token0 : pool.token1,
+                                amount: sellAmount,
+                            },
                         },
-                        sell: {
-                            token: zeroToOne ? pool.token0 : pool.token1,
-                            amount: zeroToOne ? amount0 : amount1LO,
-                        },
-                    },
-                    pool,
-                };
-            }
-        );
-    }, [limitOrders, poolForLimitOrders]);
+                        pool,
+                    };
+                }
+            )
+            .filter(Boolean);
+    }, [limitOrders, poolForLimitOrders, chainId]);
 
     const [closedOrders, openedOrders] = useMemo(() => {
         if (!formattedLimitOrders) return [];
@@ -173,7 +192,7 @@ const LimitOrdersList = () => {
                         </button>
                         <button
                             onClick={() => setTab(1)}
-                            className={`relative py-2 px-4 bg-card relative rounded-3xl font-semibold duration-300 ${
+                            className={`relative py-2 px-4 bg-card rounded-3xl font-semibold duration-300 ${
                                 tab === 1 ? "text-primary-text bg-muted-primary" : "hover:bg-card-hover"
                             }`}
                         >
@@ -181,7 +200,7 @@ const LimitOrdersList = () => {
                         </button>
                     </div>
                     <div className="pb-4 bg-card border border-card-border rounded-3xl">
-                        <LimitOrdersTable columns={limitOrderColumns} data={limitOrdersForTable} />
+                        <LimitOrdersTable defaultSortingID="time" columns={limitOrderColumns} data={limitOrdersForTable} />
                     </div>
                 </>
             )}

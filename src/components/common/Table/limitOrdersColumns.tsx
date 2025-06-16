@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChainId, CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
@@ -41,6 +41,7 @@ interface Ticks {
 interface Amount {
     token: Token;
     amount: CurrencyAmount<Token>;
+    maxAmount?: CurrencyAmount<Token>;
 }
 
 interface Amounts {
@@ -54,12 +55,14 @@ export interface LimitOrder {
     killed: boolean;
     owner: Address;
     epoch: Epoch;
+    positionLO: Position;
     zeroToOne: boolean;
     isClosed: boolean;
     ticks: Ticks;
     rates: Rates;
     amounts: Amounts;
     pool: Pool;
+    time: Date;
 }
 
 const TokenAmount = ({ amount }: { amount: Amount }) => (
@@ -67,7 +70,9 @@ const TokenAmount = ({ amount }: { amount: Amount }) => (
         <CurrencyLogo currency={amount.token} size={35} />
         <div className="text-left">
             <div className="font-bold">{amount.token.symbol}</div>
-            <div>{amount.amount.toSignificant(3)}</div>
+            <div>
+                {amount.amount.toSignificant(3)} {amount.maxAmount ? `/ ${amount?.maxAmount?.toSignificant(3)}` : ""}
+            </div>
         </div>
     </div>
 );
@@ -83,7 +88,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
     <div className="relative flex h-[25px] bg-card-dark rounded-xl">
         <div className="relative flex w-full h-full font-semibold text-sm">
             <div
-                className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#143e65] border border-[#36f] duration-300 ${
+                className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#ffeab7] border border-card-border duration-300 ${
                     Number(progress) === 100 ? "rounded-2xl" : "rounded-l-2xl"
                 }`}
                 style={{ width: `${progress}%` }}
@@ -91,7 +96,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
                 <CurrencyLogo currency={sellToken} size={22} className="absolute left-1" />
             </div>
             <div
-                className={`flex items-center pr-1 pl-2 h-full bg-[#351d6b] border border-[#996cff] duration-300 ${
+                className={`flex items-center pr-1 pl-2 h-full bg-[#f9ffb7] border border-card-border  duration-300 ${
                     Number(progress) === 100 ? "rounded-2xl" : "rounded-r-2xl"
                 }`}
                 style={{ width: `${100 - progress}%` }}
@@ -114,7 +119,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
             </div>
         );
 
-    if (ticks.isClosed)
+    if (ticks.isClosed || ticks.isFilled)
         return (
             <div className="flex items-center gap-4 text-left">
                 <CheckCircle2Icon className={"text-green-500"} />
@@ -173,17 +178,19 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
 
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
-        accessorKey: "amounts.buy",
-        header: () => <HeaderItem className="ml-2">You buy</HeaderItem>,
-        cell: ({ getValue }) => (
-            <div className="ml-4">
-                <TokenAmount amount={getValue() as Amount} />
-            </div>
-        ),
+        accessorKey: "time",
+        header: () => <HeaderItem className="ml-4">Time</HeaderItem>,
+        cell: ({ getValue }) => <div className="ml-4">{(getValue() as Date).toLocaleString()}</div>,
+        sortingFn: (rowA, rowB) => rowA.original.time.getTime() - rowB.original.time.getTime(),
     },
     {
         accessorKey: "amounts.sell",
         header: () => <HeaderItem>You sell</HeaderItem>,
+        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
+    },
+    {
+        accessorKey: "amounts.buy",
+        header: () => <HeaderItem>You buy</HeaderItem>,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
     },
     {

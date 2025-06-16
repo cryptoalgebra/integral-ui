@@ -53,7 +53,7 @@ export function useSmartRouterCallback(
                 args: [[calldata]],
             }),
             value: BigInt(value || 0),
-            gas: BigInt(1_000_000),
+            gas: BigInt(2_000_000),
         };
         try {
             const txHash = await sendTransactionAsync(txData);

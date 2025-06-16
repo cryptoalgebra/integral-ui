@@ -3,6 +3,6 @@ export interface FormattedPosition {
     outOfRange: boolean;
     range: string;
     liquidityUSD: number;
-    feesUSD: number;
+    feesUSD: number | null;
     apr: number;
 }

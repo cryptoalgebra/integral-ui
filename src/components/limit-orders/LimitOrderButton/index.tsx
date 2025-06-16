@@ -13,6 +13,7 @@ import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { SwapField } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 
 interface LimitOrderButtonProps {
     token0: Token | undefined;
@@ -47,6 +48,7 @@ const LimitOrderButton = ({
         toggledTrade: trade,
         inputError,
     } = useDerivedSwapInfo();
+
     const amount = trade && trade.inputAmount;
 
     const limitOrderTick = zeroToOne
@@ -100,7 +102,7 @@ const LimitOrderButton = ({
     if (isWrongChain)
         return (
             <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>
-                Connect to Goerli
+                {`Connect to ${DEFAULT_CHAIN_NAME[ChainId.Base]}`}
             </Button>
         );
 

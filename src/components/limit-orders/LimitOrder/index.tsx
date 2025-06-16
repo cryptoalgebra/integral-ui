@@ -1,7 +1,7 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { computeCustomPoolAddress, getTickToPrice, tickToPrice, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
@@ -20,13 +20,19 @@ const LimitOrder = () => {
         actions: { typeLimitOrderPrice, limitOrderPriceLastFocused, limitOrderPriceWasInverted },
     } = useSwapState();
 
-    const showWrap = false;
+    const chainId = useChainId();
 
     const tokenA = currencies[SwapField.INPUT]?.wrapped;
     const tokenB = currencies[SwapField.OUTPUT]?.wrapped;
 
+    const showWrap = tokenA?.wrapped?.equals(WNATIVE[chainId]) && tokenB?.wrapped.equals(WNATIVE[chainId]);
+
     const [token0, token1] =
-        tokenA && tokenB && !showWrap ? (tokenA?.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]) : [undefined, undefined];
+        tokenA && tokenB && !showWrap
+            ? tokenA.wrapped?.sortsBefore(tokenB.wrapped)
+                ? [tokenA, tokenB]
+                : [tokenB, tokenA]
+            : [undefined, undefined];
 
     const invertPrice = Boolean(currencies[SwapField.INPUT] && token0 && !currencies[SwapField.INPUT]?.wrapped.equals(token0));
 
@@ -34,10 +40,8 @@ const LimitOrder = () => {
 
     const [wasInverted, setWasInverted] = useState(false);
 
-    const chainId = useChainId();
-
     const limitOrderPoolAddress =
-        token0 && token1
+        token0 && token1 && !showWrap
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
@@ -50,16 +54,22 @@ const LimitOrder = () => {
     const initialSellPrice = useMemo(() => {
         if (!limitOrderPool) return "";
 
-        const _newPrice = invertPrice
-            ? getTickToPrice(token1, token0, limitOrderPool.tickCurrent - limitOrderPool.tickSpacing)
-            : getTickToPrice(token0, token1, limitOrderPool.tickCurrent + limitOrderPool.tickSpacing);
+        const { tickCurrent, tickSpacing } = limitOrderPool;
 
-        return _newPrice?.toSignificant(_newPrice.baseCurrency.decimals / 2);
+        const targetTick = invertPrice
+            ? Math.max(tickCurrent - tickSpacing, TickMath.MIN_TICK)
+            : Math.min(tickCurrent + tickSpacing, TickMath.MAX_TICK);
+
+        const _newPrice = invertPrice ? getTickToPrice(token1, token0, targetTick) : getTickToPrice(token0, token1, targetTick);
+
+        return _newPrice?.toSignificant(8);
     }, [limitOrderPool, token0, token1, invertPrice]);
 
     const [sellPrice, setSellPrice] = useState("");
 
     const isPoolExists = limitOrderPoolExists === PoolState.EXISTS;
+
+    console.log(isPoolExists);
 
     const tick = limitOrderPool?.tickCurrent;
     const tickSpacing = limitOrderPool?.tickSpacing;
@@ -78,49 +88,79 @@ const LimitOrder = () => {
             }
 
             const limitOrderPrice = invertPrice
-                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(token1.decimals / 2)
-                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(token0.decimals / 2);
+                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(8)
+                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(8);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);
         },
-        [invertPrice, token0, token1, sellPrice, tickSpacing]
+        [invertPrice, token0, token1, sellPrice, tickSpacing, typeLimitOrderPrice]
     );
+    const { blockCreation, message } = useMemo(() => {
+        const missingFields: string[] = [];
 
-    const blockCreation = useMemo(() => {
-        if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return true;
+        if (!currencies.INPUT) missingFields.push("currencies.INPUT");
+        if (!currencies.OUTPUT) missingFields.push("currencies.OUTPUT");
+        if (!token0) missingFields.push("token0");
+        if (!token1) missingFields.push("token1");
+        if (tick === undefined) missingFields.push("tick");
+        if (tickSpacing === undefined) missingFields.push("tickSpacing");
+
+        if (
+            missingFields.length > 0 ||
+            !token0 ||
+            !token1 ||
+            tick === undefined ||
+            tickSpacing === undefined ||
+            !currencies.INPUT ||
+            !currencies.OUTPUT
+        ) {
+            return {
+                blockCreation: true,
+                message: `Missing required data to create order: ${missingFields.join(", ")}`,
+            };
+        }
 
         const _priceTick = invertPrice
             ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_priceTick === undefined) return true;
+        if (_priceTick === undefined) {
+            return { blockCreation: true, message: "Unable to calculate price tick" };
+        }
 
         const priceTick = wasInverted ? -_priceTick : _priceTick;
 
-        if (currencies.INPUT.wrapped.equals(token0) && priceTick < tick) return true;
+        if (currencies.INPUT.wrapped.equals(token0) && priceTick < tick) {
+            return { blockCreation: true, message: "Sell price must be above current price when selling token0" };
+        }
 
-        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick) return true;
+        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick) {
+            return { blockCreation: true, message: "Sell price must be below current price when selling token1" };
+        }
 
-        return false;
+        return { blockCreation: false, message: "" };
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
 
-    console.log("BLOCK", blockCreation);
+    console.log("BLOCK", blockCreation, message);
 
     const [plusDisabled, minusDisabled] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return [true, true];
 
-        const _priceTick = invertPrice
+        const priceTick = invertPrice
+            ? wasInverted
+                ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
+                : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : wasInverted
             ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_priceTick === undefined) return [true, true];
+        if (priceTick === undefined) return [true, true];
 
-        const priceTick = wasInverted ? -_priceTick : _priceTick;
+        if (currencies.INPUT.wrapped.equals(token0.wrapped) && priceTick - tickSpacing <= tick)
+            return wasInverted ? [true, false] : [false, true];
 
-        if (currencies.INPUT.wrapped.equals(token0) && priceTick - tickSpacing <= tick) return wasInverted ? [true, false] : [false, true];
-
-        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick - tickSpacing)
+        if (currencies.INPUT.wrapped.equals(token1.wrapped) && priceTick + tickSpacing >= tick - tickSpacing)
             return wasInverted ? [true, false] : [false, true];
 
         return [false, false];
@@ -137,9 +177,7 @@ const LimitOrder = () => {
                 return;
             }
 
-            const limitOrderPrice = invert
-                ? newPrice.invert().toSignificant((token1?.decimals || 6) / 2)
-                : newPrice.toSignificant((token0?.decimals || 6) / 2);
+            const limitOrderPrice = invert ? newPrice.invert().toSignificant(8) : newPrice.toSignificant(8);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);

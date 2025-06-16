@@ -4,7 +4,9 @@ import { CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/custom-pool
 
 export async function getPositionFees(pool: Pool, positionId: number) {
     try {
-        const algebraPositionManager = getAlgebraPositionManager({});
+        const algebraPositionManager = getAlgebraPositionManager({
+            chainId: pool.chainId as 8453 | 84532,
+        });
 
         const owner = await algebraPositionManager.read.ownerOf([BigInt(positionId)]);
 
@@ -28,7 +30,8 @@ export async function getPositionFees(pool: Pool, positionId: number) {
             CurrencyAmount.fromRawAmount(unwrappedToken(pool.token0), fees0.toString()),
             CurrencyAmount.fromRawAmount(unwrappedToken(pool.token1), fees1.toString()),
         ];
-    } catch {
+    } catch (err) {
+        console.error(err);
         return [undefined, undefined];
     }
 }

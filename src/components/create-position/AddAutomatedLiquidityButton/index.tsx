@@ -7,47 +7,47 @@ import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
-import { ChainId, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { deposit, depositNativeToken, SupportedDex } from "@cryptoalgebra/alm-sdk";
+import { ChainId, Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { deposit, depositNativeToken, SupportedChainId, SupportedDex, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useCallback, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import { Address, useAccount, useChainId } from "wagmi";
-import { VAULT_DEPOSIT_GUARD } from "@/constants/addresses";
+import { useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
+import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
+
+const dex = SupportedDex.CLAMM;
 
 interface AddAutomatedLiquidityButtonProps {
     vault: ExtendedVault | undefined;
     amount: CurrencyAmount<Currency> | undefined;
+    poolId?: string;
 }
 
-export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiquidityButtonProps) => {
+export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutomatedLiquidityButtonProps) => {
     const { address: account } = useAccount();
+
+    const slippage = useUserSlippageToleranceWithDefault(new Percent(50, 1_000));
     const chainId = useChainId();
+
+    const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolId as Address, account);
 
     const { open } = useWeb3Modal();
 
     const { selectedNetworkId } = useWeb3ModalState();
 
-    const { poolId } = useParams();
-
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
 
-    const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(amount, VAULT_DEPOSIT_GUARD[chainId]);
+    const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
+        amount,
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][dex] as Address
+    );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
 
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
 
     const isReady = approvalStateA === ApprovalState.APPROVED;
-
-    // const { config: addLiquidityConfig } = usePrepareAlgebraPositionManagerMulticall({
-    //     args: calldata && [calldata as `0x${string}`[]],
-    //     enabled: Boolean(calldata && isReady),
-    //     value: BigInt(value || 0),
-    // });
-
-    // const { data: addLiquidityData, write: addLiquidity } = useContractWrite(addLiquidityConfig);
 
     const provider = useEthersSigner();
 
@@ -57,7 +57,6 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
     const callback = useCallback(async () => {
         if (!vault || !amount || !account || !provider) return;
         setIsPending(true);
-        const dex = SupportedDex.CLAMM;
 
         try {
             let tx;
@@ -68,7 +67,8 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    dex
+                    dex,
+                    Number(slippage.toSignificant(4))
                 );
             } else {
                 tx = await deposit(
@@ -77,7 +77,8 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    dex
+                    dex,
+                    Number(slippage.toSignificant(4))
                 );
             }
 
@@ -87,17 +88,24 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
         } finally {
             setIsPending(false);
         }
-    }, [vault, amount?.quotient.toString(), account, provider, useNative]);
+    }, [vault, amount?.quotient.toString(), account, provider, useNative, slippage.quotient.toString()]);
 
-    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
+    const { isLoading: isAddingLiquidityLoading, isSuccess } = useTransactionAwait(
         txHash,
         {
             title: "Add automated liquidity",
             tokenA: currency?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        `/pool/${poolId}`
+        poolId ? `/pool/${poolId}` : undefined
     );
+
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        console.log("refetchUserVaults");
+        refetchUserVaults();
+    }, [isSuccess]);
 
     const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
 

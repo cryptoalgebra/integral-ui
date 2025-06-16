@@ -92,7 +92,7 @@ const LimitOrdersTable = <TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card-dark"} ${
+                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card"} ${
                                         (action || link) && "cursor-pointer"
                                     } ${
                                         action || link

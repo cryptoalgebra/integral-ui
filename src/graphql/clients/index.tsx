@@ -1,36 +1,23 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { createApolloClient } from "../utils/createApolloClient";
 
-export const infoClient = new ApolloClient({
-    uri: import.meta.env.VITE_INFO_GRAPH,
-    cache: new InMemoryCache(),
-});
+export const infoClient: Record<number, ApolloClient<NormalizedCacheObject>> = {
+    [ChainId.Base]: createApolloClient(import.meta.env.VITE_INFO_GRAPH),
+    [ChainId.BaseSepolia]: createApolloClient(import.meta.env.VITE_INFO_GRAPH_TESTNET),
+};
 
-export const limitOrderClient = new ApolloClient({
-    uri: import.meta.env.VITE_LIMIT_ORDERS_GRAPH,
-    cache: new InMemoryCache(),
-});
+export const limitOrderClient: Record<number, ApolloClient<NormalizedCacheObject>> = {
+    [ChainId.Base]: createApolloClient(import.meta.env.VITE_LIMIT_ORDERS_GRAPH),
+    [ChainId.BaseSepolia]: createApolloClient(import.meta.env.VITE_LIMIT_ORDERS_GRAPH_TESTNET),
+};
 
-export const blocksClient = new ApolloClient({
-    uri: import.meta.env.VITE_BLOCKS_GRAPH,
-    cache: new InMemoryCache(),
-});
+export const blocksClient: Record<number, ApolloClient<NormalizedCacheObject>> = {
+    [ChainId.Base]: createApolloClient(import.meta.env.VITE_BLOCKS_GRAPH),
+    [ChainId.BaseSepolia]: createApolloClient(import.meta.env.VITE_BLOCKS_GRAPH_TESTNET),
+};
 
-export const farmingClient = new ApolloClient({
-    uri: import.meta.env.VITE_FARMING_GRAPH,
-    cache: new InMemoryCache(),
-});
-
-export const infoClientTestnet = new ApolloClient({
-    uri: import.meta.env.VITE_INFO_GRAPH_TESTNET,
-    cache: new InMemoryCache(),
-});
-
-export const blocksClientTestnet = new ApolloClient({
-    uri: import.meta.env.VITE_BLOCKS_GRAPH_TESTNET,
-    cache: new InMemoryCache(),
-});
-
-export const farmingClientTestnet = new ApolloClient({
-    uri: import.meta.env.VITE_FARMING_GRAPH_TESTNET,
-    cache: new InMemoryCache(),
-});
+export const farmingClient: Record<number, ApolloClient<NormalizedCacheObject>> = {
+    [ChainId.Base]: createApolloClient(import.meta.env.VITE_FARMING_GRAPH),
+    [ChainId.BaseSepolia]: createApolloClient(import.meta.env.VITE_FARMING_GRAPH_TESTNET),
+};

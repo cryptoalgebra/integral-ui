@@ -1,9 +1,10 @@
-import { ADDRESS_ZERO, Currency, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
 import { Address, useChainId } from "wagmi";
 import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
+import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -44,19 +45,22 @@ export function useSwapPools(
 
     useEffect(() => {
         async function getPools() {
-            const useBasePool = !deployer || deployer === ADDRESS_ZERO;
+            const customPoolDeployerAddresses = [
+                CUSTOM_POOL_BASE[chainId],
+                CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                CUSTOM_POOL_DEPLOYER_ALM[chainId],
+            ].filter((d) => d !== undefined);
 
-            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) =>
-                useBasePool
-                    ? computePoolAddress({
-                          tokenA,
-                          tokenB,
-                      })
-                    : computeCustomPoolAddress({
-                          tokenA,
-                          tokenB,
-                          customPoolDeployer: deployer,
-                      })
+            const poolsAddresses = allCurrencyCombinations.flatMap(([tokenA, tokenB]) =>
+                customPoolDeployerAddresses.map((customPoolDeployer) =>
+                    customPoolDeployer === CUSTOM_POOL_BASE[chainId]
+                        ? computePoolAddress({ tokenA, tokenB })
+                        : computeCustomPoolAddress({
+                              tokenA,
+                              tokenB,
+                              customPoolDeployer,
+                          })
+                )
             );
 
             const poolsData = await getMultiplePools({
@@ -90,7 +94,7 @@ export function useSwapPools(
         }
 
         Boolean(allCurrencyCombinations.length) && getPools();
-    }, [allCurrencyCombinations, deployer]);
+    }, [allCurrencyCombinations, deployer, chainId]);
 
     return useMemo(() => {
         if (!existingPools)

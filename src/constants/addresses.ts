@@ -18,7 +18,7 @@ export const ALGEBRA_POOL_DEPLOYER: Record<number, Address> = {
 
 export const ALGEBRA_LIMIT_ORDER_PLUGIN: Record<number, Address> = {
     [ChainId.Base]: "0x211BD8917d433B7cC1F4497AbA906554Ab6ee479",
-    [ChainId.BaseSepolia]: ADDRESS_ZERO,
+    [ChainId.BaseSepolia]: "0x822ddb9EECc3794790B8316585FebA5b8F7C7507",
 };
 
 export const ALGEBRA_POSITION_MANAGER: Record<number, Address> = {
@@ -53,6 +53,7 @@ export const FARMING_CENTER: Record<number, Address> = {
 
 export const CUSTOM_POOL_DEPLOYER_LIMIT_ORDER: Record<number, Address> = {
     [ChainId.Base]: "0xf3b57fe4d5d0927c3a5e549cb6af1866687e2d62",
+    [ChainId.BaseSepolia]: "0x9089f3440c8e7534afcfec2b731c4d6b78876308",
 };
 
 export const CUSTOM_POOL_BASE: Record<number, Address> = {
@@ -60,7 +61,10 @@ export const CUSTOM_POOL_BASE: Record<number, Address> = {
     [ChainId.BaseSepolia]: ADDRESS_ZERO,
 };
 
-// ALM
-export const VAULT_DEPOSIT_GUARD: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x6768D9cEC5e1C4f416685dBfCFa4F92E660dc129",
+export const CUSTOM_POOL_DEPLOYER_ALM: Record<number, Address> = {
+    [ChainId.Base]: "0x05f3bd357d47d159ac7d33f9dbaacfc65d31976d",
+};
+
+export const CUSTOM_POOL_DEPLOYER_AI: Record<number, Address> = {
+    [ChainId.Base]: "0x8af296FcA616376aBbB3Ac78bD319bfbe4aF5503",
 };

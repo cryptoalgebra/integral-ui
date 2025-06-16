@@ -6,6 +6,7 @@ export const EPOCH_FRAGMENT = gql`
         pool
         filled
         totalLiquidity
+        fillTimestamp
     }
 `;
 
@@ -15,6 +16,8 @@ export const LIMIT_ORDER_FRAGMENT = gql`
         epoch {
             ...EpochFields
         }
+        placeTimestamp
+        closeTimestamp
         owner
         pool
         liquidity

@@ -7,7 +7,8 @@ import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { useClients } from "@/hooks/graphql/useClients";
-import { ALM_POOLS } from "@/constants/pools";
+import { blacklistedPools } from "@/constants/pools";
+import { isDefined } from "@/utils/common/isDefined";
 
 const PoolsList = () => {
     const { infoClient, farmingClient } = useClients();
@@ -36,46 +37,47 @@ const PoolsList = () => {
     const formattedPools = useMemo(() => {
         if (isLoading || !pools) return [];
 
-        return pools.pools.map(({ id, token0, token1, fee, totalValueLockedUSD, deployer, poolDayData }) => {
-            const currentPool = poolDayData[0];
-            const lastDate = currentPool ? currentPool.date * 1000 : 0;
-            const currentDate = new Date().getTime();
+        return pools.pools
+            .map(({ id, token0, token1, fee, totalValueLockedUSD, deployer, poolDayData }) => {
+                if (blacklistedPools.includes(id.toLowerCase())) return null;
 
-            /* time difference calculations here to ensure that the graph provides information for the last 24 hours */
-            const timeDifference = currentDate - lastDate;
-            const msIn24Hours = 24 * 60 * 60 * 1000;
+                const currentPool = poolDayData[0];
+                const lastDate = currentPool ? currentPool.date * 1000 : 0;
+                const currentDate = new Date().getTime();
 
-            const openPositions = positions?.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
-            const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
+                /* time difference calculations here to ensure that the graph provides information for the last 24 hours */
+                const timeDifference = currentDate - lastDate;
+                const msIn24Hours = 24 * 60 * 60 * 1000;
 
-            const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
-            const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
-            const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
+                const openPositions = positions?.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
+                const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
-            const avgApr = farmApr + poolAvgApr;
+                const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
+                const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
+                const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
 
-            const hasALM = ALM_POOLS.includes(id.toLowerCase() as Address);
+                const avgApr = farmApr + poolAvgApr;
 
-            return {
-                id: id as Address,
-                pair: {
-                    token0,
-                    token1,
-                },
-                fee: Number(fee) / 10_000,
-                tvlUSD: Number(totalValueLockedUSD),
-                volume24USD: timeDifference <= msIn24Hours ? currentPool.volumeUSD : 0,
-                fees24USD: timeDifference <= msIn24Hours ? currentPool.feesUSD : 0,
-                poolMaxApr,
-                poolAvgApr,
-                farmApr,
-                avgApr,
-                isMyPool: Boolean(openPositions?.length),
-                hasActiveFarming: Boolean(activeFarming),
-                deployer: deployer.toLowerCase(),
-                hasALM,
-            };
-        });
+                return {
+                    id: id as Address,
+                    pair: {
+                        token0,
+                        token1,
+                    },
+                    fee: Number(fee) / 10_000,
+                    tvlUSD: Number(totalValueLockedUSD),
+                    volume24USD: timeDifference <= msIn24Hours ? currentPool.volumeUSD : 0,
+                    fees24USD: timeDifference <= msIn24Hours ? currentPool.feesUSD : 0,
+                    poolMaxApr,
+                    poolAvgApr,
+                    farmApr,
+                    avgApr,
+                    isMyPool: Boolean(openPositions?.length),
+                    hasActiveFarming: Boolean(activeFarming),
+                    deployer: deployer.toLowerCase(),
+                };
+            })
+            .filter(isDefined);
     }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR]);
 
     return (
