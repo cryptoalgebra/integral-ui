@@ -26,6 +26,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Address, useAccount } from 'wagmi';
 import JSBI from 'jsbi'
+import { createUncheckedPosition } from '@/utils/positions/createUncheckedPosition';
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -74,12 +75,12 @@ const PoolPage = () => {
             .filter(({ pool }) => pool.toLowerCase() === poolId.toLowerCase())
             .map((position) => ({
                 positionId: position.tokenId,
-                position: new Position({
-                    pool: poolEntity,
-                    liquidity: position.liquidity.toString(),
-                    tickLower: Number(position.tickLower),
-                    tickUpper: Number(position.tickUpper),
-                }),
+                position: createUncheckedPosition(
+                    poolEntity,
+                    position.liquidity.toString(),
+                    Number(position.tickLower),
+                    Number(position.tickUpper)
+                )
             }));
     }, [positions, poolEntity]);
 

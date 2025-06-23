@@ -3,6 +3,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { usePool } from "@/hooks/pools/usePool";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { PositionFromTokenId } from "@/hooks/positions/usePositions";
+import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import {
   Currency,
   CurrencyAmount,
@@ -66,12 +67,12 @@ export function useDerivedBurnInfo(
                 position?.liquidity &&
                 typeof position?.tickLower === 'number' &&
                 typeof position?.tickUpper === 'number'
-                ? new Position({
+                ? createUncheckedPosition(
                     pool,
-                    liquidity: position.liquidity.toString(),
-                    tickLower: position.tickLower,
-                    tickUpper: position.tickUpper,
-                })
+                    position.liquidity.toString(),
+                    Number(position.tickLower),
+                    Number(position.tickUpper)
+                )
                 : undefined,
         [pool, position],
     );

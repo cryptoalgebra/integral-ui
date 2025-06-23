@@ -3,7 +3,6 @@ import {
     usePosition,
     usePositionInFarming,
 } from '@/hooks/positions/usePositions';
-import { Position } from '@cryptoalgebra/sdk';
 import PositionNFT from '../PositionNFT';
 import { FormattedPosition } from '@/types/formatted-position';
 import { formatUSD } from '@/utils/common/formatUSD';
@@ -19,6 +18,7 @@ import ActiveFarmingCard from '../ActiveFarmingCard';
 import ClosedFarmingCard from '../ClosedFarmingCard';
 import { IncreaseLiquidityModal } from '@/components/modals/IncreaseLiquidityModal';
 import { useCurrency } from '@/hooks/common/useCurrency';
+import { createUncheckedPosition } from '@/utils/positions/createUncheckedPosition';
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -50,12 +50,12 @@ const PositionCard = ({
     const positionEntity =
         pool &&
         position &&
-        new Position({
+        createUncheckedPosition(
             pool,
-            liquidity: position.liquidity.toString(),
-            tickLower: Number(position.tickLower),
-            tickUpper: Number(position.tickUpper),
-        });
+            position.liquidity.toString(),
+            Number(position.tickLower),
+            Number(position.tickUpper)
+        )
 
     const mintInfo = useDerivedMintInfo(
         currencyA,
