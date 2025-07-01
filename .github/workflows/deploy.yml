@@ -1,16 +1,22 @@
 name: Algebra Integral Deploy
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'master'
+
 jobs:
   deploy:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout selected branch
         uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Set up node
         uses: actions/setup-node@v3
@@ -24,10 +30,11 @@ jobs:
       - name: Build
         run: CI=false yarn build
 
-      #setup key
+      # setup key
       - run: set -eu
       - run: mkdir "$HOME/.ssh"
       - run: echo "${{ secrets.SHHKEYM }}" > "$HOME/.ssh/SHHKEYM"
       - run: chmod 600 "$HOME/.ssh/SHHKEYM"
-      #deploy
+
+      # deploy
       - run: cd dist && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ secrets.DEPLOYMENT_PATH }}
