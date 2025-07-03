@@ -142,7 +142,7 @@ const SwapButton = ({
         return <Button disabled>{isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}</Button>;
 
     if (smartTrade && insufficientBalance) {
-        return <Button>{isLoadingRoute ? <Loader /> : `Insufficient ${smartTrade.inputAmount.currency.symbol} amount`}</Button>;
+        return <Button disabled>{isLoadingRoute ? <Loader /> : `Insufficient ${smartTrade.inputAmount.currency.symbol} amount`}</Button>;
     }
 
     if (showApproveFlow)

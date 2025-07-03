@@ -603,17 +603,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-<<<<<<< HEAD
 "@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.2.0.tgz#4db64888ec2a1cc58c1a5b1c64912ff75ace4754"
   integrity sha512-Nh0Rm/tHiziRkL9xbwHdOOvz5Mc2GV6TNL0nV8qD7vkfb+Zf+/OCRYdjP++t3QIeDcEJvinIufR8xLXjhc4tWQ==
-=======
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools-and-sliding-fee/-/router-custom-pools-and-sliding-fee-1.4.1.tgz#884171e6e708c1bd589149c7818036bdb4c44127"
-  integrity sha512-/6GsQRCY/+IeWBLc9JHNSR+zEHCOWgUiRYk6qwB/ASTexgdWxj+jhl02Q+28ctqYbCsM/xb8l+0SAv3OtwRwSQ==
->>>>>>> parent of ee3ac33 (redesign)
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

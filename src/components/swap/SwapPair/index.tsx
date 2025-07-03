@@ -10,7 +10,7 @@ import {
     TradeType,
     tryParseAmount,
 } from "@cryptoalgebra/custom-pools-sdk";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
@@ -19,6 +19,7 @@ import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 import { usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
+import JSBI from "jsbi";
 
 const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> }) => {
     const chainId = useChainId();
@@ -177,6 +178,17 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                 ? parsedAmounts[independentField]?.toExact() ?? ""
                 : parsedAmounts[dependentField]?.toExact() ?? "",
     };
+
+    useEffect(() => {
+        if (!parsedAmounts[SwapField.INPUT] || !currencyBalances[SwapField.INPUT]) return;
+
+        const inputAmountJSBI = JSBI.BigInt(parsedAmounts[SwapField.INPUT]!.quotient.toString());
+        const balanceAmountJSBI = JSBI.BigInt(currencyBalances[SwapField.INPUT]!.quotient.toString());
+
+        if (JSBI.lessThan(balanceAmountJSBI, inputAmountJSBI)) {
+            derivedSwap.inputError = `Insufficient ${parsedAmounts[SwapField.INPUT]!.currency.symbol} balance`;
+        }
+    }, [currencyBalances, derivedSwap, parsedAmounts]);
 
     return (
         <div className="flex flex-col gap-1 relative">

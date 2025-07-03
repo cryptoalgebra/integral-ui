@@ -51,13 +51,11 @@ const LimitOrderButton = ({
 
     const amount = trade && trade.inputAmount;
 
-    const limitOrderTick = zeroToOne
-        ? tryParseTick(token0, token1, sellPrice, tickSpacing)
-        : tryParseTick(token1, token0, sellPrice, tickSpacing);
+    const isInverted = wasInverted === zeroToOne;
+    const [baseToken, quoteToken] = isInverted ? [token1, token0] : [token0, token1];
+    const limitOrderTick = tryParseTick(baseToken, quoteToken, sellPrice, tickSpacing);
 
-    const formattedTick = limitOrderTick ? (wasInverted ? -limitOrderTick : limitOrderTick) : undefined;
-
-    const limitOrder = useLimitOrderInfo(poolAddress, amount, formattedTick);
+    const limitOrder = useLimitOrderInfo(poolAddress, amount, limitOrderTick);
 
     const chainId = useChainId();
 
@@ -67,7 +65,7 @@ const LimitOrderButton = ({
         ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]
     );
 
-    const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance;
+    const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance && BigInt(limitOrder.liquidity.toString()) > 0;
 
     const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]);
 
@@ -119,7 +117,7 @@ const LimitOrderButton = ({
 
     return (
         <Button
-            disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING}
+            disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING || !isReady}
             onClick={() => {
                 console.log(
                     "[PLACE LIMIT ORDER]",
