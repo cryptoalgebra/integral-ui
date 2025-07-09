@@ -1,6 +1,6 @@
 import { FARMING_CENTER } from "@/constants/addresses";
 import { farmingCenterABI } from "@/generated";
-import { getRewardsCalldata } from "@/utils/farming/getRewardsCalldata";
+import { getRewardsCalldata, getUnclaimedRewardsCalldata } from "@/utils/farming/getRewardsCalldata";
 import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { encodeFunctionData } from "viem";
 import { Deposit } from "@/graphql/generated/graphql";
@@ -110,5 +110,39 @@ export function useFarmHarvestAll(
         isLoading,
         isSuccess,
         onHarvestAll,
+    };
+}
+
+export function useFarmHarvestUnclaimed({
+    rewards,
+    account,
+}: {
+    rewards: Address[];
+    account: Address;
+}) {
+    const calldata = getUnclaimedRewardsCalldata({
+        rewards,
+        account
+    });
+
+    const { config } = usePrepareContractWrite({
+        address: account ? FARMING_CENTER : undefined,
+        abi: farmingCenterABI,
+        functionName: "multicall",
+        args: [calldata],
+        account
+    });
+
+    const { data: data, writeAsync: onHarvestUnclaimed } = useContractWrite(config);
+
+    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+        title: `Farm Harvest Unclaimed`,
+        type: TransactionType.FARM,
+    });
+
+    return {
+        isLoading,
+        isSuccess,
+        onHarvestUnclaimed,
     };
 }

@@ -4,6 +4,7 @@ import MyPositions from '@/components/pool/MyPositions';
 import MyPositionsToolbar from '@/components/pool/MyPositionsToolbar';
 import PoolHeader from '@/components/pool/PoolHeader';
 import PositionCard from '@/components/position/PositionCard';
+import UnclaimedRewards from '@/components/farming/UnclaimedRewards';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -13,6 +14,7 @@ import {
 } from '@/graphql/generated/graphql';
 import { useActiveFarming } from '@/hooks/farming/useActiveFarming';
 import { useClosedFarmings } from '@/hooks/farming/useClosedFarmings';
+import { useUnclaimedRewards } from '@/hooks/farming/useUnclaimedRewards';
 import { usePool } from '@/hooks/pools/usePool';
 import { usePositions } from '@/hooks/positions/usePositions';
 import { FormattedPosition } from '@/types/formatted-position';
@@ -62,6 +64,8 @@ const PoolPage = () => {
         poolId: poolId,
         poolInfo: poolInfo,
     });
+
+    const { unclaimedRewards } = useUnclaimedRewards()
 
     const [positionsFees, setPositionsFees] = useState<any>();
     const [positionsAPRs, setPositionsAPRs] = useState<any>();
@@ -230,6 +234,19 @@ const PoolPage = () => {
                                     )
                                 }
                             />
+                            {
+                                unclaimedRewards &&
+                                Boolean(unclaimedRewards?.rewards.length) && (
+                                    <div>
+                                          <h2 className="font-semibold text-xl text-left mt-12">
+                                            Unclaimed Rewards
+                                        </h2>
+                                        <UnclaimedRewards
+                                            unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards}
+                                        />
+                                    </div>
+                                )
+                            }
                             {farmingInfo &&
                                 deposits &&
                                 !isFarmingLoading &&

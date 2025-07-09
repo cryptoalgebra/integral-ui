@@ -40,3 +40,14 @@ export const ACTIVE_FARMINGS = gql`
         }
     }
 `;
+
+export const UNCLAIMED_REWARDS = gql`
+    query UnclaimedRewards($owner: Bytes!) {
+        rewards(where: { owner: $owner, amount_gt: 0 }) {
+            id
+            owner
+            amount
+            rewardAddress
+        }
+    }
+`
