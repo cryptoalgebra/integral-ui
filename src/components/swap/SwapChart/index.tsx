@@ -24,7 +24,7 @@ const SwapChart = () => {
         return computeCustomPoolAddress({
             tokenA: tokenA.wrapped,
             tokenB: tokenB.wrapped,
-            customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+            customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainId],
         });
     }, [tokenA, tokenB, chainId]);
 

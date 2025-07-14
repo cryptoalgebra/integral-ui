@@ -106,11 +106,11 @@ export function useSmartRouterBestRoute(
                     outputCurrency,
                     isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
                     {
-                        gasPriceWei: () => SmartRouter.publicClient[outputCurrency.chainId as 84532].getGasPrice(),
+                        gasPriceWei: () => SmartRouter.publicClient[outputCurrency.chainId as 998].getGasPrice(),
                         maxHops: isMultihop ? 2 : 1,
                         maxSplits: isSplit ? 3 : 0,
                         poolProvider,
-                        quoteProvider: SmartRouter.quoteProvider[outputCurrency.chainId as 84532],
+                        quoteProvider: SmartRouter.quoteProvider[outputCurrency.chainId as 998],
                         quoterOptimization: true,
                         distributionPercent: 10,
                         signal,

@@ -8,7 +8,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { ReactNode } from "react";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { customPoolDeployerTitleByAddress } from "config/custom-pool-deployer";
+// import { customPoolDeployerTitleByAddress } from "config/custom-pool-deployer";
 
 import FarmingModule from "@/modules/FarmingModule";
 const { FarmTag } = FarmingModule.components;
@@ -94,15 +94,15 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 .toLowerCase()
                 .includes(value),
     },
-    {
-        accessorKey: "deployer",
-        header: ({ column }) => (
-            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                Deployer
-            </HeaderItem>
-        ),
-        cell: ({ row }) => customPoolDeployerTitleByAddress[row.original.deployer.toLowerCase() as Address],
-    },
+    // {
+    //     accessorKey: "deployer",
+    //     header: ({ column }) => (
+    //         <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+    //             Deployer
+    //         </HeaderItem>
+    //     ),
+    //     cell: ({ row }) => customPoolDeployerTitleByAddress[row.original.deployer.toLowerCase() as Address],
+    // },
     {
         accessorKey: "tvlUSD",
         header: ({ column }) => (

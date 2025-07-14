@@ -27,7 +27,7 @@ const router = createBrowserRouter([
                 path: "swap",
                 element: <SwapPage type={SwapPageView.SWAP} />,
             },
-            enabledModules.alm && {
+            enabledModules.limitOrders && {
                 path: "limit-order",
                 element: <SwapPage type={SwapPageView.LIMIT_ORDER} />,
             },

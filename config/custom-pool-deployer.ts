@@ -1,20 +1,16 @@
 import { ADDRESS_ZERO, ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
-export type PoolDeployerType = "BASE" | "ALL_INCLUSIVE";
+export type PoolDeployerType = "BASE";
 
 export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address>> = {
     BASE: {
-        [ChainId.BaseSepolia]: ADDRESS_ZERO,
-    },
-    ALL_INCLUSIVE: {
-        [ChainId.BaseSepolia]: "0x44564Ed09f4d88ae963E6579709973Eb7C109A30",
+        [ChainId.HyperEvmTestnet]: ADDRESS_ZERO,
     },
 } as const;
 
 export const CUSTOM_POOL_DEPLOYER_TITLES: Record<PoolDeployerType, string> = {
     BASE: "Base",
-    ALL_INCLUSIVE: "All-inclusive",
 } as const;
 
 export const customPoolDeployerTitleByAddress: Record<Address, string> = Object.fromEntries(

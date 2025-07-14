@@ -245,7 +245,9 @@ export function Chart({
             </div>
             <div className="relative">
                 {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
-                    <Loader className="w-10 h-10 mx-auto mt-20" />
+                    <div className="w-full h-full min-h-[200px] flex items-center justify-center">
+                        <Loader className="w-10 h-10" />
+                    </div>
                 ) : (
                     <div
                         className={`transition-all duration-1000 ${isChartDataLoading ? "opacity-40 animate-pulse" : "opacity-100"}`}

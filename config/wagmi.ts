@@ -1,5 +1,5 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork, baseSepolia } from "@reown/appkit/networks";
+import { AppKitNetwork } from "@reown/appkit/networks";
 import {
     algebraBasePluginABI,
     algebraCustomPoolDeployerABI,
@@ -22,8 +22,29 @@ import {
     QUOTER_V2,
     SWAP_ROUTER,
 } from "./contract-addresses";
+import { defineChain } from "viem";
 
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia];
+const hyperEvmTestnet = /*#__PURE__*/ defineChain({
+    id: 998,
+    network: "hyperEVM-testnet",
+    name: "HyperEVM Testnet",
+    nativeCurrency: { name: "HYPE", symbol: "HYPE", decimals: 18 },
+    rpcUrls: {
+        default: {
+            http: ["https://998.rpc.thirdweb.com/"],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: "Purrsec",
+            url: "https://testnet.purrsec.com/",
+        },
+    },
+    testnet: true,
+});
+
+/* app chains */
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [hyperEvmTestnet];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },

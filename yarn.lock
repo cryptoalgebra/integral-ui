@@ -581,10 +581,10 @@
     node-cache "^5.1.2"
     typechain "^8.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/integral-sdk@1.0.0":
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/kitten-sdk@1.0.0":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.0.0.tgz#250047480c92df6f76e71e8f5acdafb811600742"
-  integrity sha512-HzRa0kHt8SPVZmVAgQUpQQxN13ZnQeG/4ZQ6FKmACucD6YTaYqRps6Ah9jqOZXDqb2MhJiThASMgf8mGUNPNdQ==
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/kitten-sdk/-/kitten-sdk-1.0.0.tgz#02fe3ab7630aaec68fdf6b216bcb7d4f6f670969"
+  integrity sha512-YVnE61z1vjIW1UJLXI9Co3hi/UYDnB7LIeYcR5DvjlIYoD5y4A2xUyRwtz8kRyIo8hhgto7VoXHo3+X8S43p9Q==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -598,12 +598,12 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.0.tgz#dd5821e5c272056ed3ef15000db72b383421fcf3"
-  integrity sha512-57ndGq4UTJg5eyyfrV92S8qn/hj6vNR3R3DA08XxLxCe7pdsRPfeSi9gB2QB9w8tROkcgAeSbNag/cG/lhg+WA==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/kitten-router@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/kitten-router/-/kitten-router-1.0.0.tgz#e457d97cef6821fbb07729ed943fabd7fab88fdb"
+  integrity sha512-43t53GbDU1FOVar+QkLlOmbGGWMfjn98mo/DYeOQbV38vKn99IC6C7Z9FaNCvyGlTfdCF+/DPRS221kEYOnUgg==
   dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/integral-sdk@1.0.0"
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/kitten-sdk@1.0.0"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"
