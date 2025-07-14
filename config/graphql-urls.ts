@@ -9,7 +9,7 @@ export const INFO_GRAPH_URL = {
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.HyperEvmTestnet]: "",
+    [ChainId.HyperEvmTestnet]: "https://api.studio.thegraph.com/query/50593/limit-orders/v0.0.1",
 };
 
 export const BLOCKS_GRAPH_URL = {

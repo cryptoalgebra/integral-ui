@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 
-import { CurrencyAmount, Currency, TickMath, Percent, ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/custom-pools-sdk";
 
 import { ApprovalState } from "@/types/approve-state";
 
@@ -12,6 +12,7 @@ import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
+import { DEFAULT_CHAIN_ID } from "config/default-chain";
 
 interface IFixBrokenPool {
     currencyIn?: Currency;
@@ -26,7 +27,7 @@ const Notification = ({ tick }: { tick?: number }) => (
 );
 
 const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) => {
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     const { address: account } = useAccount();
 
@@ -78,7 +79,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         }
     }, [callback]);
 
-    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
+    const isWrongChain = !selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId;
 
     const insufficientBalance = inputBalance && trade ? trade.inputAmount.greaterThan(inputBalance.value.toString()) : undefined;
 
