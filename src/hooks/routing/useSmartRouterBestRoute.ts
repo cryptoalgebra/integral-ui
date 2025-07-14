@@ -131,6 +131,7 @@ export function useSmartRouterBestRoute(
                               BigInt(allowedSlippage.denominator.toString())
                           ),
                           deadlineOrPreviousBlockhash: Date.now() + txDeadline * 1000,
+                          pluginData: "0x",
                       })
                     : { value: undefined, calldata: undefined };
 

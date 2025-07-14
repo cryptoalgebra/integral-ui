@@ -31,7 +31,7 @@ const hyperEvmTestnet = /*#__PURE__*/ defineChain({
     nativeCurrency: { name: "HYPE", symbol: "HYPE", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://998.rpc.thirdweb.com/"],
+            http: ["https://998.rpc.thirdweb.com/c12d40e08559e44221f53ce0a23b7e67"],
         },
     },
     blockExplorers: {
