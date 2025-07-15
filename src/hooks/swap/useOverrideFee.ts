@@ -1,5 +1,5 @@
 import { SWAP_ROUTER } from "config";
-import { readAlgebraPoolPlugin, simulateAlgebraBasePluginBeforeSwap } from "@/generated";
+import { readAlgebraPoolPlugin, simulateAlgebraBasePluginV1BeforeSwap } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
 import { ADDRESS_ZERO, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
@@ -46,7 +46,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType> | undefin
                     let beforeSwap: [string, number, number];
 
                     try {
-                        const { result } = await simulateAlgebraBasePluginBeforeSwap(wagmiConfig, {
+                        const { result } = await simulateAlgebraBasePluginV1BeforeSwap(wagmiConfig, {
                             address: plugin,
                             args: [
                                 SWAP_ROUTER[chainId],

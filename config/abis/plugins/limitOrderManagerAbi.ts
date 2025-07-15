@@ -133,6 +133,25 @@ export const limitOrderManagerABI = [
             {
                 indexed: true,
                 internalType: "address",
+                name: "pool",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "int24",
+                name: "tickSpacing",
+                type: "int24",
+            },
+        ],
+        name: "LimitOrderTickSpacing",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "address",
                 name: "owner",
                 type: "address",
             },
@@ -212,24 +231,6 @@ export const limitOrderManagerABI = [
             },
         ],
         stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "address",
-                name: "pool",
-                type: "address",
-            },
-            {
-                internalType: "int24",
-                name: "tick",
-                type: "int24",
-            },
-        ],
-        name: "afterInitialize",
-        outputs: [],
-        stateMutability: "nonpayable",
         type: "function",
     },
     {

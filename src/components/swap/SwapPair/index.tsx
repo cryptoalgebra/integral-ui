@@ -1,23 +1,14 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import {
-    computeCustomPoolAddress,
-    Currency,
-    CurrencyAmount,
-    getTickToPrice,
-    maxAmountSpend,
-    TradeType,
-    tryParseAmount,
-} from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, getTickToPrice, maxAmountSpend, TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { CUSTOM_POOL_DEPLOYER_ADDRESSES, enabledModules, STABLECOINS } from "config";
+import { STABLECOINS } from "config";
 import { usePool } from "@/hooks/pools/usePool";
-import { Address } from "viem";
 import { useChainId } from "wagmi";
 
 const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> | undefined }) => {
@@ -41,14 +32,14 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
-    const limitOrderPoolAddress =
-        enabledModules.limitOrders && baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
-            ? (computeCustomPoolAddress({
-                  tokenA: baseCurrency.wrapped,
-                  tokenB: quoteCurrency.wrapped,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
-              }) as Address)
-            : undefined;
+    const limitOrderPoolAddress = undefined;
+    // enabledModules.limitOrders && baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
+    //     ? (computeCustomPoolAddress({
+    //           tokenA: baseCurrency.wrapped,
+    //           tokenB: quoteCurrency.wrapped,
+    //           customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+    //       }) as Address)
+    //     : undefined;
 
     const [, limitOrderPool] = usePool(limitOrderPoolAddress);
 

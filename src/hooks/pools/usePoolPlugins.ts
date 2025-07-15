@@ -1,4 +1,4 @@
-import { useReadAlgebraBasePluginIncentive, useReadAlgebraPoolGlobalState, useReadAlgebraPoolPlugin } from "@/generated";
+import { useReadAlgebraBasePluginV1Incentive, useReadAlgebraPoolGlobalState, useReadAlgebraPoolPlugin } from "@/generated";
 import { usePoolsStore } from "@/state/poolsStore";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect } from "react";
@@ -17,12 +17,12 @@ export function usePoolPlugins(poolId: Address | undefined) {
         address: skipFetch ? undefined : poolId,
     });
 
-    const { data: hasFarmingPlugin, isLoading: farmingLoading } = useReadAlgebraBasePluginIncentive({
+    const { data: hasFarmingPlugin, isLoading: farmingLoading } = useReadAlgebraBasePluginV1Incentive({
         address: skipFetch ? undefined : plugin,
     });
 
     // const { data: hasLimitOrderPlugin, isLoading: limitLoading } =
-    //     useAlgebraBasePluginLimitOrderPlugin({
+    //     useAlgebraBasePluginV1LimitOrderPlugin({
     //         address: skipFetch ? undefined : plugin,
     //     });
 

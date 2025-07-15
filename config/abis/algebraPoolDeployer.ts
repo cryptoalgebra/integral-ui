@@ -6,11 +6,6 @@ export const algebraPoolDeployerABI = [
                 name: "_factory",
                 type: "address",
             },
-            {
-                internalType: "address",
-                name: "_communityVault",
-                type: "address",
-            },
         ],
         stateMutability: "nonpayable",
         type: "constructor",
@@ -30,6 +25,11 @@ export const algebraPoolDeployerABI = [
             {
                 internalType: "address",
                 name: "token1",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "deployer",
                 type: "address",
             },
         ],
@@ -56,11 +56,6 @@ export const algebraPoolDeployerABI = [
             {
                 internalType: "address",
                 name: "_factory",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "_communityVault",
                 type: "address",
             },
             {

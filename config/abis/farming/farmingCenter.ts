@@ -16,21 +16,16 @@ export const farmingCenterABI = [
         type: "constructor",
     },
     {
-        inputs: [
+        inputs: [],
+        name: "algebraPoolDeployer",
+        outputs: [
             {
-                internalType: "uint256",
-                name: "tokenId",
-                type: "uint256",
-            },
-            {
-                internalType: "int256",
-                name: "liquidityDelta",
-                type: "int256",
+                internalType: "address",
+                name: "",
+                type: "address",
             },
         ],
-        name: "applyLiquidityDelta",
-        outputs: [],
-        stateMutability: "nonpayable",
+        stateMutability: "view",
         type: "function",
     },
     {
@@ -40,15 +35,14 @@ export const farmingCenterABI = [
                 name: "tokenId",
                 type: "uint256",
             },
-        ],
-        name: "burnPosition",
-        outputs: [
             {
-                internalType: "bool",
-                name: "success",
-                type: "bool",
+                internalType: "int256",
+                name: "",
+                type: "int256",
             },
         ],
+        name: "applyLiquidityDelta",
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -74,7 +68,7 @@ export const farmingCenterABI = [
         outputs: [
             {
                 internalType: "uint256",
-                name: "reward",
+                name: "rewardBalanceBefore",
                 type: "uint256",
             },
         ],
@@ -135,17 +129,17 @@ export const farmingCenterABI = [
     {
         inputs: [
             {
-                internalType: "contract IAlgebraPool",
-                name: "pool",
-                type: "address",
-            },
-            {
                 internalType: "address",
                 name: "newVirtualPool",
                 type: "address",
             },
+            {
+                internalType: "contract IFarmingPlugin",
+                name: "plugin",
+                type: "address",
+            },
         ],
-        name: "connectVirtualPool",
+        name: "connectVirtualPoolToPlugin",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
@@ -157,40 +151,34 @@ export const farmingCenterABI = [
                 name: "tokenId",
                 type: "uint256",
             },
-            {
-                internalType: "uint256",
-                name: "liquidityDelta",
-                type: "uint256",
-            },
-        ],
-        name: "decreaseLiquidity",
-        outputs: [
-            {
-                internalType: "bool",
-                name: "success",
-                type: "bool",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint256",
-                name: "",
-                type: "uint256",
-            },
         ],
         name: "deposits",
         outputs: [
             {
                 internalType: "bytes32",
-                name: "",
+                name: "incentiveId",
                 type: "bytes32",
             },
         ],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "virtualPool",
+                type: "address",
+            },
+            {
+                internalType: "contract IFarmingPlugin",
+                name: "plugin",
+                type: "address",
+            },
+        ],
+        name: "disconnectVirtualPoolFromPlugin",
+        outputs: [],
+        stateMutability: "nonpayable",
         type: "function",
     },
     {
@@ -290,7 +278,7 @@ export const farmingCenterABI = [
         inputs: [
             {
                 internalType: "bytes32",
-                name: "",
+                name: "incentiveId",
                 type: "bytes32",
             },
         ],
@@ -318,24 +306,6 @@ export const farmingCenterABI = [
             },
         ],
         stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint256",
-                name: "tokenId",
-                type: "uint256",
-            },
-            {
-                internalType: "uint256",
-                name: "liquidityDelta",
-                type: "uint256",
-            },
-        ],
-        name: "increaseLiquidity",
-        outputs: [],
-        stateMutability: "nonpayable",
         type: "function",
     },
     {
@@ -374,7 +344,7 @@ export const farmingCenterABI = [
         inputs: [
             {
                 internalType: "address",
-                name: "",
+                name: "poolAddress",
                 type: "address",
             },
         ],
@@ -382,7 +352,7 @@ export const farmingCenterABI = [
         outputs: [
             {
                 internalType: "address",
-                name: "",
+                name: "virtualPoolAddress",
                 type: "address",
             },
         ],

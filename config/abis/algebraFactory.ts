@@ -14,10 +14,41 @@ export const algebraFactoryABI = [
         anonymous: false,
         inputs: [
             {
+                indexed: true,
+                internalType: "address",
+                name: "deployer",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "token0",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "token1",
+                type: "address",
+            },
+            {
                 indexed: false,
-                internalType: "uint8",
+                internalType: "address",
+                name: "pool",
+                type: "address",
+            },
+        ],
+        name: "CustomPool",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "uint16",
                 name: "newDefaultCommunityFee",
-                type: "uint8",
+                type: "uint16",
             },
         ],
         name: "DefaultCommunityFee",
@@ -27,13 +58,13 @@ export const algebraFactoryABI = [
         anonymous: false,
         inputs: [
             {
-                indexed: true,
-                internalType: "address",
-                name: "newFarmingAddress",
-                type: "address",
+                indexed: false,
+                internalType: "uint16",
+                name: "newDefaultFee",
+                type: "uint16",
             },
         ],
-        name: "FarmingAddress",
+        name: "DefaultFee",
         type: "event",
     },
     {
@@ -41,48 +72,25 @@ export const algebraFactoryABI = [
         inputs: [
             {
                 indexed: false,
-                internalType: "uint16",
-                name: "alpha1",
-                type: "uint16",
-            },
-            {
-                indexed: false,
-                internalType: "uint16",
-                name: "alpha2",
-                type: "uint16",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "beta1",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "beta2",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "uint16",
-                name: "gamma1",
-                type: "uint16",
-            },
-            {
-                indexed: false,
-                internalType: "uint16",
-                name: "gamma2",
-                type: "uint16",
-            },
-            {
-                indexed: false,
-                internalType: "uint16",
-                name: "baseFee",
-                type: "uint16",
+                internalType: "address",
+                name: "defaultPluginFactoryAddress",
+                type: "address",
             },
         ],
-        name: "FeeConfiguration",
+        name: "DefaultPluginFactory",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "int24",
+                name: "newDefaultTickspacing",
+                type: "int24",
+            },
+        ],
+        name: "DefaultTickspacing",
         type: "event",
     },
     {
@@ -146,6 +154,51 @@ export const algebraFactoryABI = [
             },
         ],
         name: "Pool",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "timestamp",
+                type: "uint256",
+            },
+        ],
+        name: "RenounceOwnershipFinish",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "timestamp",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "finishTimestamp",
+                type: "uint256",
+            },
+        ],
+        name: "RenounceOwnershipStart",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "timestamp",
+                type: "uint256",
+            },
+        ],
+        name: "RenounceOwnershipStop",
         type: "event",
     },
     {
@@ -228,49 +281,56 @@ export const algebraFactoryABI = [
         inputs: [
             {
                 indexed: false,
-                internalType: "uint256",
-                name: "timestamp",
-                type: "uint256",
+                internalType: "address",
+                name: "newVaultFactory",
+                type: "address",
             },
         ],
-        name: "renounceOwnershipFinished",
-        type: "event",
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "timestamp",
-                type: "uint256",
-            },
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "finishTimestamp",
-                type: "uint256",
-            },
-        ],
-        name: "renounceOwnershipStarted",
-        type: "event",
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "timestamp",
-                type: "uint256",
-            },
-        ],
-        name: "renounceOwnershipStopped",
+        name: "VaultFactory",
         type: "event",
     },
     {
         inputs: [],
+        name: "CUSTOM_POOL_DEPLOYER",
+        outputs: [
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
         name: "DEFAULT_ADMIN_ROLE",
+        outputs: [
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "POOLS_ADMINISTRATOR_ROLE",
+        outputs: [
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "POOL_INIT_CODE_HASH",
         outputs: [
             {
                 internalType: "bytes32",
@@ -289,59 +349,95 @@ export const algebraFactoryABI = [
         type: "function",
     },
     {
-        inputs: [],
-        name: "baseFeeConfiguration",
+        inputs: [
+            {
+                internalType: "address",
+                name: "deployer",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "token0",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "token1",
+                type: "address",
+            },
+        ],
+        name: "computeCustomPoolAddress",
         outputs: [
             {
-                internalType: "uint16",
-                name: "alpha1",
-                type: "uint16",
-            },
-            {
-                internalType: "uint16",
-                name: "alpha2",
-                type: "uint16",
-            },
-            {
-                internalType: "uint32",
-                name: "beta1",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "beta2",
-                type: "uint32",
-            },
-            {
-                internalType: "uint16",
-                name: "gamma1",
-                type: "uint16",
-            },
-            {
-                internalType: "uint16",
-                name: "gamma2",
-                type: "uint16",
-            },
-            {
-                internalType: "uint16",
-                name: "baseFee",
-                type: "uint16",
+                internalType: "address",
+                name: "customPool",
+                type: "address",
             },
         ],
         stateMutability: "view",
         type: "function",
     },
     {
-        inputs: [],
-        name: "communityVault",
+        inputs: [
+            {
+                internalType: "address",
+                name: "token0",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "token1",
+                type: "address",
+            },
+        ],
+        name: "computePoolAddress",
         outputs: [
             {
                 internalType: "address",
-                name: "",
+                name: "pool",
                 type: "address",
             },
         ],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "deployer",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "creator",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "tokenA",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "tokenB",
+                type: "address",
+            },
+            {
+                internalType: "bytes",
+                name: "data",
+                type: "bytes",
+            },
+        ],
+        name: "createCustomPool",
+        outputs: [
+            {
+                internalType: "address",
+                name: "customPool",
+                type: "address",
+            },
+        ],
+        stateMutability: "nonpayable",
         type: "function",
     },
     {
@@ -356,6 +452,11 @@ export const algebraFactoryABI = [
                 name: "tokenB",
                 type: "address",
             },
+            {
+                internalType: "bytes",
+                name: "data",
+                type: "bytes",
+            },
         ],
         name: "createPool",
         outputs: [
@@ -369,13 +470,29 @@ export const algebraFactoryABI = [
         type: "function",
     },
     {
-        inputs: [],
-        name: "defaultCommunityFee",
+        inputs: [
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+        ],
+        name: "customPoolByPair",
         outputs: [
             {
-                internalType: "uint8",
+                internalType: "address",
                 name: "",
-                type: "uint8",
+                type: "address",
             },
         ],
         stateMutability: "view",
@@ -383,12 +500,74 @@ export const algebraFactoryABI = [
     },
     {
         inputs: [],
-        name: "farmingAddress",
+        name: "defaultCommunityFee",
         outputs: [
             {
-                internalType: "address",
+                internalType: "uint16",
+                name: "",
+                type: "uint16",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "defaultConfigurationForPool",
+        outputs: [
+            {
+                internalType: "uint16",
+                name: "communityFee",
+                type: "uint16",
+            },
+            {
+                internalType: "int24",
+                name: "tickSpacing",
+                type: "int24",
+            },
+            {
+                internalType: "uint16",
+                name: "fee",
+                type: "uint16",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "defaultFee",
+        outputs: [
+            {
+                internalType: "uint16",
+                name: "",
+                type: "uint16",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "defaultPluginFactory",
+        outputs: [
+            {
+                internalType: "contract IAlgebraPluginFactory",
                 name: "",
                 type: "address",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "defaultTickspacing",
+        outputs: [
+            {
+                internalType: "int24",
+                name: "",
+                type: "int24",
             },
         ],
         stateMutability: "view",
@@ -644,59 +823,9 @@ export const algebraFactoryABI = [
     {
         inputs: [
             {
-                components: [
-                    {
-                        internalType: "uint16",
-                        name: "alpha1",
-                        type: "uint16",
-                    },
-                    {
-                        internalType: "uint16",
-                        name: "alpha2",
-                        type: "uint16",
-                    },
-                    {
-                        internalType: "uint32",
-                        name: "beta1",
-                        type: "uint32",
-                    },
-                    {
-                        internalType: "uint32",
-                        name: "beta2",
-                        type: "uint32",
-                    },
-                    {
-                        internalType: "uint16",
-                        name: "gamma1",
-                        type: "uint16",
-                    },
-                    {
-                        internalType: "uint16",
-                        name: "gamma2",
-                        type: "uint16",
-                    },
-                    {
-                        internalType: "uint16",
-                        name: "baseFee",
-                        type: "uint16",
-                    },
-                ],
-                internalType: "struct IAlgebraFeeConfiguration.Configuration",
-                name: "_config",
-                type: "tuple",
-            },
-        ],
-        name: "setBaseFeeConfiguration",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint8",
+                internalType: "uint16",
                 name: "newDefaultCommunityFee",
-                type: "uint8",
+                type: "uint16",
             },
         ],
         name: "setDefaultCommunityFee",
@@ -707,12 +836,51 @@ export const algebraFactoryABI = [
     {
         inputs: [
             {
+                internalType: "uint16",
+                name: "newDefaultFee",
+                type: "uint16",
+            },
+        ],
+        name: "setDefaultFee",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
                 internalType: "address",
-                name: "newFarmingAddress",
+                name: "newDefaultPluginFactory",
                 type: "address",
             },
         ],
-        name: "setFarmingAddress",
+        name: "setDefaultPluginFactory",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "int24",
+                name: "newDefaultTickspacing",
+                type: "int24",
+            },
+        ],
+        name: "setDefaultTickspacing",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "newVaultFactory",
+                type: "address",
+            },
+        ],
+        name: "setVaultFactory",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
@@ -761,6 +929,19 @@ export const algebraFactoryABI = [
         name: "transferOwnership",
         outputs: [],
         stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "vaultFactory",
+        outputs: [
+            {
+                internalType: "contract IAlgebraVaultFactory",
+                name: "",
+                type: "address",
+            },
+        ],
+        stateMutability: "view",
         type: "function",
     },
 ] as const;

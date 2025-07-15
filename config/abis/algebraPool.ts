@@ -36,6 +36,11 @@ export const algebraPoolABI = [
     },
     {
         inputs: [],
+        name: "incorrectPluginFee",
+        type: "error",
+    },
+    {
+        inputs: [],
         name: "insufficientInputAmount",
         type: "error",
     },
@@ -48,7 +53,7 @@ export const algebraPoolABI = [
         inputs: [
             {
                 internalType: "bytes4",
-                name: "selector",
+                name: "expectedSelector",
                 type: "bytes4",
             },
         ],
@@ -98,11 +103,6 @@ export const algebraPoolABI = [
     {
         inputs: [],
         name: "notInitialized",
-        type: "error",
-    },
-    {
-        inputs: [],
-        name: "onlyFarming",
         type: "error",
     },
     {
@@ -204,6 +204,12 @@ export const algebraPoolABI = [
                 name: "amount1",
                 type: "uint256",
             },
+            {
+                indexed: false,
+                internalType: "uint24",
+                name: "pluginFee",
+                type: "uint24",
+            },
         ],
         name: "Burn",
         type: "event",
@@ -262,6 +268,38 @@ export const algebraPoolABI = [
             },
         ],
         name: "CommunityFee",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "address",
+                name: "newCommunityVault",
+                type: "address",
+            },
+        ],
+        name: "CommunityVault",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount0",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount1",
+                type: "uint256",
+            },
+        ],
+        name: "ExcessTokens",
         type: "event",
     },
     {
@@ -420,6 +458,31 @@ export const algebraPoolABI = [
             {
                 indexed: true,
                 internalType: "address",
+                name: "to",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount0",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "amount1",
+                type: "uint256",
+            },
+        ],
+        name: "Skim",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "address",
                 name: "sender",
                 type: "address",
             },
@@ -458,6 +521,18 @@ export const algebraPoolABI = [
                 internalType: "int24",
                 name: "tick",
                 type: "int24",
+            },
+            {
+                indexed: false,
+                internalType: "uint24",
+                name: "overrideFee",
+                type: "uint24",
+            },
+            {
+                indexed: false,
+                internalType: "uint24",
+                name: "pluginFee",
+                type: "uint24",
             },
         ],
         name: "Swap",
@@ -561,19 +636,6 @@ export const algebraPoolABI = [
     },
     {
         inputs: [],
-        name: "communityFeeLastTimestamp",
-        outputs: [
-            {
-                internalType: "uint32",
-                name: "",
-                type: "uint32",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [],
         name: "communityVault",
         outputs: [
             {
@@ -659,6 +721,24 @@ export const algebraPoolABI = [
     },
     {
         inputs: [],
+        name: "getPluginFeePending",
+        outputs: [
+            {
+                internalType: "uint128",
+                name: "",
+                type: "uint128",
+            },
+            {
+                internalType: "uint128",
+                name: "",
+                type: "uint128",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
         name: "getReserves",
         outputs: [
             {
@@ -691,7 +771,7 @@ export const algebraPoolABI = [
             },
             {
                 internalType: "uint16",
-                name: "fee",
+                name: "lastFee",
                 type: "uint16",
             },
             {
@@ -728,6 +808,32 @@ export const algebraPoolABI = [
     },
     {
         inputs: [],
+        name: "isUnlocked",
+        outputs: [
+            {
+                internalType: "bool",
+                name: "unlocked",
+                type: "bool",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "lastFeeTransferTimestamp",
+        outputs: [
+            {
+                internalType: "uint32",
+                name: "",
+                type: "uint32",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
         name: "liquidity",
         outputs: [
             {
@@ -749,7 +855,7 @@ export const algebraPoolABI = [
                 type: "uint128",
             },
         ],
-        stateMutability: "pure",
+        stateMutability: "view",
         type: "function",
     },
     {
@@ -885,6 +991,49 @@ export const algebraPoolABI = [
         type: "function",
     },
     {
+        inputs: [],
+        name: "safelyGetStateOfAMM",
+        outputs: [
+            {
+                internalType: "uint160",
+                name: "sqrtPrice",
+                type: "uint160",
+            },
+            {
+                internalType: "int24",
+                name: "tick",
+                type: "int24",
+            },
+            {
+                internalType: "uint16",
+                name: "lastFee",
+                type: "uint16",
+            },
+            {
+                internalType: "uint8",
+                name: "pluginConfig",
+                type: "uint8",
+            },
+            {
+                internalType: "uint128",
+                name: "activeLiquidity",
+                type: "uint128",
+            },
+            {
+                internalType: "int24",
+                name: "nextTick",
+                type: "int24",
+            },
+            {
+                internalType: "int24",
+                name: "previousTick",
+                type: "int24",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
         inputs: [
             {
                 internalType: "uint16",
@@ -893,6 +1042,19 @@ export const algebraPoolABI = [
             },
         ],
         name: "setCommunityFee",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "newCommunityVault",
+                type: "address",
+            },
+        ],
+        name: "setCommunityVault",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
@@ -945,6 +1107,13 @@ export const algebraPoolABI = [
             },
         ],
         name: "setTickSpacing",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "skim",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
@@ -1044,6 +1213,13 @@ export const algebraPoolABI = [
     },
     {
         inputs: [],
+        name: "sync",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [],
         name: "tickSpacing",
         outputs: [
             {
@@ -1064,6 +1240,38 @@ export const algebraPoolABI = [
             },
         ],
         name: "tickTable",
+        outputs: [
+            {
+                internalType: "uint256",
+                name: "",
+                type: "uint256",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "tickTreeRoot",
+        outputs: [
+            {
+                internalType: "uint32",
+                name: "",
+                type: "uint32",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "int16",
+                name: "",
+                type: "int16",
+            },
+        ],
+        name: "tickTreeSecondLayer",
         outputs: [
             {
                 internalType: "uint256",

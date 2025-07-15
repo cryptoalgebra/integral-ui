@@ -8,14 +8,14 @@ export const INFO_GRAPH_URL = {
     [ChainId.HyperEvmTestnet]: "https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/kitten-analytics/1.0.0/gn",
 };
 
-export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.HyperEvmTestnet]: "https://api.studio.thegraph.com/query/50593/limit-orders/v0.0.1",
-};
-
 export const BLOCKS_GRAPH_URL = {
     [ChainId.HyperEvmTestnet]: "https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/kitten-blocks/1.0.0/gn",
 };
 
 export const FARMING_GRAPH_URL = {
     [ChainId.HyperEvmTestnet]: "https://api.goldsky.com/api/public/project_cmcxkn8h7pwwc01x30a5e6t39/subgraphs/kitten-farming/1.0.0/gn",
+};
+
+export const LIMIT_ORDERS_GRAPH_URL = {
+    [ChainId.HyperEvmTestnet]: "https://api.studio.thegraph.com/query/50593/limit-orders/v0.0.1",
 };

@@ -944,6 +944,40 @@ export const algebraEternalFarmingABI = [
     {
         inputs: [
             {
+                internalType: "address",
+                name: "pool",
+                type: "address",
+            },
+        ],
+        name: "incentiveKeys",
+        outputs: [
+            {
+                internalType: "contract IERC20Minimal",
+                name: "rewardToken",
+                type: "address",
+            },
+            {
+                internalType: "contract IERC20Minimal",
+                name: "bonusRewardToken",
+                type: "address",
+            },
+            {
+                internalType: "contract IAlgebraPool",
+                name: "pool",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "nonce",
+                type: "uint256",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
                 internalType: "bytes32",
                 name: "incentiveId",
                 type: "bytes32",

@@ -1,4 +1,4 @@
-export const algebraBasePluginABI = [
+export const algebraBasePluginV1ABI = [
     {
         inputs: [
             {
@@ -16,6 +16,48 @@ export const algebraBasePluginABI = [
                 name: "_pluginFactory",
                 type: "address",
             },
+            {
+                components: [
+                    {
+                        internalType: "uint16",
+                        name: "alpha1",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "alpha2",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "beta1",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "beta2",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "gamma1",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "gamma2",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "baseFee",
+                        type: "uint16",
+                    },
+                ],
+                internalType: "struct AlgebraFeeConfiguration",
+                name: "_config",
+                type: "tuple",
+            },
         ],
         stateMutability: "nonpayable",
         type: "constructor",
@@ -23,11 +65,6 @@ export const algebraBasePluginABI = [
     {
         inputs: [],
         name: "targetIsTooOld",
-        type: "error",
-    },
-    {
-        inputs: [],
-        name: "tickOutOfRange",
         type: "error",
     },
     {
@@ -44,13 +81,50 @@ export const algebraBasePluginABI = [
         anonymous: false,
         inputs: [
             {
+                components: [
+                    {
+                        internalType: "uint16",
+                        name: "alpha1",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "alpha2",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "beta1",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "beta2",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "gamma1",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "gamma2",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "baseFee",
+                        type: "uint16",
+                    },
+                ],
                 indexed: false,
-                internalType: "uint16",
-                name: "baseFee",
-                type: "uint16",
+                internalType: "struct AlgebraFeeConfiguration",
+                name: "feeConfig",
+                type: "tuple",
             },
         ],
-        name: "BaseFee",
+        name: "FeeConfiguration",
         type: "event",
     },
     {
@@ -64,19 +138,6 @@ export const algebraBasePluginABI = [
             },
         ],
         name: "Incentive",
-        type: "event",
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "priceChangeFactor",
-                type: "uint256",
-            },
-        ],
-        name: "PriceChangeFactor",
         type: "event",
     },
     {
@@ -404,7 +465,7 @@ export const algebraBasePluginABI = [
             },
             {
                 internalType: "bool",
-                name: "zeroToOne",
+                name: "",
                 type: "bool",
             },
             {
@@ -452,6 +513,56 @@ export const algebraBasePluginABI = [
     {
         inputs: [
             {
+                components: [
+                    {
+                        internalType: "uint16",
+                        name: "alpha1",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "alpha2",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "beta1",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "beta2",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "gamma1",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "gamma2",
+                        type: "uint16",
+                    },
+                    {
+                        internalType: "uint16",
+                        name: "baseFee",
+                        type: "uint16",
+                    },
+                ],
+                internalType: "struct AlgebraFeeConfiguration",
+                name: "_config",
+                type: "tuple",
+            },
+        ],
+        name: "changeFeeConfiguration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
                 internalType: "address",
                 name: "token",
                 type: "address",
@@ -480,6 +591,49 @@ export const algebraBasePluginABI = [
                 internalType: "uint8",
                 name: "",
                 type: "uint8",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "feeConfig",
+        outputs: [
+            {
+                internalType: "uint16",
+                name: "alpha1",
+                type: "uint16",
+            },
+            {
+                internalType: "uint16",
+                name: "alpha2",
+                type: "uint16",
+            },
+            {
+                internalType: "uint32",
+                name: "beta1",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "beta2",
+                type: "uint32",
+            },
+            {
+                internalType: "uint16",
+                name: "gamma1",
+                type: "uint16",
+            },
+            {
+                internalType: "uint16",
+                name: "gamma2",
+                type: "uint16",
+            },
+            {
+                internalType: "uint16",
+                name: "baseFee",
+                type: "uint16",
             },
         ],
         stateMutability: "view",
@@ -680,63 +834,6 @@ export const algebraBasePluginABI = [
         type: "function",
     },
     {
-        inputs: [],
-        name: "s_baseFee",
-        outputs: [
-            {
-                internalType: "uint16",
-                name: "",
-                type: "uint16",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [],
-        name: "s_feeFactors",
-        outputs: [
-            {
-                internalType: "uint128",
-                name: "zeroToOneFeeFactor",
-                type: "uint128",
-            },
-            {
-                internalType: "uint128",
-                name: "oneToZeroFeeFactor",
-                type: "uint128",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [],
-        name: "s_priceChangeFactor",
-        outputs: [
-            {
-                internalType: "uint16",
-                name: "",
-                type: "uint16",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint16",
-                name: "newBaseFee",
-                type: "uint16",
-            },
-        ],
-        name: "setBaseFee",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
         inputs: [
             {
                 internalType: "address",
@@ -745,19 +842,6 @@ export const algebraBasePluginABI = [
             },
         ],
         name: "setIncentive",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "uint16",
-                name: "newPriceChangeFactor",
-                type: "uint16",
-            },
-        ],
-        name: "setPriceChangeFactor",
         outputs: [],
         stateMutability: "nonpayable",
         type: "function",
