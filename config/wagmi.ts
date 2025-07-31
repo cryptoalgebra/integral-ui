@@ -1,5 +1,6 @@
 import { ContractConfig } from "@wagmi/cli";
 import { AppKitNetwork, baseSepolia } from "@reown/appkit/networks";
+import { defineChain } from "viem";
 import {
     algebraBasePluginV1ABI,
     algebraCustomPoolEntryPointABI,
@@ -23,8 +24,33 @@ import {
     SWAP_ROUTER,
 } from "./contract-addresses";
 
+// Define Hyperliquid Mainnet
+export const hyperliquid = defineChain({
+    id: 999,
+    name: "Hyperliquid",
+    nativeCurrency: {
+        decimals: 18,
+        name: "Hype",
+        symbol: "HYPE",
+    },
+    rpcUrls: {
+        default: {
+            http: ["https://rpc.hyperliquid.xyz/evm"],
+        },
+        public: {
+            http: ["https://rpc.hyperliquid.xyz/evm"],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: "Hyperliquid Explorer",
+            url: "https://explorer.hyperliquid.xyz",
+        },
+    },
+}) as AppKitNetwork;
+
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [hyperliquid, baseSepolia];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
