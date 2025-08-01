@@ -1,30 +1,75 @@
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
+// Hyperliquid Mainnet Chain ID
+export const HYPERLIQUID_CHAIN_ID = 999;
+
+// Legacy Base Sepolia Chain ID for reference
+const BASE_SEPOLIA_CHAIN_ID = 84532;
+
 export const ALGEBRA_FACTORY: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xcD58521ecaC7724d1752F941C56490c27bAe9ab0",
+    [BASE_SEPOLIA_CHAIN_ID]: "0xcD58521ecaC7724d1752F941C56490c27bAe9ab0",
+    [HYPERLIQUID_CHAIN_ID]: "0x41ba59415eC75AC4242dd157F2a7A282F1e75652",
 };
 
 export const QUOTER_V2: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x1c219ba68A9100E4F3475A624cf225ADA02c0F1B",
+    [BASE_SEPOLIA_CHAIN_ID]: "0x1c219ba68A9100E4F3475A624cf225ADA02c0F1B",
+    [HYPERLIQUID_CHAIN_ID]: "0x6dE3843D846543eEE20F73601ecc3Eb43E1B932b",
 };
 
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x3400D4f83c528A0E19c380d92DD100eA51d8980c",
+    [BASE_SEPOLIA_CHAIN_ID]: "0x3400D4f83c528A0E19c380d92DD100eA51d8980c",
+    [HYPERLIQUID_CHAIN_ID]: "0xCAfDa2b3E5c2B5E30f6d67FEFa5AfFD3f6a93b0a",
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x5baD56bfBABEC1A5A7848399762f54566FA22557",
+    [BASE_SEPOLIA_CHAIN_ID]: "0x5baD56bfBABEC1A5A7848399762f54566FA22557",
+    [HYPERLIQUID_CHAIN_ID]: "0x578D8A2D07B60b12993559f1DDF90EB2af3eA496",
 };
 
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x1C5E8C41B5B119dc8fc5ac8e53692E323a6D78D7",
+    [BASE_SEPOLIA_CHAIN_ID]: "0x1C5E8C41B5B119dc8fc5ac8e53692E323a6D78D7",
+    [HYPERLIQUID_CHAIN_ID]: "0x85DA28ebAf2B5c97b2788CDD1987D4A4D9804627",
 };
 
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x4Ce15380bA2573954e67298209B8DF84222bc62E",
+    [BASE_SEPOLIA_CHAIN_ID]: "0x4Ce15380bA2573954e67298209B8DF84222bc62E",
+    [HYPERLIQUID_CHAIN_ID]: "0x9C65Ae9CE43695d3C6DD034e0273bD07e8854108",
 };
 
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x05F9E353559da6f2Bfe9A0980D5C3e84eA5d4238",
+    [BASE_SEPOLIA_CHAIN_ID]: "0x05F9E353559da6f2Bfe9A0980D5C3e84eA5d4238",
+    [HYPERLIQUID_CHAIN_ID]: "0x0000000000000000000000000000000000000000",
+};
+
+// Additional Hyperliquid specific contracts
+export const ALGEBRA_POOL_DEPLOYER: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x0d1D2Af74a59A2A0F266fD75Fb081F637c4ec9C2",
+};
+
+export const QUOTER_V1: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x60AB5130dE02C91742533E6B9c40E219244C2391",
+};
+
+export const VAULT: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x9ffc63B7f284fA9A8071017b29a594B7e667f5d9",
+};
+
+export const VAULT_FACTORY: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x4Df05feE1958c3596DfEa9aB4172210a79dD5D8a",
+};
+
+export const BASE_PLUGIN_V1_FACTORY: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x772452bF8437831A5B879aA860C7EB0ae180929E",
+};
+
+export const TICK_LENS: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x6029685D415288F818FefF7345e4980742f79456",
+};
+
+export const NFT_DESCRIPTOR: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x4E34402645f3622355Bc81a646Bd03A443DeF50b",
+};
+
+export const MULTICALL: Record<number, Address> = {
+    [HYPERLIQUID_CHAIN_ID]: "0x1094487796e6b8A24A587456Dbac00f13Fc00c8C",
 };
