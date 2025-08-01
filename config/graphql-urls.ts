@@ -1,6 +1,8 @@
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+
 // Hyperliquid Mainnet Chain ID
-const HYPERLIQUID_CHAIN_ID = 999;
-const BASE_SEPOLIA_CHAIN_ID = 84532;
+const HYPERLIQUID_CHAIN_ID = ChainId.HyperEvmMainnet;
+const BASE_SEPOLIA_CHAIN_ID = ChainId.BaseSepolia;
 
 // NOTE: For codegen to work, we currently use Base Sepolia endpoints
 // The actual Hyperliquid subgraphs will be deployed at the URLs below

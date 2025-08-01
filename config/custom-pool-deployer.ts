@@ -5,10 +5,12 @@ export type PoolDeployerType = "BASE" | "ALL_INCLUSIVE";
 
 export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | undefined>> = {
     BASE: {
+        [ChainId.HyperEvmMainnet]: ADDRESS_ZERO,
         [ChainId.BaseSepolia]: ADDRESS_ZERO,
     },
     /* Replace with `undefined` to use as a stub */
     ALL_INCLUSIVE: {
+        [ChainId.HyperEvmMainnet]: undefined,
         [ChainId.BaseSepolia]: "0x44564Ed09f4d88ae963E6579709973Eb7C109A30",
     },
 } as const;

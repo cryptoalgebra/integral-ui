@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ExtendedNative } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "config";
+import { NATIVE_NAME, NATIVE_SYMBOL } from "config";
 import { Address } from "viem";
 import { useAllTokens } from "../tokens/useAllTokens";
 
@@ -13,7 +13,7 @@ export function useAlgebraToken(address: Address | undefined, chainId: number) {
         if (!tokens || !address) return;
         const isETH = address === ADDRESS_ZERO;
 
-        if (isETH) return ExtendedNative.onChain(chainId, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME);
+        if (isETH) return ExtendedNative.onChain(chainId, NATIVE_SYMBOL[chainId], NATIVE_NAME[chainId]);
 
         const tokenData = tokens.find((token) => token.id.toLowerCase() === address.toLowerCase());
 

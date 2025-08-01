@@ -1,9 +1,10 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import "dotenv/config";
 import { INFO_GRAPH_URL, LIMIT_ORDERS_GRAPH_URL, BLOCKS_GRAPH_URL, FARMING_GRAPH_URL } from "./config";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 // Use Base Sepolia for codegen since Hyperliquid subgraphs might not all be deployed yet
-const BASE_SEPOLIA_CHAIN_ID = 999;
+const BASE_SEPOLIA_CHAIN_ID = ChainId.BaseSepolia;
 
 const config: CodegenConfig = {
     overwrite: true,

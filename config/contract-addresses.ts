@@ -1,10 +1,11 @@
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
 // Hyperliquid Mainnet Chain ID
-export const HYPERLIQUID_CHAIN_ID = 999;
+export const HYPERLIQUID_CHAIN_ID = ChainId.HyperEvmMainnet;
 
 // Legacy Base Sepolia Chain ID for reference
-const BASE_SEPOLIA_CHAIN_ID = 84532;
+const BASE_SEPOLIA_CHAIN_ID = ChainId.BaseSepolia;
 
 export const ALGEBRA_FACTORY: Record<number, Address> = {
     [BASE_SEPOLIA_CHAIN_ID]: "0xcD58521ecaC7724d1752F941C56490c27bAe9ab0",
