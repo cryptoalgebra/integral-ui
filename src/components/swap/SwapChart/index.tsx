@@ -1,4 +1,4 @@
-import { useDerivedSwapInfo } from "@/state/swapStore";
+import { IDerivedSwapInfo } from "@/state/swapStore";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { useMemo, useState } from "react";
 import { CHART_SPAN, CHART_VIEW, ChartSpanType, POOL_CHART_TYPE } from "@/types/swap-chart";
@@ -9,12 +9,11 @@ import { Address } from "viem";
 import { BarChart3Icon } from "lucide-react";
 import { usePoolChartData } from "@/hooks/analytics";
 
-const SwapChart = () => {
-    const { currencies } = useDerivedSwapInfo();
-
+const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
+    const { currencies } = derivedSwap;
     const [tokenA, tokenB] = [currencies.INPUT, currencies.OUTPUT];
 
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.DAY);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
 
     const poolId = useMemo(() => {
         if (!tokenA || !tokenB) return undefined;

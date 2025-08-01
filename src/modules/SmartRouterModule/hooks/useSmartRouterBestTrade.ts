@@ -11,6 +11,8 @@ import useDebounce from "@/hooks/common/useDebounce";
 import { useCommonPools } from "./useRoutingPools";
 import usePreviousValue from "@/hooks/uitls/usePreviousValue.ts";
 import { DEFAULT_CHAIN_ID } from "config/default-chain";
+import { TradeState, TradeStateType } from "@/types/trade-state";
+import { SmartRouterBestTrade } from "../types/best-trade";
 
 const REFRESH_TIMEOUT = 15_000;
 
@@ -23,12 +25,12 @@ export function usePropsChanged(...args: any[]) {
     return args.length !== prevArgs?.length || args.some((arg, i) => arg !== prevArgs[i]);
 }
 
-export function useSmartRouterBestRoute(
+export function useSmartRouterBestTrade(
     amount: CurrencyAmount<Currency> | undefined,
     outputCurrency: Currency | undefined,
     isExactIn: boolean,
     isEnabled: boolean
-) {
+): SmartRouterBestTrade {
     const queryClient = useQueryClient();
 
     const { txDeadline, isSplit, isMultihop } = useUserState();
@@ -156,7 +158,7 @@ export function useSmartRouterBestRoute(
     }, [trade, keepPreviousDataRef]);
 
     const isValidating = fetchStatus === "fetching";
-    const isLoading = isLoadingTrade || isPlaceholderData;
+    const isLoading = isLoadingTrade || isPlaceholderData || loading;
 
     const refresh = useCallback(async () => {
         await refreshPools();
@@ -167,12 +169,26 @@ export function useSmartRouterBestRoute(
         refetch();
     }, [refreshPools, queryClient, refetch]);
 
+    const state: TradeStateType = useMemo(() => {
+        const isSyncing = syncing || isValidating || (amount?.quotient?.toString() !== deferQuotient && deferQuotient !== undefined);
+        const isError = error !== undefined;
+
+        if (isLoading) {
+            return TradeState.LOADING;
+        } else if (isSyncing) {
+            return TradeState.SYNCING;
+        } else if (trade?.bestTrade) {
+            return TradeState.VALID;
+        } else if (isError) {
+            return TradeState.INVALID;
+        } else {
+            return TradeState.NO_ROUTE_FOUND;
+        }
+    }, [amount?.quotient, deferQuotient, error, isLoading, isValidating, syncing, trade?.bestTrade]);
+
     return {
         refresh,
         trade,
-        isLoading: isLoading || loading,
-        isStale: trade?.blockNumber !== blockNumber,
-        error: error as Error | undefined,
-        syncing: syncing || isValidating || (amount?.quotient?.toString() !== deferQuotient && deferQuotient !== undefined),
+        state,
     };
 }

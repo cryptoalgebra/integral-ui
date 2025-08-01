@@ -55,10 +55,10 @@ export function useDexChartData(span: ChartSpanType, selector: "tvlUSD" | "volum
         const poolDatas = span === CHART_SPAN.DAY ? dexHourDatas : span === CHART_SPAN.WEEK ? dexHourDatas : dexDayDatas;
         if (!poolDatas) return [];
 
-        return dexDayDatas
+        return poolDatas
             .filter(isDefined)
             .map((v) => ({
-                time: Math.floor(v.date) as UTCTimestamp,
+                time: v.date as UTCTimestamp,
                 value: Number(v[selector]),
             }))
             .slice(1);

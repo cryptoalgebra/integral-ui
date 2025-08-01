@@ -1,5 +1,5 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
-import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,8 +9,8 @@ import { LimitPriceCard } from "../LimitPriceCard";
 import { LimitOrderButton } from "../LimitOrderButton";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 
-export const LimitOrder = () => {
-    const { currencies } = useDerivedSwapInfo();
+export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
+    const { currencies } = derivedSwap;
 
     const singleHopOnly = false;
 
@@ -236,6 +236,7 @@ export const LimitOrder = () => {
                 disabled={showWrap || !isPoolExists}
             />
             <LimitOrderButton
+                derivedSwap={derivedSwap}
                 disabled={blockCreation}
                 limitOrderPlugin={isPoolExists}
                 token0={token0}

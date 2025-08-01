@@ -10,26 +10,16 @@ import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
-import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Currency, Trade, TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { Address } from "viem";
+import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
+import { TradeState } from "@/types/trade-state";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
 
-const SwapButton = ({
-    derivedSwap,
-    trade,
-    isTradeLoading,
-    smartTradeCallOptions,
-}: {
-    derivedSwap: IDerivedSwapInfo;
-    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined;
-    isTradeLoading: boolean;
-    smartTradeCallOptions: { calldata: Address | undefined; value: Address | undefined };
-}) => {
+const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { open } = useAppKit();
 
     const appChainId = useChainId();
@@ -41,7 +31,16 @@ const SwapButton = ({
     const { isExpertMode } = useUserState();
 
     const { independentField, typedValue } = useSwapState();
-    const { allowedSlippage, parsedAmount, currencies, inputError: swapInputError, currencyBalances } = derivedSwap;
+    const {
+        allowedSlippage,
+        parsedAmount,
+        currencies,
+        inputError: swapInputError,
+        currencyBalances,
+        toggledTrade: trade,
+        tradeState,
+        smartTradeCallOptions,
+    } = derivedSwap;
 
     const {
         wrapType,
@@ -77,7 +76,7 @@ const SwapButton = ({
             parsedAmounts[independentField]?.greaterThan("0")
     );
 
-    const isLoadingRoute = isTradeLoading;
+    const isLoadingRoute = tradeState.state === TradeState.LOADING;
     const routeNotFound = !trade;
     const insufficientBalance =
         currencyBalances[SwapField.INPUT] &&
@@ -92,7 +91,7 @@ const SwapButton = ({
         if (!trade) return undefined;
 
         if (isSmartTrade) {
-            return SmartRouter.getPriceImpact(trade as SmartRouterTrade<TradeType>);
+            return SmartRouter.getPriceImpact(trade);
         } else {
             return trade.priceImpact;
         }
@@ -102,11 +101,6 @@ const SwapButton = ({
         if (!priceImpact) return 0;
         return warningSeverity(priceImpact);
     }, [priceImpact]);
-
-    const showApproveFlow =
-        !swapInputError &&
-        (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) &&
-        !(priceImpactSeverity > 3 && !isExpertMode);
 
     const { callback: smartSwapCallback, isLoading: smartSwapLoading } = useSmartRouterCallback(
         trade?.inputAmount?.currency,
@@ -120,7 +114,7 @@ const SwapButton = ({
         callback: swapCallback,
         isLoading: swapLoading,
         error: swapError,
-    } = useSwapCallback(!isSmartTrade ? trade : undefined, allowedSlippage, approvalState);
+    } = useSwapCallback(!isSmartTrade ? trade : null, allowedSlippage, approvalState);
 
     const isSwapLoading = swapLoading || smartSwapLoading;
 
@@ -140,6 +134,9 @@ const SwapButton = ({
     const isValid = !swapInputError && !swapError;
 
     const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
+
+    const showApproveFlow =
+        !swapInputError && (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && !priceImpactTooHigh;
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
@@ -182,12 +179,12 @@ const SwapButton = ({
             <Button onClick={() => handleSwap()} disabled={!isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute}>
                 {isSwapLoading ? (
                     <Loader />
-                ) : swapInputError || swapError ? (
-                    swapInputError || swapError
                 ) : priceImpactTooHigh ? (
                     "Price Impact Too High"
                 ) : priceImpactSeverity > 2 ? (
                     "Swap Anyway"
+                ) : swapInputError || swapError ? (
+                    swapInputError || swapError
                 ) : (
                     "Swap"
                 )}

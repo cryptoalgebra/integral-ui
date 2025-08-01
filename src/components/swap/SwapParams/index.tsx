@@ -4,28 +4,21 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronDownIcon, ZapIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Button } from "@/components/ui/button.tsx";
 import { useOverrideFee } from "@/hooks/swap/useOverrideFee";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
+import { TradeState } from "@/types/trade-state";
 const { SwapRouteModal } = SmartRouterModule.components;
 
-const SwapParams = ({
-    derivedSwap,
-    trade,
-    isTradeLoading,
-}: {
-    derivedSwap: IDerivedSwapInfo;
-    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined;
-    isTradeLoading: boolean;
-}) => {
+const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const { allowedSlippage, currencies, poolAddress } = derivedSwap;
+    const { allowedSlippage, currencies, poolAddress, toggledTrade: trade, tradeState } = derivedSwap;
     const { typedValue } = useSwapState();
 
     const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
@@ -42,7 +35,7 @@ const SwapParams = ({
         if (!trade) return undefined;
 
         if (isSmartTrade) {
-            return SmartRouter.getPriceImpact(trade as SmartRouterTrade<TradeType>);
+            return SmartRouter.getPriceImpact(trade);
         } else {
             return trade.priceImpact;
         }
@@ -62,6 +55,8 @@ const SwapParams = ({
         }
     }, [allowedSlippage, isSmartTrade, trade]);
 
+    const isTradeLoading = tradeState.state === TradeState.LOADING;
+
     if (wrapType !== WrapType.NOT_APPLICABLE) return;
 
     return trade ? (
@@ -71,7 +66,7 @@ const SwapParams = ({
                     className="flex items-center w-full text-md mb-1 text-center bg-card-dark py-1 px-3 rounded-lg"
                     onClick={() => toggleExpanded(!isExpanded)}
                 >
-                    {fee ? (
+                    {fee !== undefined ? (
                         <div className="rounded select-none pointer px-1.5 py-1 flex items-center relative">
                             {dynamicFeePlugin && <ZapIcon className="mr-2 fill-text" strokeWidth={1} stroke="white" size={16} />}
                             <span>{`${fee?.toFixed(4)}% fee`}</span>

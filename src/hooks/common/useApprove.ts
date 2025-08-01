@@ -67,7 +67,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 }
 
 export function useApproveCallbackFromTrade(
-    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined,
+    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent
 ) {
     const isSmartTrade = trade && "routes" in trade;

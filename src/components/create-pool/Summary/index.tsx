@@ -37,24 +37,25 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
         client: infoClient,
     });
     useEffect(() => {
-        if (!singleToken0?.token || !singleToken1?.token) return;
+        if (!singleToken0?.token || !singleToken1?.token || !currencyA || !currencyB) return;
         if (Number(singleToken0.token.derivedMatic) === 0 || Number(singleToken1.token.derivedMatic) === 0) {
             setSuggestedPrice(0);
             return;
         }
 
-        const suggstdPrice = singleToken1.token.derivedMatic / singleToken0.token.derivedMatic;
+        const suggstdPrice = Number(singleToken0.token.derivedMatic) / Number(singleToken1.token.derivedMatic);
+
         const filteredSuggstdPrice = Number(suggstdPrice.toFixed(4));
 
         setSuggestedPrice(filteredSuggstdPrice);
-    }, [singleToken0, singleToken1]);
+    }, [currencyA, currencyB, singleToken0, singleToken1]);
 
     return (
-        <div className="flex flex-col gap-4 bg-card-dark py-2 px-3 rounded-lg">
-            <div className="flex items-center gap-4 ml-2 justify-between">
+        <div className="flex flex-col gap-2 bg-card-dark py-2 px-3 rounded-lg">
+            <div className="flex items-center gap-2 justify-between">
                 <div className="flex">
-                    <CurrencyLogo currency={currencyA} size={30} />
-                    <CurrencyLogo currency={currencyB} size={30} className="-ml-2" />
+                    <CurrencyLogo currency={currencyA} size={24} />
+                    <CurrencyLogo currency={currencyB} size={24} className="-ml-2" />
                 </div>
 
                 {currencyA && currencyB ? (
@@ -66,7 +67,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
                 <div>{`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${currencyB?.symbol}`}</div>
             </div>
             {suggestedPrice > 0 && (
-                <div className="text-left ml-2 flex justify-between">
+                <div className="text-left flex justify-between">
                     <p className="opacity-50">Suggested price:</p>
                     <p className="opacity-50">{` 1 ${currencyA?.symbol} = ${suggestedPrice} ${currencyB?.symbol}`}</p>
                 </div>

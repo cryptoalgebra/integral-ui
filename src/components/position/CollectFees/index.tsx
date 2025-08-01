@@ -50,7 +50,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
           }
         : undefined;
 
-    const { data: collectData, writeContract: collect } = useWriteNonfungiblePositionManagerMulticall();
+    const { data: collectData, writeContract: collect, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
     const { isLoading } = useTransactionAwait(collectData, {
         title: "Collect fees",
@@ -102,8 +102,13 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
                     <Skeleton className="w-[100px] h-[30px]" />
                 )}
             </div>
-            <Button size={"md"} disabled={!collect || zeroRewards || isLoading} onClick={() => collectConfig && collect(collectConfig)}>
-                {isLoading ? <Loader /> : "Collect fees"}
+            <Button
+                size={"md"}
+                disabled={!collect || zeroRewards || isLoading || isPending}
+                onClick={() => collectConfig && collect(collectConfig)}
+                className="min-w-[108px]"
+            >
+                {isLoading || isPending ? <Loader /> : "Collect fees"}
             </Button>
         </div>
     );

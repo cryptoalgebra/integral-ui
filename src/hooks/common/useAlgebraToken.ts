@@ -1,28 +1,26 @@
 import { useMemo } from "react";
-import { useToken } from "wagmi";
 import { Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ExtendedNative } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "config";
 import { Address } from "viem";
+import { useAllTokens } from "../tokens/useAllTokens";
 
 export function useAlgebraToken(address: Address | undefined, chainId: number) {
-    const isETH = address === ADDRESS_ZERO;
-
-    const { data: tokenData, isLoading } = useToken({
-        address: isETH ? undefined : address,
-        chainId,
-    });
+    const { tokens, isLoading } = useAllTokens();
 
     return useMemo(() => {
-        if (!address) return;
+        if (!tokens || !address) return;
+        const isETH = address === ADDRESS_ZERO;
 
-        if (address === ADDRESS_ZERO) return ExtendedNative.onChain(chainId, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME);
+        if (isETH) return ExtendedNative.onChain(chainId, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME);
+
+        const tokenData = tokens.find((token) => token.id.toLowerCase() === address.toLowerCase());
 
         if (isLoading || !tokenData) return undefined;
 
-        const { symbol, name, decimals } = tokenData;
+        const { decimals, name, symbol } = tokenData;
 
-        return new Token(chainId, address, decimals, symbol, name);
-    }, [address, tokenData, isLoading, chainId]);
+        return new Token(chainId, address, Number(decimals), symbol, name);
+    }, [address, tokens, isLoading, chainId]);
 }

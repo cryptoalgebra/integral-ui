@@ -1,49 +1,23 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import {
-    computeCustomPoolAddress,
-    Currency,
-    CurrencyAmount,
-    getTickToPrice,
-    maxAmountSpend,
-    Trade,
-    TradeType,
-    tryParseAmount,
-    ZERO,
-} from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, maxAmountSpend, ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { CUSTOM_POOL_DEPLOYER_ADDRESSES, enabledModules, STABLECOINS } from "config";
-import { usePool } from "@/hooks/pools/usePool";
+import { STABLECOINS } from "config";
 import { useChainId } from "wagmi";
-import { Address } from "viem";
-import JSBI from "jsbi";
+import { TradeState } from "@/types/trade-state";
 
-const SwapPair = ({
-    derivedSwap,
-    trade,
-    isTradeLoading,
-}: {
-    derivedSwap: IDerivedSwapInfo;
-    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined;
-    isTradeLoading: boolean | undefined;
-}) => {
+const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const chainId = useChainId();
 
-    const {
-        independentField,
-        typedValue,
-        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
-        limitOrderPriceFocused,
-        lastFocusedField,
-        wasInverted,
-    } = useSwapState();
+    const { independentField, typedValue } = useSwapState();
 
-    const { currencyBalances, parsedAmount, currencies } = derivedSwap;
+    const { currencyBalances, parsedAmounts, currencies, toggledTrade: trade, tradeState } = derivedSwap;
+
+    const isTradeLoading = tradeState.state === TradeState.LOADING || tradeState.state === TradeState.SYNCING;
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
@@ -52,18 +26,18 @@ const SwapPair = ({
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
-    const limitOrderPoolAddress =
-        enabledModules.limitOrders && baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
-            ? (computeCustomPoolAddress({
-                  tokenA: baseCurrency.wrapped,
-                  tokenB: quoteCurrency.wrapped,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
-              }) as Address)
-            : undefined;
+    // const limitOrderPoolAddress =
+    //     enabledModules.limitOrders && baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
+    //         ? (computeCustomPoolAddress({
+    //               tokenA: baseCurrency.wrapped,
+    //               tokenB: quoteCurrency.wrapped,
+    //               customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+    //           }) as Address)
+    //         : undefined;
 
-    const [, limitOrderPool] = usePool(limitOrderPoolAddress);
+    // const [, limitOrderPool] = usePool(limitOrderPoolAddress);
 
-    const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, limitOrderPool?.tickCurrent);
+    // const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, limitOrderPool?.tickCurrent);
 
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
@@ -96,74 +70,6 @@ const SwapPair = ({
         [onUserInput]
     );
 
-    const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
-        if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !baseCurrency) return {};
-
-        try {
-            const parsedAmountNumber = parseFloat(parsedAmount.toExact());
-            const limitPriceNumber = parseFloat(limitOrderPrice);
-
-            if (independentField === SwapField.INPUT) {
-                const outputAmount = !wasInverted ? parsedAmountNumber * limitPriceNumber : parsedAmountNumber / limitPriceNumber;
-                return {
-                    parsedLimitOrderInput: parsedAmount,
-                    parsedLimitOrderOutput: tryParseAmount(outputAmount.toFixed(quoteCurrency.decimals), quoteCurrency),
-                };
-            } else {
-                const inputAmount = !wasInverted ? parsedAmountNumber / limitPriceNumber : parsedAmountNumber * limitPriceNumber;
-
-                return {
-                    parsedLimitOrderInput: tryParseAmount(inputAmount.toFixed(baseCurrency.decimals), baseCurrency),
-                    parsedLimitOrderOutput: parsedAmount,
-                };
-            }
-        } catch (error) {
-            console.error("Error calculating limit order amounts:", error);
-            return {};
-        }
-    }, [limitOrderPrice, parsedAmount, quoteCurrency, baseCurrency, independentField, wasInverted]);
-
-    const parsedAmounts = useMemo(() => {
-        return showWrap
-            ? {
-                  [SwapField.INPUT]: parsedAmount,
-                  [SwapField.OUTPUT]: parsedAmount,
-              }
-            : {
-                  [SwapField.INPUT]:
-                      independentField === SwapField.INPUT
-                          ? parsedAmount
-                          : pairPrice && limitOrderPrice
-                            ? parsedLimitOrderInput
-                            : trade?.inputAmount,
-                  [SwapField.OUTPUT]:
-                      independentField === SwapField.OUTPUT
-                          ? limitOrderPrice
-                              ? quoteCurrency && parsedAmount
-                                  ? !limitOrderPriceFocused && lastFocusedField === SwapField.LIMIT_ORDER_PRICE
-                                      ? parsedLimitOrderOutput
-                                      : parsedAmount
-                                  : undefined
-                              : parsedAmount
-                          : limitOrderPrice
-                            ? quoteCurrency && parsedAmount
-                                ? parsedLimitOrderOutput
-                                : undefined
-                            : trade?.outputAmount,
-              };
-    }, [
-        showWrap,
-        independentField,
-        parsedAmount,
-        limitOrderPrice,
-        parsedLimitOrderInput,
-        parsedLimitOrderOutput,
-        trade,
-        quoteCurrency,
-        limitOrderPriceFocused,
-        lastFocusedField,
-    ]);
-
     const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[SwapField.INPUT]);
     const showMaxButton = Boolean(maxInputAmount?.greaterThan(0));
 
@@ -192,17 +98,6 @@ const SwapPair = ({
         if (!usdValueA || !usdValueB) return 0;
         return ((usdValueB - usdValueA) / usdValueA) * 100;
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
-
-    useEffect(() => {
-        if (!parsedAmounts[SwapField.INPUT] || !currencyBalances[SwapField.INPUT]) return;
-
-        const inputAmountJSBI = JSBI.BigInt(parsedAmounts[SwapField.INPUT]!.quotient.toString());
-        const balanceAmountJSBI = JSBI.BigInt(currencyBalances[SwapField.INPUT]!.quotient.toString());
-
-        if (JSBI.lessThan(balanceAmountJSBI, inputAmountJSBI)) {
-            derivedSwap.inputError = `Insufficient ${parsedAmounts[SwapField.INPUT]!.currency.symbol} balance`;
-        }
-    }, [currencyBalances, derivedSwap, parsedAmounts]);
 
     useEffect(() => {
         handleOutputSelect(STABLECOINS[chainId].USDC);

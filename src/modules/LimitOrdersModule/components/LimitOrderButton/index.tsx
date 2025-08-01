@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { useDerivedSwapInfo } from "@/state/swapStore";
+import { IDerivedSwapInfo } from "@/state/swapStore";
 import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId } from "wagmi";
 import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
@@ -17,6 +17,7 @@ import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useLimitOrderInfo } from "../../hooks";
 
 interface LimitOrderButtonProps {
+    derivedSwap: IDerivedSwapInfo;
     token0: Token | undefined;
     token1: Token | undefined;
     poolAddress: Address | undefined;
@@ -29,6 +30,7 @@ interface LimitOrderButtonProps {
 }
 
 export const LimitOrderButton = ({
+    derivedSwap,
     disabled,
     token0,
     token1,
@@ -49,37 +51,39 @@ export const LimitOrderButton = ({
 
     const {
         currencies: { [SwapField.INPUT]: inputCurrency },
-        toggledTrade: trade,
+        currencyBalances,
         inputError,
-    } = useDerivedSwapInfo();
-
-    const amount = trade && trade.inputAmount;
+        parsedAmounts: { [SwapField.INPUT]: inputAmount },
+    } = derivedSwap;
 
     const isInverted = wasInverted === zeroToOne;
     const [baseToken, quoteToken] = isInverted ? [token1, token0] : [token0, token1];
     const limitOrderTick = tryParseTick(baseToken, quoteToken, sellPrice, tickSpacing);
 
-    const limitOrder = useLimitOrderInfo(poolAddress, amount, limitOrderTick);
+    const limitOrder = useLimitOrderInfo(poolAddress, inputAmount, limitOrderTick);
 
     const chainId = useChainId();
 
     const needAllowance = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
-        amount,
+        inputAmount,
         LIMIT_ORDER_MANAGER[chainId]
     );
+
+    const insufficientBalance = inputAmount && currencyBalances[SwapField.INPUT]?.lessThan(inputAmount.quotient.toString());
 
     const isReady =
         token0 &&
         token1 &&
-        amount &&
+        inputAmount &&
         limitOrder &&
         !disabled &&
         !inputError &&
         !needAllowance &&
+        !insufficientBalance &&
         BigInt(limitOrder.liquidity.toString()) > 0;
 
-    const { approvalState, approvalCallback } = useApprove(amount, LIMIT_ORDER_MANAGER[chainId]);
+    const { approvalState, approvalCallback } = useApprove(inputAmount, LIMIT_ORDER_MANAGER[chainId]);
 
     const placeLimitOrderConfig =
         isReady && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
@@ -95,7 +99,7 @@ export const LimitOrderButton = ({
                       zeroToOne,
                       BigInt(limitOrder.liquidity.toString()),
                   ] as const,
-                  value: amount?.currency.isNative ? BigInt(amount.quotient.toString()) : BigInt(0),
+                  value: inputAmount?.currency.isNative ? BigInt(inputAmount.quotient.toString()) : BigInt(0),
               }
             : undefined;
 
@@ -103,7 +107,7 @@ export const LimitOrderButton = ({
 
     const { isLoading: isPlaceLoading } = useTransactionAwait(placeData, {
         type: TransactionType.LIMIT_ORDER,
-        title: `Buy ${formatCurrency.format(Number(amount?.toSignificant()))} ${amount?.currency.symbol}`,
+        title: `Buy ${formatCurrency.format(Number(inputAmount?.toSignificant()))} ${inputAmount?.currency.symbol}`,
     });
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
@@ -121,10 +125,14 @@ export const LimitOrderButton = ({
 
     if (!disabled && inputError) return <Button disabled>{inputError}</Button>;
 
+    if (insufficientBalance) {
+        return <Button disabled>Insufficient {inputAmount.currency.symbol} amount</Button>;
+    }
+
     if (!disabled && needAllowance)
         return (
             <Button disabled={approvalState === ApprovalState.PENDING} onClick={() => approvalCallback && approvalCallback()}>
-                {approvalState === ApprovalState.PENDING ? <Loader /> : `Approve ${amount?.currency.symbol}`}
+                {approvalState === ApprovalState.PENDING ? <Loader /> : `Approve ${inputAmount?.currency.symbol}`}
             </Button>
         );
 
@@ -137,7 +145,7 @@ export const LimitOrderButton = ({
                     {
                         token0,
                         token1,
-                        amount,
+                        inputAmount,
                         limitOrder,
                         disabled,
                         inputError,

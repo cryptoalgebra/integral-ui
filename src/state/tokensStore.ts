@@ -24,7 +24,6 @@ export const useTokensState = create(
                 importToken: (address, symbol, name, decimals, chainId) => {
                     const { importedTokens } = get();
 
-                    console.log(importedTokens);
                     set({
                         importedTokens: {
                             ...importedTokens,

@@ -41,8 +41,8 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
 
     const provider = useEthersProvider();
 
-    const { formatted: currencyAPriceUSD } = useUSDCPrice(currencyA);
-    const { formatted: currencyBPriceUSD } = useUSDCPrice(currencyB);
+    const { formatted: currencyAPriceUSD, price: currencyAPrice } = useUSDCPrice(currencyA);
+    const { formatted: currencyBPriceUSD, price: currencyBPrice } = useUSDCPrice(currencyB);
 
     const { data: vaultAddresses } = useSWR(["vaultAddresses", poolAddress], async () => {
         if (!poolAddress) {
@@ -52,41 +52,40 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
         return vaultAddresses;
     });
 
-    const { data: vaults, isLoading } = useSWR(
-        ["almVaults", vaultAddresses, currencyA, currencyB, poolAddress, currencyAPriceUSD, currencyBPriceUSD, provider],
-        async () => {
-            if (!provider || !currencyA || !currencyB || !poolAddress || !vaultAddresses) {
-                throw new Error("No provider");
-            }
+    const isReady = vaultAddresses && currencyA && currencyB && poolAddress && currencyAPrice && currencyBPrice && provider;
 
-            const vaultsData = await Promise.all(
-                vaultAddresses.map(async (vault) => {
-                    const data = await getExtendedAlgebraVault(vault, DEX, chainId, provider, currencyA.decimals, currencyB.decimals);
-
-                    const amount0 = formatUnits(data.amount0, currencyA.decimals);
-                    const amount1 = formatUnits(data.amount1, currencyB.decimals);
-
-                    const tvlUsd = Number(amount0) * currencyAPriceUSD + Number(amount1) * currencyBPriceUSD;
-
-                    const depositToken = data.allowTokenA ? currencyA : currencyB;
-
-                    return {
-                        ...data,
-                        name: `ALM-${depositToken.symbol}`,
-                        apr: data.apr || 0,
-                        tvlUsd,
-                        amount0,
-                        amount1,
-                        token0: currencyA,
-                        token1: currencyB,
-                        depositToken,
-                    };
-                })
-            );
-
-            return vaultsData;
+    const { data: vaults, isLoading } = useSWR(["almVaults", isReady], async () => {
+        if (!isReady) {
+            throw new Error("not ready");
         }
-    );
+
+        const vaultsData = await Promise.all(
+            vaultAddresses.map(async (vault) => {
+                const data = await getExtendedAlgebraVault(vault, DEX, chainId, provider, currencyA.decimals, currencyB.decimals);
+
+                const amount0 = formatUnits(data.amount0, currencyA.decimals);
+                const amount1 = formatUnits(data.amount1, currencyB.decimals);
+
+                const tvlUsd = Number(amount0) * currencyAPriceUSD + Number(amount1) * currencyBPriceUSD;
+
+                const depositToken = data.allowTokenA ? currencyA : currencyB;
+
+                return {
+                    ...data,
+                    name: `ALM-${depositToken.symbol}`,
+                    apr: data.apr || 0,
+                    tvlUsd,
+                    amount0,
+                    amount1,
+                    token0: currencyA,
+                    token1: currencyB,
+                    depositToken,
+                };
+            })
+        );
+
+        return vaultsData;
+    });
 
     return { vaults, isLoading };
 }

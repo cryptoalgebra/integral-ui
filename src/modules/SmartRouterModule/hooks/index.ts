@@ -1,3 +1,3 @@
 export * from "./useRoutingPools";
-export * from "./useSmartRouterBestRoute";
+export * from "./useSmartRouterBestTrade";
 export * from "./useSmartRouterCallback";

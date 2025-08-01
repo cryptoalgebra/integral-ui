@@ -43,7 +43,7 @@ function ChartComponent({
 }
 
 export function DexCharts() {
-    const { dexDayDatas, loading } = useDexChartData(CHART_SPAN.DAY, "tvlUSD");
+    const { dexDayDatas, loading } = useDexChartData(CHART_SPAN.MONTH, "tvlUSD");
 
     const { currentTVL, currentVolume24H, currentFees24H } = useMemo(() => {
         if (!dexDayDatas)

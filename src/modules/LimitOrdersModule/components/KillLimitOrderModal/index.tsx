@@ -3,7 +3,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
 import { useWriteLimitOrderManagerKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -31,7 +31,6 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
 
     const killConfig = CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
         ? {
-              address: LIMIT_ORDER_MANAGER[chainId],
               args: [
                   {
                       token0: pool.token0.address as Address,
@@ -47,7 +46,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
           }
         : undefined;
 
-    const { data: killData, writeContract: kill } = useWriteLimitOrderManagerKill();
+    const { data: killData, writeContract: kill, isPending } = useWriteLimitOrderManagerKill();
 
     const { isLoading: isKillLoading } = useTransactionAwait(killData, {
         type: TransactionType.LIMIT_ORDER,
@@ -124,8 +123,8 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
                         token1={pool.token1}
                     />
 
-                    <Button disabled={value[0] === 0 || isKillLoading} onClick={() => killConfig && kill(killConfig)}>
-                        {isKillLoading ? <Loader /> : "Withdraw Liquidity"}
+                    <Button disabled={value[0] === 0 || isKillLoading || isPending} onClick={() => killConfig && kill(killConfig)}>
+                        {isKillLoading || isPending ? <Loader /> : "Withdraw Liquidity"}
                     </Button>
                 </div>
             </DialogContent>

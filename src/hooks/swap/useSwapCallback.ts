@@ -31,7 +31,7 @@ interface FailedCall extends SwapCallEstimate {
 }
 
 export function useSwapCallback(
-    trade: Trade<Currency, Currency, TradeType> | undefined,
+    trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
     approvalState: ApprovalStateType
 ) {
@@ -103,7 +103,7 @@ export function useSwapCallback(
         [bestCall]
     );
 
-    const { data: swapData, writeContractAsync: swapCallback } = useWriteSwapRouterMulticall();
+    const { data: swapData, writeContractAsync: swapCallback, isPending } = useWriteSwapRouterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(swapData, {
         title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
@@ -113,7 +113,7 @@ export function useSwapCallback(
     });
 
     return useMemo(() => {
-        if (!trade)
+        if (!trade && trade !== null)
             return {
                 state: SwapCallbackState.INVALID,
                 callback: null,
@@ -126,8 +126,8 @@ export function useSwapCallback(
             state: SwapCallbackState.VALID,
             callback: () => swapConfig && swapCallback(swapConfig),
             error: callError?.message.split(":")[1].split("Contract Call")[0],
-            isLoading,
+            isLoading: isLoading || isPending,
             isSuccess,
         };
-    }, [trade, callError, isLoading, isSuccess, swapConfig, swapCallback]);
+    }, [trade, callError?.message, isLoading, isPending, isSuccess, swapConfig, swapCallback]);
 }

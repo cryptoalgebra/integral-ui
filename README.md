@@ -1,6 +1,8 @@
 # Algebra Integral UI
 
-[Algebra Integral on Holesky](https://integral.algebra.finance)
+[Algebra Integral on Base Sepolia](https://integral.algebra.finance)
+
+## Get started
 
 To launch the application locally:
 
@@ -9,3 +11,7 @@ To launch the application locally:
 `yarn codegen && yarn wagmi-generate`
 
 `yarn dev`
+
+## Changelog
+
+Detailed list of updates in the [CHANGELOG.md](./CHANGELOG.md).

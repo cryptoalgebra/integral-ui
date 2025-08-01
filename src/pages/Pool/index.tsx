@@ -222,7 +222,7 @@ const PoolPage = () => {
                                 selectedPosition={selectedPosition?.id}
                                 selectPosition={(positionId) => selectPosition((prev) => (prev === positionId ? null : positionId))}
                             />
-                            {unclaimedRewards && Boolean(unclaimedRewards?.rewards.length) && (
+                            {unclaimedRewards && Boolean(unclaimedRewards?.rewards?.length) && (
                                 <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
                             )}
                         </>

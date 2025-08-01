@@ -110,7 +110,7 @@ export const LimitPriceCard = ({
                 <div className="flex gap-2">
                     <Button
                         size={"icon"}
-                        className="w-[25px] h-[25px] bg-[#262a3a] rounded-full"
+                        className="w-[25px] h-[25px] bg-card rounded-full"
                         disabled={plusDisabled || disabled}
                         onClick={() => tickStep(1)}
                     >
@@ -118,7 +118,7 @@ export const LimitPriceCard = ({
                     </Button>
                     <Button
                         size={"icon"}
-                        className="w-[25px] h-[25px] bg-[#262a3a] rounded-full"
+                        className="w-[25px] h-[25px] bg-card rounded-full"
                         disabled={minusDisabled || disabled}
                         onClick={() => tickStep(-1)}
                     >

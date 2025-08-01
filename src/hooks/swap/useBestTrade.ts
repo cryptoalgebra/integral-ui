@@ -9,21 +9,26 @@ import { useQuotesResults } from "./useQuotesResults";
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
 
+export interface BestTradeExactIn {
+    state: TradeStateType;
+    trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null;
+    fee?: bigint[] | null;
+    priceAfterSwap?: bigint[] | null;
+}
+
+export interface BestTradeExactOut {
+    state: TradeStateType;
+    trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null;
+    fee?: bigint[] | null;
+    priceAfterSwap?: bigint[] | null;
+}
+
 /**
  * Returns the best v3 trade for a desired exact input swap
  * @param amountIn the amount to swap in
  * @param currencyOut the desired output currency
  */
-export function useBestTradeExactIn(
-    amountIn?: CurrencyAmount<Currency>,
-    currencyOut?: Currency,
-    deployer?: Address
-): {
-    state: TradeStateType;
-    trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null;
-    fee?: bigint[] | null;
-    priceAfterSwap?: bigint[] | null;
-} {
+export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency, deployer?: Address): BestTradeExactIn {
     const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, deployer);
 
     const {
@@ -122,15 +127,7 @@ export function useBestTradeExactIn(
  * @param currencyIn the desired input currency
  * @param amountOut the amount to swap out
  */
-export function useBestTradeExactOut(
-    currencyIn?: Currency,
-    amountOut?: CurrencyAmount<Currency>
-): {
-    state: TradeStateType;
-    trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null;
-    fee?: bigint[] | null;
-    priceAfterSwap?: bigint[] | null;
-} {
+export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
     const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
     const {

@@ -22,7 +22,7 @@ export default {
     useV3CandidatePools: () => ({}),
     useCommonPools: () => ({}),
     usePropsChanged: () => ({}),
-    useSmartRouterBestRoute: () => ({}),
+    useSmartRouterBestTrade: () => ({}),
     useSmartRouterCallback: () => ({}),
   },
   components: {

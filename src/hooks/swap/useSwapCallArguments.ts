@@ -3,7 +3,7 @@ import { Currency, Percent, SwapRouter, Trade, TradeType } from "@cryptoalgebra/
 import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
-export function useSwapCallArguments(trade: Trade<Currency, Currency, TradeType> | undefined, allowedSlippage: Percent) {
+export function useSwapCallArguments(trade: Trade<Currency, Currency, TradeType> | null | undefined, allowedSlippage: Percent) {
     const { address: account } = useAccount();
 
     const { txDeadline } = useUserState();
