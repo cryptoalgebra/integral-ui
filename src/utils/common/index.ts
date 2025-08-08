@@ -1,6 +1,5 @@
 export * from "./cn";
 export * from "./formatAmount";
-export * from "./formatBalance";
 export * from "./formatCurrency";
 export * from "./formatPercent";
 export * from "./formatPlural";

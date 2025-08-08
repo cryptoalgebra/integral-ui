@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
-import { formatCurrency } from "@/utils/common/formatCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
@@ -157,7 +156,7 @@ export function Chart({
                 priceScaleId: "left",
                 priceFormat: {
                     type: "custom",
-                    formatter: (price: LightWeightCharts.BarPrice) => formatCurrency.format(price),
+                    formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
@@ -174,7 +173,7 @@ export function Chart({
                 priceScaleId: "left",
                 priceFormat: {
                     type: "custom",
-                    formatter: (price: LightWeightCharts.BarPrice) => formatCurrency.format(price),
+                    formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {

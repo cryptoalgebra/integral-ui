@@ -1,3 +1,5 @@
+import { Position } from "@cryptoalgebra/custom-pools-sdk";
+
 export interface FormattedPosition {
     id: string;
     outOfRange: boolean;
@@ -6,4 +8,5 @@ export interface FormattedPosition {
     feesUSD: number | null;
     apr: number;
     rangeLength: number;
+    position: Position | null;
 }

@@ -1,4 +1,3 @@
-import { formatBalance } from "@/utils/common/formatBalance";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
@@ -12,6 +11,7 @@ import { useWriteSwapRouterMulticall } from "@/generated";
 import { estimateContractGas } from "viem/actions";
 import { SWAP_ROUTER } from "config/contract-addresses";
 import { swapRouterABI } from "config/abis";
+import { formatAmount } from "@/utils";
 
 interface SwapCallEstimate {
     calldata: Address[];
@@ -106,7 +106,7 @@ export function useSwapCallback(
     const { data: swapData, writeContractAsync: swapCallback, isPending } = useWriteSwapRouterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(swapData, {
-        title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
+        title: `Swap ${formatAmount(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
         type: TransactionType.SWAP,

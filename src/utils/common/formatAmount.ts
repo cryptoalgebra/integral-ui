@@ -1,4 +1,4 @@
-export function formatAmount(amount: string | number, decimals = 3): string {
+export function formatAmount(amount: string | number, decimals = 6): string {
     const amountNum = Number(amount);
     const isNegative = amountNum < 0;
     const absAmount = Math.abs(amountNum);

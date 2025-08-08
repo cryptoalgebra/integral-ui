@@ -17,6 +17,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
         variables: {
             tokenId: currency ? currency.wrapped.address.toLowerCase() : "",
         },
+        skip: !currency,
         client: infoClient,
     });
 

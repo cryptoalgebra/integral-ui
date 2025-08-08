@@ -17,6 +17,7 @@ export default {
     useFarmingRewardsEarned: () => ({}),
     useFarmStake: () => ({}),
     useFarmUnstake: () => ({}),
+    usePositionInFarming: () => ({}),
     useUnclaimedRewards: () => ({}),
     useLimitOrderInfo: () => ({}),
     useV3CandidatePools: () => ({}),

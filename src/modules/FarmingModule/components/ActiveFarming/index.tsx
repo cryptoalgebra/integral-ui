@@ -1,4 +1,3 @@
-import { Deposit } from "@/graphql/generated/graphql";
 import { Farming } from "../../../../types/farming-info";
 import { Button } from "@/components/ui/button";
 import { Address, formatUnits } from "viem";
@@ -14,6 +13,7 @@ import { SelectPositionFarmModal } from "..";
 import { CardInfo } from "../CardInfo";
 import { formatAmount } from "@/utils";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { Deposit } from "@/graphql/generated/graphql";
 
 interface ActiveFarmingProps {
     farming: Farming;

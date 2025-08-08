@@ -9,12 +9,12 @@ import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { SwapField } from "@/types/swap-field";
-import { formatCurrency } from "@/utils/common/formatCurrency";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useWriteLimitOrderManagerPlace } from "@/generated";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useLimitOrderInfo } from "../../hooks";
+import { formatAmount } from "@/utils";
 
 interface LimitOrderButtonProps {
     derivedSwap: IDerivedSwapInfo;
@@ -107,7 +107,7 @@ export const LimitOrderButton = ({
 
     const { isLoading: isPlaceLoading } = useTransactionAwait(placeData, {
         type: TransactionType.LIMIT_ORDER,
-        title: `Buy ${formatCurrency.format(Number(inputAmount?.toSignificant()))} ${inputAmount?.currency.symbol}`,
+        title: `Buy ${formatAmount(Number(inputAmount?.toSignificant()))} ${inputAmount?.currency.symbol}`,
     });
 
     const isWrongChain = !userChainId || appChainId !== userChainId;

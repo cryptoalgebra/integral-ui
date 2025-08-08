@@ -125,7 +125,7 @@ const TransactionHistoryPopover = ({ children }: { children: React.ReactNode }) 
     if (account)
         return (
             <Popover open={isOpen} onOpenChange={setIsOpen}>
-                <PopoverTrigger>{children}</PopoverTrigger>
+                <PopoverTrigger asChild>{children}</PopoverTrigger>
                 <PopoverContent
                     className="w-fit max-h-80 flex flex-col gap-4 -translate-x-28 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4"
                     sideOffset={6}

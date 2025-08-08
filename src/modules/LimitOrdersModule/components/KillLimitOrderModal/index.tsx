@@ -11,6 +11,8 @@ import { useMemo, useState } from "react";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
 import { LimitOrderInfo } from "../Table";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
+import { formatAmount } from "@/utils";
 
 export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positionLO }: LimitOrderInfo) => {
     const [value, setValue] = useState([50]);
@@ -50,7 +52,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
 
     const { isLoading: isKillLoading } = useTransactionAwait(killData, {
         type: TransactionType.LIMIT_ORDER,
-        title: `Withdraw ${amount0Parsed || amount1Parsed} ${amount0Parsed ? pool.token0.symbol : pool.token1.symbol}`,
+        title: `Withdraw ${formatAmount(amount0Parsed || amount1Parsed)} ${amount0Parsed ? pool.token0.symbol : pool.token1.symbol}`,
         tokenA: amount0Parsed ? (pool.token0.wrapped.address as Address) : undefined,
         tokenB: amount1Parsed ? (pool.token1.wrapped.address as Address) : undefined,
     });
@@ -119,8 +121,8 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
                     <CurrencyAmounts
                         amount0Parsed={amount0Parsed}
                         amount1Parsed={amount1Parsed}
-                        token0={pool.token0}
-                        token1={pool.token1}
+                        token0={unwrappedToken(pool.token0)}
+                        token1={unwrappedToken(pool.token1)}
                     />
 
                     <Button disabled={value[0] === 0 || isKillLoading || isPending} onClick={() => killConfig && kill(killConfig)}>

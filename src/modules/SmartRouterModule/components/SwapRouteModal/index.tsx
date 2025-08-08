@@ -15,6 +15,7 @@ import { useMemo } from "react";
 import { Route, Pool, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Currency, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
+import { formatAmount } from "@/utils";
 
 interface ISwapRouteModal {
     isOpen: boolean;
@@ -40,7 +41,7 @@ const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deplo
             </div>
             <div className={"flex flex-2 flex-col gap-2 items-center"}>
                 <ArrowRight size={"16px"} />
-                <span>{`${deployer} ${currencyA?.symbol}/${currencyB?.symbol} (${pool.fee / 10_000}%)`}</span>
+                <span>{`${deployer} ${currencyA?.symbol}/${currencyB?.symbol} (${formatAmount(pool.fee / 10_000, 4)}%)`}</span>
             </div>
             <div className={"flex flex-1 flex-col gap-2 items-end"}>
                 <CurrencyLogo currency={currencyB} size={20} />
@@ -75,7 +76,9 @@ const RouteSplit = ({
 
     return (
         <div className={"px-4 py-3 rounded-xl bg-card-dark/80 border border-card-border"}>
-            {route.percent < 100 && <div className={"pb-2 border-b border-card-border font-bold"}>{`Split ${route.percent}%`}</div>}
+            {route.percent < 100 && (
+                <div className={"pb-2 border-b border-card-border font-bold"}>{`Split ${formatAmount(route.percent, 2)}%`}</div>
+            )}
             {route.pools.map((pool, idx) =>
                 pool.type === 1 ? (
                     <RoutePool

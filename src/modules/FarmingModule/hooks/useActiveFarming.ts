@@ -1,13 +1,20 @@
 import { useAccount } from "wagmi";
 import { useMemo } from "react";
 import { useClients } from "@/hooks/graphql/useClients";
-import { useDepositsQuery, useEternalFarmingsQuery, useSingleTokenQuery, SinglePoolQuery } from "@/graphql/generated/graphql";
+import { useDepositsQuery, useEternalFarmingsQuery, useSinglePoolQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
 
-export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolInfo: SinglePoolQuery | undefined }) {
+export function useActiveFarming({ poolId }: { poolId: Address }) {
     const { address: account } = useAccount();
 
     const { infoClient, farmingClient } = useClients();
+
+    const { data: poolInfo } = useSinglePoolQuery({
+        variables: {
+            poolId,
+        },
+        client: infoClient,
+    });
 
     const { data: farmings, loading: isFarmingLoading } = useEternalFarmingsQuery({
         variables: {
