@@ -18,18 +18,24 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
         : [];
 
     return (
-        <div className="flex gap-3 md:flex-row bg-card rounded-xl px-3 items-center min-h-16 justify-between mb-3 w-full">
-            <div className="flex w-full col-span-3 items-center gap-6">
-                <div className="flex items-center gap-4">
+        <div className="flex gap-3 md:flex-row bg-card rounded-xl p-3 items-center min-h-16 justify-between mb-3 w-full">
+            <div className="flex w-full col-span-3 items-start gap-3 flex-col">
+                <div className="flex items-center gap-4 justify-between w-full">
                     <CurrencyLogo currency={currencyA} size={40} />
                     <CurrencyLogo currency={currencyB} size={40} className="-ml-6" />
                     <h1 className="scroll-m-20 font-bold tracking-tight lg:text-2xl">
                         {currencyA?.symbol} / {currencyB?.symbol}
                     </h1>
+
+                    <div className="ml-auto">
+                        <FilterPopover>
+                            <Settings2 className="w-fit h-fit" />
+                        </FilterPopover>
+                    </div>
                 </div>
                 {myLiquidityUSD ? (
-                    <>
-                        <div className="self-center w-[1px] h-[20px] border border-text-100"></div>
+                    <div className="flex items-center gap-4">
+                        {/* <div className="self-center w-[1px] h-[20px] border border-text-100"></div> */}
                         <div className="font-semibold">{`${positionsData?.length} ${formatPlural(
                             positionsData.length,
                             "position",
@@ -39,13 +45,8 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
                         <div className="text-cyan-300 font-semibold">{`$${formatAmount(myLiquidityUSD || 0, 2)} TVL`}</div>
                         <div className="self-center w-[1px] h-[20px] border border-text-100"></div>
                         <div className="text-green-300 font-semibold">{`$${formatAmount(myFeesUSD || 0, 2)} Fees`}</div>
-                    </>
+                    </div>
                 ) : null}
-                <div className="ml-auto">
-                    <FilterPopover>
-                        <Settings2 className="w-fit h-fit" />
-                    </FilterPopover>
-                </div>
             </div>
         </div>
     );

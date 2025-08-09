@@ -170,22 +170,18 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
     );
 };
 
-const LiquidityChartLoader = () => (
-    <div className="flex items-end gap-4 w-full h-[250px]">
-        <Skeleton className="w-[40px] h-[120px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[130px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[160px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[130px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[120px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[160px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[200px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[140px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[130px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[120px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[140px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[120px] bg-card-dark" />
-        <Skeleton className="w-[40px] h-[190px] bg-card-dark" />
-    </div>
-);
+const LiquidityChartLoader = () => {
+    const heights = [
+        100, 110, 140, 110, 100, 140, 180, 120, 110, 100, 120, 100, 170, 170, 110, 100, 120, 100, 100, 110, 140, 110, 100, 140, 100, 120,
+        100, 100, 110, 140, 110, 100, 140,
+    ];
 
+    return (
+        <div className="flex items-end gap-2 pb-4 w-full h-[250px]">
+            {heights.map((h, i) => (
+                <Skeleton key={i} className={`w-[20px] h-[${h}px] bg-card-dark`} />
+            ))}
+        </div>
+    );
+};
 export default LiquidityChart;

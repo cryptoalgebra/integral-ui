@@ -8,10 +8,10 @@ import { CreateManualPosition } from "./CreateManualPosition";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { Address } from "viem";
-
-import ALMModule from "@/modules/ALMModule";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import { enabledModules } from "config/app-modules";
+import ALMModule from "@/modules/ALMModule";
+
 const { useALMVaultsByPool } = ALMModule.hooks;
 const { CreateAutomatedPosition } = ALMModule.components;
 

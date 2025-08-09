@@ -36,7 +36,7 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
     if (!selectedVault) return null;
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-3 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-y-3 md:gap-3 text-left">
             <div className="col-span-2">
                 <div className="flex flex-col w-full p-3 gap-3 bg-card border border-card-border rounded-xl">
                     <p className="p-2 ">

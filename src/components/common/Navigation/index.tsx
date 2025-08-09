@@ -1,13 +1,14 @@
+import { cn } from "@/utils";
 import { enabledModules } from "config/app-modules";
-import { ArrowUpRight } from "lucide-react";
-import { Link, NavLink, matchPath, useLocation } from "react-router-dom";
+import { ArrowUpDown, Droplets, LucideLineChart } from "lucide-react";
+import { matchPath, NavLink, useLocation } from "react-router-dom";
 
 const PATHS = {
     SWAP: "/swap",
     LIMIT_ORDERS: "limit-order",
     POOLS: "/pools",
-    POOL: "/pool",
-    ANALYTICS: "/analytics",
+    POOL: "/pool/*",
+    ANALYTICS: "/analytics/*",
 };
 
 const menuItems = [
@@ -15,49 +16,60 @@ const menuItems = [
         title: "Swap",
         link: "/swap",
         active: [PATHS.SWAP, PATHS.LIMIT_ORDERS],
+        icon: <ArrowUpDown size={20} />,
     },
     {
         title: "Pools",
         link: "/pools",
         active: [PATHS.POOLS, PATHS.POOL],
+        icon: <Droplets size={20} />,
     },
     enabledModules.analytics && {
         title: "Analytics",
         link: "/analytics",
         active: [PATHS.ANALYTICS],
+        icon: <LucideLineChart size={20} />,
     },
-].filter(Boolean) as { title: string; link: string; active: string[] }[];
+].filter(Boolean) as { title: string; link: string; active: string[]; icon?: React.ReactNode }[];
 
-const Navigation = () => {
+export function NavButtons() {
     const { pathname } = useLocation();
 
     const setNavlinkClasses = (paths: string[]) =>
         paths.some((path) => matchPath(path, pathname))
-            ? "border-b border-muted-primary"
-            : "border-b border-transparent hover:border-card-hover";
+            ? "bg-primary-100/20 text-primary-200 font-bold shadow-md"
+            : "text-muted-foreground hover:bg-white/10";
 
     return (
-        <nav>
-            <ul className="flex justify-center gap-2 rounded-full whitespace-nowrap">
-                {menuItems.map((item) => (
-                    <NavLink
-                        key={`nav-item-${item.link}`}
-                        to={item.link}
-                        className={`${setNavlinkClasses(item.active)} py-2 px-4 font-semibold select-none duration-200`}
-                    >
-                        {item.title}
-                    </NavLink>
-                ))}
-                <Link
-                    to="https://docs.algebra.finance/"
-                    target="_blank"
-                    className="flex items-center py-2 px-4 gap-2 font-semibold max-sm:hidden select-none duration-200 border-b border-transparent hover:opacity-60"
+        <>
+            {menuItems.map((item) => (
+                <NavLink
+                    key={`nav-item-${item.link}`}
+                    to={{ pathname: item.link }}
+                    className={cn(
+                        "flex items-center justify-center gap-1 w-fit min-w-10 h-full px-4 rounded-lg transition-all duration-200",
+                        setNavlinkClasses(item.active)
+                    )}
                 >
-                    Docs <ArrowUpRight size={16} />
-                </Link>
-            </ul>
+                    <div className="text-lg">{item.icon}</div>
+                    <span className="font-medium max-md:text-sm">{item.title}</span>
+                </NavLink>
+            ))}
+        </>
+    );
+}
+
+export function Navigation() {
+    return (
+        <ul className="flex w-full h-full gap-2 whitespace-nowrap items-center max-md:hidden">
+            <NavButtons />
+        </ul>
+    );
+}
+export function MobileNavigation() {
+    return (
+        <nav className="fixed flex gap-2 bottom-4 left-1/2 h-full max-h-[64px] md:hidden -translate-x-1/2 z-50 border border-card-border bg-card backdrop-blur-xl shadow-lg p-2 rounded-xl">
+            <NavButtons />
         </nav>
     );
-};
-
-export default Navigation;
+}

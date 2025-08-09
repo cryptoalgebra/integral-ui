@@ -1,35 +1,37 @@
-import Navigation from "@/components/common/Navigation";
+import { Navigation } from "@/components/common/Navigation";
 import AlgebraLogo from "@/assets/algebra-logo.svg";
 import AlgebraIntegral from "@/assets/algebra-itegral.svg";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { AlignJustify, UnplugIcon, WalletIcon } from "lucide-react";
+import { ChevronDown, Clock, WalletIcon } from "lucide-react";
 import Loader from "../Loader";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
-import { DEFAULT_CHAIN_NAME } from "config";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
+import { cn, truncateHash } from "@/utils";
 
 const Header = () => (
-    <header className="sticky top-0 py-4 z-10 grid grid-cols-3 bg-background h-full max-h-18 justify-between items-center gap-4">
-        <Algebra />
-        <Navigation />
+    <header className="md:sticky top-2 z-10 flex bg-transparent h-full max-h-[64px] mt-4 justify-between md:justify-center items-center gap-4">
+        <nav className="w-fit flex gap-2 h-full rounded-xl border border-card-border bg-card px-2 py-2 shadow-lg">
+            <Algebra />
+            <Navigation />
+        </nav>
         <Account />
     </header>
 );
 
-const Algebra = () => (
-    <div className="flex items-center gap-2">
+export const Algebra = () => (
+    <div className="flex items-center  gap-2 w-full p-2">
         <NavLink to={"/"}>
-            <div className="flex items-center gap-2 rounded-3xl duration-200">
-                <div className="flex items-center justify-center w-[32px] h-[32px] rounded-full">
+            <div className="flex items-center gap-2 md:mr-2 rounded-3xl duration-200">
+                <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
                     <img src={AlgebraLogo} width={25} height={25} />
                 </div>
-                <img className="hidden md:block" src={AlgebraIntegral} width={140} height={25} />
+                <img className="max-lg:hidden" src={AlgebraIntegral} width={140} height={25} />
             </div>
         </NavLink>
     </div>
@@ -38,9 +40,7 @@ const Algebra = () => (
 const Account = () => {
     const { open } = useAppKit();
 
-    const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
+    const { caipNetwork: currentNetwork } = useAppKitNetwork();
 
     const { pendingTransactions } = usePendingTransactionsStore();
 
@@ -53,66 +53,46 @@ const Account = () => {
             ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length
             : 0;
 
-    if (!userChainId || appChainId !== userChainId)
-        return (
-            <div className="flex justify-end">
-                <Button
-                    onClick={() =>
-                        open({
-                            view: "Networks",
-                        })
-                    }
-                    size={"sm"}
-                    variant={"destructive"}
-                    className="hidden md:block"
-                >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
-                <Button
-                    onClick={() =>
-                        open({
-                            view: "Networks",
-                        })
-                    }
-                    size={"icon"}
-                    variant={"icon"}
-                    className="md:hidden text-red-500"
-                >
-                    <UnplugIcon />
-                </Button>
-            </div>
-        );
-
     return (
-        <div className="flex h-full justify-end gap-4 whitespace-nowrap">
-            <div className="hidden md:block">
-                <w3m-button balance={pendingTxCount > 0 ? "hide" : "show"} />
-            </div>
-            <div className="md:hidden">
-                <Button onClick={() => open()} variant={"icon"} size={"icon"}>
-                    <WalletIcon />
+        <div className="flex h-full justify-end max-h-[64px] gap-4 whitespace-nowrap items-center shadow-lg rounded-xl">
+            <div className="flex p-2 gap-2 h-full rounded-xl bg-card border border-card-border">
+                {showTxHistory && (
+                    <TransactionHistoryPopover>
+                        {pendingTxCount > 0 ? (
+                            <Button
+                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-lg transition-all duration-200"
+                                aria-label="Transaction history"
+                            >
+                                <Loader />
+                                <span>{pendingTxCount}</span>
+                                <span>Pending</span>
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="ghost"
+                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200"
+                                aria-label="Transaction history"
+                            >
+                                <Clock size={20} /> <span className="max-md:hidden">History</span>
+                            </Button>
+                        )}
+                    </TransactionHistoryPopover>
+                )}
+                <Button className="flex gap-2 h-full rounded-lg" variant={"icon"} size={"sm"} onClick={() => open({ view: "Networks" })}>
+                    <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
+                </Button>
+                <Button
+                    className={cn(
+                        "flex gap-2 h-full rounded-lg",
+                        account ? " text-primary-200 bg-primary-100/20 hover:bg-primary-100/30" : ""
+                    )}
+                    onClick={() => open()}
+                    variant={"icon"}
+                    size={"sm"}
+                >
+                    <WalletIcon /> <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
                 </Button>
             </div>
-            {showTxHistory && (
-                <TransactionHistoryPopover>
-                    {pendingTxCount > 0 ? (
-                        <Button
-                            className="flex font-normal items-center my-auto h-10 px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-3xl transition-all duration-200"
-                            aria-label="Transaction history"
-                        >
-                            <Loader />
-                            <span>{pendingTxCount}</span>
-                            <span>Pending</span>
-                        </Button>
-                    ) : (
-                        <Button
-                            variant="ghost"
-                            className="flex font-normal items-center my-auto h-10 px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200"
-                            aria-label="Transaction history"
-                        >
-                            <AlignJustify size={20} />
-                        </Button>
-                    )}
-                </TransactionHistoryPopover>
-            )}
         </div>
     );
 };

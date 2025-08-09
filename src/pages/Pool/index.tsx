@@ -204,7 +204,7 @@ const PoolPage = () => {
         <PageContainer>
             <PoolHeader />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 w-full mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full mt-3">
                 <div className="col-span-2">
                     <MyPositionsToolbar
                         currencyA={poolEntity && unwrappedToken(poolEntity.token0)}
