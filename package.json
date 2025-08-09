@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite",
         "wagmi-generate": "wagmi generate",
-        "build": "yarn wagmi-generate && vite build",
+        "build": "yarn codegen && yarn wagmi-generate && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "codegen": "graphql-codegen --config codegen.ts",
