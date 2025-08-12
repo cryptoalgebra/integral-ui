@@ -7,7 +7,6 @@ import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated"
 import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
-import { DEX } from "../dex";
 
 export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     name: string;
@@ -23,7 +22,7 @@ export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
 export function useAllALMVaults() {
     const chainId = useChainId();
 
-    return useSWR(["allALMVaults", chainId], () => getAllVaults(chainId, DEX));
+    return useSWR(["allALMVaults", chainId], () => getAllVaults(chainId));
 }
 
 export function useALMVaultsByPool(poolAddress: Address | undefined) {
@@ -48,7 +47,7 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
         if (!poolAddress) {
             throw new Error("No pool address");
         }
-        const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId, DEX);
+        const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId);
         return vaultAddresses;
     });
 
@@ -61,7 +60,7 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
 
         const vaultsData = await Promise.all(
             vaultAddresses.map(async (vault) => {
-                const data = await getExtendedAlgebraVault(vault, DEX, chainId, provider, currencyA.decimals, currencyB.decimals);
+                const data = await getExtendedAlgebraVault(vault, chainId, provider, currencyA.decimals, currencyB.decimals);
 
                 const amount0 = formatUnits(data.amount0, currencyA.decimals);
                 const amount1 = formatUnits(data.amount1, currencyB.decimals);

@@ -24,7 +24,6 @@ import { Address, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { BigNumber } from "ethers";
 import { UserALMVault, useUserALMVaultsByPool } from "../../hooks";
-import { DEX } from "../../dex";
 
 interface RemoveALMLiquidityModalProps {
     userVault: UserALMVault | undefined;
@@ -58,7 +57,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         lpShareToWithdraw,
-        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][DEX] as Address
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId] as Address
     );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
@@ -77,9 +76,9 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
         try {
             let tx;
             if (useNative) {
-                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, DEX, Number(slippage.toSignificant(4)));
+                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, Number(slippage.toSignificant(4)));
             } else {
-                tx = await withdrawWithSlippage(account, shareToWithdraw, vault.id, provider, DEX, Number(slippage.toSignificant(4)));
+                tx = await withdrawWithSlippage(account, shareToWithdraw, vault.id, provider, Number(slippage.toSignificant(4)));
             }
 
             setTxHash(tx.hash as Address);

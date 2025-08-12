@@ -1,11 +1,10 @@
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { getAllUserAmounts } from "@cryptoalgebra/alm-sdk";
 import useSWR from "swr";
-import { DEX } from "../dex";
 import { Address } from "viem";
 
 export function useAllUserALMAmounts(account: Address | undefined) {
     const signer = useEthersSigner();
 
-    return useSWR(account && signer ? ["allUserVaults", account, signer] : null, async () => getAllUserAmounts(account!, signer!, DEX));
+    return useSWR(account && signer ? ["allUserVaults", account, signer] : null, async () => getAllUserAmounts(account!, signer!));
 }

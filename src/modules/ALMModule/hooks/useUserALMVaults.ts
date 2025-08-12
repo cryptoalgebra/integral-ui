@@ -4,7 +4,6 @@ import useSWR from "swr";
 import { calculateUserDepositTokenPNL, getUserAmounts } from "@cryptoalgebra/alm-sdk";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
-import { DEX } from "../dex";
 
 export interface UserALMVault {
     amount0: string;
@@ -40,7 +39,6 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
                     account,
                     vault.id,
                     provider,
-                    DEX,
                     vault.token0.decimals,
                     vault.token1.decimals,
                     true
@@ -62,8 +60,7 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
                     userAmount1.toString(),
                     vault.token0.decimals,
                     vault.token1.decimals,
-                    provider,
-                    DEX
+                    provider
                 );
 
                 userALMVaults.push({
