@@ -2,9 +2,19 @@ import { useReadNonfungiblePositionManagerTokenUri } from "@/generated";
 import { cn } from "@/utils/common/cn";
 import { useEffect, useRef } from "react";
 
-export const FarmingPositionImg = ({ positionId, size, className }: { positionId: bigint; size: number; className?: string }) => {
+export const FarmingPositionImg = ({
+    positionId,
+    size,
+    className,
+    isALM,
+}: {
+    positionId: string;
+    size: number;
+    className?: string;
+    isALM?: boolean;
+}) => {
     const { data: uri } = useReadNonfungiblePositionManagerTokenUri({
-        args: [positionId],
+        args: isALM ? [1n] : [BigInt(positionId)],
     });
 
     const imgRef = useRef<any>();
@@ -24,13 +34,11 @@ export const FarmingPositionImg = ({ positionId, size, className }: { positionId
                 height: `${size * 4}px`,
                 maxWidth: `${size * 4}px`,
                 maxHeight: `${size * 4}px`,
+                minWidth: `${size * 4}px`,
+                minHeight: `${size * 4}px`,
             }}
         >
-            {json ? (
-                <img ref={imgRef} className="w-full h-full object-cover" alt={`position ${positionId.toString()}`} />
-            ) : (
-                <p>{positionId.toString()}</p>
-            )}
+            {json ? <img ref={imgRef} className="w-full h-full object-cover" alt={`position ${positionId}`} /> : <p>{positionId}</p>}
         </div>
     );
 };

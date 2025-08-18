@@ -12,7 +12,7 @@ import { getPositionFees } from "@/utils/positions/getPositionFees";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { CurrencyAmount, ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { MoveRightIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import JSBI from "jsbi";
@@ -37,8 +37,6 @@ const PoolPage = () => {
     const { address: account } = useAccount();
 
     const { pool: poolId } = useParams() as { pool: Address };
-
-    const [selectedPositionId, selectPosition] = useState<string | null>();
 
     const [, poolEntity] = usePool(poolId);
 
@@ -160,9 +158,12 @@ const PoolPage = () => {
                 liquidityUSD,
                 feesUSD,
                 apr,
-                inFarming: Boolean(currentPositionInFarming?.eternalFarming),
+                onFarming: Boolean(currentPositionInFarming?.eternalFarming),
                 rangeLength,
                 position,
+                isALM: false,
+                almShares: null,
+                almVaultAddress: null,
             } as FormattedPosition;
         });
 
@@ -170,7 +171,7 @@ const PoolPage = () => {
             userVaults?.map(
                 (vault) =>
                     ({
-                        id: vault.vault.name,
+                        id: `${vault.vault.name}${vault.onFarming ? "-F" : ""}`,
                         isALM: true,
                         isClosed: false,
                         outOfRange: false,
@@ -178,22 +179,24 @@ const PoolPage = () => {
                         liquidityUSD: vault.amountsUsd,
                         feesUSD: null,
                         apr: Math.abs(vault.vault.apr),
-                        inFarming: false,
+                        onFarming: vault.onFarming,
                         rangeLength: 0,
                         position: null,
+                        almShares: vault.shares,
+                        almVaultAddress: vault.vault.id,
                     }) as FormattedPosition
             ) || [];
 
         return [...almPositionsData, ...positionsData];
     }, [filteredPositions, poolEntity, positionsFees, positionsAPRs, userVaults, deposits?.deposits, token0PriceUSD, token1PriceUSD]);
 
-    const [selectedPosition, setSelectedPosition] = useState<FormattedPosition | undefined>();
+    const [selectedPosition, setSelectedPosition] = useState<FormattedPosition | null>(null);
 
-    useEffect(() => {
-        if (!selectedPositionId || !positionsData) return;
-        const found = positionsData.find(({ id }) => Number(id) === Number(selectedPositionId));
-        if (found) setSelectedPosition(found);
-    }, [selectedPositionId, positionsData]);
+    // useEffect(() => {
+    //     if (!selectedPositionId || !positionsData) return;
+    //     const found = positionsData.find(({ id, isALM, almShares }) => selectedPositionId);
+    //     if (found) setSelectedPosition(found);
+    // }, [selectedPositionId, positionsData]);
 
     const isLoading =
         positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading || positionsFeesLoading || positionsAPRsLoading;
@@ -223,7 +226,7 @@ const PoolPage = () => {
                                 positions={positionsData}
                                 poolId={poolId}
                                 selectedPosition={selectedPosition?.id}
-                                selectPosition={(positionId) => selectPosition((prev) => (prev === positionId ? null : positionId))}
+                                selectPosition={(position) => setSelectedPosition(position)}
                             />
                             {unclaimedRewards && Boolean(unclaimedRewards?.rewards?.length) && (
                                 <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
@@ -244,9 +247,15 @@ const PoolPage = () => {
                         pool={poolEntity}
                         farming={farmingInfo}
                         closedFarmings={closedFarmings}
-                        selectedPosition={selectedPosition}
+                        selectedPosition={selectedPosition?.isALM ? null : selectedPosition}
                     />
-                    <ALMPositionCard poolAddress={poolId} userVault={userVaults?.find((v) => v.vault.name === selectedPositionId)} />
+                    <ALMPositionCard
+                        farming={farmingInfo}
+                        poolAddress={poolId}
+                        userVault={userVaults?.find(
+                            (v) => v.vault.id === selectedPosition?.almVaultAddress && v.shares === selectedPosition?.almShares
+                        )}
+                    />
                 </div>
             </div>
         </PageContainer>

@@ -36,14 +36,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const isSameReward = isSameRewards(farming.farming.rewardToken as Address, farming.farming.bonusRewardToken as Address);
 
-    const TVL = depositsForActiveFarming.reduce((acc, deposit) => {
-        const currentFormattedPosition = positionsData.find((position) => Number(position.id) === Number(deposit.id));
-        if (deposit.eternalFarming !== null && currentFormattedPosition) {
-            return acc + currentFormattedPosition.liquidityUSD;
-        } else {
-            return acc;
-        }
-    }, 0);
+    const TVL = positionsData.filter((d) => d.onFarming).reduce((acc, curr) => acc + curr.liquidityUSD, 0);
 
     const formattedTVL = formatAmount(TVL, 2);
 

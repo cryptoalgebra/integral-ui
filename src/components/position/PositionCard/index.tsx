@@ -20,7 +20,7 @@ const { usePositionInFarming } = FarmingModule.hooks;
 
 interface PositionCardProps {
     pool: Pool | null;
-    selectedPosition: FormattedPosition | undefined;
+    selectedPosition: FormattedPosition | null | undefined;
     farming?: Farming | null;
     closedFarmings?: EternalFarming[] | null;
 }

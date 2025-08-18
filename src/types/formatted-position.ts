@@ -9,4 +9,8 @@ export interface FormattedPosition {
     apr: number;
     rangeLength: number;
     position: Position | null;
+    isALM: boolean;
+    almVaultAddress: string | null;
+    almShares: string | null;
+    onFarming: boolean;
 }

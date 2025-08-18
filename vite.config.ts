@@ -45,7 +45,7 @@ if (disabledModules.length > 0) {
 }
 
 export default defineConfig({
-    plugins: [react(), tailwindcss(), ignoreDisabledModules(disabledModules.map((m) => m.moduleDir)), eslint()],
+    plugins: [react(), tailwindcss(), ignoreDisabledModules(disabledModules.map((m) => m.moduleDir))],
     resolve: {
         alias: [
             { find: "@", replacement: path.resolve(__dirname, "./src") },

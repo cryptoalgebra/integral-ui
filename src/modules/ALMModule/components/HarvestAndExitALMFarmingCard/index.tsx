@@ -1,59 +1,34 @@
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useAccount, useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
-import { Deposit, EternalFarming } from "@/graphql/generated/graphql";
-import { useFarmHarvest, useFarmingRewardsEarned, useFarmUnstake } from "../../hooks";
+import { EternalFarming } from "@/graphql/generated/graphql";
 import { Address } from "viem";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { formatAmount } from "@/utils";
-import { isSameRewards } from "../../utils";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
+import { useALMFarmHarvest, useALMFarmUnstake, UserALMVault } from "../../hooks";
+import { useALMFarmingRewardsEarned } from "../../hooks/useALMFarmingRewardsEarned";
+import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 
 interface ActiveFarmingCardProps {
     eternalFarming: EternalFarming;
-    selectedPosition: Deposit;
+    almPosition: UserALMVault;
     isEnded: boolean;
 }
 
-export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, isEnded }: ActiveFarmingCardProps) => {
-    const { address: account } = useAccount();
-    const chainId = useChainId();
-
+export const HarvestAndExitALMFarmingCard = ({ eternalFarming, almPosition, isEnded }: ActiveFarmingCardProps) => {
     const rewardTokenCurrency = useCurrency(eternalFarming.rewardToken as Address);
     const bonusRewardTokenCurrency = useCurrency(eternalFarming.bonusRewardToken as Address);
 
     const { formattedRewardEarned, formattedBonusRewardEarned, rewardEarnedUSD, bonusRewardEarnedUSD, totalRewardsEarnedUSD } =
-        useFarmingRewardsEarned(eternalFarming, [selectedPosition]);
+        useALMFarmingRewardsEarned(eternalFarming, almPosition);
 
-    const isSameReward = isSameRewards(eternalFarming.rewardToken as Address, eternalFarming.bonusRewardToken as Address);
+    const isSameReward =
+        eternalFarming.rewardToken.toLowerCase() === eternalFarming.bonusRewardToken.toLowerCase() ||
+        eternalFarming.bonusRewardToken === ADDRESS_ZERO;
 
-    const farmingArgs = {
-        tokenId: BigInt(selectedPosition.id),
-        rewardToken: eternalFarming.rewardToken as Address,
-        bonusRewardToken: eternalFarming.bonusRewardToken as Address,
-        pool: eternalFarming.pool as Address,
-        nonce: BigInt(eternalFarming.nonce),
-        account: account ?? ADDRESS_ZERO,
-        chainId,
-    };
-
-    const { onHarvest, isLoading: isHarvesting } = useFarmHarvest(farmingArgs);
-
-    const { onUnstake, isLoading: isUnstaking } = useFarmUnstake(farmingArgs);
-
-    const handleUnstake = async () => {
-        if (!account) return;
-        if (!onUnstake) return;
-        onUnstake();
-    };
-
-    const handleHarvest = async () => {
-        if (!account) return;
-        if (!onHarvest) return;
-        onHarvest();
-    };
+    const { onUnstake, isLoading: isUnstaking } = useALMFarmUnstake(almPosition);
+    const { onHarvest, isLoading: isHarvesting } = useALMFarmHarvest(almPosition);
 
     return (
         <div className="flex flex-col gap-6">
@@ -78,7 +53,7 @@ export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, is
 
                                         <div className="flex gap-1 items-end">
                                             <span>{formatAmount(formattedRewardEarned + formattedBonusRewardEarned, 6)}</span>
-                                            <span className="opacity-50 text-sm">(${totalRewardsEarnedUSD})</span>
+                                            <span className="opacity-50 text-sm">(${formatAmount(totalRewardsEarnedUSD || 0, 2)})</span>
                                         </div>
                                     </div>
                                 ) : (
@@ -111,11 +86,11 @@ export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, is
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                <Button size={"md"} disabled={isHarvesting || isUnstaking} onClick={handleHarvest}>
+                <Button className="min-w-20 w-full max-w-fit" size={"md"} disabled={isHarvesting || isUnstaking} onClick={onHarvest}>
                     {isHarvesting ? <Loader /> : "Collect"}
                 </Button>
             </div>
-            <Button onClick={handleUnstake} disabled={isUnstaking || isHarvesting}>
+            <Button onClick={onUnstake} disabled={isUnstaking || isHarvesting}>
                 {isUnstaking ? <Loader /> : `Exit from ${isEnded ? "ended" : ""} farming`}
             </Button>
         </div>

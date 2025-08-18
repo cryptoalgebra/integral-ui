@@ -2,7 +2,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME } from "config";
 import { useApprove } from "@/hooks/common/useApprove";
-import { useEthersSigner } from "@/hooks/common/useEthersProvider";
+import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
@@ -49,7 +49,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const isReady = approvalStateA === ApprovalState.APPROVED;
 
-    const provider = useEthersSigner();
+    const provider = useEthersProvider();
 
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<Address | undefined>();

@@ -554,10 +554,8 @@
     eventemitter3 "^5.0.1"
     preact "^10.24.2"
 
-"@cryptoalgebra/alm-sdk@^1.0.8":
+"@cryptoalgebra/alm-sdk@file:.yalc/@cryptoalgebra/alm-sdk":
   version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.8.tgz#d1f38e3ef8f8b4ec14bb7e2172a1210687843707"
-  integrity sha512-1Q6uGFKs95rwAYRuVrdDXbhWosVjE0v43dm+u4wumCRg/WggZlGpsSWXwzjkan9s0AQAIeC3FGlnjgjHmqn6+Q==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/abstract-signer" "^5.6.2"
@@ -598,10 +596,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.2.tgz#eb49237b86bb0a0f996d05bb2d7610c715a988f1"
-  integrity sha512-VE8nLQeZYfPlIG3mqUKEQpoozWcN7wqfbVh5WGFutNgSDnFFWXvqR0/XHnvOEhBHYRnGdHrlR00APtLOejtbrg==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.3.tgz#bc06f45538b60d7b178c879a6899b51c9243e421"
+  integrity sha512-4vnt6/gf9G3q+JxboOEQOtiQOf7U0RQL633qBt/N2XYRkiNkQl8HXZws9ctShXm7WmtimliNf3htSlJIx72Aow==
   dependencies:
     "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/integral-sdk@1.0.0"
     "@pancakeswap/sdk" "5.7.6"

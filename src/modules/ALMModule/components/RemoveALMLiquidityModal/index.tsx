@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Slider } from "@/components/ui/slider";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { useEthersSigner } from "@/hooks/common/useEthersProvider";
+import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useBurnActionHandlers, useBurnState } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -63,7 +63,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
 
-    const provider = useEthersSigner();
+    const provider = useEthersProvider();
 
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<Address | undefined>();
@@ -169,7 +169,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
 
                     {showApproveA ? (
                         <Button disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
-                            {isApprovePending ? <Loader /> : `Approve ${vaultLpToken?.symbol}`}
+                            {isApprovePending ? <Loader /> : `Approve ALM LP Token`}
                         </Button>
                     ) : (
                         <Button disabled={isDisabled} onClick={callback}>
