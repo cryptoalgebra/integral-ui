@@ -51,6 +51,7 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
         return vaultAddresses;
     });
 
+    console.log(provider);
     const isReady = vaultAddresses && currencyA && currencyB && poolAddress && currencyAPrice && currencyBPrice && provider;
 
     const { data: vaults, isLoading } = useSWR(["almVaults", isReady], async () => {
