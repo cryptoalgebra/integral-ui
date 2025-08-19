@@ -3,8 +3,8 @@ import { ADDRESS_ZERO, Currency, CurrencyAmount, Pool, Position, Price, Token } 
 import { ZERO } from "@cryptoalgebra/custom-pools-sdk";
 
 import { Bound, Field, Rounding } from "@cryptoalgebra/custom-pools-sdk";
-import { tryParseAmount, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
-import { tickToPrice, priceToClosestTick, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/custom-pools-sdk";
 
 import { getTickToPrice } from "@cryptoalgebra/custom-pools-sdk";
 
@@ -14,6 +14,7 @@ import { create } from "zustand";
 import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
 import { PresetsType } from "@/types/presets";
 import { Address } from "viem";
+import { priceToClosestTick, tryParseTick } from "@/utils/common/priceToClosestTick";
 
 export type FullRange = true;
 
