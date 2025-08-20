@@ -25,7 +25,12 @@ export function useAllALMVaults() {
     return useSWR(["allALMVaults", chainId], () => getAllVaults(chainId));
 }
 
-export function useALMVaultsByPool(poolAddress: Address | undefined) {
+export function useALMVaultsByPool(
+    poolAddress: Address | undefined
+): {
+    vaults: ExtendedVault[] | undefined;
+    isLoading: boolean;
+} {
     const { data: token0Address } = useReadAlgebraPoolToken0({
         address: poolAddress,
     });

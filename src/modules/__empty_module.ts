@@ -33,6 +33,7 @@ export default {
   },
   components: {
     ALMPositionCard: () => null,
+    ALMTag: () => null,
     AddALMLiquidityModal: () => null,
     AddAutomatedLiquidityButton: () => null,
     CreateAutomatedPosition: () => null,
