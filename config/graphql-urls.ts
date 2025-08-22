@@ -13,7 +13,8 @@ export const BLOCKS_GRAPH_URL = {
 };
 
 export const FARMING_GRAPH_URL = {
-    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/integral-v12-farming/v1.0.5",
+    [ChainId.BaseSepolia]:
+        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/9vgT17hNEzkU5rboq6mGfuKZcyyFzaVwSm2XvcVipXih",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
