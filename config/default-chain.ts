@@ -20,7 +20,12 @@ export const CHAIN_ID = {
     [ChainId.BaseSepolia]: ChainId.BaseSepolia,
 };
 
-export const DEFAULT_CHAIN_ID = 999; // Hyperliquid Mainnet
+export const CHAIN_IMAGE = {
+    [ChainId.HyperEvmMainnet]: "https://www.ethereum-ecosystem.com/logos/base_icon.png",
+    [ChainId.BaseSepolia]: "https://www.ethereum-ecosystem.com/logos/base_icon.png",
+};
+
+export const DEFAULT_CHAIN_ID = ChainId.BaseSepolia;
 export const DEFAULT_CHAIN_NAME = CHAIN_NAME[DEFAULT_CHAIN_ID];
 export const DEFAULT_NATIVE_SYMBOL = NATIVE_SYMBOL[DEFAULT_CHAIN_ID];
 export const DEFAULT_NATIVE_NAME = NATIVE_NAME[DEFAULT_CHAIN_ID];

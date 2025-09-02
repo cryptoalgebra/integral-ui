@@ -7,3 +7,4 @@ export * from "./useFarmCheckApprove";
 export * from "./useFarmingAPR";
 export * from "./useFarmingRewardsEarned";
 export * from "./useUnclaimedRewards";
+export * from "./usePositionInFarming";

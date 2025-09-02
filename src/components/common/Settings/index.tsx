@@ -16,7 +16,10 @@ const Settings = () => {
                     <SettingsIcon />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent align={"end"} className="flex flex-col gap-4 p-6 w-fit bg-card rounded-xl border border-card-border">
+            <PopoverContent
+                align={"end"}
+                className="flex flex-col gap-4 p-6 w-full max-w-[360px] bg-card rounded-xl border border-card-border"
+            >
                 <div className="text-md font-bold">Transaction Settings</div>
                 <Separator orientation={"horizontal"} className="bg-border" />
                 <SlippageTolerance />
@@ -67,20 +70,28 @@ const SlippageTolerance = () => {
     return (
         <div className="flex flex-col gap-2">
             <div className="text-md font-semibold">Slippage Tolerance</div>
-            <div className="flex gap-2">
-                <Button variant={slippageString === "auto" ? "iconActive" : "icon"} size={"sm"} onClick={() => parseSlippageInput("")}>
+            <div className="grid grid-cols-4 gap-4">
+                <Button variant={slippageString === "auto" ? "iconActive" : "outline"} size={"sm"} onClick={() => parseSlippageInput("")}>
                     Auto
                 </Button>
-                <Button variant={slippageString === "0.10" ? "iconActive" : "icon"} size={"sm"} onClick={() => parseSlippageInput("0.10")}>
+                <Button
+                    variant={slippageString === "0.10" ? "iconActive" : "outline"}
+                    size={"sm"}
+                    onClick={() => parseSlippageInput("0.10")}
+                >
                     0.1%
                 </Button>
-                <Button variant={slippageString === "0.50" ? "iconActive" : "icon"} size={"sm"} onClick={() => parseSlippageInput("0.5")}>
+                <Button
+                    variant={slippageString === "0.50" ? "iconActive" : "outline"}
+                    size={"sm"}
+                    onClick={() => parseSlippageInput("0.5")}
+                >
                     0.5%
                 </Button>
-                <Button variant={slippageString === "1.00" ? "iconActive" : "icon"} size={"sm"} onClick={() => parseSlippageInput("1")}>
+                <Button variant={slippageString === "1.00" ? "iconActive" : "outline"} size={"sm"} onClick={() => parseSlippageInput("1")}>
                     1%
                 </Button>
-                <div className="flex">
+                <div className="flex col-span-4">
                     <Input
                         value={slippageInput.length > 0 ? slippageInput : slippage === "auto" ? "" : slippage.toFixed(2)}
                         onChange={(e) => parseSlippageInput(e.target.value)}
@@ -88,7 +99,7 @@ const SlippageTolerance = () => {
                             setSlippageInput("");
                             setSlippageError(false);
                         }}
-                        className={`text-right border-none text-md font-semibold bg-card-dark rounded-l-lg rounded-r-none w-[70px] ring-0!`}
+                        className={`text-left border-none text-md font-semibold bg-card-dark rounded-l-lg rounded-r-none w-full min-w-[70px] ring-0!`}
                         placeholder={"0.0"}
                     />
                     <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-lg select-none">%</div>

@@ -6,6 +6,7 @@ import { useEternalFarmingsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { useReadAlgebraVirtualPoolRewardReserves } from "@/generated";
 
 export function FarmTag({ poolAddress }: { poolAddress: string }) {
     const { farmingClient } = useClients();
@@ -19,13 +20,17 @@ export function FarmTag({ poolAddress }: { poolAddress: string }) {
 
     const activeFarming = farmings?.eternalFarmings.filter((farming) => !farming.isDeactivated)[0];
 
+    const { data: rewardReserves } = useReadAlgebraVirtualPoolRewardReserves({
+        address: activeFarming?.virtualPool as Address,
+    });
+
     const rewardCurrency = useCurrency(activeFarming?.rewardToken as Address);
     const rewardsPerDay =
         activeFarming &&
         rewardCurrency &&
         Number(formatUnits(BigInt(activeFarming.rewardRate), Number(rewardCurrency.decimals))) * 60 * 60 * 24;
     const rewardsLeftFor =
-        activeFarming && Number(formatUnits(BigInt(activeFarming.reward), Number(rewardCurrency?.decimals))) / (rewardsPerDay || 1);
+        activeFarming && rewardReserves && Number(formatUnits(rewardReserves[0], Number(rewardCurrency?.decimals))) / (rewardsPerDay || 1);
 
     const hasBonusRewardToken = activeFarming?.bonusRewardToken !== ADDRESS_ZERO;
     const bonusRewardCurrency = useCurrency(activeFarming?.bonusRewardToken as Address);
@@ -34,7 +39,8 @@ export function FarmTag({ poolAddress }: { poolAddress: string }) {
         Number(formatUnits(BigInt(activeFarming.bonusRewardRate), Number(bonusRewardCurrency?.decimals || 0))) * 60 * 60 * 24;
     const bonuseRewardsLeftFor =
         activeFarming &&
-        Number(formatUnits(BigInt(activeFarming.bonusReward), Number(bonusRewardCurrency?.decimals))) / (bonusRewardsPerDay || 1);
+        rewardReserves &&
+        Number(formatUnits(BigInt(rewardReserves[1]), Number(bonusRewardCurrency?.decimals))) / (bonusRewardsPerDay || 1);
 
     return (
         <HoverCard openDelay={100} closeDelay={100}>

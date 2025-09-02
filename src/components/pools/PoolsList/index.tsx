@@ -10,7 +10,7 @@ import { useClients } from "@/hooks/graphql/useClients";
 import { useAccount } from "wagmi";
 
 import ALMModule from "@/modules/ALMModule";
-const { useAllUserALMAmounts } = ALMModule.hooks;
+const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
 const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenId?: Address }) => {
     const { address: account } = useAccount();
@@ -27,6 +27,7 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
     const { positions, loading: isPositionsLoading } = usePositions();
 
     const { data: almPositions } = useAllUserALMAmounts(account);
+    const { data: almVaults } = useAllALMVaults();
 
     const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
     const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
@@ -64,6 +65,7 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
                 );
                 const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
+                const openVaults = almVaults?.filter((vault) => vault.pool === id.toLowerCase());
                 const openAlmPositions = almPositions?.filter((position) => position.poolAddress.toLowerCase() === id.toLowerCase());
 
                 const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
@@ -87,11 +89,23 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
                     farmApr,
                     avgApr,
                     isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
+                    hasALM: Boolean(openVaults?.length),
                     hasActiveFarming: Boolean(activeFarming),
                     deployer: deployer.toLowerCase(),
                 };
             });
-    }, [isLoading, pools, tokenId, positions, activeFarmings?.eternalFarmings, almPositions, poolsMaxApr, poolsAvgApr, farmingsAPR]);
+    }, [
+        isLoading,
+        pools,
+        tokenId,
+        positions,
+        activeFarmings?.eternalFarmings,
+        almVaults,
+        almPositions,
+        poolsMaxApr,
+        poolsAvgApr,
+        farmingsAPR,
+    ]);
 
     return (
         <div className="flex flex-col gap-4">

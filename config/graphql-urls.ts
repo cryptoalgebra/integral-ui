@@ -12,11 +12,11 @@ export const USE_UNISWAP_PLACEHOLDER_DATA = false; // Changed to false to use re
 export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // actually it's Thena Fusion BSC Mainnet
 
 // Goldsky Subgraph URLs for Hyperliquid
-const GOLDSKY_BASE_URL = "https://api.goldsky.com/api/public/project_cmay1j7dh90w601r2hjv26a5b/subgraphs";
+const GOLDSKY_BASE_URL = "https://api.goldsky.com/api/public/project_cmay1j7dh90w601r2hjv26a5b/subgraphs/analytics";
 
 export const INFO_GRAPH_URL = {
     [BASE_SEPOLIA_CHAIN_ID]: "https://api.studio.thegraph.com/query/50593/integral-v12/v1.0.0",
-    [HYPERLIQUID_CHAIN_ID]: `${GOLDSKY_BASE_URL}/hx-analytics/v1.4.5/gn`, // HX Analytics on Goldsky
+    [HYPERLIQUID_CHAIN_ID]: `https://api.goldsky.com/api/public/project_cmay1j7dh90w601r2hjv26a5b/subgraphs/analytics/v1.3.5/gn`, // HX Analytics on Goldsky
 };
 
 export const BLOCKS_GRAPH_URL = {
@@ -25,7 +25,8 @@ export const BLOCKS_GRAPH_URL = {
 };
 
 export const FARMING_GRAPH_URL = {
-    [BASE_SEPOLIA_CHAIN_ID]: "https://api.studio.thegraph.com/query/50593/integral-v12-farming/v1.0.2",
+    [BASE_SEPOLIA_CHAIN_ID]:
+        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/9vgT17hNEzkU5rboq6mGfuKZcyyFzaVwSm2XvcVipXih",
     [HYPERLIQUID_CHAIN_ID]: `${GOLDSKY_BASE_URL}/algebra-farming/1.0.0/gn`, // Algebra Farming on Goldsky
 };
 

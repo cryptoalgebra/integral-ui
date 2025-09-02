@@ -74,3 +74,4 @@ export const NFT_DESCRIPTOR: Record<number, Address> = {
 export const MULTICALL: Record<number, Address> = {
     [HYPERLIQUID_CHAIN_ID]: "0x1094487796e6b8A24A587456Dbac00f13Fc00c8C",
 };
+

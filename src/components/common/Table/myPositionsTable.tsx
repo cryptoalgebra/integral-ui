@@ -64,13 +64,13 @@ const MyPositionsTable = <TData, TValue>({
         },
     });
 
-    const activePositions = data.filter((pos: any) => !pos.inFarming && !pos.isClosed && !pos.isALM);
+    const activePositions = data.filter((pos: any) => !pos.isALM && !pos.onFarming && !pos.isClosed);
 
-    const farmingPositions = data.filter((pos: any) => pos.inFarming && !pos.isClosed);
+    const farmingPositions = data.filter((pos: any) => pos.onFarming && !pos.isClosed);
 
     const closedPositions = data.filter((pos: any) => pos.isClosed);
 
-    const almPositions = data.filter((pos: any) => pos.isALM);
+    const almPositions = data.filter((pos: any) => pos.isALM && !pos.onFarming && !pos.isClosed);
 
     const noActivePositions = filterStatus.Open && activePositions.length === 0 && almPositions.length === 0;
     const noFarmingPositions = filterStatus.OnFarming && farmingPositions.length === 0;
@@ -127,10 +127,10 @@ const MyPositionsTable = <TData, TValue>({
             return table.getRowModel().rows.map((row: any) => {
                 const isSelected = selectedRow === row.original.id;
                 if (
-                    (isStatusActive && !row.original.inFarming && !row.original.isClosed && !row.original.isALM) ||
-                    (isStatusOnFarming && row.original.inFarming && !row.original.isClosed) ||
+                    (isStatusActive && !row.original.onFarming && !row.original.isClosed && !row.original.isALM) ||
+                    (isStatusOnFarming && row.original.onFarming && !row.original.isClosed) ||
                     (isStatusClosed && row.original.isClosed) ||
-                    (isStatusALM && row.original.isALM)
+                    (isStatusALM && row.original.isALM && !row.original.onFarming && !row.original.isClosed)
                 ) {
                     return (
                         <TableRow
@@ -146,7 +146,7 @@ const MyPositionsTable = <TData, TValue>({
                             }`}
                             onClick={() => {
                                 if (action) {
-                                    action(row.original.id);
+                                    action(row.original);
                                 } else if (link) {
                                     navigate(`/${link}/${row.original.id}`);
                                 }
@@ -216,7 +216,7 @@ const MyPositionsTable = <TData, TValue>({
                                     {renderPositions(PositionsStatus.CLOSED)}
                                 </>
                             )}
-                            {almPositions.length > 0 && (
+                            {almPositions.length > 0 && filterStatus.Open && (
                                 <>
                                     {renderHeaderRow(PositionsStatus.ALM)}
                                     {renderPositions(PositionsStatus.ALM)}

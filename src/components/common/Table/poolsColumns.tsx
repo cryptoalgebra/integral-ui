@@ -10,8 +10,12 @@ import { ReactNode } from "react";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { customPoolDeployerTitleByAddress } from "config/custom-pool-deployer";
 
-import FarmingModule from "@/modules/FarmingModule";
 import { enabledModules } from "config/app-modules";
+
+import ALMModule from "@/modules/ALMModule";
+const { ALMTag } = ALMModule.components;
+
+import FarmingModule from "@/modules/FarmingModule";
 const { FarmTag } = FarmingModule.components;
 
 interface Pair {
@@ -31,10 +35,11 @@ interface Pool {
     farmApr: number;
     isMyPool: boolean;
     hasActiveFarming: boolean;
+    hasALM: boolean;
     deployer: string;
 }
 
-const PoolPair = ({ pair, hasActiveFarming, id }: Pool) => {
+const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: Pool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -54,7 +59,10 @@ const PoolPair = ({ pair, hasActiveFarming, id }: Pool) => {
                 <Skeleton className="h-[20px] w-[90px] bg-card" />
             )}
 
-            {hasActiveFarming ? <FarmTag poolAddress={id} /> : null}
+            <div className="flex items-center gap-2">
+                {hasActiveFarming && <FarmTag poolAddress={id} />}
+                {hasALM && <ALMTag poolAddress={id} />}
+            </div>
             {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}
             {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}
         </div>
@@ -84,73 +92,71 @@ const AvgAPR = ({
     );
 };
 
-export const poolsColumns: ColumnDef<Pool>[] = (
-    [
-        {
-            accessorKey: "pair",
-            header: () => <HeaderItem className="ml-2">Pool</HeaderItem>,
-            cell: ({ row }) => <PoolPair {...row.original} />,
-            filterFn: (v, _, value) =>
-                [v.original.pair.token0.symbol, v.original.pair.token1.symbol, v.original.pair.token0.name, v.original.pair.token1.name]
-                    .join(" ")
-                    .toLowerCase()
-                    .includes(value),
+export const poolsColumns: ColumnDef<Pool>[] = ([
+    {
+        accessorKey: "pair",
+        header: () => <HeaderItem className="ml-2">Pool</HeaderItem>,
+        cell: ({ row }) => <PoolPair {...row.original} />,
+        filterFn: (v, _, value) =>
+            [v.original.pair.token0.symbol, v.original.pair.token1.symbol, v.original.pair.token0.name, v.original.pair.token1.name]
+                .join(" ")
+                .toLowerCase()
+                .includes(value),
+    },
+    enabledModules.customPools && {
+        accessorKey: "deployer",
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                Deployer
+            </HeaderItem>
+        ),
+        cell: ({ row }) => customPoolDeployerTitleByAddress[row.original.deployer.toLowerCase() as Address],
+    },
+    {
+        accessorKey: "tvlUSD",
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                TVL
+            </HeaderItem>
+        ),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
+    },
+    {
+        accessorKey: "volume24USD",
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                Volume 24H
+            </HeaderItem>
+        ),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
+    },
+    {
+        accessorKey: "fees24USD",
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                Fees 24H
+            </HeaderItem>
+        ),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
+    },
+    {
+        accessorKey: "avgApr",
+        header: ({ column }) => (
+            <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
+                Avg. APR
+            </HeaderItem>
+        ),
+        cell: ({ getValue, row }) => {
+            return (
+                <AvgAPR
+                    avgApr={`${formatAmount(row.original.poolAvgApr, 2)}%`}
+                    maxApr={`${formatAmount(row.original.poolMaxApr, 2)}%`}
+                    farmApr={row.original.hasActiveFarming ? `${formatAmount(row.original.farmApr, 2)}%` : undefined}
+                >
+                    {`${formatAmount(getValue() as number, 2)}%`}
+                </AvgAPR>
+            );
         },
-        enabledModules.customPools && {
-            accessorKey: "deployer",
-            header: ({ column }) => (
-                <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    Deployer
-                </HeaderItem>
-            ),
-            cell: ({ row }) => customPoolDeployerTitleByAddress[row.original.deployer.toLowerCase() as Address],
-        },
-        {
-            accessorKey: "tvlUSD",
-            header: ({ column }) => (
-                <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    TVL
-                </HeaderItem>
-            ),
-            cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
-        },
-        {
-            accessorKey: "volume24USD",
-            header: ({ column }) => (
-                <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    Volume 24H
-                </HeaderItem>
-            ),
-            cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
-        },
-        {
-            accessorKey: "fees24USD",
-            header: ({ column }) => (
-                <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    Fees 24H
-                </HeaderItem>
-            ),
-            cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
-        },
-        {
-            accessorKey: "avgApr",
-            header: ({ column }) => (
-                <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    Avg. APR
-                </HeaderItem>
-            ),
-            cell: ({ getValue, row }) => {
-                return (
-                    <AvgAPR
-                        avgApr={`${formatAmount(row.original.poolAvgApr, 2)}%`}
-                        maxApr={`${formatAmount(row.original.poolMaxApr, 2)}%`}
-                        farmApr={row.original.hasActiveFarming ? `${formatAmount(row.original.farmApr, 2)}%` : undefined}
-                    >
-                        {`${formatAmount(getValue() as number, 2)}%`}
-                    </AvgAPR>
-                );
-            },
-            filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
-        },
-    ] as (ColumnDef<Pool> | false)[]
-).filter((col): col is ColumnDef<Pool> => Boolean(col));
+        filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
+    },
+] as (ColumnDef<Pool> | false)[]).filter((col): col is ColumnDef<Pool> => Boolean(col));

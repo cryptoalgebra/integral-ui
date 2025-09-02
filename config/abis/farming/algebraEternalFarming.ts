@@ -656,6 +656,11 @@ export const algebraEternalFarmingABI = [
                 name: "plugin",
                 type: "address",
             },
+            {
+                internalType: "address",
+                name: "pluginDeployer",
+                type: "address",
+            },
         ],
         name: "createEternalFarming",
         outputs: [
@@ -696,6 +701,11 @@ export const algebraEternalFarmingABI = [
                 internalType: "struct IncentiveKey",
                 name: "key",
                 type: "tuple",
+            },
+            {
+                internalType: "address",
+                name: "pluginDeployer",
+                type: "address",
             },
         ],
         name: "deactivateIncentive",

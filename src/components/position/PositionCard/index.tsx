@@ -1,6 +1,4 @@
-import { usePool } from "@/hooks/pools/usePool";
-import { usePosition, usePositionInFarming } from "@/hooks/positions/usePositions";
-import { INITIAL_POOL_FEE } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Pool } from "@cryptoalgebra/custom-pools-sdk";
 import PositionNFT from "../PositionNFT";
 import { FormattedPosition } from "@/types/formatted-position";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,43 +7,37 @@ import TokenRatio from "@/components/create-position/TokenRatio";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import CollectFees from "../CollectFees";
 import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal";
-import { EternalFarming } from "@/graphql/generated/graphql";
+import { Deposit, EternalFarming } from "@/graphql/generated/graphql";
 import { IncreaseLiquidityModal } from "@/components/modals/IncreaseLiquidityModal";
-import { useCurrency } from "@/hooks/common/useCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
-
 import FarmingModule from "@/modules/FarmingModule";
 import { Farming } from "@/types/farming-info";
-import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
+import { useParams } from "react-router-dom";
+import { Address } from "viem";
+import { useCurrency } from "@/hooks/common/useCurrency";
 const { HarvestAndExitFarmingCard } = FarmingModule.components;
+const { usePositionInFarming } = FarmingModule.hooks;
 
 interface PositionCardProps {
-    selectedPosition: FormattedPosition | undefined;
+    pool: Pool | null;
+    selectedPosition: FormattedPosition | null | undefined;
     farming?: Farming | null;
     closedFarmings?: EternalFarming[] | null;
 }
 
-const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCardProps) => {
-    const { loading, position } = usePosition(selectedPosition?.id);
-
+const PositionCard = ({ pool, selectedPosition, farming, closedFarmings }: PositionCardProps) => {
+    const { pool: poolId } = useParams() as { pool: Address };
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
 
     const activeFarming = farming?.farming;
     const endedFarming = closedFarmings?.find((closedFarming) => closedFarming.id === positionInFarming?.eternalFarming);
 
-    const token0 = position?.token0;
-    const token1 = position?.token1;
+    const position = selectedPosition?.position;
 
-    const currencyA = useCurrency(token0, true);
-    const currencyB = useCurrency(token1, true);
+    const currencyA = useCurrency(pool?.token0?.address as Address, true);
+    const currencyB = useCurrency(pool?.token1?.address as Address, true);
 
-    const [, pool] = usePool(position?.pool);
-    const positionEntity =
-        pool &&
-        position &&
-        createUncheckedPosition(pool, position.liquidity.toString(), Number(position.tickLower), Number(position.tickUpper));
-
-    const mintInfo = useDerivedMintInfo(currencyA, currencyB, position?.pool, INITIAL_POOL_FEE, currencyA, positionEntity || undefined);
+    const mintInfo = useDerivedMintInfo(currencyA, currencyB, poolId, INITIAL_POOL_FEE, currencyA, position || undefined);
 
     const [positionLiquidityUSD, positionFeesUSD, positionAPR] = selectedPosition
         ? [
@@ -55,10 +47,10 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
           ]
         : [];
 
-    if (!selectedPosition || loading) return;
+    if (!selectedPosition) return;
 
     return (
-        <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in">
+        <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in w-full">
             <div className="relative flex w-full justify-end text-right">
                 <div className="absolute left-0 top-0">
                     <PositionNFT positionId={Number(selectedPosition.id)} />
@@ -93,15 +85,15 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
             <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={Number(selectedPosition.id)} />
             <TokenRatio mintInfo={mintInfo} />
 
-            {positionEntity && (
+            {position && (
                 <div className="flex justify-between font-semibold">
-                    <div>{`${formatAmount(positionEntity.amount0.toSignificant(24), 6)} ${currencyA?.symbol}`}</div>
-                    <div>{`${formatAmount(positionEntity.amount1.toSignificant(24), 6)} ${currencyB?.symbol}`}</div>
+                    <div>{`${formatAmount(position.amount0.toSignificant(24), 6)} ${currencyA?.symbol}`}</div>
+                    <div>{`${formatAmount(position.amount1.toSignificant(24), 6)} ${currencyB?.symbol}`}</div>
                 </div>
             )}
-            {pool && positionEntity && <PositionRangeChart pool={pool} position={positionEntity} />}
+            {pool && position && <PositionRangeChart pool={pool} position={position} />}
 
-            {positionEntity && (
+            {position && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
                     <IncreaseLiquidityModal
                         tokenId={Number(Number(selectedPosition.id))}
@@ -111,16 +103,16 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
                     />
                 </div>
             )}
-            {positionEntity && Number(positionEntity.liquidity) > 0 && (
+            {position && Number(position.liquidity) > 0 && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
                     <RemoveLiquidityModal positionId={Number(selectedPosition.id)} />
                 </div>
             )}
             {positionInFarming && activeFarming && !endedFarming && (
-                <HarvestAndExitFarmingCard eternalFarming={activeFarming} selectedPosition={positionInFarming} isEnded={false} />
+                <HarvestAndExitFarmingCard eternalFarming={activeFarming} selectedPosition={positionInFarming as Deposit} isEnded={false} />
             )}
             {positionInFarming && endedFarming && (
-                <HarvestAndExitFarmingCard eternalFarming={endedFarming} selectedPosition={positionInFarming} isEnded />
+                <HarvestAndExitFarmingCard eternalFarming={endedFarming} selectedPosition={positionInFarming as Deposit} isEnded />
             )}
         </div>
     );

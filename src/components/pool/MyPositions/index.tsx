@@ -7,7 +7,7 @@ interface MyPositionsProps {
     positions: FormattedPosition[];
     poolId: Address | undefined;
     selectedPosition: string | undefined;
-    selectPosition: (positionId: string | null) => void;
+    selectPosition: (position: FormattedPosition | null) => void;
 }
 
 const MyPositions = ({ positions, selectedPosition, selectPosition }: MyPositionsProps) => {

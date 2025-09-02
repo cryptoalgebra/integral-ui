@@ -1,6 +1,5 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork, baseSepolia } from "@reown/appkit/networks";
-import { defineChain } from "viem";
+import { AppKitNetwork } from "@reown/appkit/networks";
 import {
     algebraBasePluginV1ABI,
     algebraCustomPoolEntryPointABI,
@@ -23,6 +22,39 @@ import {
     QUOTER_V2,
     SWAP_ROUTER,
 } from "./contract-addresses";
+import { defineChain } from "viem";
+import { algebraVirtualPoolABI } from "./abis/farming/algebraVirtualPool";
+
+const baseSepoliaChain = /*#__PURE__*/ defineChain({
+    id: 84532,
+    network: "baseSepolia",
+    name: "Base Sepolia",
+    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: {
+        default: {
+            http: ["https://base-sepolia-rpc.publicnode.com"],
+        },
+        public: {
+            http: ["https://base-sepolia-rpc.publicnode.com"],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: "Basescan",
+            url: "https://sepolia.basescan.org",
+        },
+        etherscan: {
+            name: "Basescan",
+            url: "https://sepolia.basescan.org",
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: "0xca11bde05977b3631167028862be2a173976ca11",
+            blockCreated: 1059647,
+        },
+    },
+});
 
 // Define Hyperliquid Mainnet
 export const hyperliquid = defineChain({
@@ -55,7 +87,7 @@ export const hyperliquid = defineChain({
 }) as AppKitNetwork;
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [hyperliquid, baseSepolia];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [hyperliquid, baseSepoliaChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
@@ -66,6 +98,7 @@ const rawContracts = [
     { name: "SwapRouter", abi: swapRouterABI },
     { name: "AlgebraEternalFarming", abi: algebraEternalFarmingABI },
     { name: "FarmingCenter", abi: farmingCenterABI },
+    { name: "AlgebraVirtualPool", abi: algebraVirtualPoolABI },
     { name: "LimitOrderManager", abi: limitOrderManagerABI },
     { name: "AlgebraCustomPoolEntryPoint", abi: algebraCustomPoolEntryPointABI },
     { name: "WrappedNative", abi: wNativeABI },

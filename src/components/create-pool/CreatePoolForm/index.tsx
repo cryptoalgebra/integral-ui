@@ -112,17 +112,19 @@ const CreatePoolForm = () => {
                 value: undefined,
             };
 
-        return NonfungiblePositionManager.createCallParameters(mintInfo.pool);
-    }, [mintInfo.pool]);
+        return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
+    }, [customPoolDeployerAddresses, mintInfo.pool, poolDeployer]);
 
     const { data: createBasePoolData, writeContract: createBasePool, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
-    const createBasePoolConfig = {
-        address: NONFUNGIBLE_POSITION_MANAGER[chainid],
-        args: Array.isArray(calldata) ? ([calldata as Address[]] as const) : ([[calldata] as Address[]] as const),
-        value: BigInt(value || 0),
-        enabled: Boolean(calldata),
-    };
+    const createBasePoolConfig = calldata
+        ? {
+              address: NONFUNGIBLE_POSITION_MANAGER[chainid],
+              args: Array.isArray(calldata) ? ([calldata as Address[]] as const) : ([[calldata] as Address[]] as const),
+              value: BigInt(value || 0),
+              enabled: Boolean(calldata),
+          }
+        : null;
 
     const { isLoading: isBasePoolLoading } = useTransactionAwait(
         createBasePoolData,
@@ -180,7 +182,7 @@ const CreatePoolForm = () => {
 
     const handleCreatePool = () => {
         if (poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE) {
-            if (!createBasePool) return;
+            if (!createBasePool || !createBasePoolConfig) return;
             createBasePool(createBasePoolConfig);
         }
         if (!createCustomPoolConfig) return;
@@ -240,8 +242,8 @@ const CreatePoolForm = () => {
             </Button>
 
             {poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE && (
-                <Button disabled={isDisabled} onClick={() => createBasePool(createBasePoolConfig)} className="mt-2">
-                    {isBasePoolLoading ? <Loader /> : "Initialize"}
+                <Button disabled={isDisabled} onClick={() => createBasePoolConfig && createBasePool(createBasePoolConfig)} className="mt-2">
+                    {isCustomPoolLoading ? <Loader /> : "Initialize"}
                 </Button>
             )}
 

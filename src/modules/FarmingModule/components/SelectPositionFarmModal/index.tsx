@@ -5,12 +5,15 @@ import { Deposit } from "@/graphql/generated/graphql";
 import { cn } from "@/utils/common/cn";
 import { FormattedPosition } from "@/types/formatted-position";
 import { useState } from "react";
-import { Farming } from "../../../../types/farming-info";
+import { Farming } from "@/types/farming-info";
 import { useFarmCheckApprove } from "../../hooks/useFarmCheckApprove";
 import { useFarmApprove } from "../../hooks/useFarmApprove";
 import { useFarmStake } from "../../hooks/useFarmStake";
 import { FarmingPositionCard } from "..";
 import { Address } from "viem";
+
+import ALMModule from "@/modules/ALMModule";
+const { useALMFarmStake, useALMFarmApprove } = ALMModule.hooks;
 
 interface SelectPositionFarmModalProps {
     positions: Deposit[];
@@ -19,11 +22,11 @@ interface SelectPositionFarmModalProps {
     isHarvestLoading: boolean;
 }
 
-export function SelectPositionFarmModal({ positions, farming, positionsData, isHarvestLoading }: SelectPositionFarmModalProps) {
-    const [selectedPosition, setSelectedPosition] = useState<Deposit | null>();
-    const tokenId = selectedPosition ? BigInt(selectedPosition.id) : 0n;
+export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoading }: SelectPositionFarmModalProps) {
+    const [selectedPosition, setSelectedPosition] = useState<FormattedPosition>();
+    const tokenId = selectedPosition && !selectedPosition.isALM ? BigInt(selectedPosition.id) : 0n;
 
-    const { approved, isLoading: isApproving } = useFarmCheckApprove(tokenId);
+    const { approved, isLoading: isApproveVerifying } = useFarmCheckApprove(tokenId);
 
     const { isLoading: isApproveLoading, onApprove } = useFarmApprove(tokenId);
 
@@ -35,23 +38,42 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
         nonce: BigInt(farming.farming.nonce),
     });
 
+    const { isLoading: isALMApproveLoading, onApprove: onApproveALM, isSuccess: isALMApproved } = useALMFarmApprove(selectedPosition);
+    const { isLoading: isStakeALMLoading, onStake: onStakeALM } = useALMFarmStake(selectedPosition);
+
+    const isApproving = isApproveVerifying || isApproveLoading || isALMApproveLoading;
+    const isApproved = approved || isALMApproved;
+    const isStaking = isStakeLoading || isStakeALMLoading;
+
+    const availablePositions = positionsData.filter(
+        (position) =>
+            !position.onFarming && (Number(position.almShares || 0) > 0 || BigInt(position.position?.liquidity.toString() || 0) > 0n)
+    );
+
     const handleApprove = async () => {
-        if (approved || !onApprove) return;
-        onApprove();
+        if (isApproved) return;
+        if (isApproveLoading || isStakeLoading) return;
+        if (selectedPosition?.isALM) {
+            onApproveALM?.();
+        } else {
+            onApprove?.();
+        }
     };
 
     const handleStake = async () => {
-        if (!approved || !onStake) return;
+        if (!isApproved) return;
         if (isStakeLoading || isApproveLoading) return;
-        onStake();
+        if (selectedPosition?.isALM) {
+            onStakeALM?.();
+        } else {
+            onStake?.();
+        }
     };
 
-    const handleSelectPosition = (position: Deposit) => {
+    const handleSelectPosition = (position: FormattedPosition) => {
         if (isStakeLoading || isApproveLoading || isApproving) return;
         setSelectedPosition(position);
     };
-
-    const availablePositions = positions.filter((position) => position.eternalFarming === null && BigInt(position.liquidity) > 0n);
 
     return (
         <Dialog>
@@ -68,10 +90,8 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                     <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-3 overflow-auto">
                         {availablePositions.length > 0 ? (
                             availablePositions.map((position) => {
-                                const currentFormattedPosition = positionsData.find(
-                                    (fposition) => Number(fposition.id) === Number(position.id)
-                                );
-                                if (!currentFormattedPosition) return;
+                                const isDepositEligible = position.rangeLength >= Number(farming.farming.minRangeLength);
+
                                 return (
                                     <FarmingPositionCard
                                         key={position.id}
@@ -80,8 +100,10 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                                             selectedPosition?.id === position.id ? "border-primary-button hover:border-primary-button" : ""
                                         )}
                                         onClick={() => handleSelectPosition(position)}
-                                        position={position}
-                                        status={currentFormattedPosition.outOfRange ? "Out of range" : "In range"}
+                                        positionId={position.id}
+                                        isDepositEligible={isDepositEligible}
+                                        status={position.outOfRange ? "Out of range" : "In range"}
+                                        isALM={position.isALM}
                                     />
                                 );
                             })
@@ -91,17 +113,17 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                     </ul>
                 </div>
                 <div className="w-full flex gap-3 mt-2">
-                    {isApproving ? (
+                    {isApproveVerifying ? (
                         <Button disabled className="w-full">
                             Checking Approval...
                         </Button>
                     ) : selectedPosition && availablePositions.length > 0 ? (
                         <>
-                            <Button disabled={approved || isApproveLoading} className="w-1/2" onClick={handleApprove}>
-                                {approved ? <span>1. Approved</span> : isApproveLoading ? <Loader /> : <span>1. Approve</span>}
+                            <Button disabled={isApproved || isApproving} className="w-1/2" onClick={handleApprove}>
+                                {isApproved ? <span>1. Approved</span> : isApproving ? <Loader /> : <span>1. Approve</span>}
                             </Button>
-                            <Button disabled={!approved || isStakeLoading} className="w-1/2" onClick={handleStake}>
-                                {isStakeLoading ? <Loader /> : "2. Deposit"}
+                            <Button disabled={!isApproved || isStaking} className="w-1/2" onClick={handleStake}>
+                                {isStaking ? <Loader /> : "2. Deposit"}
                             </Button>
                         </>
                     ) : (

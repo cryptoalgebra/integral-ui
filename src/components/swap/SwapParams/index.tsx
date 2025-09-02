@@ -82,7 +82,9 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                 </button>
             </div>
             <div
-                className={`h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg ${isExpanded && isSmartTrade ? "h-[160px]" : isExpanded && "h-[142px]"}`}
+                className={`h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg ${
+                    isExpanded && isSmartTrade ? "h-[160px]" : isExpanded && "h-[142px]"
+                }`}
             >
                 <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
                     {isSmartTrade ? (
@@ -139,7 +141,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         </div>
     ) : trade !== undefined && isTradeLoading ? (
         <div className="flex justify-center mb-1 bg-card-dark py-3 px-3 rounded-lg">
-            <Loader size={17} color="black" />
+            <Loader size={17} className="text-text" />
         </div>
     ) : (
         <div className="text-md mb-1 text-center opacity-70 bg-card-dark py-2 px-3 rounded-lg">Select an amount for swap</div>

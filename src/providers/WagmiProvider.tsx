@@ -4,7 +4,7 @@ import { WagmiProvider as _WagmiProvider } from "wagmi";
 import { createAppKit } from "@reown/appkit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiNetworks } from "config/wagmi";
-import { DEFAULT_CHAIN_ID } from "config/default-chain";
+import { CHAIN_IMAGE, DEFAULT_CHAIN_ID } from "config/default-chain";
 
 const PROJECT_ID = import.meta.env.VITE_REOWN_PROJECT_ID;
 
@@ -21,6 +21,9 @@ createAppKit({
     projectId: PROJECT_ID,
     defaultNetwork: wagmiNetworks.find(({ id }) => id === DEFAULT_CHAIN_ID)!,
     themeMode: "dark",
+    chainImages: {
+        ...CHAIN_IMAGE,
+    },
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;

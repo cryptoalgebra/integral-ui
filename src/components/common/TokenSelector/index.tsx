@@ -13,7 +13,7 @@ import { ADDRESS_ZERO, Currency, ExtendedNative, Token } from "@cryptoalgebra/cu
 import { useTokensState } from "@/state/tokensStore";
 import { Copy } from "lucide-react";
 import { cn } from "@/utils/common/cn";
-import { formatBalance } from "@/utils/common/formatBalance";
+import { formatAmount } from "@/utils";
 
 const TokenSelectorView = {
     DEFAULT_LIST: "DEFAULT_LIST",
@@ -97,7 +97,7 @@ const TokenRow = ({
     const balanceString = useMemo(() => {
         if (isLoading || !balance) return "Loading...";
 
-        return formatBalance(balance.formatted);
+        return formatAmount(balance.formatted, 6);
     }, [balance, isLoading]);
 
     const lock = otherCurrency?.isNative

@@ -14,7 +14,7 @@ interface MyPosition {
 export const myPositionsColumns: ColumnDef<MyPosition>[] = [
     {
         accessorKey: "id",
-        header: () => <HeaderItem className="ml-2">ID</HeaderItem>,
+        header: () => <HeaderItem className="min-w-[110px] ml-2">ID</HeaderItem>,
         cell: ({ getValue }) => <span className="ml-4">{`#${getValue()}`}</span>,
     },
     {

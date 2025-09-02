@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
     ColumnDef,
-    ColumnFiltersState,
     SortingState,
     flexRender,
     getCoreRowModel,
@@ -12,13 +11,17 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { LoadingState } from "./loadingState";
 import { Input } from "@/components/ui/input";
 import { Search, User, X } from "lucide-react";
-import { cn } from "@/utils";
 import { enabledModules } from "config/app-modules";
+import { useNavigate } from "react-router-dom";
 
+type ActiveFilters = {
+    hasActiveFarming?: boolean;
+    hasALM?: boolean;
+    isMyPool?: boolean;
+};
 interface PoolsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
@@ -40,33 +43,53 @@ const PoolsTable = <TData, TValue>({
     loading,
 }: PoolsTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>(defaultSortingID ? [{ id: defaultSortingID, desc: true }] : []);
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-    const navigate = useNavigate();
+    const [columnFilters, setColumnFilters] = useState<any[]>([]);
+    const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
 
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: showPagination ? getPaginationRowModel() : undefined,
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
-        onColumnFiltersChange: setColumnFilters,
-        getFilteredRowModel: getFilteredRowModel(),
         state: {
-            sorting,
             columnFilters,
+            sorting,
+            globalFilter: activeFilters,
         },
-        globalFilterFn: (row: any, _, value: boolean | undefined) => row.original.isMyPool === value,
+        onColumnFiltersChange: setColumnFilters,
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setActiveFilters,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: showPagination ? getPaginationRowModel() : undefined,
+
+        globalFilterFn: (row: any, _columnId, filterValue) => {
+            const f = filterValue as ActiveFilters;
+            if (f.hasActiveFarming && !row.original.hasActiveFarming) return false;
+            if (f.hasALM && !row.original.hasALM) return false;
+            if (f.isMyPool && !row.original.isMyPool) return false;
+            return true;
+        },
     });
 
-    const isMyPools: boolean | undefined = table.getState().globalFilter;
+    const navigate = useNavigate();
 
     const searchID = "pair";
 
     const totalRows = table.getFilteredRowModel().rows.length;
     const startsFromRow = table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1;
     const endsAtRow = Math.min(startsFromRow + table.getState().pagination.pageSize - 1, totalRows);
+
+    const toggleFilter = (filterId: keyof ActiveFilters) => {
+        setActiveFilters((prev) => ({
+            ...prev,
+            [filterId]: !prev[filterId],
+        }));
+    };
+
+    const isFilterActive = (filterId: keyof ActiveFilters) => {
+        return Boolean(activeFilters[filterId]);
+    };
 
     if (loading) return <LoadingState />;
 
@@ -83,42 +106,74 @@ const PoolsTable = <TData, TValue>({
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
-                    <div className="grid grid-flow-col gap-3 md:flex w-full sm:w-fit">
+                    <div className="grid grid-cols-2 gap-3 md:flex w-full sm:w-fit">
                         {enabledModules.farming && (
                             <Button
-                                onClick={() => {
-                                    const column = table.getColumn("avgApr");
-                                    if (column?.getFilterValue() === undefined) column?.setFilterValue(true);
-                                    else column?.setFilterValue(undefined);
-                                }}
+                                onClick={() => toggleFilter("hasActiveFarming")}
+                                variant={isFilterActive("hasActiveFarming") ? "iconHover" : "outline"}
                                 size="md"
                                 className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
-                                variant={table.getColumn("avgApr")?.getFilterValue() === true ? "iconHover" : "outline"}
                             >
-                                <span>🟡</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 100 100">
+                                    <defs>
+                                        <radialGradient id="grad" cx="30%" cy="30%" r="70%">
+                                            <stop offset="0%" stop-color="#fff9b1" />
+                                            <stop offset="100%" stop-color="#f8d81c" />
+                                        </radialGradient>
+
+                                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3" />
+                                        </filter>
+                                    </defs>
+
+                                    <circle cx="50" cy="50" r="45" fill="url(#grad)" filter="url(#shadow)" />
+                                </svg>
                                 <span>Farm Pools</span>
                             </Button>
                         )}
+                        {enabledModules.alm && (
+                            <Button
+                                onClick={() => toggleFilter("hasALM")}
+                                variant={isFilterActive("hasALM") ? "iconHover" : "outline"}
+                                size="md"
+                                className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 100 100">
+                                    <defs>
+                                        <radialGradient id="grad-74f7df" cx="30%" cy="30%" r="70%">
+                                            <stop offset="0%" stop-color="#d4fff8" />
+                                            <stop offset="100%" stop-color="#74f7df" />
+                                        </radialGradient>
+
+                                        <filter id="shadow-74f7df" x="-20%" y="-20%" width="140%" height="140%">
+                                            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3" />
+                                        </filter>
+                                    </defs>
+
+                                    <circle cx="50" cy="50" r="45" fill="url(#grad-74f7df)" filter="url(#shadow-74f7df)" />
+                                </svg>
+
+                                <span>ALM Pools</span>
+                            </Button>
+                        )}
                         <Button
-                            onClick={() => table.setGlobalFilter(isMyPools ? undefined : true)}
-                            className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                            onClick={() => toggleFilter("isMyPool")}
+                            variant={isFilterActive("isMyPool") ? "iconHover" : "outline"}
                             size="md"
-                            variant={isMyPools ? "iconHover" : "outline"}
+                            className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
                         >
                             <User className="text-primary-200" size={16} />
                             <span>My Pools</span>
                         </Button>
                         <Button
+                            hidden={!(isFilterActive("isMyPool") || isFilterActive("hasActiveFarming") || isFilterActive("hasALM"))}
                             size="md"
                             onClick={() => {
-                                table.setGlobalFilter(undefined);
-                                table.getColumn("avgApr")?.setFilterValue(undefined);
+                                setColumnFilters([]);
+                                setActiveFilters({});
                             }}
-                            className={cn(
-                                "flex h-12 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4 max-lg:hidden max-md:col-span-2",
-                                isMyPools || table.getColumn("avgApr")?.getFilterValue() ? "" : "hidden"
-                            )}
-                            variant={"outline"}
+                            className="flex h-12 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4"
+                            variant="outline"
                         >
                             <span>Reset</span>
                             <X size={18} />

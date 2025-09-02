@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Slider } from "@/components/ui/slider";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { useEthersSigner } from "@/hooks/common/useEthersProvider";
+import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useBurnActionHandlers, useBurnState } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -24,7 +24,6 @@ import { Address, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { BigNumber } from "ethers";
 import { UserALMVault, useUserALMVaultsByPool } from "../../hooks";
-import { DEX } from "../../dex";
 
 interface RemoveALMLiquidityModalProps {
     userVault: UserALMVault | undefined;
@@ -58,13 +57,13 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         lpShareToWithdraw,
-        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][DEX] as Address
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId] as Address
     );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
 
-    const provider = useEthersSigner();
+    const provider = useEthersProvider();
 
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<Address | undefined>();
@@ -77,9 +76,9 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
         try {
             let tx;
             if (useNative) {
-                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, DEX, Number(slippage.toSignificant(4)));
+                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, Number(slippage.toSignificant(4)));
             } else {
-                tx = await withdrawWithSlippage(account, shareToWithdraw, vault.id, provider, DEX, Number(slippage.toSignificant(4)));
+                tx = await withdrawWithSlippage(account, shareToWithdraw, vault.id, provider, Number(slippage.toSignificant(4)));
             }
 
             setTxHash(tx.hash as Address);
@@ -126,7 +125,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                     Remove Liquidity
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[500px] rounded-xl! bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="md:min-w-[500px] rounded-xl! bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
                 </DialogHeader>
@@ -170,7 +169,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
 
                     {showApproveA ? (
                         <Button disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
-                            {isApprovePending ? <Loader /> : `Approve ${vaultLpToken?.symbol}`}
+                            {isApprovePending ? <Loader /> : `Approve ALM LP Token`}
                         </Button>
                     ) : (
                         <Button disabled={isDisabled} onClick={callback}>
