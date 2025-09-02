@@ -8,6 +8,7 @@ import { limitOrderColumns, LimitOrdersTable } from "../Table";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import { Button } from "@/components/ui/button";
 import { BookOpen, History } from "lucide-react";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 export const LimitOrdersList = () => {
     const { address: account } = useAccount();
@@ -115,6 +116,9 @@ export const LimitOrdersList = () => {
 
                     const isClosed = Number(liquidity) === 0;
 
+                    const token0 = unwrappedToken(pool.token0);
+                    const token1 = unwrappedToken(pool.token1);
+
                     return {
                         epoch,
                         zeroToOne,
@@ -137,21 +141,21 @@ export const LimitOrdersList = () => {
                         },
                         rates: {
                             buy: {
-                                token: zeroToOne ? pool.token0 : pool.token1,
+                                token: zeroToOne ? token0 : token1,
                                 rate: minBuyRate,
                             },
                             sell: {
-                                token: zeroToOne ? pool.token1 : pool.token0,
+                                token: zeroToOne ? token1 : token0,
                                 rate: minSellRate,
                             },
                         },
                         amounts: {
                             buy: {
-                                token: zeroToOne ? pool.token1 : pool.token0,
+                                token: zeroToOne ? token1 : token0,
                                 amount: buyAmount,
                             },
                             sell: {
-                                token: zeroToOne ? pool.token0 : pool.token1,
+                                token: zeroToOne ? token0 : token1,
                                 amount: sellAmount,
                             },
                         },

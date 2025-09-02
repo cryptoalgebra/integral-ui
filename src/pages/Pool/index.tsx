@@ -4,28 +4,28 @@ import PoolHeader from "@/components/pool/PoolHeader";
 import PositionCard from "@/components/position/PositionCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useNativePriceQuery, usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql";
 import { usePool } from "@/hooks/pools/usePool";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { FormattedPosition } from "@/types/formatted-position";
 import { getPositionAPR } from "@/utils/positions/getPositionAPR";
 import { getPositionFees } from "@/utils/positions/getPositionFees";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { Position, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { MoveRightIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import JSBI from "jsbi";
-import { useClients } from "@/hooks/graphql/useClients";
-import { Address } from "viem";
-
+import { Address, parseUnits } from "viem";
 import ALMModule from "@/modules/ALMModule";
 import FarmingModule from "@/modules/FarmingModule";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
 import { useAppKit } from "@reown/appkit/react";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
+import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
+import useSWR from "swr";
+import { Deposit, useSinglePositionLazyQuery } from "@/graphql/generated/graphql";
 
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
@@ -38,46 +38,24 @@ const PoolPage = () => {
 
     const { pool: poolId } = useParams() as { pool: Address };
 
-    const [selectedPositionId, selectPosition] = useState<string | null>();
-
-    const { unclaimedRewards } = useUnclaimedRewards();
-
     const [, poolEntity] = usePool(poolId);
 
-    const { infoClient } = useClients();
+    const { formatted: token0PriceUSD } = useUSDCPrice(poolEntity?.token0);
+    const { formatted: token1PriceUSD } = useUSDCPrice(poolEntity?.token1);
+
+    const { positions, loading: positionsLoading } = usePositions();
+
     const { userVaults, isLoading: areUserVaultsLoading } = useUserALMVaultsByPool(poolId, account);
-
-    const { data: poolInfo } = useSinglePoolQuery({
-        variables: {
-            poolId,
-        },
-        client: infoClient,
-    });
-
-    const { data: poolFeeData } = usePoolFeeDataQuery({
-        variables: {
-            poolId,
-        },
-        client: infoClient,
-    });
-
-    const { data: bundles } = useNativePriceQuery({ client: infoClient });
-    const nativePrice = bundles?.bundles[0].maticPriceUSD;
 
     const { farmingInfo, deposits, isFarmingLoading, areDepositsLoading } = useActiveFarming({
         poolId: poolId,
-        poolInfo: poolInfo,
     });
 
     const { closedFarmings } = useClosedFarmings({
         poolId: poolId,
-        poolInfo: poolInfo,
     });
 
-    const [positionsFees, setPositionsFees] = useState<any>();
-    const [positionsAPRs, setPositionsAPRs] = useState<any>();
-
-    const { positions, loading: positionsLoading } = usePositions();
+    const { unclaimedRewards } = useUnclaimedRewards();
 
     const filteredPositions = useMemo(() => {
         if (!positions || !poolEntity) return [];
@@ -93,67 +71,107 @@ const PoolPage = () => {
                     Number(position.tickUpper)
                 ),
             }));
-    }, [positions, poolEntity]);
+    }, [positions, poolEntity, poolId]);
 
-    useEffect(() => {
-        async function getPositionsFees() {
-            const fees = await Promise.all(filteredPositions.map(({ positionId, position }) => getPositionFees(position.pool, positionId)));
-            setPositionsFees(fees);
-        }
+    const { data: positionsFees, isLoading: positionsFeesLoading } = useSWR(
+        ["positionsFees", filteredPositions, account],
+        () => {
+            if (!account) return [];
 
-        if (filteredPositions) getPositionsFees();
-    }, [filteredPositions]);
+            return Promise.all(
+                filteredPositions.map(({ positionId, position }) => {
+                    if (JSBI.equal(position.liquidity, ZERO))
+                        return [
+                            CurrencyAmount.fromRawAmount(position.pool.token0, "0"),
+                            CurrencyAmount.fromRawAmount(position.pool.token1, "0"),
+                        ];
 
-    useEffect(() => {
-        async function getPositionsAPRs() {
-            const aprs = await Promise.all(
-                filteredPositions.map(({ position }) =>
-                    getPositionAPR(poolId, position, poolInfo?.pool, poolFeeData?.poolDayDatas, nativePrice)
-                )
+                    return getPositionFees(position.pool, positionId, account);
+                })
             );
-            setPositionsAPRs(aprs);
+        },
+        {
+            refreshInterval: 10000,
         }
+    );
 
-        if (filteredPositions && poolInfo?.pool && poolFeeData?.poolDayDatas && bundles?.bundles && poolId) getPositionsAPRs();
-    }, [filteredPositions, poolInfo, poolId, poolFeeData, bundles]);
+    const [getSinglePosition] = useSinglePositionLazyQuery();
+    const { data: positionsAPRs, isLoading: positionsAPRsLoading } = useSWR(
+        ["positionsAPRs", filteredPositions, positionsFees, token0PriceUSD, token1PriceUSD],
+        async () => {
+            if (!filteredPositions || !positionsFees) return [];
 
-    const formatLiquidityUSD = (position: Position) => {
-        if (!poolInfo?.pool) return 0;
+            const positionsAPRs = await Promise.all(
+                filteredPositions.map(async ({ positionId, position }, idx) => {
+                    if (JSBI.equal(position.liquidity, ZERO)) return 0;
 
-        const amount0USD =
-            Number(position.amount0.toSignificant()) * (Number(poolInfo.pool.token0.derivedMatic) * (Number(nativePrice) || 0));
-        const amount1USD =
-            Number(position.amount1.toSignificant()) * (Number(poolInfo.pool.token1.derivedMatic) * (Number(nativePrice) || 0));
+                    const result = await getSinglePosition({ variables: { tokenId: positionId.toString() } });
+                    const singlePosition = result?.data?.position;
+                    if (!singlePosition) return 0;
 
-        return amount0USD + amount1USD;
-    };
+                    const { token0, token1 } = position.pool;
+                    const { collectedFeesToken0, collectedFeesToken1 } = singlePosition;
 
-    const formatFeesUSD = (idx: number) => {
-        if (!positionsFees || !positionsFees[idx] || !poolInfo?.pool) return 0;
+                    return getPositionAPR(
+                        position.amount0,
+                        position.amount1,
+                        positionsFees[idx][0],
+                        positionsFees[idx][1],
+                        CurrencyAmount.fromRawAmount(token0, parseUnits(collectedFeesToken0, token0.decimals).toString()),
+                        CurrencyAmount.fromRawAmount(token1, parseUnits(collectedFeesToken1, token1.decimals).toString()),
+                        position.pool.token0Price,
+                        new Date(Number(singlePosition.transaction.timestamp) * 1000).getTime()
+                    );
+                })
+            );
 
-        const fees0USD = positionsFees[idx][0]
-            ? Number(positionsFees[idx][0].toSignificant()) * (Number(poolInfo.pool.token0.derivedMatic) * Number(nativePrice))
-            : 0;
-        const fees1USD = positionsFees[idx][1]
-            ? Number(positionsFees[idx][1].toSignificant()) * (Number(poolInfo.pool.token1.derivedMatic) * Number(nativePrice))
-            : 0;
-
-        return fees0USD + fees1USD;
-    };
-
-    const formatAPR = (idx: number) => {
-        if (!positionsAPRs || !positionsAPRs[idx]) return 0;
-        return positionsAPRs[idx];
-    };
+            return positionsAPRs;
+        }
+    );
 
     const positionsData = useMemo(() => {
-        if (!filteredPositions || !poolEntity) return [];
+        if (!filteredPositions || !poolEntity || !positionsFees || !positionsAPRs) return [];
 
-        const filteredALMPositions =
+        const positionsData = filteredPositions.map(({ positionId, position }, idx) => {
+            const currentPositionInFarming = deposits?.deposits?.find((deposit) => Number(deposit.id) === Number(positionId));
+            const range = `${formatAmount(position.token0PriceLower.toFixed(6), 6)} — ${formatAmount(
+                position.token0PriceUpper.toFixed(6),
+                6
+            )}`;
+            const rangeLength = Number(position.tickUpper) - Number(position.tickLower);
+
+            const amount0USD = Number(position.amount0.toSignificant(24)) * token0PriceUSD;
+            const amount1USD = Number(position.amount1.toSignificant(24)) * token1PriceUSD;
+            const liquidityUSD = amount0USD + amount1USD;
+
+            const fees0USD = Number(positionsFees[idx][0].toSignificant()) * token0PriceUSD;
+            const fees1USD = Number(positionsFees[idx][1].toSignificant()) * token1PriceUSD;
+            const feesUSD = fees0USD + fees1USD;
+
+            const apr = positionsAPRs[idx];
+
+            return {
+                id: positionId.toString(),
+                isClosed: JSBI.EQ(position.liquidity, ZERO),
+                outOfRange: poolEntity.tickCurrent < position.tickLower || poolEntity.tickCurrent > position.tickUpper,
+                range,
+                liquidityUSD,
+                feesUSD,
+                apr,
+                onFarming: Boolean(currentPositionInFarming?.eternalFarming),
+                rangeLength,
+                position,
+                isALM: false,
+                almShares: null,
+                almVaultAddress: null,
+            } as FormattedPosition;
+        });
+
+        const almPositionsData =
             userVaults?.map(
                 (vault) =>
                     ({
-                        id: vault.vault.name,
+                        id: `${vault.vault.name}${vault.onFarming ? "-F" : ""}`,
                         isALM: true,
                         isClosed: false,
                         outOfRange: false,
@@ -161,50 +179,35 @@ const PoolPage = () => {
                         liquidityUSD: vault.amountsUsd,
                         feesUSD: null,
                         apr: Math.abs(vault.vault.apr),
-                        inFarming: false,
+                        onFarming: vault.onFarming,
                         rangeLength: 0,
+                        position: null,
+                        almShares: vault.shares,
+                        almVaultAddress: vault.vault.id,
                     }) as FormattedPosition
             ) || [];
 
-        const positionsData = filteredPositions.map(({ positionId, position }, idx) => {
-            const currentPosition = deposits?.deposits?.find((deposit) => Number(deposit.id) === Number(positionId));
-            const rangeLength = Number(position.tickUpper) - Number(position.tickLower);
-            return {
-                id: positionId.toString(),
-                isClosed: JSBI.EQ(position.liquidity, ZERO),
-                outOfRange: poolEntity.tickCurrent < position.tickLower || poolEntity.tickCurrent > position.tickUpper,
-                range: `${formatAmount(position.token0PriceLower.toFixed(6), 6)} — ${formatAmount(
-                    position.token0PriceUpper.toFixed(6),
-                    6
-                )}`,
-                liquidityUSD: formatLiquidityUSD(position),
-                feesUSD: formatFeesUSD(idx),
-                apr: formatAPR(idx),
-                inFarming: Boolean(currentPosition?.eternalFarming),
-                rangeLength,
-            } as FormattedPosition;
-        });
+        return [...almPositionsData, ...positionsData];
+    }, [filteredPositions, poolEntity, positionsFees, positionsAPRs, userVaults, deposits?.deposits, token0PriceUSD, token1PriceUSD]);
 
-        return [...filteredALMPositions, ...positionsData];
-    }, [filteredPositions, poolEntity, poolInfo, positionsFees, positionsAPRs, deposits, userVaults]);
+    const [selectedPosition, setSelectedPosition] = useState<FormattedPosition | null>(null);
 
-    const selectedPosition = useMemo(() => {
-        if (!positionsData || !selectedPositionId) return;
+    // useEffect(() => {
+    //     if (!selectedPositionId || !positionsData) return;
+    //     const found = positionsData.find(({ id, isALM, almShares }) => selectedPositionId);
+    //     if (found) setSelectedPosition(found);
+    // }, [selectedPositionId, positionsData]);
 
-        return positionsData.find(({ id }) => Number(id) === Number(selectedPositionId));
-    }, [selectedPositionId, positionsData]);
+    const isLoading =
+        positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading || positionsFeesLoading || positionsAPRsLoading;
 
-    const noPositions =
-        (!positionsLoading || !isFarmingLoading || !areDepositsLoading || !areUserVaultsLoading) &&
-        positionsData.length === 0 &&
-        (userVaults?.length === 0 || !userVaults) &&
-        poolEntity;
+    const noPositions = !isLoading && positionsData.length === 0 && (userVaults?.length === 0 || !userVaults) && poolEntity;
 
     return (
         <PageContainer>
             <PoolHeader />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 w-full mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full mt-3">
                 <div className="col-span-2">
                     <MyPositionsToolbar
                         currencyA={poolEntity && unwrappedToken(poolEntity.token0)}
@@ -213,7 +216,7 @@ const PoolPage = () => {
                     />
                     {!account ? (
                         <NoAccount />
-                    ) : positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading ? (
+                    ) : isLoading ? (
                         <LoadingState />
                     ) : noPositions ? (
                         <NoPositions poolId={poolId} />
@@ -223,7 +226,7 @@ const PoolPage = () => {
                                 positions={positionsData}
                                 poolId={poolId}
                                 selectedPosition={selectedPosition?.id}
-                                selectPosition={(positionId) => selectPosition((prev) => (prev === positionId ? null : positionId))}
+                                selectPosition={(position) => setSelectedPosition(position)}
                             />
                             {unclaimedRewards && Boolean(unclaimedRewards?.rewards?.length) && (
                                 <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
@@ -231,13 +234,28 @@ const PoolPage = () => {
                         </>
                     )}
                     {farmingInfo && !isFarmingLoading && !areDepositsLoading && (
-                        <ActiveFarming deposits={deposits?.deposits || []} farming={farmingInfo} positionsData={positionsData} />
+                        <ActiveFarming
+                            deposits={(deposits?.deposits as Deposit[]) || []}
+                            farming={farmingInfo}
+                            positionsData={positionsData}
+                        />
                     )}
                 </div>
 
                 <div className="flex flex-col gap-8 w-full h-full">
-                    <PositionCard farming={farmingInfo} closedFarmings={closedFarmings} selectedPosition={selectedPosition} />
-                    <ALMPositionCard poolAddress={poolId} userVault={userVaults?.find((v) => v.vault.name === selectedPositionId)} />
+                    <PositionCard
+                        pool={poolEntity}
+                        farming={farmingInfo}
+                        closedFarmings={closedFarmings}
+                        selectedPosition={selectedPosition?.isALM ? null : selectedPosition}
+                    />
+                    <ALMPositionCard
+                        farming={farmingInfo}
+                        poolAddress={poolId}
+                        userVault={userVaults?.find(
+                            (v) => v.vault.id === selectedPosition?.almVaultAddress && v.shares === selectedPosition?.almShares
+                        )}
+                    />
                 </div>
             </div>
         </PageContainer>

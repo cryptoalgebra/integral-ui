@@ -1,4 +1,3 @@
-import { Deposit } from "@/graphql/generated/graphql";
 import { Farming } from "../../../../types/farming-info";
 import { Button } from "@/components/ui/button";
 import { Address, formatUnits } from "viem";
@@ -14,6 +13,7 @@ import { SelectPositionFarmModal } from "..";
 import { CardInfo } from "../CardInfo";
 import { formatAmount } from "@/utils";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { Deposit } from "@/graphql/generated/graphql";
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -36,14 +36,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const isSameReward = isSameRewards(farming.farming.rewardToken as Address, farming.farming.bonusRewardToken as Address);
 
-    const TVL = depositsForActiveFarming.reduce((acc, deposit) => {
-        const currentFormattedPosition = positionsData.find((position) => Number(position.id) === Number(deposit.id));
-        if (deposit.eternalFarming !== null && currentFormattedPosition) {
-            return acc + currentFormattedPosition.liquidityUSD;
-        } else {
-            return acc;
-        }
-    }, 0);
+    const TVL = positionsData.filter((d) => d.onFarming).reduce((acc, curr) => acc + curr.liquidityUSD, 0);
 
     const formattedTVL = formatAmount(TVL, 2);
 
@@ -69,9 +62,9 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
     };
 
     return (
-        <div className="flex items-center flex-col justify-center bg-card border border-card-border/60 rounded-xl mt-3 p-6 gap-6">
+        <div className="flex items-center flex-col justify-center bg-card border border-card-border/60 rounded-xl mt-3 md:p-6 md:gap-6 gap-3 p-3">
             <div className="flex flex-col gap-3 w-full">
-                <h3 className="text-2xl font-bold text-left">Active Farming</h3>
+                <h3 className="md:text-2xl text-xl font-bold text-left">Active Farming</h3>
             </div>
             <div className="flex flex-col w-full gap-3">
                 <div className="flex max-sm:flex-col w-full gap-3">

@@ -24,8 +24,8 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     <PageTitle title={"Trade"} showSettings={true} />
                 </div>
             </div>
-            <div className="grid md:grid-cols-3 grid-cols-1 w-full gap-3 mb-3">
-                <div className="flex flex-col gap-2 col-span-1">
+            <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
+                <div className="flex flex-col gap-2 col-span-1 w-full">
                     <div className="flex flex-col gap-1 col-span-1 w-full bg-card border border-card-border p-2 rounded-xl">
                         <SwapPair derivedSwap={derivedSwap} />
                         {isLimitOrder ? <LimitOrder derivedSwap={derivedSwap} /> : <SwapParams derivedSwap={derivedSwap} />}
@@ -33,7 +33,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     </div>
                     <PoweredByAlgebra />
                 </div>
-                <div className="flex flex-col gap-3 col-span-2 max-h-[514px]">
+                <div className="flex flex-col gap-3 col-span-2 md:max-h-[514px]">
                     <SwapChart derivedSwap={derivedSwap} />
                 </div>
             </div>

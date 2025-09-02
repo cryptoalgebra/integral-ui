@@ -1,9 +1,7 @@
 import { nonfungiblePositionManagerABI, NONFUNGIBLE_POSITION_MANAGER } from "config";
-import { useDepositsQuery } from "@/graphql/generated/graphql";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useAccount, useChainId, useReadContracts } from "wagmi";
-import { useClients } from "../graphql/useClients";
 import { Address } from "viem";
 import { useReadNonfungiblePositionManagerBalanceOf } from "@/generated";
 
@@ -48,8 +46,6 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         })),
     });
 
-    const { address: account } = useAccount();
-
     const positions = useMemo(() => {
         if (!isLoading && !isError && tokenIds && !error) {
             return results
@@ -91,7 +87,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                 });
         }
         return undefined;
-    }, [isLoading, isError, error, results, tokenIds, account, refetch, chainId]);
+    }, [isLoading, isError, error, results, tokenIds, chainId]);
 
     return useMemo(() => {
         return {
@@ -172,27 +168,4 @@ export function usePosition(tokenId: string | number | undefined): {
             refetch,
         };
     }, [isLoading, positions, refetch]);
-}
-
-export function usePositionInFarming(tokenId: string | number | undefined) {
-    const { farmingClient } = useClients();
-    const { position } = usePosition(tokenId);
-
-    const { address: account } = useAccount();
-
-    const { data: deposits } = useDepositsQuery({
-        variables: {
-            owner: account ? account : undefined,
-            pool: position?.pool,
-        },
-        client: farmingClient,
-    });
-
-    if (!deposits) return;
-    const openedPositions = deposits.deposits.filter((deposit) => deposit.eternalFarming !== null);
-
-    const positionInFarming = openedPositions.find((deposit) => Number(deposit.id) === Number(tokenId));
-
-    if (!positionInFarming) return;
-    return positionInFarming;
 }

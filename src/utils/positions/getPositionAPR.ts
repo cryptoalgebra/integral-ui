@@ -1,42 +1,31 @@
-import { Position } from "@cryptoalgebra/custom-pools-sdk";
-import { PoolFeeDataFieldsFragment, PoolFieldsFragment } from "@/graphql/generated/graphql";
-import { Address } from "viem";
-import { readAlgebraPoolLiquidity } from "@/generated";
-import { wagmiConfig } from "@/providers/WagmiProvider";
+import { Currency, CurrencyAmount, Price } from "@cryptoalgebra/custom-pools-sdk";
 
-export async function getPositionAPR(
-    poolId: Address,
-    position: Position,
-    pool: PoolFieldsFragment | undefined | null,
-    poolFeeData: PoolFeeDataFieldsFragment[] | undefined,
-    nativePrice: string | undefined
+export function getPositionAPR(
+    amount0: CurrencyAmount<Currency>,
+    amount1: CurrencyAmount<Currency>,
+    feeAmount0: CurrencyAmount<Currency>,
+    feeAmount1: CurrencyAmount<Currency>,
+    collectedFees0: CurrencyAmount<Currency>,
+    collectedFees1: CurrencyAmount<Currency>,
+    token0Price: Price<Currency, Currency>,
+    creationTime: number
 ) {
-    if (!pool || !poolFeeData || !nativePrice) return;
+    const activeDays = (Date.now() - creationTime) / (24 * 60 * 60 * 1000);
+
+    if (activeDays <= 0) return 0;
 
     try {
-        const liquidity = await readAlgebraPoolLiquidity(wagmiConfig, {
-            address: poolId,
-        });
+        const totalAmountInToken1 = token0Price.quote(amount0).add(amount1);
+        const totalFeesInToken1 = token0Price.quote(feeAmount0).add(feeAmount1);
+        const totalCollectedFeesInToken1 = token0Price.quote(collectedFees0).add(collectedFees1);
 
-        // Today fees
-        const poolDayFees = poolFeeData && Boolean(poolFeeData.length) && Number(poolFeeData[0].feesUSD);
+        const totalProfit = totalFeesInToken1.add(totalCollectedFeesInToken1);
+        const profitRatio = parseFloat(totalProfit.asFraction.divide(totalAmountInToken1.asFraction).toSignificant(24));
+        const apr = profitRatio > 0 ? (profitRatio / activeDays) * 365 * 100 : 0;
 
-        // Avg fees
-        // const poolDayFees = poolFeeData && Boolean(poolFeeData.length) && poolFeeData.reduce((acc, v) => acc + Number(v.feesUSD), 0) / poolFeeData.length
-
-        const yearFee = poolDayFees && poolDayFees * 365;
-
-        const liquidityRelation = position && liquidity && Number(position.liquidity.toString()) / Number(liquidity);
-
-        const [amount0, amount1] = position ? [position.amount0.toSignificant(), position.amount1.toSignificant()] : [0, 0];
-
-        const tvl =
-            pool &&
-            Number(pool.token0.derivedMatic) * Number(nativePrice) * Number(amount0) +
-                Number(pool.token1.derivedMatic) * Number(nativePrice) * Number(amount1);
-
-        return liquidityRelation && yearFee && tvl && ((yearFee * liquidityRelation) / tvl) * 100;
-    } catch {
+        return apr;
+    } catch (e) {
+        console.error(e);
         return 0;
     }
 }

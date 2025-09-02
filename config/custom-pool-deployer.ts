@@ -9,7 +9,7 @@ export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<num
     },
     /* Replace with `undefined` to use as a stub */
     ALL_INCLUSIVE: {
-        [ChainId.BaseSepolia]: "0x44564Ed09f4d88ae963E6579709973Eb7C109A30",
+        [ChainId.BaseSepolia]: "0xFD209C7e6b19131B2C36550950c66F0E4EbccfF0",
     },
 } as const;
 

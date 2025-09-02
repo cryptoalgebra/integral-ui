@@ -2,7 +2,6 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import TokenSelectorModal from "@/components/modals/TokenSelectorModal";
 import { Input } from "@/components/ui/input";
 import { cn, formatAmount } from "@/utils";
-import { formatBalance } from "@/utils/common/formatBalance";
 import { Currency, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,7 +52,7 @@ const TokenCard = ({
     const balanceString = useMemo(() => {
         if (isBalanceLoading) return "Loading...";
 
-        return formatBalance(balance?.formatted || "0");
+        return formatAmount(balance?.formatted || "0", 6);
     }, [balance, isBalanceLoading]);
 
     const handleInput = (value: string) => {

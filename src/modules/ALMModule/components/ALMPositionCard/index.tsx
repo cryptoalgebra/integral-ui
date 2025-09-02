@@ -5,14 +5,19 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Address } from "viem";
 import { UserALMVault } from "../../hooks";
 import { AddALMLiquidityModal, RemoveALMLiquidityModal } from "..";
+import { HarvestAndExitALMFarmingCard } from "../HarvestAndExitALMFarmingCard";
+import { Farming } from "@/types/farming-info";
 
 interface ALMPositionCardProps {
     userVault: UserALMVault | undefined;
     poolAddress: Address | undefined;
+    farming: Farming | undefined | null;
 }
 
-export const ALMPositionCard = ({ userVault, poolAddress }: ALMPositionCardProps) => {
+export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPositionCardProps) => {
     if (!userVault) return null;
+
+    const activeFarming = farming?.farming;
 
     const { token0, token1 } = userVault.vault;
 
@@ -70,10 +75,15 @@ export const ALMPositionCard = ({ userVault, poolAddress }: ALMPositionCardProps
             <div className="flex gap-4 w-full whitespace-nowrap">
                 <AddALMLiquidityModal vault={userVault.vault} />
             </div>
-            <div className="flex gap-4 w-full whitespace-nowrap">
-                <RemoveALMLiquidityModal poolAddress={poolAddress} userVault={userVault} />
-            </div>
+            {!userVault.onFarming && (
+                <div className="flex gap-4 w-full whitespace-nowrap">
+                    <RemoveALMLiquidityModal poolAddress={poolAddress} userVault={userVault} />
+                </div>
+            )}
 
+            {activeFarming && userVault.onFarming && (
+                <HarvestAndExitALMFarmingCard eternalFarming={activeFarming} almPosition={userVault} isEnded={false} />
+            )}
             {/* <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} /> */}
             {/* <TokenRatio mintInfo={mintInfo} /> */}
         </div>

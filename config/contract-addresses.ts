@@ -18,13 +18,13 @@ export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
 };
 
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x1C5E8C41B5B119dc8fc5ac8e53692E323a6D78D7",
+    [ChainId.BaseSepolia]: "0xf7cA7d0F8Bbef9BBfEB66Cf2c9C84Eeb2dA60b22",
 };
 
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x4Ce15380bA2573954e67298209B8DF84222bc62E",
+    [ChainId.BaseSepolia]: "0x07B8114E9f6fC41963c060A9fD878977c4093B84",
 };
 
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x05F9E353559da6f2Bfe9A0980D5C3e84eA5d4238",
+    [ChainId.BaseSepolia]: "0x1C9D0f9d7a29Bdc60be447973C72690D42bE1f47",
 };

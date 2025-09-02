@@ -1,16 +1,16 @@
-import { Deposit } from "@/graphql/generated/graphql";
 import { cn } from "@/utils/common/cn";
 import { FarmingPositionImg } from "..";
 
 interface FarmingPositionCardProps {
-    position: Deposit;
+    positionId: string;
+    isALM: boolean;
     status: string;
     className?: string;
     onClick?: () => void;
     isDepositEligible: boolean;
 }
 
-export const FarmingPositionCard = ({ position, status, className, onClick, isDepositEligible }: FarmingPositionCardProps) => {
+export const FarmingPositionCard = ({ positionId, status, className, onClick, isDepositEligible, isALM }: FarmingPositionCardProps) => {
     return (
         <button
             disabled={!isDepositEligible}
@@ -26,9 +26,10 @@ export const FarmingPositionCard = ({ position, status, className, onClick, isDe
                     Unsupported range. <br /> Too narrow
                 </div>
             )}
-            <FarmingPositionImg positionId={BigInt(position.id)} size={12} />
+
+            <FarmingPositionImg isALM={isALM} positionId={positionId} size={12} />
             <div className="flex flex-col z-0">
-                <p>Position #{position.id}</p>
+                <p className="text-start ">Position #{positionId}</p>
                 <div>
                     <div className={cn("flex gap-2 items-center", status === "In range" ? "text-green-300" : "text-red-300")}>
                         <div className={cn("w-2 h-2 rounded-full", status === "In range" ? "bg-green-300" : "bg-red-300")}></div>

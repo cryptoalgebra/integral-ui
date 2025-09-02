@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useChainId } from "wagmi";
 import { Address, maxUint128 } from "viem";
 
-export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined) {
+export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | null | undefined) {
     const [overrideFees, setOverrideFees] = useState<{
         fee: number | undefined;
         fees: number[][];

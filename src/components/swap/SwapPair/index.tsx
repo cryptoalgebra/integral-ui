@@ -104,7 +104,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [chainId, handleOutputSelect]);
 
     return (
-        <div className="flex flex-col gap-1 relative">
+        <div className="flex flex-col gap-1 relative ">
             <TokenCard
                 value={formattedAmounts[SwapField.INPUT]}
                 currency={baseCurrency}

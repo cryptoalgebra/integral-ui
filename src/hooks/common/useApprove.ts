@@ -8,9 +8,9 @@ import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 import { useNeedAllowance } from "./useNeedAllowance";
 import { useTransactionAwait } from "./useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore.ts";
-import { formatBalance } from "@/utils/common/formatBalance.ts";
 import { Address, erc20Abi } from "viem";
 import { useWriteContract } from "wagmi";
+import { formatAmount } from "@/utils";
 
 export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: Address) {
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;
@@ -37,7 +37,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
     const { data: approvalData, writeContract: approve, isPending } = useWriteContract();
 
     const { isLoading, isSuccess } = useTransactionAwait(approvalData, {
-        title: `Approve ${formatBalance(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
+        title: `Approve ${formatAmount(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
         tokenA: token?.address as Address,
         type: TransactionType.SWAP,
     });
