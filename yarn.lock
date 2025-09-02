@@ -1475,6 +1475,23 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/integral-sdk@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.0.1.tgz#d0e6bf83fd02dd0b2f72c0fe081f14141c2249c7"
+  integrity sha512-r4r5cBv7k8y+IkwarJFuC1G9883nIiz4H1ddVCJ7sLCl9xzLVj4jp2xuzWuwnh9nMN3W4s4tfbKL3QrAml83xA==
+  dependencies:
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/solidity" "^5.7.0"
+    "@ethersproject/units" "^5.7.0"
+    big.js "^6.2.1"
+    decimal.js-light "^2.5.1"
+    jsbi "^3.2.5"
+    numeral "^2.0.6"
+    tiny-invariant "^1.3.1"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+
 "@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.3":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.3.tgz#bc06f45538b60d7b178c879a6899b51c9243e421"

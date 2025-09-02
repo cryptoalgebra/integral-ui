@@ -3,13 +3,13 @@ import { Address } from "viem";
 
 export type PoolDeployerType = "BASE" | "ALL_INCLUSIVE";
 
-export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | undefined>> = {
+export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | null>> = {
     BASE: {
         [ChainId.BaseSepolia]: ADDRESS_ZERO,
     },
-    /* Replace with `undefined` to use as a stub */
+    /* Replace with `null` to use as a stub */
     ALL_INCLUSIVE: {
-        [ChainId.BaseSepolia]: "0xFD209C7e6b19131B2C36550950c66F0E4EbccfF0",
+        [ChainId.BaseSepolia]: null,
     },
 } as const;
 
