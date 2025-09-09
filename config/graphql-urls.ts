@@ -18,5 +18,5 @@ export const FARMING_GRAPH_URL = {
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/limit-orders/v0.0.1",
+    [ChainId.BaseSepolia]: "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/BrPZmkeRQ3giFDVNf5x92TaxjnbnidT8Swg1htxVij15",
 };
