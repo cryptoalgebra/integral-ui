@@ -45,7 +45,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
     if (!currency)
         return (
             <Skeleton
-                className={cn(`flex rounded-full bg-muted-primary`, className)}
+                className={cn(`flex rounded-full bg-white/5 border border-card-border animate-none`, className)}
                 style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}
             />
         );

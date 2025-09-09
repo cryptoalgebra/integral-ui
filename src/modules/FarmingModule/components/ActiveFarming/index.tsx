@@ -121,6 +121,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
                 <div className="w-full flex gap-3">
                     <Button
+                        variant={'primary'}
                         disabled={(!rewardEarnedUSD && !bonusRewardEarnedUSD) || isLoading}
                         onClick={handleHarvestAll}
                         className="w-1/2"

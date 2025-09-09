@@ -1,26 +1,35 @@
-import { Button } from "@/components/ui/button";
+import { cn } from "@/utils";
 import { NavLink } from "react-router-dom";
 
 export function SwapTypeSelector({ isLimitOrder }: { isLimitOrder: boolean }) {
     return (
-        <div className="grid grid-cols-2 h-full col-span-1 max-h-16 p-2 bg-card rounded-xl gap-2">
+        <div className="flex h-full col-span-1 max-h-16 text-4xl font-bold rounded-xl whitespace-nowrap">
             <NavLink className="w-full h-full" to="/swap">
-                <Button
-                    size={"sm"}
-                    variant={isLimitOrder ? "ghost" : "ghostActive"}
-                    className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
+                <h1
+                    className={
+                        cn(
+                            "leading-tight bg-gradient-to-b bg-clip-text text-transparent pr-8 duration-200",
+                            isLimitOrder ? 'from-white via-slate-200 to-slate-600 hover:opacity-70' : 'from-primary-200 via-primary-200'
+                        )
+                    }
                 >
                     Swap
-                </Button>
+                </h1>
             </NavLink>
+            <div className="flex items-center h-full pt-1">
+                <div className="w-2 h-2 bg-white/5 border border-white/25 rotate-45" />
+            </div>
             <NavLink className={"w-full h-full"} to="/limit-order">
-                <Button
-                    size={"sm"}
-                    variant={isLimitOrder ? "ghostActive" : "ghost"}
-                    className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
+                <h1 
+                    className={
+                        cn(
+                            "leading-tight bg-gradient-to-b bg-clip-text text-transparent pl-8 duration-200",
+                            isLimitOrder ? 'from-primary-200 via-primary-200' : 'from-white via-slate-200 to-slate-600 hover:opacity-70'
+                        )
+                    }
                 >
-                    Limit
-                </Button>
+                    Limit Order
+                </h1>
             </NavLink>
         </div>
     );

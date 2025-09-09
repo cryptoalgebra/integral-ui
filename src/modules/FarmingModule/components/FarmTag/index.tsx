@@ -45,7 +45,7 @@ export function FarmTag({ poolAddress }: { poolAddress: string }) {
     return (
         <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-farm px-3 py-1 text-xs font-bold text-card-dark shadow-inner shadow-white duration-200 hover:opacity-80 max-md:text-xs">
+                <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-yellow-950/40 border border-yellow-500 text-yellow-100 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs">
                     FARM
                 </div>
             </HoverCardTrigger>

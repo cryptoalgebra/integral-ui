@@ -51,7 +51,7 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
     if (!token0Ratio && !token1Ratio) return null;
 
     return (
-        <div className="relative flex h-[50px] min-h-[50px] rounded-lg p-2 bg-card-dark">
+        <div className="relative flex h-[50px] min-h-[50px]">
             <div className="flex h-full w-full font-semibold">
                 {Number(token0Ratio) > 0 && (
                     <div

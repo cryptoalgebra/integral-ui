@@ -200,8 +200,8 @@ const CreatePoolForm = () => {
     );
 
     return (
-        <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-xl">
-            <h2 className="font-semibold text-xl text-left ml-2 mt-2">Select Pair</h2>
+        <div className="flex flex-col gap-1 p-2 bg-dark-gradient border border-card-border rounded-xl">
+            
             <SelectPair mintInfo={mintInfo} currencyA={currencyA} currencyB={currencyB} />
 
             {areCurrenciesSelected && !isSameToken && !isSelectedCustomPoolExists && (
@@ -209,23 +209,24 @@ const CreatePoolForm = () => {
             )}
 
             {enabledModules.customPools ? (
-                <div className="text-left font-bold">
-                    <div>Plugin</div>
-                    <div className="grid grid-cols-2 w-full gap-4 my-2">
+                <div className="text-left font-semibold bg-card-dark border border-card-border px-4 py-3 rounded-lg">
+                    <div className="mb-3">Plugin</div>
+                    <div className="grid grid-cols-2 w-full gap-4 mt-2">
                         {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
-                            <button
+                            <Button
+                                variant={poolDeployer === v ? 'iconActive' : 'outline'}
                                 key={v}
                                 onClick={() => handlePoolDeployerChange(v)}
-                                className={cn("px-3 py-2 rounded-lg border", poolDeployer === v ? "border-primary-button" : "")}
+                                className={cn("px-3 py-2 rounded-lg")}
                             >
                                 {v}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>
             ) : null}
 
-            <Button className="mt-2" disabled={isDisabled} onClick={handleCreatePool}>
+            <Button variant={'primary'} className="mt-2" disabled={isDisabled} onClick={handleCreatePool}>
                 {isLoading ? (
                     <Loader />
                 ) : isSameToken ? (
@@ -242,7 +243,7 @@ const CreatePoolForm = () => {
             </Button>
 
             {poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE && (
-                <Button disabled={isDisabled} onClick={() => createBasePoolConfig && createBasePool(createBasePoolConfig)} className="mt-2">
+                <Button variant={'primary'} disabled={isDisabled} onClick={() => createBasePoolConfig && createBasePool(createBasePoolConfig)} className="mt-2">
                     {isCustomPoolLoading ? <Loader /> : "Initialize"}
                 </Button>
             )}

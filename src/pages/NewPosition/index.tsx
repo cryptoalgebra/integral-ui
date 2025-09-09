@@ -47,15 +47,15 @@ const NewPositionPage = () => {
     return (
         <PageContainer>
             <div className="w-full grid grid-flow-col auto-cols-fr gap-3 max-md:flex-col max-md:flex mb-3">
-                <div className="col-span-2">
-                    <PageTitle title={"Create Position"} />
+                <div className="col-span-2 mb-8">
+                    <PageTitle title={"Create Position"} showSettings={false} />
                 </div>
                 {!isCustomPoolDeployerLoading && isALMPool && enabledModules.alm && (
-                    <div className="flex items-center h-full max-h-16 col-span-1 p-2 bg-card rounded-xl justify-between gap-2">
+                    <div className="flex items-center h-full max-h-16 col-span-1 p-2 bg-card rounded-xl justify-between gap-2 border border-card-border">
                         <Button
                             onClick={() => setIsALM(false)}
                             size={"md"}
-                            variant={isALM ? "ghost" : "ghostActive"}
+                            variant={isALM ? "ghost" : "primaryLink"}
                             className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
                         >
                             Manually
@@ -64,7 +64,7 @@ const NewPositionPage = () => {
                             onClick={() => setIsALM(true)}
                             size={"md"}
                             disabled={isALM === null}
-                            variant={!isALM ? "ghost" : "ghostActive"}
+                            variant={!isALM ? "ghost" : "primaryLink"}
                             className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
                         >
                             Automated

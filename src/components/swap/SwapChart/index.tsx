@@ -1,5 +1,5 @@
 import { IDerivedSwapInfo } from "@/state/swapStore";
-import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
+// import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { useMemo, useState } from "react";
 import { CHART_SPAN, CHART_VIEW, ChartSpanType, POOL_CHART_TYPE } from "@/types/swap-chart";
 import { computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
@@ -33,11 +33,11 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const chartView = CHART_VIEW.LINE;
 
     return (
-        <div className="flex flex-col p-3 w-full h-full min-h-fit relative rounded-xl bg-card border-card-border">
-            <div className="flex flex-col px-4 pt-4 pb-0 gap-6">
+        <div className="flex flex-col px-3 w-full h-full min-h-fit relative rounded-xl">
+            {/* <div className="flex flex-col px-4 pt-4 pb-0 gap-6">
                 <CurrenciesInfoHeader tokenA={tokenA} tokenB={tokenB} />
                 <hr className="border" />
-            </div>
+            </div> */}
             {isPoolExists ? (
                 <Chart
                     chartData={chartData}
@@ -52,6 +52,7 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                     tokenA={tokenA?.symbol}
                     tokenB={tokenB?.symbol}
                     isChartDataLoading={isLoading}
+                    fadeOut
                 />
             ) : (
                 <div className="w-full h-full flex flex-col gap-4 items-center justify-center">

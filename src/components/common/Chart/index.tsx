@@ -5,6 +5,7 @@ import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
 import Loader from "../Loader";
+import { cn } from "@/utils";
 // import { bucketChartData } from "@/utils/chart/bucketChartData";
 
 export function Chart({
@@ -20,6 +21,7 @@ export function Chart({
     tokenA,
     tokenB,
     isChartDataLoading,
+    fadeOut
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +93,7 @@ export function Chart({
 
         if (chartRef.current.hasChildNodes()) chartRef.current.innerHTML = "";
 
-        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--text-200").trim();
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--text-400").trim();
 
         const chart = LightWeightCharts.createChart(chartRef.current, {
             width: chartRef.current.parentElement?.clientWidth,
@@ -210,7 +212,7 @@ export function Chart({
 
     return (
         <>
-            <div className="text-title flex flex-col-reverse items-start text-left lg:flex-row lg:justify-between p-4">
+            <div className="text-title flex flex-col-reverse items-start text-left lg:flex-row lg:justify-between px-4">
                 <div>
                     <div className="mb-2 font-semibold">{chartTitle}</div>
 
@@ -242,7 +244,7 @@ export function Chart({
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>
             </div>
-            <div className="relative">
+            <div className={cn('relative', fadeOut && 'soft-div' )}>
                 {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
                     <div className="w-full h-full min-h-[180px] flex items-center justify-center">
                         <Loader className="w-10 h-10" />

@@ -65,6 +65,7 @@ export interface IChart {
     tokenA?: string;
     tokenB?: string;
     isChartDataLoading: boolean;
+    fadeOut?: boolean;
 }
 
 export type StatsCard = {

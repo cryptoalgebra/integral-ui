@@ -127,7 +127,7 @@ const TokenCard = ({
     };
 
     return (
-        <div className="flex w-full px-4 py-6 bg-card-dark rounded-lg">
+        <div className="flex w-full px-4 py-4 bg-card-dark border border-card-border rounded-lg">
             <div className="flex flex-col gap-2 min-w-fit">
                 <TokenSelectorModal
                     showNativeToken={showNativeToken}
@@ -137,24 +137,36 @@ const TokenCard = ({
                     otherCurrency={otherCurrency}
                 >
                     <button
-                        className="flex items-center gap-4 px-3 py-1 w-fit bg-card rounded-lg hover:bg-card-hover"
+                        className="group flex items-center gap-4 py-1 w-fit bg-card rounded-lg text-left"
                         onClick={() => setIsOpen(true)}
                     >
-                        <CurrencyLogo currency={currency} size={32} />
-                        <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
-                        <ChevronRight size={16} />
+                        <div className="relative w-12 h-12">
+                            <CurrencyLogo currency={currency} size={48} />
+                            { currency && (
+                                <div className="absolute top-0 left-0 w-full h-full rounded-full bg-linear-to-b from-black/0 to-black/70 border border-card-dark shadow-primary/40 group-hover:border-primary group-hover:shadow-lg duration-100" /> 
+                            )}
+                        </div>
+
+                        <div>
+                            <div className="text-sm text-text-200">{currency ? currency.name : ''}</div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
+                                <ChevronRight size={16} className="duration-100 group-hover:rotate-90" />
+                            </div>
+                        </div>
+    
                     </button>
                 </TokenSelectorModal>
                 {currency && (
                     <div className={"flex text-sm whitespace-nowrap"}>
                         {showBalance && (
-                            <div>
+                            <div className="text-text-200">
                                 <span className="font-semibold">Balance: </span>
                                 <span>{balanceString}</span>
                             </div>
                         )}
                         {showMaxButton && (
-                            <button className="ml-2 text-[#63b4ff]" onClick={handleMaxValue}>
+                            <button className="ml-2 text-primary-50 underline underline-offset-4 hover:text-primary-50/70" onClick={handleMaxValue}>
                                 Max
                             </button>
                         )}
@@ -170,7 +182,7 @@ const TokenCard = ({
                     id={`amount-${currency?.symbol}`}
                     onUserInput={(v) => handleInput(v)}
                     className={cn(
-                        `text-right border-none text-xl font-bold w-9/12 p-0 disabled:cursor-default disabled:text-text/80 ring-0!`,
+                        `text-right border-none text-xl font-bold w-9/12 p-0 mt-2 disabled:cursor-default disabled:text-text/80 ring-0!`,
                         isLoading ? "animate-pulse" : ""
                     )}
                     placeholder={"0.0"}
@@ -180,7 +192,7 @@ const TokenCard = ({
                 {/* {!isLoading ? <Skeleton className="absolute bottom-0 left-2 z-10 h-6 w-full" /> : null} */}
                 <div
                     className={cn(
-                        "relative bottom-0 ml-auto flex h-6 min-w-max items-center gap-1 text-sm text-text-200",
+                        "relative bottom-0 ml-auto mt-auto flex h-6 min-w-max items-center gap-1 text-sm text-text-200",
                         isLoading ? "animate-pulse" : ""
                     )}
                 >

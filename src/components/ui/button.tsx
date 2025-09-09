@@ -9,15 +9,17 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
+                primary: "bg-primary-gradient text-primary-foreground hover:opacity-85",
+                primaryLink: "bg-primary-800 border border-primary-200 hover:opacity-65",
                 default: "bg-primary text-primary-foreground hover:bg-primary/90",
                 action: "bg-primary-button text-primary-foreground font-bold hover:bg-primary-button/80",
-                destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/80 font-semibold",
+                destructive: "bg-destructive-gradient text-destructive-foreground hover:bg-destructive/80 font-semibold hover:opacity-85",
                 outline: "border hover:bg-card-hover",
                 secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 ghost: "hover:bg-card-hover",
                 link: "text-primary-200 underline-offset-4 hover:underline",
                 icon: "font-semibold hover:bg-card-hover",
-                iconActive: "font-semibold bg-primary-200 hover:bg-primary-200",
+                iconActive: "font-semibold bg-primary-800 border border-primary",
                 iconHover: "font-semibold bg-card-hover",
                 ghostActive: "bg-gradient-to-r from-primary-100 to-accent-100 hover:bg-bg-100 text-white",
             },
@@ -25,7 +27,7 @@ const buttonVariants = cva(
                 default: "h-10 px-4 py-2",
                 sm: "h-9 rounded-lg px-3",
                 md: "h-6 rounded-lg p-4 py-6",
-                lg: "rounded-lg text-md p-4",
+                lg: "rounded-2xl text-md p-4",
                 icon: "h-10 w-10 rounded-xl",
             },
         },

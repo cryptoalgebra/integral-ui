@@ -12,7 +12,7 @@ interface CurrencyAmountsProps {
 
 export function CurrencyAmounts({ amount0Parsed, amount1Parsed, token0, token1 }: CurrencyAmountsProps) {
     return (
-        <div className="flex flex-col w-full  bg-card-dark p-4 gap-4 rounded-lg">
+        <div className="flex flex-col w-full bg-card-dark gap-4 rounded-lg">
             <div className="flex justify-between gap-2 items-center">
                 <div className="flex items-center gap-2">
                     <CurrencyLogo currency={token0} size={24} />

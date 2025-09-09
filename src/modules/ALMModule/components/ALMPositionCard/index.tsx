@@ -28,39 +28,42 @@ export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPosition
 
     return (
         <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in">
-            <div className="relative flex w-full justify-end text-right">
-                <CurrencyLogo
-                    className="absolute left-0 top-0  w-[160px] h-[160px] overflow-hidden rounded-full"
-                    currency={userVault.vault.depositToken}
-                    size={160}
-                />
+            <div className="relative flex w-full justify-start text-left">
                 <div className="flex flex-col gap-4 w-full">
-                    <h2 className="scroll-m-20 text-2xl font-bold tracking-tight lg:text-2xl">{userVault.vault.name}</h2>
-                    <div className="flex flex-col gap-4">
+
+                    <h2 className="flex gap-2 scroll-m-20 text-2xl font-bold tracking-tight bg-card-hover -mx-4 px-4 -mt-4 py-4 rounded-t-xl border-b border-card-border lg:text-2xl">
+                        <CurrencyLogo
+                            currency={userVault.vault.depositToken}
+                            size={30}
+                        />
+                        <span>{userVault.vault.name}</span>
+                    </h2>
+                    
+                    <div className="flex gap-8 -mx-4 px-4 pb-4 border-b border-card-border">
                         <div>
-                            <div className="font-bold text-xs">LIQUIDITY</div>
-                            <div className="font-semibold text-2xl">
+                            <div className="font-bold text-xs text-white/75 mb-2">LIQUIDITY</div>
+                            <div className="font-semibold text-xl">
                                 {positionLiquidityUSD ? (
-                                    <span className="text-cyan-300">${formatAmount(positionLiquidityUSD, 4)}</span>
+                                    <span>${formatAmount(positionLiquidityUSD, 4)}</span>
                                 ) : (
                                     <Skeleton className="w-[100px] h-[30px] ml-auto" />
                                 )}
                             </div>
                         </div>
                         <div>
-                            <div className="font-bold text-xs">APR</div>
-                            <div className="font-semibold text-2xl">
+                            <div className="font-bold text-xs text-white/75 mb-2">APR</div>
+                            <div className="font-semibold text-xl">
                                 {positionAPR >= 0 ? (
-                                    <span className="text-fuchsia-400">{formatAmount(positionAPR, 2)}%</span>
+                                    <span>{formatAmount(positionAPR, 2)}%</span>
                                 ) : (
                                     <Skeleton className="w-[100px] h-[30px] ml-auto" />
                                 )}
                             </div>
                         </div>
-                        <div className="flex w-full justify-between bg-card-dark p-4 rounded-lg">
+                        <div className="flex w-full justify-between bg-card-dark rounded-lg">
                             <div className="text-left">
-                                <div className="font-bold text-xs">NET RETURN</div>
-                                <div className="font-semibold text-2xl">
+                                <div className="font-bold text-xs text-white/75 mb-2">NET RETURN</div>
+                                <div className="font-semibold text-xl">
                                     <span className={Number(pnl) >= 0 ? "text-green-500" : "text-red-400"}>
                                         {formatAmount(Number(pnl), 6)} {userVault.vault.depositToken.symbol}
                                     </span>
