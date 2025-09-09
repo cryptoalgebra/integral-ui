@@ -93,7 +93,7 @@ const Account = () => {
                     variant={"icon"}
                     size={"sm"}
                 >
-                    <WalletIcon size={16} className="hidden" /> 
+                    <WalletIcon size={16} className="md:hidden" /> 
                     <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
                 </Button>
             </div>

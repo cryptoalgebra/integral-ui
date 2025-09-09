@@ -51,7 +51,7 @@ export function NavButtons() {
                         setNavlinkClasses(item.active)
                     )}
                 >
-                    <div className="text-lg hidden">{item.icon}</div>
+                    <div className="text-lg md:hidden">{item.icon}</div>
                     <span className="font-medium max-md:text-sm">{item.title}</span>
                 </NavLink>
             ))}

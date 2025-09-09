@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 export function SwapTypeSelector({ isLimitOrder }: { isLimitOrder: boolean }) {
     return (
-        <div className="flex h-full col-span-1 max-h-16 text-4xl font-bold rounded-xl whitespace-nowrap">
+        <div className="flex items-center h-full col-span-1 max-h-16 text-4xl font-bold rounded-xl whitespace-nowrap">
             <NavLink className="w-full h-full" to="/swap">
                 <h1
                     className={

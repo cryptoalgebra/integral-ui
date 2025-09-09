@@ -16,6 +16,11 @@ body {
     color: var(--text-100);
 }
 
+body {
+    grid-template-columns: 1fr;
+    max-width: 100vw;
+}
+
 @layer base {
     * {
         border-color: var(--color-border);
