@@ -87,7 +87,7 @@ export function TokensTable({
                             placeholder="Search token"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
-                            className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-lg"
+                            className="border border-border border-opacity-60 pl-12 h-10 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-lg"
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>

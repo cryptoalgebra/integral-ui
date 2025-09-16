@@ -34,7 +34,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
 
     return (
         <div className="flex flex-col md:flex-row lg:flex-col gap-2">
-            <div className="flex w-full relative">
+            <div className="flex w-full relative border-b border-card-border pb-2">
                 <EnterAmountCard
                     currency={currencyA}
                     value={formattedAmounts[Field.CURRENCY_A]}

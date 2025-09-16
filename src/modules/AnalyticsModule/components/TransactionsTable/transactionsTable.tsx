@@ -102,7 +102,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                 <li>
                 </li>
               </ul> */}
-                <div className="grid grid-cols-2 gap-4 md:flex max-md:w-full">
+                <div className="grid grid-cols-2 gap-2 md:flex max-md:w-full">
                     {/* <Button
                   className="flex h-12 min-w-[130px] items-center gap-2 rounded-lg"
                   variant={'outline'}
@@ -116,8 +116,8 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                                 setFilterTxTypes([...currentTxTypes, "Swap"]);
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Swap"));
                         }}
-                        className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
-                        variant={currentTxTypes?.includes("Swap") ? "iconHover" : "outline"}
+                        className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        variant={currentTxTypes?.includes("Swap") ? "iconActive" : "outline"}
                     >
                         <ArrowDownUp size={16} />
                         <span>Swaps</span>
@@ -128,8 +128,8 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                                 setFilterTxTypes([...currentTxTypes, "Mint"]);
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Mint"));
                         }}
-                        className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
-                        variant={currentTxTypes?.includes("Mint") ? "iconHover" : "outline"}
+                        className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        variant={currentTxTypes?.includes("Mint") ? "iconActive" : "outline"}
                     >
                         <ImagePlus size={16} />
                         <span>Mints</span>
@@ -140,8 +140,8 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                                 setFilterTxTypes([...currentTxTypes, "Burn"]);
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Burn"));
                         }}
-                        className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
-                        variant={currentTxTypes?.includes("Burn") ? "iconHover" : "outline"}
+                        className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        variant={currentTxTypes?.includes("Burn") ? "iconActive" : "outline"}
                     >
                         <Flame size={16} />
                         <span>Burns</span>
@@ -152,8 +152,8 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                                 setFilterTxTypes([...currentTxTypes, "Collect"]);
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Collect"));
                         }}
-                        className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
-                        variant={currentTxTypes?.includes("Collect") ? "iconHover" : "outline"}
+                        className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        variant={currentTxTypes?.includes("Collect") ? "iconActive" : "outline"}
                     >
                         <Coins size={16} />
                         <span>Collects</span>
@@ -163,7 +163,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                             setFilterTxTypes(["Swap", "Mint", "Collect", "Burn"]);
                         }}
                         className={cn(
-                            "flex h-12 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4 max-lg:hidden max-md:col-span-2",
+                            "flex h-10 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4 max-lg:hidden max-md:col-span-2",
                             currentTxTypes.length < 4 ? "" : "hidden"
                         )}
                         variant={"outline"}

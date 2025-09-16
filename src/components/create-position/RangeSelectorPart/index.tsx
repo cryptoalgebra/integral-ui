@@ -69,7 +69,7 @@ const RangeSelectorPart = ({
 
     return (
         <div>
-            <div className="font-bold text-xs mb-3">{title.toUpperCase()}</div>
+            <div className="font-bold text-xs mb-3 text-white/75">{title.toUpperCase()}</div>
             <div className="flex relative">
                 <Button
                     variant={"ghost"}
@@ -92,7 +92,7 @@ const RangeSelectorPart = ({
                         updateSelectedPreset(null);
                     }}
                     placeholder={"0.00"}
-                    className="w-full bg-card-dark border-y border-x-0 rounded-none text-sm h-[36px]"
+                    className="w-full bg-card-hover border-y border-card-border border-x-0 rounded-none text-sm h-[36px]"
                 />
 
                 <Button

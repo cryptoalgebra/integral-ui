@@ -18,7 +18,7 @@ export function ClaimRebaseRewardsButton({ amount, tokenId, refetch }: { amount:
 
     return (
         <Button
-            variant="action"
+            variant="primary"
             disabled={isPending || isLoading}
             onClick={() => onClaimRebase({ args: [tokenId] })}
             size="sm"

@@ -40,8 +40,21 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd }: EnterAmoun
         <div className="flex w-full bg-card-dark p-3 rounded-lg">
             <div className="flex flex-col gap-2 ">
                 <div className="flex items-center gap-4 min-h-10">
-                    <CurrencyLogo currency={currency} size={35} />
-                    <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
+
+                    <div className="relative w-12 h-12">
+                        <CurrencyLogo currency={currency} size={48} />
+                        {currency && (
+                            <div className="absolute top-0 left-0 w-full h-full rounded-full bg-linear-to-b from-black/0 to-black/70 border border-card-dark shadow-primary/40 group-hover:border-primary group-hover:shadow-lg duration-100" />
+                        )}
+                    </div>
+
+                    <div>
+                        <div className="text-sm text-text-200">{currency ? currency.name : ''}</div>
+                        <div className="flex items-center gap-2">
+                            <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
+                        </div>
+                    </div>
+
                 </div>
                 {currency && (
                     <div className={"flex text-sm whitespace-nowrap"}>
@@ -49,7 +62,7 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd }: EnterAmoun
                             <span className="font-semibold">Balance: </span>
                             <span>{balanceString}</span>
                         </div>
-                        <button className="ml-2 text-[#63b4ff]" onClick={setMax}>
+                        <button className="ml-2 text-primary-50 underline underline-offset-4 hover:text-primary-50/70" onClick={setMax}>
                             Max
                         </button>
                     </div>

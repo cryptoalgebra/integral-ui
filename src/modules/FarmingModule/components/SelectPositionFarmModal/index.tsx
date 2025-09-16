@@ -78,7 +78,7 @@ export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoadi
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button disabled={isHarvestLoading} className="whitespace-nowrap w-1/2">
+                <Button variant={'primary'} disabled={isHarvestLoading} className="whitespace-nowrap w-1/2">
                     Deposit
                 </Button>
             </DialogTrigger>
@@ -114,20 +114,20 @@ export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoadi
                 </div>
                 <div className="w-full flex gap-3 mt-2">
                     {isApproveVerifying ? (
-                        <Button disabled className="w-full">
+                        <Button variant={'primary'} disabled className="w-full">
                             Checking Approval...
                         </Button>
                     ) : selectedPosition && availablePositions.length > 0 ? (
                         <>
-                            <Button disabled={isApproved || isApproving} className="w-1/2" onClick={handleApprove}>
+                            <Button variant={'primary'} disabled={isApproved || isApproving} className="w-1/2" onClick={handleApprove}>
                                 {isApproved ? <span>1. Approved</span> : isApproving ? <Loader /> : <span>1. Approve</span>}
                             </Button>
-                            <Button disabled={!isApproved || isStaking} className="w-1/2" onClick={handleStake}>
+                            <Button variant={'primary'} disabled={!isApproved || isStaking} className="w-1/2" onClick={handleStake}>
                                 {isStaking ? <Loader /> : "2. Deposit"}
                             </Button>
                         </>
                     ) : (
-                        <Button disabled className="w-full">
+                        <Button variant={'primary'} disabled className="w-full">
                             Select Position
                         </Button>
                     )}

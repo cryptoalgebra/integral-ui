@@ -118,7 +118,7 @@ export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undef
                     </p>
                 )}
                 <Button
-                    variant="action"
+                    variant="primary"
                     disabled={!canMerge || isLoading}
                     onClick={handleMerge}
                     className={cn("px-6 py-2 rounded-lg font-semibold transition-colors")}

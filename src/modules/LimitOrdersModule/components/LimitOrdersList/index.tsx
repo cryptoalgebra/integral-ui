@@ -192,20 +192,20 @@ export const LimitOrdersList = () => {
                         <div className="flex gap-2 p-3">
                             <Button
                                 size="md"
-                                className="flex h-12 min-w-[130px] items-center gap-2 border whitespace-nowrap rounded-lg p-4"
+                                className="flex h-10 min-w-[130px] items-center gap-2 border whitespace-nowrap rounded-lg p-4"
                                 onClick={() => setTab(0)}
-                                variant={tab === 0 ? "iconHover" : "icon"}
+                                variant={tab === 0 ? "iconActive" : "icon"}
                             >
-                                <BookOpen className="text-primary-200" size={16} />
+                                <BookOpen size={16} />
                                 <span>Opened Orders</span>
                             </Button>
                             <Button
                                 size="md"
-                                className="flex h-12 min-w-[130px] items-center gap-2 border whitespace-nowrap rounded-lg p-4"
+                                className="flex h-10 min-w-[130px] items-center gap-2 border whitespace-nowrap rounded-lg p-4"
                                 onClick={() => setTab(1)}
-                                variant={tab === 1 ? "iconHover" : "icon"}
+                                variant={tab === 1 ? "iconActive" : "icon"}
                             >
-                                <History className="text-primary-300" size={16} />
+                                <History size={16} />
                                 <span> Closed Orders</span>
                             </Button>
                         </div>

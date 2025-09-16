@@ -51,7 +51,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
     }, [currencyA, currencyB, singleToken0, singleToken1]);
 
     return (
-        <div className="flex flex-col gap-2 bg-card-dark py-2 px-3 rounded-lg">
+        <div className="flex flex-col gap-2 bg-card-dark border border-card-border p-4 rounded-lg">
             <div className="flex items-center gap-2 justify-between">
                 <div className="flex">
                     <CurrencyLogo currency={currencyA} size={24} />
@@ -67,7 +67,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
                 <div>{`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${currencyB?.symbol}`}</div>
             </div>
             {suggestedPrice > 0 && (
-                <div className="text-left flex justify-between">
+                <div className="text-left text-sm flex justify-between">
                     <p className="opacity-50">Suggested price:</p>
                     <p className="opacity-50">{` 1 ${currencyA?.symbol} = ${suggestedPrice} ${currencyB?.symbol}`}</p>
                 </div>

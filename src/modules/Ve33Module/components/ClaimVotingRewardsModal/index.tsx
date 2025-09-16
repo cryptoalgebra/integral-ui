@@ -121,7 +121,7 @@ const RewardsList = ({
                 />
             ))}
             {rewards.length > 1 && (
-                <Button variant="action" size="sm" className="w-full" onClick={onClaimAll} disabled={isBatchClaimLoading}>
+                <Button variant="primary" size="sm" className="w-full" onClick={onClaimAll} disabled={isBatchClaimLoading}>
                     {isBatchClaimLoading ? <Loader /> : "Claim All"}
                 </Button>
             )}
@@ -152,7 +152,13 @@ const VotingRewardRow = ({
                 <TokenRewardRow key={reward.address} reward={reward} />
             ))}
 
-            <Button onClick={() => onClaim(rewardContract.votingReward)} variant="action" size="sm" className="w-full" disabled={isLoading}>
+            <Button
+                onClick={() => onClaim(rewardContract.votingReward)}
+                variant="primary"
+                size="sm"
+                className="w-full"
+                disabled={isLoading}
+            >
                 {isLoading ? <Loader /> : `Claim $${formatAmount(totalUSDValue, 2)}`}
             </Button>
         </div>

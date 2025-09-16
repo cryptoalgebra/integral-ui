@@ -86,7 +86,7 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
                 <EnterAmountCard currency={algbToken} value={amount} valueUsd={amountUSD} handleChange={setAmount} />
 
                 <div className="">
-                    <div className="bg-secondary rounded-lg p-3 space-y-2">
+                    <div className="bg-card-dark rounded-lg p-3 space-y-2">
                         <div className="text-center">
                             Locking {amount || 0} ALGB for {weeks} week
                             {weeks > 1 ? "s" : ""}
@@ -108,7 +108,7 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
 
                 {needsApproval ? (
                     <Button
-                        variant="action"
+                        variant="primary"
                         className="w-full flex items-center justify-center gap-2 text-lg font-semibold"
                         onClick={approvalCallback}
                         disabled={approvalState === ApprovalState.PENDING || txLoading || txPending}
@@ -117,7 +117,7 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
                     </Button>
                 ) : (
                     <Button
-                        variant="action"
+                        variant="primary"
                         className="w-full flex items-center justify-center gap-2 text-lg font-semibold"
                         onClick={handleCreateLock}
                         disabled={txLoading || !amount || Number(amount) === 0 || txPending || !isConnected}

@@ -60,7 +60,7 @@ export const LimitPriceCard = ({
     }, [currency, otherCurrency]);
 
     return (
-        <div className={`flex flex-col gap-4 bg-card-dark p-3 rounded-lg ${disabled ? "disabled" : ""} `}>
+        <div className={`flex flex-col gap-4 bg-card-dark p-3 border boder-card-border rounded-lg ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
                 <div className="text-sm font-semibold">
                     {currency
@@ -71,7 +71,7 @@ export const LimitPriceCard = ({
                 </div>
                 <div className="flex gap-4">
                     <button
-                        className="text-sm font-semibold text-[#63b4ff]"
+                        className="text-sm text-primary-50 underline underline-offset-4 hover:text-primary-50/70"
                         disabled={disabled}
                         onClick={() => setToMarketPrice(Boolean(limitOrderType))}
                     >
@@ -80,7 +80,7 @@ export const LimitPriceCard = ({
                     {otherCurrency ? (
                         <button
                             disabled={disabled}
-                            className="flex items-center text-sm font-semibold text-[#63b4ff]"
+                            className="flex items-center text-sm text-primary-50 underline underline-offset-4 hover:text-primary-50/70"
                             onClick={() => {
                                 setLimitOrderType(Number(!limitOrderType));
                                 invertTick(localPrice);
@@ -109,16 +109,18 @@ export const LimitPriceCard = ({
                 />
                 <div className="flex gap-2">
                     <Button
+                        variant={'outline'}
                         size={"icon"}
-                        className="w-[25px] h-[25px] bg-card rounded-full"
+                        className="w-6 h-6 bg-card-dark rounded-full border border-card-border"
                         disabled={plusDisabled || disabled}
                         onClick={() => tickStep(1)}
                     >
                         +
                     </Button>
                     <Button
+                        variant={'outline'}
                         size={"icon"}
-                        className="w-[25px] h-[25px] bg-card rounded-full"
+                        className="w-6 h-6 bg-card-dark rounded-full border border-card-border"
                         disabled={minusDisabled || disabled}
                         onClick={() => tickStep(-1)}
                     >

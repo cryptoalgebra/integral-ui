@@ -19,7 +19,7 @@ const FilterPopover = ({ children }: { children: React.ReactNode }) => {
                 <Button
                     variant={"ghost"}
                     size={"icon"}
-                    className={cn("bg-transparent border border-card-border/60", isOpen && "bg-card")}
+                    className={cn("bg-transparent border border-card-border/60", isOpen && "bg-card-hover hover:bg-card-hover")}
                     aria-label="Update dimensions"
                 >
                     {children}

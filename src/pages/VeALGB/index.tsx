@@ -14,14 +14,9 @@ const VeALGBPage = () => {
                     <PageTitle title="veALGB" showSettings={false} />
                 </div>
                 <CreateLockModal>
-                    <Button
-                        className="whitespace-nowrap h-16 w-full gap-3 rounded-xl sm:text-lg! hover:bg-primary-300 bg-primary-300 text-black"
-                        size={"md"}
-                    >
+                    <Button variant={"primaryLink"} size={"md"} className="whitespace-nowrap rounded-full gap-2 ml-auto">
+                        <Plus size={20} className="text-text-100" />
                         Create New Lock
-                        <div className="rounded-full p-1 bg-black">
-                            <Plus size={20} className="text-text-100" />
-                        </div>
                     </Button>
                 </CreateLockModal>
             </div>

@@ -114,7 +114,7 @@ export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch
                 <p className="text-xs text-destructive text-center">Cannot split: This veALGB has voted in this epoch</p>
             )}
             <Button
-                variant="action"
+                variant="primary"
                 disabled={!canSplit || isLoading}
                 onClick={handleSplit}
                 className={cn("px-6 py-2 rounded-lg font-semibold transition-colors", canSplit ? "" : "bg-muted cursor-not-allowed")}

@@ -18,8 +18,8 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
         : [];
 
     return (
-        <div className="flex gap-3 md:flex-row bg-card rounded-xl p-3 items-center min-h-16 justify-between mb-3 w-full">
-            <div className="flex w-full col-span-3 items-start gap-3 flex-col">
+        <div className="flex gap-3 md:flex-row pb-3 items-center min-h-16 justify-between mb-3 w-full">
+            <div className="flex w-full col-span-3 items-start gap-4 flex-col">
                 <div className="flex items-center gap-4 justify-between w-full">
                     <CurrencyLogo currency={currencyA} size={40} />
                     <CurrencyLogo currency={currencyB} size={40} className="-ml-6" />
@@ -35,15 +35,14 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
                 </div>
                 {myLiquidityUSD ? (
                     <div className="flex items-center gap-4">
-                        {/* <div className="self-center w-[1px] h-[20px] border border-text-100"></div> */}
                         <div className="font-semibold">{`${positionsData?.length} ${formatPlural(
                             positionsData.length,
                             "position",
                             "positions"
                         )}`}</div>
-                        <div className="self-center w-[1px] h-[20px] border border-text-100"></div>
-                        <div className="text-cyan-300 font-semibold">{`$${formatAmount(myLiquidityUSD || 0, 2)} TVL`}</div>
-                        <div className="self-center w-[1px] h-[20px] border border-text-100"></div>
+                        <div className="w-1.5 h-1.5 bg-white/5 border border-white/25 rotate-45" />
+                        <div className="text-cyan-200 font-semibold">{`$${formatAmount(myLiquidityUSD || 0, 2)} TVL`}</div>
+                        <div className="w-1.5 h-1.5 bg-white/5 border border-white/25 rotate-45" />
                         <div className="text-green-300 font-semibold">{`$${formatAmount(myFeesUSD || 0, 2)} Fees`}</div>
                     </div>
                 ) : null}

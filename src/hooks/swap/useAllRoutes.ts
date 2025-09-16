@@ -73,7 +73,7 @@ function computeAllRoutes(
 export function useAllRoutes(
     currencyIn?: Currency,
     currencyOut?: Currency,
-    deployer?: Address
+    deployer?: Address | null
 ): { loading: boolean; routes: Route<Currency, Currency>[] } {
     const chainId = useChainId();
 

@@ -168,11 +168,11 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                     />
 
                     {showApproveA ? (
-                        <Button disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
+                        <Button variant={'primary'} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
                             {isApprovePending ? <Loader /> : `Approve ALM LP Token`}
                         </Button>
                     ) : (
-                        <Button disabled={isDisabled} onClick={callback}>
+                        <Button variant={'primary'} disabled={isDisabled} onClick={callback}>
                             {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
                         </Button>
                     )}

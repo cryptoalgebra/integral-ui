@@ -138,7 +138,7 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
 
                     {needsApproval ? (
                         <Button
-                            variant="action"
+                            variant="primary"
                             className="w-full flex items-center justify-center gap-2 h-12"
                             onClick={approvalCallback}
                             disabled={approvalState === ApprovalState.PENDING || isIncreaseAmountPending}
@@ -148,7 +148,7 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
                         </Button>
                     ) : (
                         <Button
-                            variant="action"
+                            variant="primary"
                             className="w-full flex items-center justify-center gap-2 h-12"
                             onClick={handleIncreaseAmount}
                             disabled={isIncreaseAmountLoading || isIncreaseAmountPending || !amount || Number(amount) === 0}
@@ -176,7 +176,7 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
                         </div>
 
                         <Button
-                            variant="action"
+                            variant="primary"
                             className="w-full flex items-center justify-center gap-2 h-12"
                             onClick={handleExtendTime}
                             disabled={isExtendPending || isExtendLoading || weeks === 0}

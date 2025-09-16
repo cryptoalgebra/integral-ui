@@ -38,14 +38,13 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-y-3 md:gap-3 text-left">
             <div className="col-span-2">
-                <div className="flex flex-col w-full p-3 gap-3 bg-card border border-card-border rounded-xl">
-                    <p className="p-2 ">
-                        <span className="font-semibold">Simplify liquidity provisioning with ALM strategies.</span>
-                        <br />
-                        <span>
-                            Deposit a single token, and automated settings will optimize your position to maximize profits without manual
-                            adjustments. Perfect for those seeking simplicity and consistent returns.
-                        </span>
+                <div className="flex flex-col w-full p-4 gap-3 bg-card border border-card-border rounded-xl">
+                    <p className="font-semibold">
+                        Simplify liquidity provisioning with ALM strategies.
+                    </p>
+                    <p className="text-white/75">
+                        Deposit a single token, and automated settings will optimize your position to maximize profits without manual
+                        adjustments. Perfect for those seeking simplicity and consistent returns.
                     </p>
                     <form>
                         <fieldset className="flex flex-col gap-2 bg-card">
@@ -53,7 +52,7 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
                                 <label
                                     key={vault.id}
                                     htmlFor={vault.id}
-                                    className="grid grid-cols-3 cursor-pointer gap-4 rounded-lg bg-card-dark p-4"
+                                    className="grid grid-cols-3 cursor-pointer gap-4 rounded-lg bg-card-hover p-4"
                                 >
                                     <div className="flex items-center gap-2">
                                         <input

@@ -33,14 +33,14 @@ export const VotingTotalStats = () => {
             display += `${minutes}m ${seconds}s`;
 
             if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-                clearInterval(interval);
                 refetch();
+                clearInterval(interval);
             }
 
             setTime(display.trim());
         }, 1000);
         return () => clearInterval(interval);
-    }, [votingData?.currentPeriodEnd]);
+    }, [votingData?.currentPeriodEnd, refetch]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-white">

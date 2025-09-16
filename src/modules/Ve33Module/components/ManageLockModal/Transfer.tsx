@@ -60,7 +60,7 @@ export const Transfer = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refe
 
                 <Button
                     disabled={!canSend || isTransferLoading || isTransferPending}
-                    variant="action"
+                    variant="primary"
                     className="w-full flex items-center justify-center gap-2"
                     onClick={handleSend}
                 >

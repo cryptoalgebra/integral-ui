@@ -15,7 +15,7 @@ const PATHS = {
 
 const menuItems = [
     {
-        title: "Swap",
+        title: "Trade",
         link: "/swap",
         active: [PATHS.SWAP, PATHS.LIMIT_ORDERS],
         icon: <ArrowUpDown size={20} />,
@@ -55,8 +55,8 @@ export function NavButtons() {
 
     const setNavlinkClasses = (paths: string[]) =>
         paths.some((path) => matchPath(path, pathname))
-            ? "bg-primary-100/20 text-primary-200 font-bold shadow-md"
-            : "text-muted-foreground hover:bg-white/10";
+            ? "font-bold border-b border-primary"
+            : "text-muted-foreground/70 hover:text-white/50";
 
     return (
         <>
@@ -65,11 +65,11 @@ export function NavButtons() {
                     key={`nav-item-${item.link}`}
                     to={{ pathname: item.link }}
                     className={cn(
-                        "flex items-center justify-center gap-1 w-fit min-w-10 h-full px-4 rounded-lg transition-all duration-200",
+                        "flex items-center justify-center gap-1 w-fit min-w-10 h-full px-4 transition-all duration-200",
                         setNavlinkClasses(item.active)
                     )}
                 >
-                    <div className="text-lg">{item.icon}</div>
+                    <div className="text-lg md:hidden">{item.icon}</div>
                     <span className="font-medium max-md:text-sm">{item.title}</span>
                 </NavLink>
             ))}

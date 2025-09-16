@@ -57,9 +57,9 @@ export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, is
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">
+            <div className="flex w-full items-center justify-between rounded-xl">
                 <div className="text-left">
-                    <div className="font-bold text-xs">EARNED REWARDS</div>
+                    <div className="font-bold text-xs text-white/75 mb-2">EARNED REWARDS</div>
                     <HoverCard closeDelay={0} openDelay={0}>
                         <HoverCardTrigger>
                             <span className="text-cyan-300  font-semibold text-2xl drop-shadow-cyan border-b border-dotted border-cyan-300 cursor-pointer">
@@ -111,11 +111,11 @@ export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, is
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                <Button size={"md"} disabled={isHarvesting || isUnstaking} onClick={handleHarvest}>
-                    {isHarvesting ? <Loader /> : "Collect"}
+                <Button variant={'primary'} size={"md"} className="rounded-xl" disabled={isHarvesting || isUnstaking} onClick={handleHarvest}>
+                    {isHarvesting ? <Loader /> : "Collect Rewards"}
                 </Button>
             </div>
-            <Button onClick={handleUnstake} disabled={isUnstaking || isHarvesting}>
+            <Button variant={'destructive'} onClick={handleUnstake} disabled={isUnstaking || isHarvesting}>
                 {isUnstaking ? <Loader /> : `Exit from ${isEnded ? "ended" : ""} farming`}
             </Button>
         </div>

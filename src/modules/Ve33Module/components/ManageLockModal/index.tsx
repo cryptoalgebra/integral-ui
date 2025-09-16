@@ -46,7 +46,7 @@ export const ManageLockModal = ({ veALGB, children, refetch }: ManageLockModalPr
                             onClick={() => setView(v)}
                             disabled={isVeALGBsLoading}
                             className="rounded-md"
-                            variant={view === v ? "ghostActive" : "ghost"}
+                            variant={view === v ? "primaryLink" : "ghost"}
                             size={"sm"}
                         >
                             {v}

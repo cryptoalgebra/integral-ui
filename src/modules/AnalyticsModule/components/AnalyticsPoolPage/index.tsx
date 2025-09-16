@@ -16,6 +16,7 @@ import { TransactionsList } from "../TransactionsList";
 import { getPercentChange } from "@/utils/common/getPercentChange";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { usePoolChartData } from "@/hooks/analytics";
+import PageContainer from "@/components/common/PageContainer";
 
 const LiquidityStats = ({
     token0,
@@ -51,7 +52,7 @@ const LiquidityStats = ({
 
     return (
         <div className="flex flex-col gap-3 h-fit">
-            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-6 h-fit">
+            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-4 h-fit">
                 <h2 className="font-semibold mb-2">Pool Liquidity</h2>
                 <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.tvlUSD || 0, 4)}</p>
                 <div className="flex flex-col gap-3 items-start w-full">
@@ -63,7 +64,7 @@ const LiquidityStats = ({
                         </div>
                         <span className="font-semibold">
                             {formatAmount(statistics?.tvlToken0 || 0, 4)}{" "}
-                            <span className="text-text-100/50 text-sm">${formatAmount(tvlToken0USD || 0, 2)}</span>
+                            <span className="text-text-100/50 font-medium text-xs">${formatAmount(tvlToken0USD || 0, 2)}</span>
                         </span>
                     </div>
                     <div className="flex items-center w-full justify-between">
@@ -73,20 +74,20 @@ const LiquidityStats = ({
                         </div>
                         <span className="font-semibold">
                             {formatAmount(statistics?.tvlToken1 || 0, 4)}{" "}
-                            <span className="text-text-100/50 text-sm">${formatAmount(tvlToken1USD || 0, 2)}</span>
+                            <span className="text-text-100/50 font-medium text-xs">${formatAmount(tvlToken1USD || 0, 2)}</span>
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-6 h-fit">
+            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-4 h-fit">
                 <h2 className="font-semibold mb-4">Statistics</h2>
                 <div className="flex flex-col gap-3 w-full">
                     <div className="flex justify-between">
                         <span className="text-text-100/50">Liquidity</span>
                         <span className="font-semibold">
                             ${formatAmount(statistics?.tvlUSD || 0, 2)}{" "}
-                            <span className={`text-sm ${(statistics?.tvlPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
+                            <span className={`text-xs ${(statistics?.tvlPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
                                 <span>{(statistics?.tvlPercentChange || 0) > 0 ? "+" : ""}</span>
                                 <span>{formatPercent.format((statistics?.tvlPercentChange || 0) / 100)}</span>
                             </span>
@@ -96,7 +97,7 @@ const LiquidityStats = ({
                         <span className="text-text-100/50">Volume (24h)</span>
                         <span className="font-semibold">
                             ${formatAmount(statistics?.volume24H || 0, 2)}{" "}
-                            <span className={`text-sm ${(statistics?.volumePercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
+                            <span className={`text-xs ${(statistics?.volumePercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
                                 <span>{(statistics?.volumePercentChange || 0) > 0 ? "+" : ""}</span>
                                 <span>{formatPercent.format((statistics?.volumePercentChange || 0) / 100)}</span>
                             </span>
@@ -106,7 +107,7 @@ const LiquidityStats = ({
                         <span className="text-text-100/50">Fees (24h)</span>
                         <span className="font-semibold">
                             ${formatAmount(statistics?.fees24H || 0, 2)}{" "}
-                            <span className={`text-sm ${(statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
+                            <span className={`text-xs font-medium ${(statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
                                 <span>{(statistics?.feesPercentChange || 0) > 0 ? "+" : ""}</span>
                                 <span>{formatPercent.format((statistics?.feesPercentChange || 0) / 100)}</span>
                             </span>
@@ -181,13 +182,14 @@ export function AnalyticsPoolPage() {
     }, [pathname]);
 
     return (
-        <div className="flex w-full animate-fade-in flex-col gap-3 py-4 max-md:pb-24">
-            <PageTitle title="Explore pool" showSettings={false} />
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <PageContainer>
+            <div className="mb-8">
+                <PageTitle title="Explore pool" showSettings={false} />
+            </div>
+            <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-3">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
-                    <div className="flex flex-col p-3 gap-6">
+                    <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={token0} tokenB={token1} />
-                        <hr className="border" />
                     </div>
 
                     <Chart
@@ -208,21 +210,24 @@ export function AnalyticsPoolPage() {
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full " to={"/swap"}>
-                            <Button className="gap-2 rounded-xl w-full h-full max-md:text-sm" variant={"default"} size={"lg"}>
-                                <ArrowDownUp size={20} className="text-text-100" />
+                            <Button 
+                                variant={'primary'} 
+                                size={"lg"}
+                                className="gap-2 rounded-xl w-full h-full max-md:text-sm"
+                            >
+                                <ArrowDownUp size={20} />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
                             <Button
-                                className="bg-primary-300 text-bg-100 w-full gap-2 rounded-xl hover:bg-primary-300 max-md:text-sm"
-                                variant={"default"}
+                                variant={"primaryLink"}
                                 size={"lg"}
+                                className="gap-2 rounded-xl"
                             >
-                                Create position
-                                <div className="rounded-full p-1 bg-bg-100">
-                                    <Plus size={18} className="text-text-100" />
-                                </div>
+                                         <Plus size={20} />
+                                Create Position
+                           
                             </Button>
                         </Link>
                     </div>
@@ -230,12 +235,9 @@ export function AnalyticsPoolPage() {
                 </div>
             </div>
 
-            {/* <nav className="w-full border-b border-y-border-light pb-4 text-xl">
-                <div className="select-none text-left font-semibold duration-200">Transactions</div>
-            </nav> */}
-            <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full">
+            <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full mt-4">
                 <TransactionsList poolId={poolId} />
             </div>
-        </div>
+        </PageContainer>
     );
 }

@@ -28,14 +28,14 @@ export interface BestTradeExactOut {
  * @param amountIn the amount to swap in
  * @param currencyOut the desired output currency
  */
-export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency, deployer?: Address): BestTradeExactIn {
+export function useBestTradeExactIn(
+    amountIn?: CurrencyAmount<Currency>,
+    currencyOut?: Currency,
+    deployer?: Address | null
+): BestTradeExactIn {
     const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, deployer);
 
-    const {
-        data: quotesResults,
-        isLoading: isQuotesLoading,
-        refetch,
-    } = useQuotesResults({
+    const { data: quotesResults, isLoading: isQuotesLoading, refetch } = useQuotesResults({
         exactInput: true,
         amountIn,
         currencyOut,
@@ -130,11 +130,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
 export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
     const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
-    const {
-        data: quotesResults,
-        isLoading: isQuotesLoading,
-        refetch,
-    } = useQuotesResults({
+    const { data: quotesResults, isLoading: isQuotesLoading, refetch } = useQuotesResults({
         exactInput: false,
         currencyIn,
         amountOut,

@@ -2,11 +2,16 @@ import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 import CreatePoolForm from "@/components/create-pool/CreatePoolForm";
+import { ChevronLeft } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const CreatePoolPage = () => {
     return (
         <PageContainer>
-            <div className="w-full flex justify-between">
+            <div className="w-full flex items-center justify-between gap-4 mb-8">
+                <NavLink to={"/pools"}>
+                    <ChevronLeft size={28} />
+                </NavLink>
                 <PageTitle title={"Create Pool"} showSettings={false} />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3 w-full lg:gap-8">
