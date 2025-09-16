@@ -1,6 +1,6 @@
 import { cn } from "@/utils";
 import { enabledModules } from "config/app-modules";
-import { ArrowUpDown, Droplets, LucideLineChart } from "lucide-react";
+import { ArrowUpDown, ContrastIcon, Droplets, LucideLineChart, Vote } from "lucide-react";
 import { matchPath, NavLink, useLocation } from "react-router-dom";
 
 const PATHS = {
@@ -9,6 +9,8 @@ const PATHS = {
     POOLS: "/pools",
     POOL: "/pool/*",
     ANALYTICS: "/analytics/*",
+    VE_ALGB: "/vealgb/*",
+    VOTE: "/vote/*",
 };
 
 const menuItems = [
@@ -24,6 +26,22 @@ const menuItems = [
         active: [PATHS.POOLS, PATHS.POOL],
         icon: <Droplets size={20} />,
     },
+    ...(enabledModules.ve33
+        ? [
+              {
+                  title: "veALGB",
+                  link: "/vealgb",
+                  active: [PATHS.VE_ALGB],
+                  icon: <ContrastIcon size={20} />,
+              },
+              {
+                  title: "Vote",
+                  link: "/vote",
+                  active: [PATHS.VOTE],
+                  icon: <Vote size={20} />,
+              },
+          ]
+        : []),
     enabledModules.analytics && {
         title: "Analytics",
         link: "/analytics",

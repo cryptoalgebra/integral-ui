@@ -122,7 +122,7 @@ const PoolsTable = <TData, TValue>({
                                         </radialGradient>
 
                                         <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3" />
+                                            <feDropShadow dx="2" dy="4" stdDeviation="4" floodColor="#000" floodOpacity="0.3" />
                                         </filter>
                                     </defs>
 
@@ -146,7 +146,7 @@ const PoolsTable = <TData, TValue>({
                                         </radialGradient>
 
                                         <filter id="shadow-74f7df" x="-20%" y="-20%" width="140%" height="140%">
-                                            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3" />
+                                            <feDropShadow dx="2" dy="4" stdDeviation="4" floodColor="#000" floodOpacity="0.3" />
                                         </filter>
                                     </defs>
 

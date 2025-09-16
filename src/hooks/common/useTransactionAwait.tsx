@@ -71,6 +71,9 @@ export function useTransactionAwait(hash: Address | undefined, transactionInfo: 
                 description: transactionInfo.description || "Transaction confirmed",
                 action: <ViewTxOnExplorer hash={hash} />,
             });
+            if (transactionInfo.callback) {
+                transactionInfo.callback();
+            }
             if (redirectPath) {
                 navigate(redirectPath);
             }

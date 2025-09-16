@@ -2,7 +2,7 @@ import { cn } from "@/utils/common/cn";
 import { ChevronDownIcon } from "lucide-react";
 
 interface HeaderItemProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     className?: string;
     sort?: () => void;
     isAsc?: boolean;

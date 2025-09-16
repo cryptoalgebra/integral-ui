@@ -3,6 +3,7 @@ import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
+import ALGBLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -26,6 +27,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
         symbol: "BTC",
         logo: BTCLogo,
+    },
+    ["0xba59071d5804e1edd1e871b895ddc1dc3692da22"]: {
+        symbol: "ALGB",
+        logo: ALGBLogo,
     },
 };
 

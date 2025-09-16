@@ -184,19 +184,13 @@ const PoolPage = () => {
                         position: null,
                         almShares: vault.shares,
                         almVaultAddress: vault.vault.id,
-                    }) as FormattedPosition
+                    } as FormattedPosition)
             ) || [];
 
         return [...almPositionsData, ...positionsData];
     }, [filteredPositions, poolEntity, positionsFees, positionsAPRs, userVaults, deposits?.deposits, token0PriceUSD, token1PriceUSD]);
 
     const [selectedPosition, setSelectedPosition] = useState<FormattedPosition | null>(null);
-
-    // useEffect(() => {
-    //     if (!selectedPositionId || !positionsData) return;
-    //     const found = positionsData.find(({ id, isALM, almShares }) => selectedPositionId);
-    //     if (found) setSelectedPosition(found);
-    // }, [selectedPositionId, positionsData]);
 
     const isLoading =
         positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading || positionsFeesLoading || positionsAPRsLoading;

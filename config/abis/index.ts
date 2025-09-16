@@ -8,3 +8,4 @@ export * from "./plugins";
 export * from "./farming";
 export * from "./tokens";
 export * from "./custom-pools";
+export * from "./ve33";

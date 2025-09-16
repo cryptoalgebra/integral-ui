@@ -1,8 +1,9 @@
-import { EternalFarming, SinglePoolQuery, TokenFieldsFragment } from "@/graphql/generated/graphql";
+import { EternalFarming, SinglePoolQuery } from "@/graphql/generated/graphql";
+import { Token } from "@cryptoalgebra/custom-pools-sdk";
 
 export interface Farming {
     farming: EternalFarming;
-    rewardToken: TokenFieldsFragment;
-    bonusRewardToken: TokenFieldsFragment | null;
+    rewardToken: Token;
+    bonusRewardToken: Token | null;
     pool: SinglePoolQuery["pool"];
 }

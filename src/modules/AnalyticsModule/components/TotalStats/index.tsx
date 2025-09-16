@@ -45,7 +45,7 @@ export default function TotalStats({ currentTVL, currentVolume, currentFees, isL
                     <div className="text-title whitespace-nowrap text-[16px] md:text-[14px]">{card.title}</div>
                     {!isLoading ? (
                         <div className="flex w-full flex-col items-center md:flex-row">
-                            <div className="text-title ml-auto text-[24px] font-semibold md:ml-0 md:text-[36px]">
+                            <div className="text-title ml-auto text-[24px] font-semibold md:ml-0 md:text-[32px]">
                                 ${formatAmount(card.value)}
                             </div>
                             {card.change !== undefined && (
