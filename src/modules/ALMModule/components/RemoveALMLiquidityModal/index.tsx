@@ -99,18 +99,13 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
         slippage.quotient.toString(),
     ]);
 
-    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(txHash, {
+    const { isLoading: isRemoveLoading } = useTransactionAwait(txHash, {
         title: "Remove ALM liquidity",
         tokenA: vault?.token0.wrapped.address as Address,
         tokenB: vault?.token1.wrapped.address as Address,
         type: TransactionType.POOL,
+        callback: refetchUserVaults,
     });
-
-    useEffect(() => {
-        if (!isSuccess) return;
-
-        refetchUserVaults();
-    }, [isSuccess]);
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || isPending;
 
@@ -168,11 +163,11 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                     />
 
                     {showApproveA ? (
-                        <Button variant={'primary'} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
+                        <Button variant={"primary"} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
                             {isApprovePending ? <Loader /> : `Approve ALM LP Token`}
                         </Button>
                     ) : (
-                        <Button variant={'primary'} disabled={isDisabled} onClick={callback}>
+                        <Button variant={"primary"} disabled={isDisabled} onClick={callback}>
                             {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
                         </Button>
                     )}

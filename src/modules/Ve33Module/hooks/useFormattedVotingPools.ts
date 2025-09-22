@@ -27,55 +27,57 @@ export function useFormattedVotingPools() {
             return [];
         }
 
-        return votingPools.map((votingPool, index) => {
-            const { totalValueLockedUSD, poolDayData } =
-                commonPools.find((commonPool) => commonPool.id.toLowerCase() === votingPool.pool.toLowerCase()) || {};
+        return votingPools
+            .filter((v) => v.isAlive) // filter out inactive gauges
+            .map((votingPool, index) => {
+                const { totalValueLockedUSD, poolDayData } =
+                    commonPools.find((commonPool) => commonPool.id.toLowerCase() === votingPool.pool.toLowerCase()) || {};
 
-            const feesForCurrentEpoch = Number(poolDayData?.[0].feesUSD || 0);
+                const feesForCurrentEpoch = Number(poolDayData?.[0].feesUSD || 0);
 
-            // const feesForCurrentEpoch =
-            //     poolDayData
-            //         ?.filter((dayData) => dayData.date >= Number(votingData?.currentPeriodStart))
-            //         ?.reduce((total: number, dayData) => {
-            //             return total + Number(dayData.feesUSD);
-            //         }, 0) || 0;
+                // const feesForCurrentEpoch =
+                //     poolDayData
+                //         ?.filter((dayData) => dayData.date >= Number(votingData?.currentPeriodStart))
+                //         ?.reduce((total: number, dayData) => {
+                //             return total + Number(dayData.feesUSD);
+                //         }, 0) || 0;
 
-            // TODO: Calculate incetives correctly, this solution ignores incentives in token0 and token1
-            const incentivesUSD = votingPool.rewardTokenList
-                .filter(
-                    (reward) =>
-                        reward.address.toLowerCase() !== votingPool.token0.address.toLowerCase() &&
-                        reward.address.toLowerCase() !== votingPool.token1.address.toLowerCase()
-                )
-                .reduce((total: number, reward: RewardToken) => total + reward.amountUsd, 0);
+                // TODO: Calculate incetives correctly, this solution ignores incentives in token0 and token1
+                const incentivesUSD = votingPool.rewardTokenList
+                    .filter(
+                        (reward) =>
+                            reward.address.toLowerCase() !== votingPool.token0.address.toLowerCase() &&
+                            reward.address.toLowerCase() !== votingPool.token1.address.toLowerCase()
+                    )
+                    .reduce((total: number, reward: RewardToken) => total + reward.amountUsd, 0);
 
-            const totalRewardsUSD = incentivesUSD + feesForCurrentEpoch;
+                const totalRewardsUSD = incentivesUSD + feesForCurrentEpoch;
 
-            let vApr = 0;
-            if (algbPrice && votingPool.poolVotesDeposited) {
-                const votingPowerALGB = Number(formatUnits(votingPool.poolVotesDeposited, 18));
-                const votingPowerUSD = votingPowerALGB * algbPrice;
+                let vApr = 0;
+                if (algbPrice && votingPool.poolVotesDeposited) {
+                    const votingPowerALGB = Number(formatUnits(votingPool.poolVotesDeposited, 18));
+                    const votingPowerUSD = votingPowerALGB * algbPrice;
 
-                if (votingPowerUSD > 0) {
-                    vApr = (totalRewardsUSD / votingPowerUSD) * 52 * 100;
+                    if (votingPowerUSD > 0) {
+                        vApr = (totalRewardsUSD / votingPowerUSD) * 52 * 100;
+                    }
                 }
-            }
 
-            return {
-                id: index.toString(),
-                address: votingPool.pool,
-                gauge: votingPool.gauge,
-                token0: votingPool.token0,
-                token1: votingPool.token1,
-                vApr,
-                incentivesUSD: votingPool.isAlive ? incentivesUSD : 0,
-                totalRewardsUSD: votingPool.isAlive ? totalRewardsUSD : 0,
-                isAlive: votingPool.isAlive,
-                tvlUSD: Number(totalValueLockedUSD || 0),
-                feesUSD: feesForCurrentEpoch,
-                poolVotesDeposited: votingPool.poolVotesDeposited,
-            };
-        });
+                return {
+                    id: index.toString(),
+                    address: votingPool.pool,
+                    gauge: votingPool.gauge,
+                    token0: votingPool.token0,
+                    token1: votingPool.token1,
+                    vApr,
+                    incentivesUSD: votingPool.isAlive ? incentivesUSD : 0,
+                    totalRewardsUSD: votingPool.isAlive ? totalRewardsUSD : 0,
+                    isAlive: votingPool.isAlive,
+                    tvlUSD: Number(totalValueLockedUSD || 0),
+                    feesUSD: feesForCurrentEpoch,
+                    poolVotesDeposited: votingPool.poolVotesDeposited,
+                };
+            });
     }, [algbPrice, commonPools, votingPools, votingPoolsLoading]);
 
     return {

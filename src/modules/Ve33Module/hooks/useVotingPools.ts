@@ -26,7 +26,11 @@ export function useVotingPools() {
 
     const nextPeriod = currentPeriod ? currentPeriod + 1n : 0n;
 
-    const { data: poolVotesResults, isLoading: poolVotesLoading, refetch: refetchPoolVotes } = useReadContracts({
+    const {
+        data: poolVotesResults,
+        isLoading: poolVotesLoading,
+        refetch: refetchPoolVotes,
+    } = useReadContracts({
         contracts: gaugeList.map((g) => ({
             address: g.votingReward,
             abi: votingRewardABI,

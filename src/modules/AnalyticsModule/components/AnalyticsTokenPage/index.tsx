@@ -23,18 +23,18 @@ const LiquidityStats = ({
 }: {
     token0: Currency | undefined;
     statistics:
-    | {
-        volume24H: string;
-        fees24H: string;
-        tvlUSD: string;
-        tvl: string;
-        tvlPercentChange: number;
-        volumePercentChange: number;
-        feesPercentChange: number;
-        txCount: string;
-        priceUSD: string;
-    }
-    | undefined;
+        | {
+              volume24H: string;
+              fees24H: string;
+              tvlUSD: string;
+              tvl: string;
+              tvlPercentChange: number;
+              volumePercentChange: number;
+              feesPercentChange: number;
+              txCount: string;
+              priceUSD: string;
+          }
+        | undefined;
 }) => {
     return (
         <div className="flex flex-col gap-3 h-fit">
@@ -160,9 +160,8 @@ export function AnalyticsTokenPage() {
             <div className="mb-8">
                 <PageTitle title="Explore token" showSettings={false} />
             </div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 w-full">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
-
                     <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={currency} tokenB={null} />
                     </div>
@@ -183,24 +182,15 @@ export function AnalyticsTokenPage() {
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full" to={"/swap"}>
-                            <Button
-                                variant={'primary'}
-                                size={"lg"}
-                                className="gap-2 rounded-xl w-full h-full max-md:text-sm"
-                            >
+                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
                                 <ArrowDownUp size={20} />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={"/pools"}>
-                            <Button
-                                variant={"primaryLink"}
-                                size={"lg"}
-                                className="gap-2 rounded-xl"
-                            >
+                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
                                 <Plus size={20} />
                                 Create Position
-
                             </Button>
                         </Link>
                     </div>
@@ -213,8 +203,9 @@ export function AnalyticsTokenPage() {
                     <button
                         type={"button"}
                         onClick={() => setTableView("pools")}
-                        className={`select-none font-semibold duration-200 ${tableView === "pools" ? "text-primary-200" : "hover:text-primary-200"
-                            }`}
+                        className={`select-none font-semibold duration-200 ${
+                            tableView === "pools" ? "text-primary-200" : "hover:text-primary-200"
+                        }`}
                     >
                         Pools
                     </button>
@@ -222,8 +213,9 @@ export function AnalyticsTokenPage() {
                     <button
                         type={"button"}
                         onClick={() => setTableView("transactions")}
-                        className={`select-none font-semibold duration-200 ${tableView === "transactions" ? "text-primary-200" : "hover:text-primary-200"
-                            }`}
+                        className={`select-none font-semibold duration-200 ${
+                            tableView === "transactions" ? "text-primary-200" : "hover:text-primary-200"
+                        }`}
                     >
                         Transactions
                     </button>

@@ -1,14 +1,10 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import { useParams } from "react-router-dom";
-import { useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CreateManualPosition } from "./CreateManualPosition";
-import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
-import { useClients } from "@/hooks/graphql/useClients";
 import { Address } from "viem";
-import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import { enabledModules } from "config/app-modules";
 import ALMModule from "@/modules/ALMModule";
 
@@ -18,23 +14,25 @@ const { CreateAutomatedPosition } = ALMModule.components;
 type NewPositionPageParams = Record<"pool", Address>;
 
 const NewPositionPage = () => {
-    const chainId = useChainId();
     const [isALM, setIsALM] = useState<boolean | null>(null);
 
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
-    const { infoClient } = useClients();
+    // const { infoClient } = useClients();
 
-    const { data, loading: isCustomPoolDeployerLoading } = useCustomPoolDeployerQuery({
-        variables: { poolId: poolAddress as string },
-        skip: !poolAddress,
-        client: infoClient,
-    });
+    // const { data, loading: isCustomPoolDeployerLoading } = useCustomPoolDeployerQuery({
+    //     variables: { poolId: poolAddress as string },
+    //     skip: !poolAddress,
+    //     client: infoClient,
+    // });
 
-    const isALMPool =
-        data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
-            ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId].toLowerCase()
-            : false;
+    // const isALMPool =
+    //     data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+    //         ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId].toLowerCase()
+    //         : false;
+
+    const isALMPool = true;
+    const isCustomPoolDeployerLoading = false;
 
     const { vaults } = useALMVaultsByPool(isALMPool ? poolAddress : undefined);
 

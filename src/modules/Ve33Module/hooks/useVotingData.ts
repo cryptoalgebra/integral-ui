@@ -18,7 +18,11 @@ export function useVotingData() {
 
     const currentPeriod = (baseData?.[0]?.result as bigint) || 0n;
 
-    const { data: periodData, isLoading: periodDataLoading, refetch } = useReadContracts({
+    const {
+        data: periodData,
+        isLoading: periodDataLoading,
+        refetch,
+    } = useReadContracts({
         contracts: [
             {
                 address: VOTER[chainId],
@@ -44,7 +48,7 @@ export function useVotingData() {
     const votingData: VotingData | undefined = useMemo(() => {
         if (!baseData || !periodData) return undefined;
 
-        const duration = baseData[1]?.result as bigint;
+        const duration = (baseData[1]?.result as bigint) || 0n;
 
         const [, totalEmissions] = (periodData[0]?.result as [bigint, bigint]) ?? [0n, [], []];
         const [totalVotes] = (periodData[1]?.result as [bigint, bigint]) ?? [0n, [], []];

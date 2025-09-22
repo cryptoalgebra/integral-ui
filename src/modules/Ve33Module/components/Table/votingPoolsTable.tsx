@@ -21,6 +21,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { FormattedVotingPool, VotingData } from "../../types/voting";
 import { VoteMap } from "../VotingPoolsList";
 import { LoadingState } from "@/components/common/Table/loadingState";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 const VoteInput = ({
     poolAddress,
@@ -151,13 +152,15 @@ export const VotingPoolsTable = ({ pools, votingData, votes, isReadOnly, selecte
                 header: () => <HeaderItem className="pl-2">Pool</HeaderItem>,
                 cell: ({ row }) => {
                     const p = row.original;
+                    const token0 = unwrappedToken(p.token0);
+                    const token1 = unwrappedToken(p.token1);
                     return (
                         <div className="flex items-center gap-4 min-w-[180px]">
-                            <CurrencyLogo currency={p.token0} size={32} />
-                            <CurrencyLogo className="-ml-6" currency={p.token1} size={32} />
+                            <CurrencyLogo currency={token0} size={32} />
+                            <CurrencyLogo className="-ml-6" currency={token1} size={32} />
 
                             <div className="flex flex-col">
-                                <span className="whitespace-nowrap">{`${p.token0.symbol} - ${p.token1.symbol}`}</span>
+                                <span className="whitespace-nowrap">{`${token0.symbol} - ${token1.symbol}`}</span>
                             </div>
                         </div>
                     );
@@ -281,7 +284,7 @@ export const VotingPoolsTable = ({ pools, votingData, votes, isReadOnly, selecte
                 },
             },
         ],
-        [votingData, handleVoteChange, handleMax, selectedTokenId, isReadOnly] // keep columns stable to avoid input remounts
+        [votingData, handleVoteChange, handleMax, selectedTokenId, isReadOnly]
     );
 
     // Table instance
@@ -309,7 +312,7 @@ export const VotingPoolsTable = ({ pools, votingData, votes, isReadOnly, selecte
     if (isLoading) return <LoadingState />;
 
     if (!pools || pools.length === 0) {
-        return <div className="text-center p-8 text-muted-foreground">No voting pools available</div>;
+        return <div className="flex gap-5 flex-col bg-card border border-card-border/60 rounded-xl p-24">No voting pools available</div>;
     }
 
     const isVoted: boolean | undefined = table.getState().globalFilter;

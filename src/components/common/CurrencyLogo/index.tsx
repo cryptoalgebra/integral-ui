@@ -20,7 +20,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xbfc131442fe1ea6c7912d40fb4df68b792128ae1"]: {
+    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
@@ -28,7 +28,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "BTC",
         logo: BTCLogo,
     },
-    ["0xba59071d5804e1edd1e871b895ddc1dc3692da22"]: {
+    ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
         symbol: "ALGB",
         logo: ALGBLogo,
     },

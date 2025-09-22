@@ -19,10 +19,10 @@ interface LockSelectorProps {
 export const LockSelector = ({ veALGBsList, isLoading, selectedTokenId, onSelect }: LockSelectorProps) => {
     const [open, setOpen] = useState(false);
 
-    const selectedVeALGB = useMemo(() => veALGBsList?.find((vk) => vk.tokenId.toString() === selectedTokenId?.toString()), [
-        veALGBsList,
-        selectedTokenId,
-    ]);
+    const selectedVeALGB = useMemo(
+        () => veALGBsList?.find((vk) => vk.tokenId.toString() === selectedTokenId?.toString()),
+        [veALGBsList, selectedTokenId]
+    );
 
     useEffect(() => {
         if (veALGBsList && veALGBsList.length > 0 && !selectedTokenId) {
@@ -37,7 +37,7 @@ export const LockSelector = ({ veALGBsList, isLoading, selectedTokenId, onSelect
     if (!veALGBsList || veALGBsList.length === 0) {
         return (
             <Link to="/vealgb" className="w-full sm:w-fit">
-                <Button variant="default" className="w-full min-w-50 h-10 whitespace-nowrap">
+                <Button variant="default" className="w-full rounded-lg min-w-50 h-10 whitespace-nowrap">
                     Lock ALGB to start voting
                 </Button>
             </Link>

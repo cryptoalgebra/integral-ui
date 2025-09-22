@@ -5,6 +5,7 @@ import { VOTER } from "config/contract-addresses";
 import { useMemo } from "react";
 import { useChainId, useReadContracts } from "wagmi";
 import { AlgebraGauge } from "../types/voting";
+import { isDefined } from "@/utils";
 
 export function useAllGauges() {
     const chainId = useChainId();
@@ -23,9 +24,12 @@ export function useAllGauges() {
         })),
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const gaugeList: AlgebraGauge[] = useMemo(() => gaugesResults?.map((d) => d?.result as AlgebraGauge) ?? [], [gaugesResults]);
+    const gaugeList: AlgebraGauge[] = useMemo(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        () => gaugesResults?.map((d) => d?.result as AlgebraGauge | undefined).filter(isDefined) ?? [],
+        [gaugesResults]
+    );
 
     return {
         data: gaugeList,

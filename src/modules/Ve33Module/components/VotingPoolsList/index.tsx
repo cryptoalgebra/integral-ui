@@ -89,17 +89,15 @@ export const VotingPoolsList = () => {
                 onSelectTokenId={setSelectedTokenId}
                 refetch={handleRefetch}
             />
-            <div className="flex flex-col min-h-[377px] w-full pb-8 bg-card border border-card-border/60 rounded-xl">
-                <VotingPoolsTable
-                    pools={pools}
-                    votes={displayVotes}
-                    setVotes={setVotes}
-                    votingData={votingData}
-                    isReadOnly={isReadOnly}
-                    selectedTokenId={selectedTokenId}
-                    isLoading={votingDataLoading || poolsLoading}
-                />
-            </div>
+            <VotingPoolsTable
+                pools={pools}
+                votes={displayVotes}
+                setVotes={setVotes}
+                votingData={votingData}
+                isReadOnly={isReadOnly}
+                selectedTokenId={selectedTokenId}
+                isLoading={votingDataLoading || poolsLoading}
+            />
         </>
     );
 };
