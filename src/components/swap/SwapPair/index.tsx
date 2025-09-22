@@ -118,7 +118,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                 isLoading={independentField === SwapField.OUTPUT && isTradeLoading}
             />
             <button
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card hover:bg-card-hover duration-200"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card-border hover:bg-card-hover duration-200"
                 onClick={onSwitchTokens}
             >
                 <ChevronsUpDownIcon size={16} />

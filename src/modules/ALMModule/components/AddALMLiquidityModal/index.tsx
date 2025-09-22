@@ -21,7 +21,7 @@ export const AddALMLiquidityModal = ({ vault }: AddALMLiquidityModalProps) => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button disabled={false} className="whitespace-nowrap w-full">
+                <Button variant={'primary'} disabled={false} className="whitespace-nowrap w-full">
                     Add liquidity
                 </Button>
             </DialogTrigger>

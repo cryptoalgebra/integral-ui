@@ -102,7 +102,7 @@ const PoolsTable = <TData, TValue>({
                             placeholder="Search pool"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
-                            className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-lg"
+                            className="border border-border border-opacity-60 pl-12 h-10 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 focus:bg-primary-800 rounded-lg"
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
@@ -110,75 +110,48 @@ const PoolsTable = <TData, TValue>({
                         {enabledModules.farming && (
                             <Button
                                 onClick={() => toggleFilter("hasActiveFarming")}
-                                variant={isFilterActive("hasActiveFarming") ? "iconHover" : "outline"}
+                                variant={isFilterActive("hasActiveFarming") ? "iconActive" : "outline"}
                                 size="md"
-                                className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                                className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg py-4"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 100 100">
-                                    <defs>
-                                        <radialGradient id="grad" cx="30%" cy="30%" r="70%">
-                                            <stop offset="0%" stop-color="#fff9b1" />
-                                            <stop offset="100%" stop-color="#f8d81c" />
-                                        </radialGradient>
-
-                                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3" />
-                                        </filter>
-                                    </defs>
-
-                                    <circle cx="50" cy="50" r="45" fill="url(#grad)" filter="url(#shadow)" />
-                                </svg>
+                                <span className="w-2 h-2 bg-yellow-950 border border-yellow-500 rotate-45" />
                                 <span>Farm Pools</span>
                             </Button>
                         )}
                         {enabledModules.alm && (
                             <Button
                                 onClick={() => toggleFilter("hasALM")}
-                                variant={isFilterActive("hasALM") ? "iconHover" : "outline"}
+                                variant={isFilterActive("hasALM") ? "iconActive" : "outline"}
                                 size="md"
-                                className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                                className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 100 100">
-                                    <defs>
-                                        <radialGradient id="grad-74f7df" cx="30%" cy="30%" r="70%">
-                                            <stop offset="0%" stop-color="#d4fff8" />
-                                            <stop offset="100%" stop-color="#74f7df" />
-                                        </radialGradient>
-
-                                        <filter id="shadow-74f7df" x="-20%" y="-20%" width="140%" height="140%">
-                                            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.3" />
-                                        </filter>
-                                    </defs>
-
-                                    <circle cx="50" cy="50" r="45" fill="url(#grad-74f7df)" filter="url(#shadow-74f7df)" />
-                                </svg>
-
+                                <span className="w-2 h-2 bg-cyan-950 border border-cyan-500 rotate-45" />
                                 <span>ALM Pools</span>
                             </Button>
                         )}
                         <Button
                             onClick={() => toggleFilter("isMyPool")}
-                            variant={isFilterActive("isMyPool") ? "iconHover" : "outline"}
+                            variant={isFilterActive("isMyPool") ? "iconActive" : "outline"}
                             size="md"
-                            className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                            className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
                         >
                             <User className="text-primary-200" size={16} />
                             <span>My Pools</span>
                         </Button>
-                        <Button
-                            hidden={!(isFilterActive("isMyPool") || isFilterActive("hasActiveFarming") || isFilterActive("hasALM"))}
-                            size="md"
-                            onClick={() => {
-                                setColumnFilters([]);
-                                setActiveFilters({});
-                            }}
-                            className="flex h-12 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4"
-                            variant="outline"
-                        >
-                            <span>Reset</span>
-                            <X size={18} />
-                        </Button>
                     </div>
+                    <Button
+                        hidden={!(isFilterActive("isMyPool") || isFilterActive("hasActiveFarming") || isFilterActive("hasALM"))}
+                        size="md"
+                        onClick={() => {
+                            setColumnFilters([]);
+                            setActiveFilters({});
+                        }}
+                        className="flex h-10 w-fit ml-auto items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        variant="outline"
+                    >
+                        <X size={18} />
+                        <span>Reset</span>
+                    </Button>
                 </div>
             )}
             <Table>
@@ -229,7 +202,7 @@ const PoolsTable = <TData, TValue>({
             {showPagination && (
                 <div className="flex items-center justify-end space-x-2 px-4 mt-auto">
                     {totalRows > 0 && (
-                        <p className="mr-2">
+                        <p className="mr-4">
                             {startsFromRow === totalRows
                                 ? `${startsFromRow} of ${totalRows}`
                                 : `${startsFromRow} - ${endsAtRow} of ${totalRows}`}

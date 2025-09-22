@@ -57,9 +57,9 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
     });
 
     return (
-        <div className="flex w-full justify-between bg-card-dark p-4 rounded-lg">
+        <div className="relative flex w-full items-center justify-between">
             <div className="text-left">
-                <div className="font-bold text-xs">EARNED FEES</div>
+                <div className="font-bold text-xs text-white/75 mb-2">EARNED FEES</div>
                 {positionFeesUSD ? (
                     <HoverCard closeDelay={0} openDelay={0}>
                         <HoverCardTrigger>
@@ -67,7 +67,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
                                 {positionFeesUSD}
                             </span>
                         </HoverCardTrigger>
-                        <HoverCardContent side="bottom" className="flex flex-col gap-2 p-2">
+                        <HoverCardContent side="bottom" className="flex flex-col gap-2 p-4">
                             <h4>Tokens</h4>
                             <div className="flex flex-col p-2 gap-2 bg-card-dark rounded-lg">
                                 <div className="flex items-center gap-6 justify-between">
@@ -101,9 +101,10 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
             </div>
             <Button
                 size={"md"}
+                variant={'primary'}
                 disabled={!collect || zeroRewards || isLoading || isPending}
                 onClick={() => collectConfig && collect(collectConfig)}
-                className="min-w-[108px]"
+                className="min-w-[108px] rounded-2xl"
             >
                 {isLoading || isPending ? <Loader /> : "Collect fees"}
             </Button>

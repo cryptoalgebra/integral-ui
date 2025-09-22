@@ -5,7 +5,7 @@ import PageContainer from "@/components/common/PageContainer";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 import { useDerivedSwapInfo } from "@/state/swapStore.ts";
 import { SwapPageProps, SwapPageView } from "./types";
-import PageTitle from "@/components/common/PageTitle";
+// import PageTitle from "@/components/common/PageTitle";
 import SwapChart from "@/components/swap/SwapChart";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
@@ -18,15 +18,12 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-full gap-3 mb-3">
+            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
                 <SwapTypeSelector isLimitOrder={isLimitOrder} />
-                <div className="col-span-2">
-                    <PageTitle title={"Trade"} showSettings={true} />
-                </div>
             </div>
             <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
                 <div className="flex flex-col gap-2 col-span-1 w-full">
-                    <div className="flex flex-col gap-1 col-span-1 w-full bg-card border border-card-border p-2 rounded-xl">
+                    <div className="flex flex-col gap-1.5 col-span-1 w-full bg-dark-gradient border border-card-border p-2 rounded-xl">
                         <SwapPair derivedSwap={derivedSwap} />
                         {isLimitOrder ? <LimitOrder derivedSwap={derivedSwap} /> : <SwapParams derivedSwap={derivedSwap} />}
                         {!isLimitOrder && <SwapButton derivedSwap={derivedSwap} />}

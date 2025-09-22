@@ -17,7 +17,7 @@ import { useAppKitNetwork } from "@reown/appkit/react";
 interface IFixBrokenPool {
     currencyIn?: Currency;
     currencyOut?: Currency;
-    deployer?: Address;
+    deployer?: Address | null;
 }
 
 const DEFAULT_SLIPPAGE = new Percent(50, 10_000);
@@ -93,7 +93,9 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         return (
             <>
                 <Notification tick={givenPool?.tickCurrent} />
-                <Button disabled>{isSwapLoading ? <Loader /> : `Insufficient ${currencyIn.symbol} amount to fix`}</Button>
+                <Button variant={"primary"} disabled>
+                    {isSwapLoading ? <Loader /> : `Insufficient ${currencyIn.symbol} amount to fix`}
+                </Button>
             </>
         );
     }
@@ -102,7 +104,11 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         return (
             <>
                 <Notification tick={givenPool?.tickCurrent} />
-                <Button disabled={approvalState !== ApprovalState.NOT_APPROVED} onClick={() => approvalCallback && approvalCallback()}>
+                <Button
+                    variant={"primary"}
+                    disabled={approvalState !== ApprovalState.NOT_APPROVED}
+                    onClick={() => approvalCallback && approvalCallback()}
+                >
                     {approvalState === ApprovalState.PENDING ? (
                         <Loader />
                     ) : approvalState === ApprovalState.APPROVED ? (
@@ -118,7 +124,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
     return (
         <>
             <Notification tick={givenPool?.tickCurrent} />
-            <Button onClick={() => handleSwap()} disabled={isSwapLoading}>
+            <Button variant={"primary"} onClick={() => handleSwap()} disabled={isSwapLoading}>
                 {isSwapLoading ? <Loader /> : "Fix Pool"}
             </Button>
         </>

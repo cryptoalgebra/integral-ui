@@ -92,6 +92,7 @@ const PoolPage = () => {
         },
         {
             refreshInterval: 10000,
+            keepPreviousData: true,
         }
     );
 
@@ -192,16 +193,16 @@ const PoolPage = () => {
 
     const [selectedPosition, setSelectedPosition] = useState<FormattedPosition | null>(null);
 
-    // useEffect(() => {
-    //     if (!selectedPositionId || !positionsData) return;
-    //     const found = positionsData.find(({ id, isALM, almShares }) => selectedPositionId);
-    //     if (found) setSelectedPosition(found);
-    // }, [selectedPositionId, positionsData]);
+    const noPositions = positionsData.length === 0 && (userVaults?.length === 0 || !userVaults) && poolEntity;
 
     const isLoading =
-        positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading || positionsFeesLoading || positionsAPRsLoading;
-
-    const noPositions = !isLoading && positionsData.length === 0 && (userVaults?.length === 0 || !userVaults) && poolEntity;
+        (positionsLoading ||
+            isFarmingLoading ||
+            areDepositsLoading ||
+            areUserVaultsLoading ||
+            positionsFeesLoading ||
+            positionsAPRsLoading) &&
+        noPositions;
 
     return (
         <PageContainer>
@@ -266,7 +267,7 @@ const NoPositions = ({ poolId }: { poolId: Address }) => (
     <div className="flex flex-col items-start gap-4 p-6 bg-card border border-card-border rounded-xl animate-fade-in">
         <h2 className="text-2xl font-bold text-left">You don't have positions for this pool</h2>
         <p className="text-md font-semibold">Let's create one!</p>
-        <Button className="gap-2" asChild>
+        <Button variant={"primary"} className="gap-2" asChild>
             <Link to={`/pool/${poolId}/new-position`}>
                 Create Position
                 <MoveRightIcon />
@@ -282,7 +283,9 @@ const NoAccount = () => {
         <div className="flex flex-col items-start p-6 bg-card border border-card-border rounded-xl animate-fade-in">
             <h2 className="text-2xl font-bold">Connect Wallet</h2>
             <p className="text-md font-semibold my-4">Connect your account to view or create positions</p>
-            <Button onClick={() => open()}>Connect Wallet</Button>
+            <Button variant={"primary"} size={"lg"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
         </div>
     );
 };

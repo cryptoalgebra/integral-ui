@@ -12,13 +12,13 @@ const Settings = () => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant={"icon"} size={"icon"}>
+                <Button variant={"icon"} size={"md"} className="border border-card-border">
                     <SettingsIcon />
                 </Button>
             </PopoverTrigger>
             <PopoverContent
                 align={"end"}
-                className="flex flex-col gap-4 p-6 w-full max-w-[360px] bg-card rounded-xl border border-card-border"
+                className="flex flex-col gap-4 p-6 w-full max-w-[360px] bg-card-dark shadow-popover rounded-xl border border-card-border"
             >
                 <div className="text-md font-bold">Transaction Settings</div>
                 <Separator orientation={"horizontal"} className="bg-border" />
@@ -99,18 +99,18 @@ const SlippageTolerance = () => {
                             setSlippageInput("");
                             setSlippageError(false);
                         }}
-                        className={`text-left border-none text-md font-semibold bg-card-dark rounded-l-lg rounded-r-none w-full min-w-[70px] ring-0!`}
+                        className={`text-left border-none text-md font-semibold bg-card-hover rounded-l-lg rounded-r-none w-full min-w-[70px] ring-0!`}
                         placeholder={"0.0"}
                     />
-                    <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-lg select-none">%</div>
+                    <div className="bg-card-hover text-sm p-2 pt-2.5 rounded-r-lg select-none">%</div>
                 </div>
             </div>
             {slippageError || tooLow || tooHigh ? (
                 <div>
                     {slippageError ? (
-                        <div className="bg-red-900 text-red-200 px-2 py-1 rounded-lg">Enter a valid slippage percentage</div>
+                        <div className="bg-red-900 text-red-200 border border-red-500 px-2 py-1 rounded-lg">Enter a valid slippage percentage</div>
                     ) : (
-                        <div className="bg-yellow-900 text-yellow-200 px-2 py-1 rounded-lg">
+                        <div className="bg-yellow-900 text-yellow-200 border border-yellow-500 px-2 py-1 rounded-lg">
                             {tooLow ? "Your transaction may fail" : "Your transaction may be frontrun"}
                         </div>
                     )}
@@ -162,9 +162,9 @@ const TransactionDeadline = () => {
                         setDeadlineError(false);
                     }}
                     color={deadlineError ? "red" : ""}
-                    className={`text-left border-none text-md font-semibold bg-card-dark rounded-l-lg rounded-r-none w-full ring-0!`}
+                    className={`text-left border-none text-md font-semibold bg-card-hover rounded-l-lg rounded-r-none w-full ring-0!`}
                 />
-                <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-lg select-none">minutes</div>
+                <div className="bg-card-hover text-sm p-2 pt-2.5 rounded-r-lg select-none">minutes</div>
             </div>
         </div>
     );

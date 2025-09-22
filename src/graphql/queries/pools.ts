@@ -20,6 +20,8 @@ export const POOL_FRAGMENT = gql`
         untrackedFeesUSD
         token0Price
         token1Price
+        feesToken0
+        feesToken1
         deployer
     }
 `;

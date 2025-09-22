@@ -5,6 +5,7 @@ export enum AppFeatureModule {
     Farming = "farming",
     LimitOrders = "limitOrders",
     ALM = "alm",
+    VE_33 = "ve33",
 }
 
 export const moduleNameToPath: Record<AppFeatureModule, string> = {
@@ -14,15 +15,18 @@ export const moduleNameToPath: Record<AppFeatureModule, string> = {
     [AppFeatureModule.Farming]: "FarmingModule",
     [AppFeatureModule.LimitOrders]: "LimitOrdersModule",
     [AppFeatureModule.ALM]: "ALMModule",
+    [AppFeatureModule.VE_33]: "Ve33Module",
 };
 
 /* configure enabled modules here */
 export const enabledModules: Record<AppFeatureModule, boolean> = {
-    [AppFeatureModule.CustomPools]: false,
-    [AppFeatureModule.SmartRouter]: false,
+    [AppFeatureModule.CustomPools]: true,
+    [AppFeatureModule.SmartRouter]: true,
 
     [AppFeatureModule.Analytics]: true,
-    [AppFeatureModule.Farming]: false,
-    [AppFeatureModule.LimitOrders]: false,
-    [AppFeatureModule.ALM]: false,
+    [AppFeatureModule.Farming]: true,
+    [AppFeatureModule.LimitOrders]: true,
+    [AppFeatureModule.ALM]: true,
+
+    [AppFeatureModule.VE_33]: true,
 };

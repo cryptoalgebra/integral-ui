@@ -9,9 +9,14 @@ import {
     farmingCenterABI,
     limitOrderManagerABI,
     nonfungiblePositionManagerABI,
+    algebraVirtualPoolABI,
     quoterV2ABI,
     swapRouterABI,
     wNativeABI,
+    voterABI,
+    votingRewardABI,
+    rebaseRewardAbi,
+    veALGBABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -20,10 +25,12 @@ import {
     LIMIT_ORDER_MANAGER,
     NONFUNGIBLE_POSITION_MANAGER,
     QUOTER_V2,
+    REBASE_REWARD,
     SWAP_ROUTER,
+    VE_ALGB,
+    VOTER,
 } from "./contract-addresses";
 import { defineChain } from "viem";
-import { algebraVirtualPoolABI } from "./abis/farming/algebraVirtualPool";
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
     id: 84532,
@@ -72,9 +79,13 @@ const rawContracts = [
     { name: "LimitOrderManager", abi: limitOrderManagerABI },
     { name: "AlgebraCustomPoolEntryPoint", abi: algebraCustomPoolEntryPointABI },
     { name: "WrappedNative", abi: wNativeABI },
+    { name: "Voter", abi: voterABI },
+    { name: "VotingReward", abi: votingRewardABI },
+    { name: "RebaseReward", abi: rebaseRewardAbi },
+    { name: "veALGB", abi: veALGBABI },
 ];
 
-const contractAddreses = {
+const contractAddresses = {
     AlgebraFactory: ALGEBRA_FACTORY,
     NonfungiblePositionManager: NONFUNGIBLE_POSITION_MANAGER,
     QuoterV2: QUOTER_V2,
@@ -82,10 +93,13 @@ const contractAddreses = {
     AlgebraEternalFarming: ALGEBRA_ETERNAL_FARMING,
     FarmingCenter: FARMING_CENTER,
     LimitOrderManager: LIMIT_ORDER_MANAGER,
+    Voter: VOTER,
+    RebaseReward: REBASE_REWARD,
+    veALGB: VE_ALGB,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts.map((contract) => ({
     name: contract.name,
     abi: contract.abi,
-    address: contractAddreses[contract.name as keyof typeof contractAddreses],
+    address: contractAddresses[contract.name as keyof typeof contractAddresses],
 }));

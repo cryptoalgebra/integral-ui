@@ -172,7 +172,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         token1={liquidityValue1?.currency}
                     />
 
-                    <Button disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
+                    <Button variant={'primary'} disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
                         {isRemoveLoading || isPending ? <Loader /> : "Remove Liquidity"}
                     </Button>
                 </div>

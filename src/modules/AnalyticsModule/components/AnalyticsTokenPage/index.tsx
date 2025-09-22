@@ -15,6 +15,7 @@ import { TransactionsList } from "../TransactionsList";
 import PoolsList from "@/components/pools/PoolsList";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useTokenChartData } from "@/hooks/analytics";
+import PageContainer from "@/components/common/PageContainer";
 
 const LiquidityStats = ({
     token0,
@@ -37,7 +38,7 @@ const LiquidityStats = ({
 }) => {
     return (
         <div className="flex flex-col gap-3 h-fit">
-            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-6 h-fit">
+            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-4 h-fit">
                 <h2 className="font-semibold mb-2">Price</h2>
                 <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.priceUSD || 0, 4)}</p>
                 <h2 className="font-semibold mb-2">Liquidity</h2>
@@ -54,7 +55,7 @@ const LiquidityStats = ({
                 </div>
             </div>
 
-            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-6 h-fit">
+            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-4 h-fit">
                 <h2 className="font-semibold mb-4">Statistics</h2>
                 <div className="flex flex-col gap-3 w-full">
                     <div className="flex justify-between">
@@ -155,13 +156,14 @@ export function AnalyticsTokenPage() {
     }, [pathname]);
 
     return (
-        <div className="flex w-full animate-fade-in flex-col gap-3 py-4 max-md:pb-24">
-            <PageTitle title="Explore token" showSettings={false} />
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <PageContainer>
+            <div className="mb-8">
+                <PageTitle title="Explore token" showSettings={false} />
+            </div>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 w-full">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
-                    <div className="flex flex-col p-3 gap-6">
+                    <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={currency} tokenB={null} />
-                        <hr className="border" />
                     </div>
 
                     <Chart
@@ -180,21 +182,15 @@ export function AnalyticsTokenPage() {
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full" to={"/swap"}>
-                            <Button className="gap-2 rounded-xl w-full h-full max-md:text-sm" variant={"default"} size={"lg"}>
-                                <ArrowDownUp size={20} className="text-text-100" />
+                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
+                                <ArrowDownUp size={20} />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={"/pools"}>
-                            <Button
-                                className="bg-primary-300 w-full h-full text-bg-100 gap-2 rounded-xl hover:bg-primary-300 max-md:text-sm"
-                                variant={"default"}
-                                size={"lg"}
-                            >
-                                Create position
-                                <div className="rounded-full p-1 bg-bg-100">
-                                    <Plus size={18} className="text-text-100" />
-                                </div>
+                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
+                                <Plus size={20} />
+                                Create Position
                             </Button>
                         </Link>
                     </div>
@@ -202,7 +198,7 @@ export function AnalyticsTokenPage() {
                 </div>
             </div>
 
-            <nav className="w-full text-xl pb-3 border-b my-3">
+            <nav className="w-full text-xl pb-3 border-b my-4">
                 <ul className="flex gap-8 whitespace-nowrap">
                     <button
                         type={"button"}
@@ -227,6 +223,6 @@ export function AnalyticsTokenPage() {
             </nav>
 
             <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full">{tables[tableView]}</div>
-        </div>
+        </PageContainer>
     );
 }

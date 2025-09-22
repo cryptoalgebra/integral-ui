@@ -1,30 +1,43 @@
-import { ADDRESS_ZERO, ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
+/* Algebra Core */
 export const ALGEBRA_FACTORY: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xE4e7d1b09faE61B12F07EF86ED7eC590F1B6c6CF",
+    [ChainId.BaseSepolia]: "0x2fB84Ae4b1B6aeEc5627268070cF44C678Cd9728",
 };
-
 export const QUOTER_V2: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xeaA2385078D9e5eccda27Bb8BFF5BC256Aac80c1",
+    [ChainId.BaseSepolia]: "0x663181bbbACA5ff7c7c0dDbb5ae16De85D07Fc9f",
 };
-
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x8A310D66d06c1FE28AfE61e0130B5FF00afCb223",
+    [ChainId.BaseSepolia]: "0x1Cfb48AAD4c3822C24Baf15EB58DBEDaB0f72E72",
 };
-
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x07b10e41B97aC181143698964f7bBBb7969C3cC6",
+    [ChainId.BaseSepolia]: "0x9026d1c84f5834968FE80368b216D7C34109Cf97",
 };
 
+/* Farming */
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x3f8350ae86E7ABbE67B1f5Fd1CA6E85c309d4e21",
+    [ChainId.BaseSepolia]: "0xc709aCDA0dBF1a70189bd850e8E8b2659017Fa62",
 };
-
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xd5FBdE38734a2E8f28B12B12A3A617979bDe953E",
+    [ChainId.BaseSepolia]: "0xD1271285aaBe5CbE5E64248d1cb18B8c8550f4fD",
 };
 
+/* Limit Orders */
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: ADDRESS_ZERO,
+    [ChainId.BaseSepolia]: "0xe578551955EA80F001DD5C1d1db3F4652a049C5D",
+};
+
+/* Ve 3.3 */
+export const VE_ALGB: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x6827d0ac944672b6E476B99274310E374fB23409", // Voting Escrow
+};
+export const VOTER: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x4e4c56c54eBa37259BE28258b54493D85C693b86",
+};
+export const REBASE_REWARD: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x9427BdEa2939c2e78072D116bA2AcB95480B4042",
+};
+export const ALGB_TOKEN_ADDRESS: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x253f3460BC16074B960f80421d72E6FA6Ef786c8",
 };

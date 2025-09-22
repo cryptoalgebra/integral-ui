@@ -20,6 +20,7 @@ export interface TransactionInfo {
     tokenB?: Address;
     tokenId?: string;
     type: TransactionType;
+    callback?: () => void;
 }
 
 export interface Transaction {

@@ -140,7 +140,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
+    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
@@ -149,21 +149,21 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     if (showWrap)
         return (
-            <Button onClick={() => onWrap && onWrap()}>
+            <Button variant={'primary'} onClick={() => onWrap && onWrap()}>
                 {isWrapLoading ? <Loader /> : wrapType === WrapType.WRAP ? "Wrap" : "Unwrap"}
             </Button>
         );
 
     if (routeNotFound && userHasSpecifiedInputOutput)
-        return <Button disabled>{isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}</Button>;
+        return <Button variant={'primary'} disabled>{isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}</Button>;
 
     if (trade && insufficientBalance) {
-        return <Button disabled>{isLoadingRoute ? <Loader /> : `Insufficient ${trade.inputAmount.currency.symbol} amount`}</Button>;
+        return <Button variant={'primary'} disabled>{isLoadingRoute ? <Loader /> : `Insufficient ${trade.inputAmount.currency.symbol} amount`}</Button>;
     }
 
     if (showApproveFlow)
         return (
-            <Button disabled={approvalState !== ApprovalState.NOT_APPROVED} onClick={() => approvalCallback && approvalCallback()}>
+            <Button variant={'primary'} disabled={approvalState !== ApprovalState.NOT_APPROVED} onClick={() => approvalCallback && approvalCallback()}>
                 {approvalState === ApprovalState.PENDING ? (
                     <Loader />
                 ) : approvalState === ApprovalState.APPROVED ? (
@@ -176,7 +176,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     return (
         <>
-            <Button onClick={() => handleSwap()} disabled={!isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute}>
+            <Button variant={'primary'} onClick={() => handleSwap()} disabled={!isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute}>
                 {isSwapLoading ? (
                     <Loader />
                 ) : priceImpactTooHigh ? (

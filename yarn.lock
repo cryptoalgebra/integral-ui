@@ -1431,10 +1431,10 @@
     eventemitter3 "^5.0.1"
     preact "^10.24.2"
 
-"@cryptoalgebra/alm-sdk@^1.0.9":
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.9.tgz#3b354500b93c30afce5206e58a78ccdba7ca4358"
-  integrity sha512-Vt9vbKDnzHiPkoMRp2Y/1jri0U2kqlEBomeTPxH75hN6ijKQIQIAAuEtBL0eH6szbdRXW5zRgVFbKxJT6ZzMLA==
+"@cryptoalgebra/alm-sdk@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.11.tgz#2df7d9305143d3a3788aa3ade017ba1f6dca1ba6"
+  integrity sha512-bFQkPIu2vcUUKCHvQOG63ZRW1GHXw2cSg0gB0ilH+cSg0RBMUWzpYqU0Lser8jrHjKrAWci+MFHoTpqPIZYFDQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/abstract-signer" "^5.6.2"
@@ -1458,10 +1458,10 @@
     tsdx "^0.14.1"
     typechain "^8.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/integral-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.0.0.tgz#250047480c92df6f76e71e8f5acdafb811600742"
-  integrity sha512-HzRa0kHt8SPVZmVAgQUpQQxN13ZnQeG/4ZQ6FKmACucD6YTaYqRps6Ah9jqOZXDqb2MhJiThASMgf8mGUNPNdQ==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/integral-sdk@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.0.2.tgz#a39a47f59db2041e4d4826f32c46f1819ff35183"
+  integrity sha512-CEwE4HS8ZnXdISXS5NPhf5f9kSAJuL1DUfIn2cdR6Vcbl4/CD1XlIyxoKZva7qAg8ZoUvXS0HvAjlytyIvkikQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -1475,29 +1475,12 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/integral-sdk@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.0.1.tgz#d0e6bf83fd02dd0b2f72c0fe081f14141c2249c7"
-  integrity sha512-r4r5cBv7k8y+IkwarJFuC1G9883nIiz4H1ddVCJ7sLCl9xzLVj4jp2xuzWuwnh9nMN3W4s4tfbKL3QrAml83xA==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.4.tgz#527e65e117276f1eedf9944275cbfdaf78470edf"
+  integrity sha512-AcQnWrz5dCU/6SVah0XYg6jbne4koiyU9aZKB1hVLbQHPOkajTv/pUQ0CT8ptI8p7lAR3eXqTMsoGZj8i5T4kA==
   dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/address" "^5.7.0"
-    "@ethersproject/solidity" "^5.7.0"
-    "@ethersproject/units" "^5.7.0"
-    big.js "^6.2.1"
-    decimal.js-light "^2.5.1"
-    jsbi "^3.2.5"
-    numeral "^2.0.6"
-    tiny-invariant "^1.3.1"
-    tiny-warning "^1.0.3"
-    toformat "^2.0.0"
-
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.3.tgz#bc06f45538b60d7b178c879a6899b51c9243e421"
-  integrity sha512-4vnt6/gf9G3q+JxboOEQOtiQOf7U0RQL633qBt/N2XYRkiNkQl8HXZws9ctShXm7WmtimliNf3htSlJIx72Aow==
-  dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/integral-sdk@1.0.0"
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/integral-sdk@1.0.2"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"

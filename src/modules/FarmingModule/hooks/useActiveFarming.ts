@@ -1,8 +1,10 @@
 import { useAccount } from "wagmi";
 import { useMemo } from "react";
 import { useClients } from "@/hooks/graphql/useClients";
-import { useDepositsQuery, useEternalFarmingsQuery, useSinglePoolQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
+import { useDepositsQuery, useEternalFarmingsQuery, useSinglePoolQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
+import { useCurrency } from "@/hooks/common/useCurrency";
+import { Farming } from "@/types/farming-info";
 
 export function useActiveFarming({ poolId }: { poolId: Address }) {
     const { address: account } = useAccount();
@@ -26,21 +28,8 @@ export function useActiveFarming({ poolId }: { poolId: Address }) {
 
     const activeFarming = farmings?.eternalFarmings.filter((farming) => !farming.isDeactivated)[0];
 
-    const { data: rewardToken } = useSingleTokenQuery({
-        skip: !activeFarming,
-        variables: {
-            tokenId: activeFarming?.rewardToken || "",
-        },
-        client: infoClient,
-    });
-
-    const { data: bonusRewardToken } = useSingleTokenQuery({
-        skip: !activeFarming || !activeFarming?.bonusRewardToken,
-        variables: {
-            tokenId: activeFarming?.bonusRewardToken || "",
-        },
-        client: infoClient,
-    });
+    const rewardToken = useCurrency(activeFarming?.rewardToken as Address);
+    const bonusRewardToken = useCurrency(activeFarming?.bonusRewardToken as Address);
 
     const { data: deposits, loading: areDepositsLoading } = useDepositsQuery({
         variables: {
@@ -51,19 +40,17 @@ export function useActiveFarming({ poolId }: { poolId: Address }) {
         skip: !poolInfo,
     });
 
-    const farmingInfo = useMemo(() => {
+    const farmingInfo: Farming | undefined = useMemo(() => {
         if (!farmings?.eternalFarmings) return;
         if (!poolInfo) return;
-        if (!rewardToken) return;
-        if (!bonusRewardToken) return;
-        if (!activeFarming || !rewardToken.token) {
-            console.debug("Active farming not found");
-            return null;
+        if (!activeFarming || !rewardToken) {
+            console.warn("Active farming not found");
+            return;
         }
         return {
             farming: activeFarming,
-            rewardToken: rewardToken.token,
-            bonusRewardToken: bonusRewardToken.token ?? null,
+            rewardToken: rewardToken.wrapped,
+            bonusRewardToken: bonusRewardToken?.wrapped ?? null,
             pool: poolInfo.pool,
         };
     }, [activeFarming, bonusRewardToken, farmings?.eternalFarmings, poolInfo, rewardToken]);

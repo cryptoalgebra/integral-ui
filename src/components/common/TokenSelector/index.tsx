@@ -221,7 +221,7 @@ export const TokenSelector = ({
 
     const itemKey = useCallback((index: number, data: TokenFieldsFragment[]) => {
         const currency = data[index];
-        return currency.name;
+        return currency.id;
     }, []);
 
     return (

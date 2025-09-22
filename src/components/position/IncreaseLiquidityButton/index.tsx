@@ -109,18 +109,19 @@ export const IncreaseLiquidityButton = ({
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
+    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
-    if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
+    if (mintInfo.errorMessage) return <Button variant={'primary'} disabled>{mintInfo.errorMessage}</Button>;
 
     if (showApproveA || showApproveB)
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button
+                        variant={'primary'}
                         disabled={approvalStateA === ApprovalState.PENDING}
                         className="w-full"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
@@ -130,6 +131,7 @@ export const IncreaseLiquidityButton = ({
                 )}
                 {showApproveB && (
                     <Button
+                        variant={'primary'}
                         disabled={approvalStateB === ApprovalState.PENDING}
                         className="w-full"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
@@ -142,6 +144,7 @@ export const IncreaseLiquidityButton = ({
 
     return (
         <Button
+            variant={'primary'}
             disabled={!isReady || isIncreaseLiquidityLoading || isPending}
             onClick={() => increaseLiquidityConfig && increaseLiquidity(increaseLiquidityConfig)}
         >

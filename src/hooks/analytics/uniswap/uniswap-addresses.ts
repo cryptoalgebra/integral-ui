@@ -10,6 +10,5 @@ export const uniswapPlaceholderTokens: Record<IntegralTokenAddress, UniswapToken
 };
 
 export const uniswapPlaceholderPools: Record<IntegralPoolAddress, UniswapPoolAddress> = {
-    "0x6ac1effa0f55a64d3bfb77a47ff1da88c0f504d8": "0xa60a504d92a1c95bda729c3f745b361ca822d6dd", // ETH - USDC base
-    "0x048822b49dffc1fedd4f1ddcd5525912bb2fac5f": "0xa60a504d92a1c95bda729c3f745b361ca822d6dd", // ETH - USDC all-inclusive
+    "0x5500c2ffebb0b0d03c39f6f39f31000c5ada3bca": "0xa60a504d92a1c95bda729c3f745b361ca822d6dd", // ETH - USDC base
 };

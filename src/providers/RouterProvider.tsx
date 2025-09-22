@@ -12,6 +12,8 @@ import { enabledModules } from "config/app-modules";
 import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider, RouteObject } from "react-router-dom";
 
 import AnalyticsModule from "@/modules/AnalyticsModule";
+import VeALGBPage from "@/pages/VeALGB";
+import VotePage from "@/pages/Vote";
 const { AnalyticsPoolPage, TransactionsList, TokensList, AnalyticsTokenPage } = AnalyticsModule.components;
 
 const router = createBrowserRouter([
@@ -35,6 +37,19 @@ const router = createBrowserRouter([
                 path: "pools",
                 element: <PoolsPage />,
             },
+            {
+                path: "pools/create",
+                element: <CreatePoolPage />,
+            },
+            {
+                path: "pool/:pool",
+                element: <PoolPage />,
+            },
+            {
+                path: "pool/:pool/new-position",
+                element: <NewPositionPage />,
+            },
+
             ...(enabledModules.analytics
                 ? [
                       {
@@ -71,18 +86,19 @@ const router = createBrowserRouter([
                       },
                   ]
                 : []),
-            {
-                path: "pools/create",
-                element: <CreatePoolPage />,
-            },
-            {
-                path: "pool/:pool",
-                element: <PoolPage />,
-            },
-            {
-                path: "pool/:pool/new-position",
-                element: <NewPositionPage />,
-            },
+
+            ...(enabledModules.ve33
+                ? [
+                      {
+                          path: "vealgb",
+                          element: <VeALGBPage />,
+                      },
+                      {
+                          path: "vote",
+                          element: <VotePage />,
+                      },
+                  ]
+                : []),
         ].filter(Boolean) as RouteObject[],
     },
 ]);

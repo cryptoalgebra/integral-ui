@@ -3,6 +3,7 @@ import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
+import ALGBLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -19,7 +20,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xbfc131442fe1ea6c7912d40fb4df68b792128ae1"]: {
+    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
@@ -27,13 +28,17 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "BTC",
         logo: BTCLogo,
     },
+    ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
+        symbol: "ALGB",
+        logo: ALGBLogo,
+    },
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
     if (!currency)
         return (
             <Skeleton
-                className={cn(`flex rounded-full bg-muted-primary`, className)}
+                className={cn(`flex rounded-full bg-white/5 border border-card-border animate-none`, className)}
                 style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}
             />
         );

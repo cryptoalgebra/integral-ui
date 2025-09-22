@@ -1,15 +1,8 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 import dayjs from "dayjs";
-import { getBlocksFromTimestamps } from "@/graphql/utils/getBlocksFromTimestamps";
-
 const mainnetInfoClient = new ApolloClient({
     uri: "https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV",
-    cache: new InMemoryCache(),
-});
-
-const mainnetBlocksClient = new ApolloClient({
-    uri: "https://gateway.thegraph.com/api/a4d37baa6dd0119dfc09526fcbf4976d/subgraphs/id/9A6bkprqEG2XsZUYJ5B2XXp6ymz9fNcn4tVPxMWDztYC",
     cache: new InMemoryCache(),
 });
 
@@ -65,15 +58,6 @@ export function useSwapChart() {
             }
 
             if (timestamps.length === 0) {
-                return {
-                    data: [],
-                    error: false,
-                };
-            }
-
-            const blocks = await getBlocksFromTimestamps(timestamps, mainnetBlocksClient, 500);
-            if (!blocks || blocks.length === 0) {
-                console.log("Error fetching blocks");
                 return {
                     data: [],
                     error: false,
