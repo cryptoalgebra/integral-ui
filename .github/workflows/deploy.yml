@@ -1,4 +1,4 @@
-name: Algebra Integral Deploy
+name: Deploy to integral.algebra.finance
 
 on:
     workflow_dispatch:
