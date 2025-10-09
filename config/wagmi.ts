@@ -16,7 +16,7 @@ import {
     voterABI,
     votingRewardABI,
     rebaseRewardAbi,
-    veALGBABI,
+    votingEscrowABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -27,8 +27,8 @@ import {
     QUOTER_V2,
     REBASE_REWARD,
     SWAP_ROUTER,
-    VE_ALGB,
     VOTER,
+    VOTING_ESCROW,
 } from "./contract-addresses";
 import { defineChain } from "viem";
 
@@ -82,7 +82,7 @@ const rawContracts = [
     { name: "Voter", abi: voterABI },
     { name: "VotingReward", abi: votingRewardABI },
     { name: "RebaseReward", abi: rebaseRewardAbi },
-    { name: "veALGB", abi: veALGBABI },
+    { name: "VotingEscrow", abi: votingEscrowABI },
 ];
 
 const contractAddresses = {
@@ -95,7 +95,7 @@ const contractAddresses = {
     LimitOrderManager: LIMIT_ORDER_MANAGER,
     Voter: VOTER,
     RebaseReward: REBASE_REWARD,
-    veALGB: VE_ALGB,
+    VotingEscrow: VOTING_ESCROW,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts.map((contract) => ({

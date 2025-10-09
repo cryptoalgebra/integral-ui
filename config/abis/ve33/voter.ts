@@ -30,13 +30,6 @@ export const voterABI = [
     { type: "function", name: "acceptOwnership", inputs: [], outputs: [], stateMutability: "nonpayable" },
     {
         type: "function",
-        name: "algb",
-        inputs: [],
-        outputs: [{ name: "", type: "address", internalType: "contract IERC20" }],
-        stateMutability: "view",
-    },
-    {
-        type: "function",
         name: "algebraGaugeFactory",
         inputs: [],
         outputs: [{ name: "", type: "address", internalType: "contract AlgebraGaugeFactory" }],
@@ -48,16 +41,6 @@ export const voterABI = [
         inputs: [],
         outputs: [{ name: "", type: "address", internalType: "contract IAlgebraVaultFactory" }],
         stateMutability: "view",
-    },
-    {
-        type: "function",
-        name: "carryVoteForward",
-        inputs: [
-            { name: "_tokenId", type: "uint256", internalType: "uint256" },
-            { name: "_fromPeriod", type: "uint256", internalType: "uint256" },
-        ],
-        outputs: [],
-        stateMutability: "nonpayable",
     },
     {
         type: "function",
@@ -94,16 +77,6 @@ export const voterABI = [
         type: "function",
         name: "distribute",
         inputs: [{ name: "_gauge", type: "address", internalType: "address" }],
-        outputs: [],
-        stateMutability: "nonpayable",
-    },
-    {
-        type: "function",
-        name: "distribute",
-        inputs: [
-            { name: "_period", type: "uint256", internalType: "uint256" },
-            { name: "_gauge", type: "address", internalType: "address" },
-        ],
         outputs: [],
         stateMutability: "nonpayable",
     },
@@ -182,8 +155,10 @@ export const voterABI = [
                 components: [
                     { name: "amount", type: "uint256", internalType: "uint256" },
                     { name: "distributed", type: "bool", internalType: "bool" },
+                    { name: "killedDistributed", type: "bool", internalType: "bool" },
                 ],
             },
+            { name: "_totalClaimedEmissions", type: "uint256", internalType: "uint256" },
         ],
         stateMutability: "view",
     },
@@ -238,7 +213,7 @@ export const voterABI = [
         type: "function",
         name: "initialize",
         inputs: [
-            { name: "_veALGB", type: "address", internalType: "address" },
+            { name: "_veTOKEN", type: "address", internalType: "address" },
             { name: "_initialOwner", type: "address", internalType: "address" },
         ],
         outputs: [],
@@ -307,6 +282,7 @@ export const voterABI = [
         outputs: [
             { name: "globalTotalVotes", type: "uint256", internalType: "uint256" },
             { name: "totalEmissions", type: "uint256", internalType: "uint256" },
+            { name: "totalClaimedEmissions", type: "uint256", internalType: "uint256" },
         ],
         stateMutability: "view",
     },
@@ -407,6 +383,13 @@ export const voterABI = [
     },
     {
         type: "function",
+        name: "token",
+        inputs: [],
+        outputs: [{ name: "", type: "address", internalType: "contract IERC20" }],
+        stateMutability: "view",
+    },
+    {
+        type: "function",
         name: "transferOwnership",
         inputs: [{ name: "newOwner", type: "address", internalType: "address" }],
         outputs: [],
@@ -424,7 +407,7 @@ export const voterABI = [
     },
     {
         type: "function",
-        name: "veALGB",
+        name: "veTOKEN",
         inputs: [],
         outputs: [{ name: "", type: "address", internalType: "contract IVotingEscrow" }],
         stateMutability: "view",
@@ -586,7 +569,6 @@ export const voterABI = [
         inputs: [{ name: "implementation", type: "address", internalType: "address" }],
     },
     { type: "error", name: "ERC1967NonPayable", inputs: [] },
-    { type: "error", name: "EmissionsAlreadyDistributedForPeriod", inputs: [] },
     { type: "error", name: "FailedCall", inputs: [] },
     { type: "error", name: "GaugeAlreadyExist", inputs: [] },
     { type: "error", name: "GaugeDead", inputs: [] },
@@ -597,12 +579,24 @@ export const voterABI = [
     { type: "error", name: "NotApprovedOrOwner", inputs: [] },
     { type: "error", name: "NotInitializing", inputs: [] },
     { type: "error", name: "OwnableInvalidOwner", inputs: [{ name: "owner", type: "address", internalType: "address" }] },
-    { type: "error", name: "OwnableUnauthorizedAccount", inputs: [{ name: "account", type: "address", internalType: "address" }] },
+    {
+        type: "error",
+        name: "OwnableUnauthorizedAccount",
+        inputs: [{ name: "account", type: "address", internalType: "address" }],
+    },
     { type: "error", name: "ReentrancyGuardReentrantCall", inputs: [] },
-    { type: "error", name: "SafeERC20FailedOperation", inputs: [{ name: "token", type: "address", internalType: "address" }] },
+    {
+        type: "error",
+        name: "SafeERC20FailedOperation",
+        inputs: [{ name: "token", type: "address", internalType: "address" }],
+    },
     { type: "error", name: "TokenNotWhitelisted", inputs: [] },
     { type: "error", name: "UUPSUnauthorizedCallContext", inputs: [] },
-    { type: "error", name: "UUPSUnsupportedProxiableUUID", inputs: [{ name: "slot", type: "bytes32", internalType: "bytes32" }] },
+    {
+        type: "error",
+        name: "UUPSUnsupportedProxiableUUID",
+        inputs: [{ name: "slot", type: "bytes32", internalType: "bytes32" }],
+    },
     { type: "error", name: "Unauthorized", inputs: [] },
     { type: "error", name: "ZeroVotes", inputs: [] },
 ] as const;

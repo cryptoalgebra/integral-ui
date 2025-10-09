@@ -20,7 +20,7 @@ export function useFormattedVotingPools() {
 
     const commonPools = useMemo(() => commonPoolsResult?.pools ?? [], [commonPoolsResult]);
 
-    const { formatted: algbPrice } = useUSDCPrice(STABLECOINS[chainId].ALGB);
+    const { formatted: tokenPriceUSD } = useUSDCPrice(STABLECOINS[chainId].TOKEN);
 
     const formattedVotingPools: FormattedVotingPool[] = useMemo(() => {
         if (votingPoolsLoading || !commonPools) {
@@ -54,9 +54,9 @@ export function useFormattedVotingPools() {
                 const totalRewardsUSD = incentivesUSD + feesForCurrentEpoch;
 
                 let vApr = 0;
-                if (algbPrice && votingPool.poolVotesDeposited) {
-                    const votingPowerALGB = Number(formatUnits(votingPool.poolVotesDeposited, 18));
-                    const votingPowerUSD = votingPowerALGB * algbPrice;
+                if (tokenPriceUSD && votingPool.poolVotesDeposited) {
+                    const votingPowerTOKEN = Number(formatUnits(votingPool.poolVotesDeposited, 18));
+                    const votingPowerUSD = votingPowerTOKEN * tokenPriceUSD;
 
                     if (votingPowerUSD > 0) {
                         vApr = (totalRewardsUSD / votingPowerUSD) * 52 * 100;
@@ -78,7 +78,7 @@ export function useFormattedVotingPools() {
                     poolVotesDeposited: votingPool.poolVotesDeposited,
                 };
             });
-    }, [algbPrice, commonPools, votingPools, votingPoolsLoading]);
+    }, [tokenPriceUSD, commonPools, votingPools, votingPoolsLoading]);
 
     return {
         data: formattedVotingPools,

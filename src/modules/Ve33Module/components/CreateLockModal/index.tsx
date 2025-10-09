@@ -2,7 +2,7 @@ import { Slider } from "@/components/ui/slider";
 import { useState, useMemo, useCallback } from "react";
 import { parseEther } from "viem";
 import { useAccount, useChainId } from "wagmi";
-import { ALGB_TOKEN_ADDRESS, VE_ALGB } from "config";
+import { TOKEN_ADDRESS, VOTING_ESCROW } from "config";
 import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
 import { CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useApprove } from "@/hooks/common/useApprove";
@@ -10,15 +10,15 @@ import { ApprovalState } from "@/types/approve-state";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Button } from "@/components/ui/button";
-import { useWriteVeAlgbCreateLock } from "@/generated";
+import { useWriteVotingEscrowCreateLock } from "@/generated";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import Loader from "@/components/common/Loader";
-import { useVeALGBs } from "../../hooks";
+import { useVeTOKENs } from "../../hooks";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 
 export const CreateLockModal = ({ children }: { children: React.ReactNode }) => {
-    const { refetch } = useVeALGBs();
+    const { refetch } = useVeTOKENs();
     const { address: account, isConnected } = useAccount();
     const chainId = useChainId();
 
@@ -26,34 +26,34 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
 
     const [weeks, setWeeks] = useState<number>(1);
 
-    const algbToken = useAlgebraToken(ALGB_TOKEN_ADDRESS[chainId], chainId);
+    const lockToken = useAlgebraToken(TOKEN_ADDRESS[chainId], chainId);
 
     const amountToApprove = useMemo(() => {
-        if (!algbToken || !amount || Number(amount) === 0 || isNaN(Number(amount))) return undefined;
+        if (!lockToken || !amount || Number(amount) === 0 || isNaN(Number(amount))) return undefined;
         try {
             const raw = parseEther(amount);
-            return CurrencyAmount.fromRawAmount(algbToken, raw.toString());
+            return CurrencyAmount.fromRawAmount(lockToken, raw.toString());
         } catch {
             return undefined;
         }
-    }, [algbToken, amount]);
+    }, [lockToken, amount]);
 
     const { formatted: amountUSD } = useUSDCValue(amountToApprove);
 
-    const { approvalState, approvalCallback } = useApprove(amountToApprove, VE_ALGB[chainId]);
+    const { approvalState, approvalCallback } = useApprove(amountToApprove, VOTING_ESCROW[chainId]);
 
     const needsApproval = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
 
-    const { writeContract: createLock, data: txHash, isPending: txPending } = useWriteVeAlgbCreateLock();
+    const { writeContract: createLock, data: txHash, isPending: txPending } = useWriteVotingEscrowCreateLock();
 
     const { isLoading: txLoading } = useTransactionAwait(txHash, {
-        title: `Lock ${amount || "0"} ALGB for ${weeks} week${weeks > 1 ? "s" : ""}`,
-        tokenA: ALGB_TOKEN_ADDRESS[chainId],
+        title: `Lock ${amount || "0"} TOKEN for ${weeks} week${weeks > 1 ? "s" : ""}`,
+        tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
         callback: refetch,
     });
 
-    const veALGBAmount = useMemo(() => {
+    const veTOKENAmount = useMemo(() => {
         if (!amount || Number(amount) === 0 || isNaN(Number(amount))) return 0;
         const durationSeconds = weeks * 7 * 24 * 60 * 60; // weeks -> seconds
 
@@ -61,9 +61,9 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
 
         const lockDuration = Math.min(durationSeconds, MAXTIME);
 
-        const veALGBAmount = (Number(amount) * lockDuration) / MAXTIME;
+        const veTOKENAmount = (Number(amount) * lockDuration) / MAXTIME;
 
-        return Math.max(0, veALGBAmount);
+        return Math.max(0, veTOKENAmount);
     }, [amount, weeks]);
 
     const handleCreateLock = useCallback(async () => {
@@ -83,16 +83,16 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none mt-2 max-md:mx-auto">Create New Lock</DialogTitle>
                 </DialogHeader>
-                <EnterAmountCard currency={algbToken} value={amount} valueUsd={amountUSD} handleChange={setAmount} />
+                <EnterAmountCard currency={lockToken} value={amount} valueUsd={amountUSD} handleChange={setAmount} />
 
                 <div className="">
                     <div className="bg-card-dark rounded-lg p-3 space-y-2">
                         <div className="text-center">
-                            Locking {amount || 0} ALGB for {weeks} week
+                            Locking {amount || 0} TOKEN for {weeks} week
                             {weeks > 1 ? "s" : ""}
                         </div>
-                        {veALGBAmount > 0 && (
-                            <div className="text-center text-primary font-semibold">Will receive: {veALGBAmount.toFixed(4)} veALGB</div>
+                        {veTOKENAmount > 0 && (
+                            <div className="text-center text-primary font-semibold">Will receive: {veTOKENAmount.toFixed(4)} veTOKEN</div>
                         )}
                     </div>
 
@@ -113,7 +113,7 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
                         onClick={approvalCallback}
                         disabled={approvalState === ApprovalState.PENDING || txLoading || txPending}
                     >
-                        {approvalState === ApprovalState.PENDING ? <Loader /> : "Approve ALGB"}
+                        {approvalState === ApprovalState.PENDING ? <Loader /> : "Approve TOKEN"}
                     </Button>
                 ) : (
                     <Button

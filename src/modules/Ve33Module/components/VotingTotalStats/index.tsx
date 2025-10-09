@@ -20,7 +20,7 @@ export const VotingTotalStats = () => {
 
     const amountVotedThisEpoch = totalAvailableVotes > 0 ? (totalVotes / totalAvailableVotes) * 100 : 0;
 
-    const totalEmissionsThisEpoch = votingData ? formatUnits(votingData.totalEmissions, STABLECOINS[DEFAULT_CHAIN_ID].ALGB.decimals) : 0;
+    const totalEmissionsThisEpoch = votingData ? formatUnits(votingData.totalEmissions, STABLECOINS[DEFAULT_CHAIN_ID].TOKEN.decimals) : 0;
 
     const isLoading = votingDataLoading || formattedVotingPoolsLoading;
 
@@ -64,7 +64,7 @@ export const VotingTotalStats = () => {
                 {!isLoading ? (
                     <div className="flex w-full flex-col items-center md:flex-row">
                         <div className="text-title ml-auto text-[24px] font-semibold md:ml-0 md:text-[28px]">
-                            {formatAmount(totalEmissionsThisEpoch, 2)} ALGB
+                            {formatAmount(totalEmissionsThisEpoch, 2)} TOKEN
                         </div>
                     </div>
                 ) : (

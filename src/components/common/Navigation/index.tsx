@@ -9,7 +9,7 @@ const PATHS = {
     POOLS: "/pools",
     POOL: "/pool/*",
     ANALYTICS: "/analytics/*",
-    VE_ALGB: "/vealgb/*",
+    VE_TOKEN: "/vetoken/*",
     VOTE: "/vote/*",
 };
 
@@ -29,9 +29,9 @@ const menuItems = [
     ...(enabledModules.ve33
         ? [
               {
-                  title: "veALGB",
-                  link: "/vealgb",
-                  active: [PATHS.VE_ALGB],
+                  title: "veTOKEN",
+                  link: "/vetoken",
+                  active: [PATHS.VE_TOKEN],
                   icon: <ContrastIcon size={20} />,
               },
               {

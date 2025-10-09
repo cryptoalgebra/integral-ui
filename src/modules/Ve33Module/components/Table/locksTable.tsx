@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { HeaderItem } from "@/components/common/Table/common";
 import { getTimeUntilTimestamp } from "../../utils";
-import ALGBLogo from "@/assets/algebra-logo.svg";
+import TOKENLogo from "@/assets/algebra-logo.svg";
 import { formatUnits } from "viem";
 import { ManageLockModal } from "../ManageLockModal";
 import { ClaimVotingRewardsModal } from "../ClaimVotingRewardsModal";
@@ -37,10 +37,10 @@ export const LocksTable = ({ data, loading, refetch }: DataTableProps) => {
         () => [
             {
                 accessorKey: "tokenId",
-                header: () => <HeaderItem className="min-w-[110px] ml-2">veALGB ID</HeaderItem>,
+                header: () => <HeaderItem className="min-w-[110px] ml-2">veTOKEN ID</HeaderItem>,
                 cell: ({ row, getValue }) => (
                     <div className="ml-2 flex gap-4 items-center">
-                        <img width={24} src={ALGBLogo} alt="VeALGB" />
+                        <img width={24} src={TOKENLogo} alt="VeTOKEN" />
                         <span>{`#${getValue()}`}</span>
                         {row.original.votedThisEpoch && <div className="py-1 px-3 rounded-lg bg-primary-200 text-xs">voted</div>}
                     </div>
@@ -53,7 +53,7 @@ export const LocksTable = ({ data, loading, refetch }: DataTableProps) => {
                         Lock Amount
                     </HeaderItem>
                 ),
-                cell: ({ getValue }) => `${formatAmount(formatUnits(getValue() as bigint, 18), 2)} ALGB`,
+                cell: ({ getValue }) => `${formatAmount(formatUnits(getValue() as bigint, 18), 2)} TOKEN`,
             },
             {
                 accessorKey: "balance",
@@ -62,7 +62,7 @@ export const LocksTable = ({ data, loading, refetch }: DataTableProps) => {
                         Voting Power
                     </HeaderItem>
                 ),
-                cell: ({ getValue }) => `${formatAmount(formatUnits(getValue() as bigint, 18), 2)} veALGB`,
+                cell: ({ getValue }) => `${formatAmount(formatUnits(getValue() as bigint, 18), 2)} veTOKEN`,
             },
             {
                 accessorKey: "lockedEnd",
@@ -96,7 +96,7 @@ export const LocksTable = ({ data, loading, refetch }: DataTableProps) => {
                 header: () => <HeaderItem />,
                 cell: ({ row }) => (
                     <div className="flex gap-2 items-center justify-end">
-                        <ManageLockModal veALGB={row.original} refetch={refetch} />
+                        <ManageLockModal veTOKEN={row.original} refetch={refetch} />
                     </div>
                 ),
             },

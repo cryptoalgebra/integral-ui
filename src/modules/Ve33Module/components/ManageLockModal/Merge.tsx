@@ -4,9 +4,9 @@ import { formatUnits } from "viem";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Button } from "@/components/ui/button";
-import { VeALGB } from "../../types";
-import { useWriteVeAlgbMerge } from "@/generated";
-import { ALGB_TOKEN_ADDRESS } from "config";
+import { VeTOKEN } from "../../types";
+import { useWriteVotingEscrowMerge } from "@/generated";
+import { TOKEN_ADDRESS } from "config";
 import { useChainId } from "wagmi";
 import { LockSelector } from "../LockSelector";
 import { formatAmount } from "@/utils";
@@ -14,22 +14,30 @@ import { Plus } from "lucide-react";
 import Loader from "@/components/common/Loader";
 import { getTimeUntilTimestamp } from "../../utils";
 
-export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undefined; veALGBsList: VeALGB[]; refetch?: () => void }) => {
+export const Merge = ({
+    veTOKEN,
+    veTOKENsList,
+    refetch,
+}: {
+    veTOKEN: VeTOKEN | undefined;
+    veTOKENsList: VeTOKEN[];
+    refetch?: () => void;
+}) => {
     const chainId = useChainId();
 
     const [targetId, setTargetId] = useState<bigint | undefined>();
 
-    const veALGBsListWithoutSource = useMemo(() => {
-        if (!veALGBsList || !veALGB) return [];
-        return veALGBsList.filter((v) => v.tokenId !== veALGB.tokenId);
-    }, [veALGBsList, veALGB]);
+    const veTOKENsListWithoutSource = useMemo(() => {
+        if (!veTOKENsList || !veTOKEN) return [];
+        return veTOKENsList.filter((v) => v.tokenId !== veTOKEN.tokenId);
+    }, [veTOKENsList, veTOKEN]);
 
     const { totalLockedAmount, totalBalance, maxLockedEnd } = useMemo(() => {
         if (!targetId) return {};
-        if (!veALGBsList) return {};
+        if (!veTOKENsList) return {};
 
-        const source = veALGB;
-        const target = veALGBsList.find((v) => v.tokenId === targetId);
+        const source = veTOKEN;
+        const target = veTOKENsList.find((v) => v.tokenId === targetId);
 
         if (!target || !source) return {};
 
@@ -42,32 +50,32 @@ export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undef
             totalBalance: formatUnits(totalBalance, 18),
             maxLockedEnd: maxLockedEnd ? getTimeUntilTimestamp(maxLockedEnd).display : "N/A",
         };
-    }, [targetId, veALGBsList, veALGB]);
+    }, [targetId, veTOKENsList, veTOKEN]);
 
-    const { writeContractAsync: mergeWrite, data: mergeHash, isPending: isMergePending } = useWriteVeAlgbMerge();
+    const { writeContractAsync: mergeWrite, data: mergeHash, isPending: isMergePending } = useWriteVotingEscrowMerge();
 
     const { isLoading: isMerging } = useTransactionAwait(mergeHash, {
-        title: `Merge veALGB #${veALGB?.tokenId?.toString()} → #${targetId?.toString()}`,
-        tokenA: ALGB_TOKEN_ADDRESS[chainId],
+        title: `Merge veTOKEN #${veTOKEN?.tokenId?.toString()} → #${targetId?.toString()}`,
+        tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
         callback: refetch,
     });
 
-    const sourceHasVoted = veALGB?.votedThisEpoch;
-    const targetHasVoted = veALGBsList?.find((v) => v.tokenId === targetId)?.votedThisEpoch;
+    const sourceHasVoted = veTOKEN?.votedThisEpoch;
+    const targetHasVoted = veTOKENsList?.find((v) => v.tokenId === targetId)?.votedThisEpoch;
 
     const canMerge = !!targetId && !!mergeWrite && !sourceHasVoted && !targetHasVoted;
 
     const handleMerge = useCallback(async () => {
-        if (!mergeWrite || !targetId || !veALGB) return;
+        if (!mergeWrite || !targetId || !veTOKEN) return;
 
-        mergeWrite({ args: [veALGB.tokenId, targetId] });
-    }, [mergeWrite, targetId, veALGB]);
+        mergeWrite({ args: [veTOKEN.tokenId, targetId] });
+    }, [mergeWrite, targetId, veTOKEN]);
 
     const isLoading = isMergePending || isMerging;
 
-    if (veALGBsListWithoutSource.length === 0)
-        return <div className="flex min-h-64 flex-col items-center justify-center">No other veALGB to merge</div>;
+    if (veTOKENsListWithoutSource.length === 0)
+        return <div className="flex min-h-64 flex-col items-center justify-center">No other veTOKEN to merge</div>;
 
     return (
         <>
@@ -77,11 +85,11 @@ export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undef
             </div>
             <div className="flex gap-2 w-full justify-between items-center">
                 <div className="py-0 px-4 h-10 min-w-50  border border-bg-300 rounded-lg justify-between flex gap-x-2 items-center whitespace-nowrap w-fit">
-                    <span className="font-semibold text-text-200">#{veALGB?.tokenId.toString()}</span>
+                    <span className="font-semibold text-text-200">#{veTOKEN?.tokenId.toString()}</span>
                     <div className="flex gap-x-1 items-center">
-                        {veALGB && (
+                        {veTOKEN && (
                             <span className="text-sm font-medium text-muted-foreground">
-                                {formatAmount(formatUnits(veALGB.balance, 18), 6)} veALGB
+                                {formatAmount(formatUnits(veTOKEN.balance, 18), 6)} veTOKEN
                             </span>
                         )}
                     </div>
@@ -90,8 +98,8 @@ export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undef
 
                 <LockSelector
                     selectedTokenId={Number(targetId)}
-                    isLoading={veALGBsList.length === 0}
-                    veALGBsList={veALGBsListWithoutSource}
+                    isLoading={veTOKENsList.length === 0}
+                    veTOKENsList={veTOKENsListWithoutSource}
                     onSelect={(v) => v && setTargetId(BigInt(v))}
                 />
             </div>
@@ -100,11 +108,11 @@ export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undef
                 <div className="grid grid-cols-3 h-full items-center justify-center gap-3 w-full">
                     <div className="bg-card-dark h-full border border-card-border rounded-xl p-6 w-full">
                         <div className="text-xs uppercase text-muted-foreground mb-1">Total Locked</div>
-                        <div className="text-lg font-bold text-white">{formatAmount(totalLockedAmount || 0, 6)} ALGB</div>
+                        <div className="text-lg font-bold text-white">{formatAmount(totalLockedAmount || 0, 6)} TOKEN</div>
                     </div>
                     <div className="bg-card-dark h-full border border-card-border rounded-xl p-6 w-full">
                         <div className="text-xs uppercase text-muted-foreground mb-1">Voting Power</div>
-                        <div className="text-lg font-bold text-white">{formatAmount(totalBalance || 0, 6)} veALGB</div>
+                        <div className="text-lg font-bold text-white">{formatAmount(totalBalance || 0, 6)} veTOKEN</div>
                     </div>
                     <div className="bg-card-dark h-full border border-card-border rounded-xl p-6 w-full">
                         <div className="text-xs uppercase text-muted-foreground mb-1">Unlock Date</div>
@@ -112,9 +120,9 @@ export const Merge = ({ veALGB, veALGBsList, refetch }: { veALGB: VeALGB | undef
                     </div>
                 </div>
 
-                {(sourceHasVoted || targetHasVoted) && veALGB && (
+                {(sourceHasVoted || targetHasVoted) && veTOKEN && (
                     <p className="text-xs text-destructive text-center">
-                        Cannot merge: {sourceHasVoted ? "Source" : "Target"} veALGB has voted in this epoch
+                        Cannot merge: {sourceHasVoted ? "Source" : "Target"} veTOKEN has voted in this epoch
                     </p>
                 )}
                 <Button

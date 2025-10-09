@@ -3,41 +3,41 @@ import { Address } from "viem";
 
 /* Algebra Core */
 export const ALGEBRA_FACTORY: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x2fB84Ae4b1B6aeEc5627268070cF44C678Cd9728",
+    [ChainId.BaseSepolia]: "0x285C74f3d01296F96c5d3858ab482f707e8Bfdfc",
 };
 export const QUOTER_V2: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x663181bbbACA5ff7c7c0dDbb5ae16De85D07Fc9f",
+    [ChainId.BaseSepolia]: "0xE7E57600a294d9e82DdD44AC9242754EC0c3D4A3",
 };
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x1Cfb48AAD4c3822C24Baf15EB58DBEDaB0f72E72",
+    [ChainId.BaseSepolia]: "0x32327f375148019A7C3B72E34a66c982951779C3",
 };
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x9026d1c84f5834968FE80368b216D7C34109Cf97",
+    [ChainId.BaseSepolia]: "0xCcD3A4AB7bD75bab509d25101eDDc37778cA49A4",
 };
 
 /* Farming */
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xc709aCDA0dBF1a70189bd850e8E8b2659017Fa62",
+    [ChainId.BaseSepolia]: "0xB50E639E23C954546C75d9C15363FC0375E5E95E",
 };
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xD1271285aaBe5CbE5E64248d1cb18B8c8550f4fD",
+    [ChainId.BaseSepolia]: "0x92E4eaCD3b49fa85D13E4B6E8d6bfd0CFafaeD75",
 };
 
 /* Limit Orders */
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xe578551955EA80F001DD5C1d1db3F4652a049C5D",
+    [ChainId.BaseSepolia]: "0xdA9c1AF6498583Ae548CAd31c47eFde061569789",
 };
 
 /* Ve 3.3 */
-export const VE_ALGB: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x6827d0ac944672b6E476B99274310E374fB23409", // Voting Escrow
+export const TOKEN_ADDRESS: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0xDeB24A7dD1491966598B3BDd28F51F2Ca939CB1f", // TOKEN erc20
+};
+export const VOTING_ESCROW: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x8b7A9e5086157476E26f1E75342F0Da0582C57B4", // veTOKEN
 };
 export const VOTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x4e4c56c54eBa37259BE28258b54493D85C693b86",
+    [ChainId.BaseSepolia]: "0x1B79491D453FFb4eFf2B75b106052B1670AC8b27",
 };
 export const REBASE_REWARD: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x9427BdEa2939c2e78072D116bA2AcB95480B4042",
-};
-export const ALGB_TOKEN_ADDRESS: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x253f3460BC16074B960f80421d72E6FA6Ef786c8",
+    [ChainId.BaseSepolia]: "0xd4BDe8f104d8317bB348D4bD7F96318Aad244932",
 };

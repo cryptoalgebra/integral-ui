@@ -14,7 +14,7 @@ export function ClaimRebaseRewardsButton({ amount, tokenId, refetch }: { amount:
         callback: refetch,
     });
 
-    if (!amount) return <span>0 ALGB</span>;
+    if (!amount) return <span>0 TOKEN</span>;
 
     return (
         <Button
@@ -24,7 +24,7 @@ export function ClaimRebaseRewardsButton({ amount, tokenId, refetch }: { amount:
             size="sm"
             className="w-fit min-w-32"
         >
-            {isLoading || isPending ? <Loader /> : `Claim ${formatAmount(formatEther(amount), 6)} ALGB`}
+            {isLoading || isPending ? <Loader /> : `Claim ${formatAmount(formatEther(amount), 6)} TOKEN`}
         </Button>
     );
 }

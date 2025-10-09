@@ -1,4 +1,4 @@
 export * from "./voter";
-export * from "./veALGB";
+export * from "./votingEscrow";
 export * from "./votingReward";
 export * from "./rebaseReward";

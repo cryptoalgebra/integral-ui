@@ -1,5 +1,5 @@
 import {
-    useReadVeAlgbBalanceOfNft,
+    useReadVotingEscrowBalanceOfNft,
     useReadVoterGetCurrentPeriod,
     useReadVoterCheckPeriodVoted,
     useReadVoterGetTokenIdVotes,
@@ -19,7 +19,7 @@ export const VotingPoolsList = () => {
 
     const [selectedTokenId, setSelectedTokenId] = useState<number | undefined>();
 
-    const { data: lockedAmount } = useReadVeAlgbBalanceOfNft({
+    const { data: lockedAmount } = useReadVotingEscrowBalanceOfNft({
         args: [BigInt(selectedTokenId ?? 0)],
     });
 

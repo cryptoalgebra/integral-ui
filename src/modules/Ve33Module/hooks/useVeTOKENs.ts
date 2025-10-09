@@ -1,31 +1,31 @@
-import { useReadVeAlgbBalanceOf, useReadVoterGetCurrentPeriod, veAlgbAbi, voterAbi } from "@/generated";
+import { useReadVotingEscrowBalanceOf, useReadVoterGetCurrentPeriod, votingEscrowAbi, voterAbi } from "@/generated";
 import { useAccount, useChainId, useReadContracts } from "wagmi";
 import { Address } from "viem";
-import { VeALGB } from "../types";
-import { VE_ALGB, VOTER } from "config/contract-addresses";
+import { VeTOKEN } from "../types";
+import { VOTING_ESCROW, VOTER } from "config/contract-addresses";
 
-export interface VeAlgbsType {
+export interface VeTOKENSType {
     isLoading: boolean;
-    veALGBs: VeALGB[];
+    veTOKENs: VeTOKEN[];
     refetch: () => void;
 }
-export function useVeALGBs(filterOutEmpty: boolean = true): VeAlgbsType {
+export function useVeTOKENs(filterOutEmpty: boolean = true): VeTOKENSType {
     const { address } = useAccount();
     const chainId = useChainId();
-    const { data: balanceOf, refetch: refetchBalanceOf } = useReadVeAlgbBalanceOf({
+    const { data: balanceOf, refetch: refetchBalanceOf } = useReadVotingEscrowBalanceOf({
         args: [address as Address],
     });
-    const numberOfVeALGBs = balanceOf ? Number(balanceOf) : 0;
+    const numberOfVeTOKENs = balanceOf ? Number(balanceOf) : 0;
     const { data: currentEpoch } = useReadVoterGetCurrentPeriod();
     const nextEpoch = currentEpoch ? Number(currentEpoch) + 1 : 0;
 
     const { data: tokenIdList, isLoading: isTokenIdListLoading, refetch: refetchTokenIdList } = useReadContracts({
         contracts:
-            numberOfVeALGBs == 0
+            numberOfVeTOKENs == 0
                 ? []
-                : new Array(numberOfVeALGBs).fill(0).map((_, index) => ({
-                      address: VE_ALGB[chainId],
-                      abi: veAlgbAbi,
+                : new Array(numberOfVeTOKENs).fill(0).map((_, index) => ({
+                      address: VOTING_ESCROW[chainId],
+                      abi: votingEscrowAbi,
                       functionName: "tokenOfOwnerByIndex",
                       args: [address as Address, index],
                   })),
@@ -34,8 +34,8 @@ export function useVeALGBs(filterOutEmpty: boolean = true): VeAlgbsType {
     const { data: lockedList, isLoading: isLockedListLoading, refetch: refetchLockedList } = useReadContracts({
         contracts:
             tokenList?.map((tokenId: bigint) => ({
-                address: VE_ALGB[chainId],
-                abi: veAlgbAbi,
+                address: VOTING_ESCROW[chainId],
+                abi: votingEscrowAbi,
                 functionName: "locked",
                 args: [tokenId],
             })) || [],
@@ -44,8 +44,8 @@ export function useVeALGBs(filterOutEmpty: boolean = true): VeAlgbsType {
     const { data: balanceList, isLoading: isBalanceListLoading, refetch: refetchBalanceList } = useReadContracts({
         contracts:
             tokenList?.map((tokenId: bigint) => ({
-                address: VE_ALGB[chainId],
-                abi: veAlgbAbi,
+                address: VOTING_ESCROW[chainId],
+                abi: votingEscrowAbi,
                 functionName: "balanceOfNFT",
                 args: [tokenId],
             })) || [],
@@ -61,7 +61,7 @@ export function useVeALGBs(filterOutEmpty: boolean = true): VeAlgbsType {
             })) || [],
     });
 
-    const veALGBs = tokenList?.map((tokenId, index) => {
+    const veTOKENs = tokenList?.map((tokenId, index) => {
         const lockedRes = (lockedList as any)?.[index]?.result;
 
         let lockedAmount: bigint | undefined = undefined;
@@ -88,10 +88,10 @@ export function useVeALGBs(filterOutEmpty: boolean = true): VeAlgbsType {
             lockedEnd: lockedEnd ?? 0n,
             balance: balance ?? 0n,
             votedThisEpoch: votedThisEpoch ?? false,
-        } as VeALGB;
+        } as VeTOKEN;
     });
     return {
-        veALGBs: veALGBs?.filter((veALGB: any) => (filterOutEmpty ? Number(veALGB.lockedAmount) > 0 : true)) ?? [],
+        veTOKENs: veTOKENs?.filter((veTOKEN: any) => (filterOutEmpty ? Number(veTOKEN.lockedAmount) > 0 : true)) ?? [],
         isLoading: isTokenIdListLoading || isLockedListLoading || isBalanceListLoading,
         refetch: () => {
             refetchVotedThisEpochList();

@@ -1,19 +1,19 @@
 import { formatAmount } from "@/utils/common/formatAmount";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useVeALGBRewards, useVeALGBs } from "../../hooks";
+import { useVeTOKENRewards, useVeTOKENs } from "../../hooks";
 import { useMemo } from "react";
 import { formatUnits } from "viem";
 
 export const LocksTotalStats = () => {
-    const { veALGBs } = useVeALGBs();
-    const { data: veALGBRewards, isLoading } = useVeALGBRewards();
+    const { veTOKENs } = useVeTOKENs();
+    const { data: veTOKENRewards, isLoading } = useVeTOKENRewards();
 
-    const { totalBalanceVeALGB, votingRewardsUSD, rebaseRewardsUSD, totalRewardsUSD } = useMemo(() => {
-        const veAlGBsBalance = veALGBs?.reduce((acc, reward) => acc + reward.balance, 0n) || 0n;
-        const totalBalanceVeALGB = formatUnits(veAlGBsBalance, 18);
+    const { totalBalanceVeTOKEN, votingRewardsUSD, rebaseRewardsUSD, totalRewardsUSD } = useMemo(() => {
+        const veTOKENsBalance = veTOKENs?.reduce((acc, reward) => acc + reward.balance, 0n) || 0n;
+        const totalBalanceVeTOKEN = formatUnits(veTOKENsBalance, 18);
 
         const votingRewardsUSD =
-            veALGBRewards?.reduce(
+            veTOKENRewards?.reduce(
                 (acc, reward) =>
                     acc +
                     reward.votingRewardList.reduce(
@@ -24,7 +24,7 @@ export const LocksTotalStats = () => {
                 0
             ) || 0;
 
-        const rebaseRewardsUSD = veALGBRewards?.reduce((acc, reward) => acc + reward.rebaseAmountUsd, 0) || 0;
+        const rebaseRewardsUSD = veTOKENRewards?.reduce((acc, reward) => acc + reward.rebaseAmountUsd, 0) || 0;
 
         const totalRewardsUSD = votingRewardsUSD + rebaseRewardsUSD;
 
@@ -32,9 +32,9 @@ export const LocksTotalStats = () => {
             votingRewardsUSD,
             rebaseRewardsUSD,
             totalRewardsUSD,
-            totalBalanceVeALGB,
+            totalBalanceVeTOKEN,
         };
-    }, [veALGBRewards, veALGBs]);
+    }, [veTOKENRewards, veTOKENs]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3 pb-3 w-full text-white">
@@ -43,7 +43,7 @@ export const LocksTotalStats = () => {
                 {!isLoading ? (
                     <div className="flex w-full flex-col items-center md:flex-row">
                         <div className="text-title ml-auto text-[24px] font-semibold md:ml-0 md:text-[28px]">
-                            {formatAmount(totalBalanceVeALGB, 2)} veALGB
+                            {formatAmount(totalBalanceVeTOKEN, 2)} veTOKEN
                         </div>
                     </div>
                 ) : (

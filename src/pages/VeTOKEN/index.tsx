@@ -6,12 +6,12 @@ import { Plus } from "lucide-react";
 import Ve33Module from "@/modules/Ve33Module";
 const { CreateLockModal, LocksTotalStats, LocksList } = Ve33Module.components;
 
-const VeALGBPage = () => {
+const VeTOKENPage = () => {
     return (
         <PageContainer>
             <div className="w-full flex-col flex sm:grid grid-cols-4 gap-3 mb-3 justify-between">
                 <div className="col-span-3">
-                    <PageTitle title="veALGB" showSettings={false} />
+                    <PageTitle title="veTOKEN" showSettings={false} />
                 </div>
                 <CreateLockModal>
                     <Button variant={"primaryLink"} size={"md"} className="whitespace-nowrap rounded-full gap-2 ml-auto">
@@ -26,4 +26,4 @@ const VeALGBPage = () => {
     );
 };
 
-export default VeALGBPage;
+export default VeTOKENPage;

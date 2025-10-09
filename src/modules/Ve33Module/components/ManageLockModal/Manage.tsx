@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { parseEther } from "viem";
 import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
-import { ALGB_TOKEN_ADDRESS, DEFAULT_CHAIN_ID, VE_ALGB } from "config";
+import { TOKEN_ADDRESS, DEFAULT_CHAIN_ID, VOTING_ESCROW } from "config";
 import { CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useApprove } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
@@ -12,38 +12,38 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import dayjs from "dayjs";
-import { VeALGB } from "../../types";
-import { useWriteVeAlgbIncreaseAmount, useWriteVeAlgbIncreaseUnlockTime, useWriteVeAlgbWithdraw } from "@/generated";
+import { VeTOKEN } from "../../types";
+import { useWriteVotingEscrowIncreaseAmount, useWriteVotingEscrowIncreaseUnlockTime, useWriteVotingEscrowWithdraw } from "@/generated";
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import Loader from "@/components/common/Loader";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 
 interface ManageLockModalProps {
-    veALGB: VeALGB;
+    veTOKEN: VeTOKEN;
     children?: React.ReactNode;
     refetch?: () => void;
 }
 
-export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
-    const { tokenId, lockedEnd } = veALGB;
+export const Manage = ({ veTOKEN, refetch }: ManageLockModalProps) => {
+    const { tokenId, lockedEnd } = veTOKEN;
     const chainId = useChainId();
 
     const [amount, setAmount] = useState<string>("");
     const { address: account } = useAccount();
 
-    const algbToken = useAlgebraToken(ALGB_TOKEN_ADDRESS[chainId], chainId);
+    const lockToken = useAlgebraToken(TOKEN_ADDRESS[chainId], chainId);
 
     const amountToApprove = useMemo(() => {
-        if (!algbToken || !amount || Number(amount) === 0 || isNaN(Number(amount))) return undefined;
+        if (!lockToken || !amount || Number(amount) === 0 || isNaN(Number(amount))) return undefined;
         try {
             const raw = parseEther(amount);
-            return CurrencyAmount.fromRawAmount(algbToken, raw.toString());
+            return CurrencyAmount.fromRawAmount(lockToken, raw.toString());
         } catch {
             return undefined;
         }
-    }, [algbToken, amount]);
+    }, [lockToken, amount]);
 
-    const { approvalState, approvalCallback } = useApprove(amountToApprove, VE_ALGB[DEFAULT_CHAIN_ID]);
+    const { approvalState, approvalCallback } = useApprove(amountToApprove, VOTING_ESCROW[DEFAULT_CHAIN_ID]);
     const needsApproval = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
 
     const { formatted: amountUSD } = useUSDCValue(amountToApprove);
@@ -52,11 +52,11 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
         writeContract: increaseAmountWrite,
         isPending: isIncreaseAmountPending,
         data: increaseAmountHash,
-    } = useWriteVeAlgbIncreaseAmount();
+    } = useWriteVotingEscrowIncreaseAmount();
     const { isLoading: isIncreaseAmountLoading } = useTransactionAwait(increaseAmountHash, {
         title: `Increase lock #${tokenId.toString()}`,
-        description: `Adding ${amount || 0} ALGB`,
-        tokenA: ALGB_TOKEN_ADDRESS[chainId],
+        description: `Adding ${amount || 0} TOKEN`,
+        tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
         callback: refetch,
     });
@@ -90,11 +90,11 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
         }
     }, [maxExtendableWeeks]);
 
-    const { writeContract: extendTimeWrite, isPending: isExtendPending, data: extendHash } = useWriteVeAlgbIncreaseUnlockTime();
+    const { writeContract: extendTimeWrite, isPending: isExtendPending, data: extendHash } = useWriteVotingEscrowIncreaseUnlockTime();
     const { isLoading: isExtendLoading } = useTransactionAwait(extendHash, {
         title: `Extend lock #${tokenId.toString()}`,
         description: `Extending by ${weeks} week${weeks > 1 ? "s" : ""}`,
-        tokenA: ALGB_TOKEN_ADDRESS[chainId],
+        tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
         callback: refetch,
     });
@@ -114,11 +114,11 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
     const unlockDate = lockedEnd && lockedEnd > 0n ? dayjs.unix(Number(lockedEnd)) : null;
     const isUnlocked = unlockDate ? unlockDate.isBefore(now) : false;
 
-    const { writeContract: withdrawWrite, isPending: isWithdrawPending, data: withdrawHash } = useWriteVeAlgbWithdraw();
+    const { writeContract: withdrawWrite, isPending: isWithdrawPending, data: withdrawHash } = useWriteVotingEscrowWithdraw();
     const { isLoading: isWithdrawLoading } = useTransactionAwait(withdrawHash, {
         title: `Withdraw lock #${tokenId.toString()}`,
-        description: `Withdrawing unlocked ALGB`,
-        tokenA: ALGB_TOKEN_ADDRESS[chainId],
+        description: `Withdrawing unlocked TOKEN`,
+        tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
         callback: refetch,
     });
@@ -134,7 +134,7 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
             <div>
                 <h4 className="text-white font-medium">Increase Amount</h4>
                 <div className="mt-2 space-y-4">
-                    <EnterAmountCard currency={algbToken} value={amount} valueUsd={amountUSD} handleChange={setAmount} />
+                    <EnterAmountCard currency={lockToken} value={amount} valueUsd={amountUSD} handleChange={setAmount} />
 
                     {needsApproval ? (
                         <Button
@@ -144,7 +144,7 @@ export const Manage = ({ veALGB, refetch }: ManageLockModalProps) => {
                             disabled={approvalState === ApprovalState.PENDING || isIncreaseAmountPending}
                         >
                             {approvalState === ApprovalState.PENDING && <Loader2 size={18} className="animate-spin" />}
-                            {approvalState === ApprovalState.PENDING ? "Approving…" : "Approve ALGB"}
+                            {approvalState === ApprovalState.PENDING ? "Approving…" : "Approve TOKEN"}
                         </Button>
                     ) : (
                         <Button

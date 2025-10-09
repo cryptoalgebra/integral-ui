@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useChainId, useReadContracts } from "wagmi";
-import { VE_ALGB, VOTER } from "config/contract-addresses";
+import { VOTING_ESCROW, VOTER } from "config/contract-addresses";
 import { voterABI } from "config/abis";
 import { VotingData } from "../types/voting";
-import { veAlgbAbi } from "@/generated";
+import { votingEscrowAbi } from "@/generated";
 
 export function useVotingData() {
     const chainId = useChainId();
@@ -18,11 +18,7 @@ export function useVotingData() {
 
     const currentPeriod = (baseData?.[0]?.result as bigint) || 0n;
 
-    const {
-        data: periodData,
-        isLoading: periodDataLoading,
-        refetch,
-    } = useReadContracts({
+    const { data: periodData, isLoading: periodDataLoading, refetch } = useReadContracts({
         contracts: [
             {
                 address: VOTER[chainId],
@@ -37,8 +33,8 @@ export function useVotingData() {
                 args: [currentPeriod + 1n], // getting votes for next period
             },
             {
-                address: VE_ALGB[chainId],
-                abi: veAlgbAbi,
+                address: VOTING_ESCROW[chainId],
+                abi: votingEscrowAbi,
                 functionName: "totalVotingPower",
             },
         ],
@@ -50,8 +46,8 @@ export function useVotingData() {
 
         const duration = (baseData[1]?.result as bigint) || 0n;
 
-        const [, totalEmissions] = (periodData[0]?.result as [bigint, bigint]) ?? [0n, [], []];
-        const [totalVotes] = (periodData[1]?.result as [bigint, bigint]) ?? [0n, [], []];
+        const [, totalEmissions] = (periodData[0]?.result as [bigint, bigint, bigint]) ?? [0n, [], []];
+        const [totalVotes] = (periodData[1]?.result as [bigint, bigint, bigint]) ?? [0n, [], []];
         const totalAvailableVotes = (periodData[2]?.result as bigint) ?? [0n];
 
         const nextPeriod = currentPeriod + 1n;

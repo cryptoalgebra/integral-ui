@@ -1,1 +1,2 @@
-export * from "./veALGB";
+export * from "./veTOKEN";
+export * from "./voting";

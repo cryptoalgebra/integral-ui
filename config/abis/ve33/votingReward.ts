@@ -175,7 +175,7 @@ export const votingRewardABI = [
         name: "initialize",
         inputs: [
             { name: "_voter", type: "address", internalType: "address" },
-            { name: "_veALGB", type: "address", internalType: "address" },
+            { name: "_veTOKEN", type: "address", internalType: "address" },
             { name: "_initialOwner", type: "address", internalType: "address" },
         ],
         outputs: [],
@@ -311,7 +311,7 @@ export const votingRewardABI = [
     },
     {
         type: "function",
-        name: "veALGB",
+        name: "veTOKEN",
         inputs: [],
         outputs: [{ name: "", type: "address", internalType: "contract IVotingEscrow" }],
         stateMutability: "view",
@@ -460,9 +460,21 @@ export const votingRewardABI = [
     { type: "error", name: "NotVoter", inputs: [] },
     { type: "error", name: "NotWhitelistedRewardToken", inputs: [] },
     { type: "error", name: "OwnableInvalidOwner", inputs: [{ name: "owner", type: "address", internalType: "address" }] },
-    { type: "error", name: "OwnableUnauthorizedAccount", inputs: [{ name: "account", type: "address", internalType: "address" }] },
+    {
+        type: "error",
+        name: "OwnableUnauthorizedAccount",
+        inputs: [{ name: "account", type: "address", internalType: "address" }],
+    },
     { type: "error", name: "ReentrancyGuardReentrantCall", inputs: [] },
-    { type: "error", name: "SafeERC20FailedOperation", inputs: [{ name: "token", type: "address", internalType: "address" }] },
+    {
+        type: "error",
+        name: "SafeERC20FailedOperation",
+        inputs: [{ name: "token", type: "address", internalType: "address" }],
+    },
     { type: "error", name: "UUPSUnauthorizedCallContext", inputs: [] },
-    { type: "error", name: "UUPSUnsupportedProxiableUUID", inputs: [{ name: "slot", type: "bytes32", internalType: "bytes32" }] },
+    {
+        type: "error",
+        name: "UUPSUnsupportedProxiableUUID",
+        inputs: [{ name: "slot", type: "bytes32", internalType: "bytes32" }],
+    },
 ] as const;

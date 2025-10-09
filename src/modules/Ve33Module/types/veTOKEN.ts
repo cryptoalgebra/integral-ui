@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { RewardToken } from "./voting";
 
-export interface VeALGB {
+export interface VeTOKEN {
     tokenId: bigint;
     lockedAmount: bigint;
     lockedEnd: bigint;
@@ -9,7 +9,7 @@ export interface VeALGB {
     votedThisEpoch: boolean;
 }
 
-export interface VeALGBRewards {
+export interface VeTOKENRewards {
     tokenId: bigint;
     votingRewardList: {
         votingReward: Address;
@@ -19,4 +19,4 @@ export interface VeALGBRewards {
     rebaseAmountUsd: number;
 }
 
-export type ExtendedVePosition = VeALGB & VeALGBRewards;
+export type ExtendedVePosition = VeTOKEN & VeTOKENRewards;

@@ -6,24 +6,24 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { VeALGB } from "../../types";
-import { useWriteVeAlgbSplit } from "@/generated";
-import { ALGB_TOKEN_ADDRESS } from "config";
+import { VeTOKEN } from "../../types";
+import { useWriteVotingEscrowSplit } from "@/generated";
+import { TOKEN_ADDRESS } from "config";
 import { useChainId } from "wagmi";
 import Loader from "@/components/common/Loader";
 import { formatAmount } from "@/utils";
 
-export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch?: () => void }) => {
+export const Split = ({ veTOKEN, refetch }: { veTOKEN: VeTOKEN | undefined; refetch?: () => void }) => {
     const chainId = useChainId();
 
-    const selectedId = veALGB?.tokenId;
+    const selectedId = veTOKEN?.tokenId;
 
     const [amount, setAmount] = useState<number>(0);
 
     const maxAmount = useMemo(() => {
-        if (!veALGB || !veALGB.lockedAmount) return 0;
-        return Number(veALGB.lockedAmount) / 1e18;
-    }, [veALGB]);
+        if (!veTOKEN || !veTOKEN.lockedAmount) return 0;
+        return Number(veTOKEN.lockedAmount) / 1e18;
+    }, [veTOKEN]);
 
     useEffect(() => {
         if (amount > maxAmount) setAmount(maxAmount);
@@ -31,28 +31,28 @@ export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch
     }, [amount, maxAmount]);
 
     const preview = useMemo(() => {
-        if (!veALGB || amount <= 0 || amount >= maxAmount) return null;
+        if (!veTOKEN || amount <= 0 || amount >= maxAmount) return null;
         const originalRemaining = maxAmount - amount;
         return {
             originalRemaining,
             splitAmount: amount,
-            unlockDate: veALGB.lockedEnd,
+            unlockDate: veTOKEN.lockedEnd,
         };
-    }, [veALGB, amount, maxAmount]);
+    }, [veTOKEN, amount, maxAmount]);
 
-    const { writeContract: splitWrite, data: splitHash, isPending: isSplitPending } = useWriteVeAlgbSplit();
+    const { writeContract: splitWrite, data: splitHash, isPending: isSplitPending } = useWriteVotingEscrowSplit();
 
     const { isLoading: isSplitting } = useTransactionAwait(splitHash, {
-        title: `Split veALGB #${selectedId?.toString()}`,
-        description: `Splitting ${amount} ALGB`,
-        tokenA: ALGB_TOKEN_ADDRESS[chainId],
+        title: `Split veTOKEN #${selectedId?.toString()}`,
+        description: `Splitting ${amount} TOKEN`,
+        tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
         callback: refetch,
     });
 
-    const hasVoted = veALGB?.votedThisEpoch;
+    const hasVoted = veTOKEN?.votedThisEpoch;
 
-    const canSplit = !!selectedId && amount > 0 && amount < maxAmount && !!splitWrite && !!veALGB && !hasVoted;
+    const canSplit = !!selectedId && amount > 0 && amount < maxAmount && !!splitWrite && !!veTOKEN && !hasVoted;
 
     const handleSplit = useCallback(async () => {
         if (!canSplit || !selectedId || !splitWrite) return;
@@ -69,7 +69,7 @@ export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch
         <>
             <div className="space-y-3">
                 <div className="text-center">
-                    Splitting {formatAmount(amount, 6)} ALGB from lock #{selectedId?.toString()}
+                    Splitting {formatAmount(amount, 6)} TOKEN from lock #{selectedId?.toString()}
                 </div>
 
                 <Slider
@@ -81,8 +81,8 @@ export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch
                     className="my-2"
                 />
                 <div className="flex justify-between text-xs text-white">
-                    <span>0 ALGB</span>
-                    <span>{formatAmount(maxAmount, 4)} ALGB</span>
+                    <span>0 TOKEN</span>
+                    <span>{formatAmount(maxAmount, 4)} TOKEN</span>
                 </div>
             </div>
             <div
@@ -96,7 +96,7 @@ export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch
                         <div className="relative flex items-center justify-center gap-3">
                             <div className="bg-card-dark border border-card-border rounded-xl p-6 w-full">
                                 <div className="text-xs uppercase text-muted-foreground mb-1">New Lock</div>
-                                <div className="text-lg font-bold text-white">{formatAmount(preview.splitAmount, 4)} ALGB</div>
+                                <div className="text-lg font-bold text-white">{formatAmount(preview.splitAmount, 4)} TOKEN</div>
                             </div>
                             <ArrowRight
                                 size={24}
@@ -104,14 +104,14 @@ export const Split = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch
                             />
                             <div className="bg-card-dark border border-card-border rounded-xl p-6 w-full">
                                 <div className="text-xs uppercase text-muted-foreground mb-1">Remaining</div>
-                                <div className="text-lg font-bold text-white">{formatAmount(preview.originalRemaining, 4)} ALGB</div>
+                                <div className="text-lg font-bold text-white">{formatAmount(preview.originalRemaining, 4)} TOKEN</div>
                             </div>
                         </div>
                     </div>
                 )}
             </div>
-            {hasVoted && veALGB && (
-                <p className="text-xs text-destructive text-center">Cannot split: This veALGB has voted in this epoch</p>
+            {hasVoted && veTOKEN && (
+                <p className="text-xs text-destructive text-center">Cannot split: This veTOKEN has voted in this epoch</p>
             )}
             <Button
                 variant="primary"

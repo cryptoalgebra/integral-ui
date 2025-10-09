@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { VeALGB } from "../../types";
 import { Manage } from "./Manage";
 import { Split } from "./Split";
 import { Merge } from "./Merge";
 import { Transfer } from "./Transfer";
-import { useVeALGBs } from "../../hooks";
+import { useVeTOKENs } from "../../hooks";
+import { VeTOKEN } from "../../types";
 
 interface ManageLockModalProps {
-    veALGB: VeALGB;
+    veTOKEN: VeTOKEN;
     children?: React.ReactNode;
     refetch?: () => void;
 }
 
 const views = ["Manage", "Split", "Merge", "Transfer"] as const;
 
-export const ManageLockModal = ({ veALGB, children, refetch }: ManageLockModalProps) => {
+export const ManageLockModal = ({ veTOKEN, children, refetch }: ManageLockModalProps) => {
     const [view, setView] = useState<typeof views[number]>("Manage");
 
-    const { veALGBs: veALGBsList, isLoading: isVeALGBsLoading } = useVeALGBs();
+    const { veTOKENs: veTOKENsList, isLoading: isVeTOKENsLoading } = useVeTOKENs();
 
     return (
         <Dialog>
@@ -35,7 +35,7 @@ export const ManageLockModal = ({ veALGB, children, refetch }: ManageLockModalPr
             <DialogContent className="max-w-[550px] rounded-xl bg-card border border-bg-300">
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">
-                        {view} veALGB #{veALGB.tokenId.toString()}
+                        {view} veTOKEN #{veTOKEN.tokenId.toString()}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -44,7 +44,7 @@ export const ManageLockModal = ({ veALGB, children, refetch }: ManageLockModalPr
                         <Button
                             key={v}
                             onClick={() => setView(v)}
-                            disabled={isVeALGBsLoading}
+                            disabled={isVeTOKENsLoading}
                             className="rounded-md"
                             variant={view === v ? "primaryLink" : "ghost"}
                             size={"sm"}
@@ -55,19 +55,19 @@ export const ManageLockModal = ({ veALGB, children, refetch }: ManageLockModalPr
                 </div>
 
                 <div className="w-full flex flex-col gap-3" hidden={view !== "Manage"}>
-                    <Manage veALGB={veALGB} refetch={refetch} />
+                    <Manage veTOKEN={veTOKEN} refetch={refetch} />
                 </div>
 
                 <div className="w-full flex flex-col gap-3" hidden={view !== "Split"}>
-                    <Split veALGB={veALGB} refetch={refetch} />
+                    <Split veTOKEN={veTOKEN} refetch={refetch} />
                 </div>
 
                 <div className="w-full flex flex-col gap-3" hidden={view !== "Merge"}>
-                    <Merge veALGBsList={veALGBsList} veALGB={veALGB} refetch={refetch} />
+                    <Merge veTOKENsList={veTOKENsList} veTOKEN={veTOKEN} refetch={refetch} />
                 </div>
 
                 <div className="w-full flex flex-col gap-3" hidden={view !== "Transfer"}>
-                    <Transfer veALGB={veALGB} refetch={refetch} />
+                    <Transfer veTOKEN={veTOKEN} refetch={refetch} />
                 </div>
             </DialogContent>
         </Dialog>

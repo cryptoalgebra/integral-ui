@@ -1,4 +1,4 @@
-export const veALGBABI = [
+export const votingEscrowABI = [
     { type: "constructor", inputs: [], stateMutability: "nonpayable" },
     {
         type: "function",
@@ -29,13 +29,6 @@ export const veALGBABI = [
         stateMutability: "view",
     },
     { type: "function", name: "acceptOwnership", inputs: [], outputs: [], stateMutability: "nonpayable" },
-    {
-        type: "function",
-        name: "algb",
-        inputs: [],
-        outputs: [{ name: "", type: "address", internalType: "address" }],
-        stateMutability: "view",
-    },
     {
         type: "function",
         name: "approve",
@@ -151,7 +144,7 @@ export const veALGBABI = [
         type: "function",
         name: "initialize",
         inputs: [
-            { name: "_algb", type: "address", internalType: "address" },
+            { name: "_token", type: "address", internalType: "address" },
             { name: "art_proxy", type: "address", internalType: "address" },
         ],
         outputs: [],
@@ -339,6 +332,13 @@ export const veALGBABI = [
     },
     {
         type: "function",
+        name: "token",
+        inputs: [],
+        outputs: [{ name: "", type: "address", internalType: "address" }],
+        stateMutability: "view",
+    },
+    {
+        type: "function",
         name: "tokenByIndex",
         inputs: [{ name: "index", type: "uint256", internalType: "uint256" }],
         outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
@@ -439,21 +439,6 @@ export const veALGBABI = [
         outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
         stateMutability: "view",
     },
-    // {
-    //     type: "function",
-    //     name: "user_point_history",
-    //     inputs: [
-    //         { name: "", type: "uint256", internalType: "uint256" },
-    //         { name: "", type: "uint256", internalType: "uint256" },
-    //     ],
-    //     outputs: [
-    //         { name: "bias", type: "int128", internalType: "int128" },
-    //         { name: "slope", type: "int128", internalType: "int128" },
-    //         { name: "ts", type: "uint256", internalType: "uint256" },
-    //         { name: "blk", type: "uint256", internalType: "uint256" },
-    //     ],
-    //     stateMutability: "view",
-    // },
     {
         type: "function",
         name: "voted",

@@ -17,6 +17,6 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     [ChainId.BaseSepolia]: [
         ...WNATIVE_ONLY[ChainId.BaseSepolia],
         STABLECOINS[ChainId.BaseSepolia].USDC,
-        STABLECOINS[ChainId.BaseSepolia].ALGB,
+        STABLECOINS[ChainId.BaseSepolia].TOKEN,
     ],
 };

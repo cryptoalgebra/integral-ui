@@ -31,18 +31,14 @@ export function useQuotesResults({
                     ? `0x${amountIn.quotient.toString(16)}`
                     : undefined
                 : amountOut
-                  ? `0x${amountOut.quotient.toString(16)}`
-                  : undefined,
+                ? `0x${amountOut.quotient.toString(16)}`
+                : undefined,
         ]);
     }, [amountIn, amountOut, routes, exactInput]);
 
     const functionName = exactInput ? "quoteExactInput" : "quoteExactOutput";
 
-    const {
-        data: quotesResults,
-        isLoading,
-        refetch,
-    } = useReadContracts({
+    const { data: quotesResults, isLoading, refetch } = useReadContracts({
         contracts: quoteInputs.map((quote: any) => ({
             address: QUOTER_V2[chainId],
             abi: quoterV2ABI,

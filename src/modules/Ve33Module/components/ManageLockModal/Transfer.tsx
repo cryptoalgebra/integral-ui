@@ -6,34 +6,34 @@ import { useAccount } from "wagmi";
 import { Address } from "viem";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { VeALGB } from "../../types";
-import { useWriteVeAlgbSafeTransferFrom } from "@/generated";
+import { VeTOKEN } from "../../types";
+import { useWriteVotingEscrowSafeTransferFrom } from "@/generated";
 import Loader from "@/components/common/Loader";
 
-export const Transfer = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refetch?: () => void }) => {
+export const Transfer = ({ veTOKEN, refetch }: { veTOKEN: VeTOKEN | undefined; refetch?: () => void }) => {
     const [targetAddress, setTargetAddress] = useState<string>("");
 
     const isValidAddress = targetAddress && isAddress(targetAddress);
     const { address: account } = useAccount();
 
-    const hasVoted = veALGB?.votedThisEpoch || false;
+    const hasVoted = veTOKEN?.votedThisEpoch || false;
 
-    const canSend = isValidAddress && veALGB && !hasVoted;
+    const canSend = isValidAddress && veTOKEN && !hasVoted;
 
-    const { writeContract: transferWrite, data: txHash, isPending: isTransferPending } = useWriteVeAlgbSafeTransferFrom();
+    const { writeContract: transferWrite, data: txHash, isPending: isTransferPending } = useWriteVotingEscrowSafeTransferFrom();
 
     const { isLoading: isTransferLoading } = useTransactionAwait(txHash, {
-        title: `Transfer veALGB`,
-        tokenId: veALGB?.tokenId?.toString(),
+        title: `Transfer veTOKEN`,
+        tokenId: veTOKEN?.tokenId?.toString(),
         type: TransactionType.POOL,
         callback: refetch,
     });
 
     const handleSend = async () => {
-        if (!transferWrite || !account || !veALGB || !isValidAddress) return;
+        if (!transferWrite || !account || !veTOKEN || !isValidAddress) return;
 
         transferWrite({
-            args: [account as Address, targetAddress as Address, veALGB.tokenId],
+            args: [account as Address, targetAddress as Address, veTOKEN.tokenId],
         });
     };
 
@@ -66,19 +66,19 @@ export const Transfer = ({ veALGB, refetch }: { veALGB: VeALGB | undefined; refe
                 >
                     {isTransferLoading || isTransferPending ? <Loader /> : "Send"}
                 </Button>
-                {hasVoted && veALGB && (
-                    <p className="text-xs text-destructive text-center">Cannot transfer: This veALGB has voted in this epoch</p>
+                {hasVoted && veTOKEN && (
+                    <p className="text-xs text-destructive text-center">Cannot transfer: This veTOKEN has voted in this epoch</p>
                 )}
             </div>
 
             <div className="w-full bg-card-dark p-3 rounded-xl">
-                <h4 className="text-white font-medium mb-4">Transferring veALGB</h4>
+                <h4 className="text-white font-medium mb-4">Transferring veTOKEN</h4>
 
                 <div className="space-y-4 text-sm text-left">
                     <div className="flex items-start space-x-3">
                         <div className="w-6 h-6 flex items-center justify-center text-xs font-bold text-white flex-shrink-0">1</div>
                         <p className="text-gray-300 text-left">
-                            veALGB is a transferable NFT. You can transfer it to another address or sell it on the NFT marketplace.
+                            veTOKEN is a transferable NFT. You can transfer it to another address or sell it on the NFT marketplace.
                         </p>
                     </div>
                     <div className="flex items-start space-x-3">

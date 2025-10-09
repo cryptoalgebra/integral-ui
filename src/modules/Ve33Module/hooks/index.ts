@@ -1,5 +1,5 @@
-export * from "./useVeALGBs";
+export * from "./useVeTOKENs";
 export * from "./useVotingData";
 export * from "./useVotingPools";
-export * from "./useVeALGBRewards";
+export * from "./useVeTOKENRewards";
 export * from "./useFormattedVotingPools";

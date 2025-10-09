@@ -4,41 +4,41 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { VeALGB } from "../../types";
+import { VeTOKEN } from "../../types";
 import { formatAmount } from "@/utils";
 import { formatEther } from "viem";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface LockSelectorProps {
-    veALGBsList: VeALGB[] | undefined;
+    veTOKENsList: VeTOKEN[] | undefined;
     isLoading: boolean;
     selectedTokenId: number | undefined;
     onSelect: (tokenId: number | undefined) => void;
 }
 
-export const LockSelector = ({ veALGBsList, isLoading, selectedTokenId, onSelect }: LockSelectorProps) => {
+export const LockSelector = ({ veTOKENsList, isLoading, selectedTokenId, onSelect }: LockSelectorProps) => {
     const [open, setOpen] = useState(false);
 
-    const selectedVeALGB = useMemo(
-        () => veALGBsList?.find((vk) => vk.tokenId.toString() === selectedTokenId?.toString()),
-        [veALGBsList, selectedTokenId]
-    );
+    const selectedVeTOKEN = useMemo(() => veTOKENsList?.find((vk) => vk.tokenId.toString() === selectedTokenId?.toString()), [
+        veTOKENsList,
+        selectedTokenId,
+    ]);
 
     useEffect(() => {
-        if (veALGBsList && veALGBsList.length > 0 && !selectedTokenId) {
-            onSelect(Number(veALGBsList[0].tokenId));
+        if (veTOKENsList && veTOKENsList.length > 0 && !selectedTokenId) {
+            onSelect(Number(veTOKENsList[0].tokenId));
         }
-    }, [veALGBsList, selectedTokenId]);
+    }, [veTOKENsList, selectedTokenId]);
 
     if (isLoading) {
         return <Skeleton className="w-50 h-10" />;
     }
 
-    if (!veALGBsList || veALGBsList.length === 0) {
+    if (!veTOKENsList || veTOKENsList.length === 0) {
         return (
-            <Link to="/vealgb" className="w-full sm:w-fit">
+            <Link to="/vetoken" className="w-full sm:w-fit">
                 <Button variant="default" className="w-full rounded-lg min-w-50 h-10 whitespace-nowrap">
-                    Lock ALGB to start voting
+                    Lock TOKEN to start voting
                 </Button>
             </Link>
         );
@@ -54,12 +54,12 @@ export const LockSelector = ({ veALGBsList, isLoading, selectedTokenId, onSelect
                     {selectedTokenId ? (
                         <div className="font-semibold">#{selectedTokenId.toString()}</div>
                     ) : (
-                        <span className="text-text-200">Select a veALGB lock</span>
+                        <span className="text-text-200">Select a veTOKEN lock</span>
                     )}
                     <div className="flex gap-x-1 items-center">
-                        {selectedVeALGB && (
+                        {selectedVeTOKEN && (
                             <span className="text-sm font-medium text-muted-foreground">
-                                {formatAmount(formatEther(selectedVeALGB.balance))} veALGB
+                                {formatAmount(formatEther(selectedVeTOKEN.balance))} veTOKEN
                             </span>
                         )}
                         <ChevronDown className="size-5 text-text-200" />
@@ -71,13 +71,13 @@ export const LockSelector = ({ veALGBsList, isLoading, selectedTokenId, onSelect
                 align="start"
                 className="p-0 min-w-56 overflow-y-auto w-auto bg-card border border-bg-300 rounded-lg"
             >
-                {veALGBsList.map((veALGB) => {
-                    const isSelected = veALGB.tokenId.toString() === selectedTokenId?.toString();
+                {veTOKENsList.map((veTOKEN) => {
+                    const isSelected = veTOKEN.tokenId.toString() === selectedTokenId?.toString();
                     return (
                         <button
-                            key={veALGB.tokenId.toString()}
+                            key={veTOKEN.tokenId.toString()}
                             onClick={() => {
-                                if (!isSelected) onSelect(Number(veALGB.tokenId));
+                                if (!isSelected) onSelect(Number(veTOKEN.tokenId));
                                 setOpen(false);
                             }}
                             className={cn(
@@ -85,8 +85,8 @@ export const LockSelector = ({ veALGBsList, isLoading, selectedTokenId, onSelect
                                 isSelected && "bg-card-hover font-medium"
                             )}
                         >
-                            <span>#{veALGB.tokenId.toString()}</span>
-                            <span>{formatAmount(formatEther(veALGB.balance))} veALGB</span>
+                            <span>#{veTOKEN.tokenId.toString()}</span>
+                            <span>{formatAmount(formatEther(veTOKEN.balance))} veTOKEN</span>
                         </button>
                     );
                 })}

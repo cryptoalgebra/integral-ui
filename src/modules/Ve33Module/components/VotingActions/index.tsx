@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronDown, X } from "lucide-react";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { FormattedVotingPool } from "../../types/voting";
-import { useVeALGBs } from "../../hooks";
+import { useVeTOKENs } from "../../hooks";
 import { LockSelector } from "../LockSelector";
 import { VoteMap } from "../VotingPoolsList";
 import { useWriteVoterVote } from "@/generated";
@@ -36,7 +36,7 @@ export const VotingActions = ({
     onSelectTokenId,
     refetch,
 }: VotingActionsProps) => {
-    const { veALGBs, isLoading: isVeALGBsLoading } = useVeALGBs();
+    const { veTOKENs, isLoading: isVeTOKENsLoading } = useVeTOKENs();
     const { writeContract: submitVote, data: voteHash, isPending: isVotePending } = useWriteVoterVote();
 
     const { isLoading: isVoteLoading } = useTransactionAwait(voteHash, {
@@ -79,7 +79,7 @@ export const VotingActions = ({
 
     return (
         <div className="flex max-md:flex-col items-center justify-start gap-3 p-3 bg-card border border-card-border rounded-xl">
-            <LockSelector veALGBsList={veALGBs} isLoading={isVeALGBsLoading} onSelect={onSelectTokenId} selectedTokenId={tokenId} />
+            <LockSelector veTOKENsList={veTOKENs} isLoading={isVeTOKENsLoading} onSelect={onSelectTokenId} selectedTokenId={tokenId} />
             <VotingPowerRemaining
                 pools={pools}
                 hasVoted={hasVoted}

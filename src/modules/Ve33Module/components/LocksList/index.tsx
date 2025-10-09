@@ -1,36 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { useVeALGBRewards, useVeALGBs } from "../../hooks";
+import { useVeTOKENRewards, useVeTOKENs } from "../../hooks";
 import { CreateLockModal } from "../CreateLockModal";
 import { useCallback, useMemo } from "react";
 import { LocksTable } from "../Table";
 import { isDefined } from "@/utils";
 
 export const LocksList = () => {
-    const { veALGBs, isLoading: isVeALGBsLoading, refetch: refetchVeALGBs } = useVeALGBs();
-    const { data: veRewards, isLoading: veRewardsLoading, refetch: refetchVeALGBRewards } = useVeALGBRewards();
+    const { veTOKENs, isLoading: isVeTOKENsLoading, refetch: refetchVeTOKENs } = useVeTOKENs();
+    const { data: veRewards, isLoading: veRewardsLoading, refetch: refetchVeTOKENRewards } = useVeTOKENRewards();
 
     const extendedVePositions = useMemo(() => {
-        if (!veALGBs || !veRewards) return [];
+        if (!veTOKENs || !veRewards) return [];
 
-        return veALGBs
-            .map((veALGB) => {
-                const reward = veRewards.find((reward) => reward.tokenId === veALGB.tokenId);
-                return reward ? { ...veALGB, ...reward } : null;
+        return veTOKENs
+            .map((veTOKEN) => {
+                const reward = veRewards.find((reward) => reward.tokenId === veTOKEN.tokenId);
+                return reward ? { ...veTOKEN, ...reward } : null;
             })
             .filter(isDefined);
-    }, [veALGBs, veRewards]);
+    }, [veTOKENs, veRewards]);
 
     const handleRefetch = useCallback(() => {
-        refetchVeALGBs();
-        refetchVeALGBRewards();
-    }, [refetchVeALGBs, refetchVeALGBRewards]);
+        refetchVeTOKENs();
+        refetchVeTOKENRewards();
+    }, [refetchVeTOKENs, refetchVeTOKENRewards]);
 
-    const isLoading = isVeALGBsLoading || veRewardsLoading;
+    const isLoading = isVeTOKENsLoading || veRewardsLoading;
 
     return (
         <>
-            {!isLoading && (!veALGBs || veALGBs.length === 0) && <NoVeALGBPositions />}
-            {veALGBs && veALGBs.length > 0 && (
+            {!isLoading && (!veTOKENs || veTOKENs.length === 0) && <NoVeTOKENPositions />}
+            {veTOKENs && veTOKENs.length > 0 && (
                 <div className="flex flex-col min-h-[377px] w-full pb-8 bg-card border border-card-border/60 rounded-xl">
                     <LocksTable data={extendedVePositions} refetch={handleRefetch} loading={isLoading} />
                 </div>
@@ -39,12 +39,12 @@ export const LocksList = () => {
     );
 };
 
-const NoVeALGBPositions = () => (
+const NoVeTOKENPositions = () => (
     <div className="flex flex-col items-start w-full gap-4 p-6 bg-card border border-card-border rounded-xl animate-fade-in">
-        <h2 className="text-2xl font-bold text-left">You have no veALGB locks</h2>
+        <h2 className="text-2xl font-bold text-left">You have no veTOKEN locks</h2>
         <p className="text-md font-semibold">Let's create one!</p>
         <CreateLockModal>
-            <Button>Get veALGB</Button>
+            <Button>Get veTOKEN</Button>
         </CreateLockModal>
     </div>
 );
