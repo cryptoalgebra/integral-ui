@@ -1458,10 +1458,10 @@
     tsdx "^0.14.1"
     typechain "^8.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/integral-sdk@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.0.3.tgz#401934a6e222d820815985e2bd303a29ac2ac178"
-  integrity sha512-2/DEb0k4eW0xkH6dObPQT3FkWiDZVn2y8xrpyF2v+HPbAeAzGxv7U9DhE/iyVJ9vqx6gF3e/lMFz3E8ofRWOew==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.1.0.tgz#e18736e5159d126288753099c3323f86077a48ae"
+  integrity sha512-M0aAdZc1Yj0I3mva4WewQG/XibmNYwr55CfMkNHKKN9T9ce8EOMmBj2x0Lu8JGZuDHqzXKwX4Sk+k8J81bm6PQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -1475,12 +1475,29 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-custom-pools@2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-custom-pools/-/router-custom-pools-2.0.5.tgz#88589e4c4d7b0e9f0ca36d12229dc65ccb9fbf5a"
-  integrity sha512-6hRvd3GYAOI+rHuzQxepF7MyD6FJtNbYT7E5jxnFwcZPSWnsRlOKuBATUGCKkm5wP+p4+Ef6Krlyx1Mg1tTMLQ==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.2.0.tgz#4db64888ec2a1cc58c1a5b1c64912ff75ace4754"
+  integrity sha512-Nh0Rm/tHiziRkL9xbwHdOOvz5Mc2GV6TNL0nV8qD7vkfb+Zf+/OCRYdjP++t3QIeDcEJvinIufR8xLXjhc4tWQ==
   dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/integral-sdk@1.0.3"
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/solidity" "^5.7.0"
+    "@ethersproject/units" "^5.7.0"
+    big.js "^6.2.1"
+    decimal.js-light "^2.5.1"
+    jsbi "^3.2.5"
+    numeral "^2.0.6"
+    tiny-invariant "^1.3.1"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.4.9":
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.4.9.tgz#328a044b2de7685ee7a605a87dde9a8deacdc882"
+  integrity sha512-x0wpB7W9eXitZJ4NEqTH7yxQz1jharu/rjT7/aDksW5JZlA82HtpTGGRay5RSsgLDyD87a8ImqONMMczp8XmXg==
+  dependencies:
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/clamm-base-sdk@1.1.0"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"

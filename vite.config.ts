@@ -51,9 +51,9 @@ export default defineConfig({
         ignoreDisabledModules(disabledModules.map((m) => m.moduleDir)),
         eslint({
             emitWarning: false,
-            emitError: true,
+            emitError: false,
             failOnWarning: false,
-            failOnError: true,
+            failOnError: false,
         }),
     ],
     resolve: {

@@ -1,4 +1,4 @@
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
@@ -7,6 +7,7 @@ import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
+import { STABLECOINS } from "config/tokens";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
@@ -20,7 +21,11 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    [STABLECOINS[ChainId.Base].USDC.address.toLowerCase()]: {
+        symbol: "USDC",
+        logo: USDCLogo,
+    },
+    [STABLECOINS[ChainId.BaseSepolia].USDC.address.toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
     },

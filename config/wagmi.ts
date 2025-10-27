@@ -31,6 +31,38 @@ import {
     VOTING_ESCROW,
 } from "./contract-addresses";
 import { defineChain } from "viem";
+import { DEFAULT_CHAIN_ID } from "./default-chain";
+
+const baseChain = defineChain({
+    id: 8453,
+    network: "base",
+    name: "Base",
+    nativeCurrency: { name: "Base Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: {
+        default: {
+            http: ["https://base.gateway.tenderly.co/4q52tUempJuHciTWl5m1Ef"],
+        },
+        public: {
+            http: ["https://base.gateway.tenderly.co/4q52tUempJuHciTWl5m1Ef"],
+        },
+    },
+    blockExplorers: {
+        etherscan: {
+            name: "BaseScan",
+            url: "https://basescan.org",
+        },
+        default: {
+            name: "BaseScan",
+            url: "https://basescan.org",
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: "0xfe3becd788320465ab649015f34f7771220a88b2",
+            blockCreated: 24170245,
+        },
+    },
+});
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
     id: 84532,
@@ -64,7 +96,7 @@ const baseSepoliaChain = /*#__PURE__*/ defineChain({
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseChain, baseSepoliaChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
@@ -98,8 +130,10 @@ const contractAddresses = {
     VotingEscrow: VOTING_ESCROW,
 };
 
-export const wagmiContracts: ContractConfig[] = rawContracts.map((contract) => ({
-    name: contract.name,
-    abi: contract.abi,
-    address: contractAddresses[contract.name as keyof typeof contractAddresses],
-}));
+export const wagmiContracts: ContractConfig[] = rawContracts
+    .map((contract) => ({
+        name: contract.name,
+        abi: contract.abi,
+        address: contractAddresses[contract.name as keyof typeof contractAddresses],
+    }))
+    .filter((contract) => contract.address?.[DEFAULT_CHAIN_ID] !== null);

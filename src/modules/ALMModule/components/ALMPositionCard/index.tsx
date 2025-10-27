@@ -30,18 +30,14 @@ export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPosition
         <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in">
             <div className="relative flex w-full justify-start text-left">
                 <div className="flex flex-col gap-4 w-full">
-
                     <h2 className="flex gap-2 scroll-m-20 text-2xl font-bold tracking-tight bg-card-hover -mx-4 px-4 -mt-4 py-4 rounded-t-xl border-b border-card-border lg:text-2xl">
-                        <CurrencyLogo
-                            currency={userVault.vault.depositToken}
-                            size={30}
-                        />
+                        <CurrencyLogo currency={userVault.vault.depositToken} size={30} />
                         <span>{userVault.vault.name}</span>
                     </h2>
-                    
+
                     <div className="flex gap-8 -mx-4 px-4 pb-4 border-b border-card-border">
                         <div>
-                            <div className="font-bold text-xs text-white/75 mb-2">LIQUIDITY</div>
+                            <div className="font-bold text-xs text-text-100/75 mb-2">LIQUIDITY</div>
                             <div className="font-semibold text-xl">
                                 {positionLiquidityUSD ? (
                                     <span>${formatAmount(positionLiquidityUSD, 4)}</span>
@@ -51,7 +47,7 @@ export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPosition
                             </div>
                         </div>
                         <div>
-                            <div className="font-bold text-xs text-white/75 mb-2">APR</div>
+                            <div className="font-bold text-xs text-text-100/75 mb-2">APR</div>
                             <div className="font-semibold text-xl">
                                 {positionAPR >= 0 ? (
                                     <span>{formatAmount(positionAPR, 2)}%</span>
@@ -62,7 +58,7 @@ export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPosition
                         </div>
                         <div className="flex w-full justify-between bg-card-dark rounded-lg">
                             <div className="text-left">
-                                <div className="font-bold text-xs text-white/75 mb-2">NET RETURN</div>
+                                <div className="font-bold text-xs text-text-100/75 mb-2">NET RETURN</div>
                                 <div className="font-semibold text-xl">
                                     <span className={Number(pnl) >= 0 ? "text-green-500" : "text-red-400"}>
                                         {formatAmount(Number(pnl), 6)} {userVault.vault.depositToken.symbol}

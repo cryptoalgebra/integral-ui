@@ -114,7 +114,7 @@ const PoolsTable = <TData, TValue>({
                                 size="md"
                                 className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg py-4"
                             >
-                                <span className="w-2 h-2 bg-yellow-950 border border-yellow-500 rotate-45" />
+                                <span className="w-2 h-2 bg-farm border border-text-100 text-text-100 rotate-45" />
                                 <span>Farm Pools</span>
                             </Button>
                         )}
@@ -125,7 +125,7 @@ const PoolsTable = <TData, TValue>({
                                 size="md"
                                 className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
                             >
-                                <span className="w-2 h-2 bg-cyan-950 border border-cyan-500 rotate-45" />
+                                <span className="w-2 h-2 bg-alm border border-text-100 text-text-100 rotate-45" />
                                 <span>ALM Pools</span>
                             </Button>
                         )}

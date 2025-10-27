@@ -5,14 +5,18 @@ export const USE_UNISWAP_PLACEHOLDER_DATA = true;
 export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // actually it's Thena Fusion BSC Mainnet
 
 export const INFO_GRAPH_URL = {
-    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/82608/ve-analytics/version/latest",
+    [ChainId.Base]:
+        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/5pwQHNUqE7GFeG7C32m2HM3vhXvoQpet4HAinmHFmxW5",
+    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/base-testnet-info/version/latest",
 };
 
 export const FARMING_GRAPH_URL = {
-    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/82608/ve-farms/version/latest",
+    [ChainId.Base]:
+        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/5ASqXjxabMNbiqXML7YBMDR7QVRgU6oFe5R8sYi4Uwtn",
+    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/base-testnet-farms/version/latest",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.BaseSepolia]:
-        "https://api.studio.thegraph.com/query/82608/ve-limits/version/latest",
+    [ChainId.Base]: "https://api.studio.thegraph.com/query/50593/clamm-limits/v1.2.4",
+    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/base-testnet-limits/v0.0.5",
 };
