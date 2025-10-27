@@ -34,7 +34,7 @@ export const LimitOrdersList = () => {
         client: infoClient,
     });
 
-    const customPoolDeployer = CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId];
+    const customPoolDeployer = CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId];
 
     const formattedLimitOrders = useMemo(() => {
         if (!limitOrders || !poolForLimitOrders?.pools || !customPoolDeployer) return [];

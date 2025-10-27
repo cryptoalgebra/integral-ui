@@ -69,7 +69,7 @@ const RangeSelectorPart = ({
 
     return (
         <div>
-            <div className="font-bold text-xs mb-3 text-white/75">{title.toUpperCase()}</div>
+            <div className="font-bold text-xs mb-3 text-text-100/75">{title.toUpperCase()}</div>
             <div className="flex relative">
                 <Button
                     variant={"ghost"}

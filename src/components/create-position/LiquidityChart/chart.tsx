@@ -48,7 +48,7 @@ const CustomBar = ({ x, y, width, height, percent, isCurrent, fill }: CustomBarP
                 )}%`}</text>
             )}
             {isCurrent && (
-                <text x={x + 10} y={y - 10} fill="white" fontSize={"14px"} fontWeight={600} textAnchor="middle">
+                <text x={x + 10} y={y - 10} className="fill-text-100" fontSize={"14px"} fontWeight={600} textAnchor="middle">
                     Current Price
                 </text>
             )}
@@ -59,10 +59,10 @@ const CustomBar = ({ x, y, width, height, percent, isCurrent, fill }: CustomBarP
                     fill === "primary"
                         ? "fill-primary-200"
                         : fill === "accent"
-                          ? "fill-accent"
-                          : fill === "muted"
-                            ? "fill-muted"
-                            : "fill-accent-foreground"
+                        ? "fill-accent"
+                        : fill === "muted"
+                        ? "fill-muted"
+                        : "fill-accent-foreground"
                 )}
                 width={width > 0 ? width : 0}
                 height={height}

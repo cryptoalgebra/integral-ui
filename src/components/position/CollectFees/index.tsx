@@ -59,7 +59,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
     return (
         <div className="relative flex w-full items-center justify-between">
             <div className="text-left">
-                <div className="font-bold text-xs text-white/75 mb-2">EARNED FEES</div>
+                <div className="font-bold text-xs text-text-100/75 mb-2">EARNED FEES</div>
                 {positionFeesUSD ? (
                     <HoverCard closeDelay={0} openDelay={0}>
                         <HoverCardTrigger>

@@ -142,7 +142,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
                                 disabled={!startPriceTypedValue && !mintInfo.price}
                             />
                             <div className="md:ml-auto md:text-right">
-                                <div className="font-bold text-xs mb-3 text-white/75">CURRENT PRICE</div>
+                                <div className="font-bold text-xs mb-3 text-text-100/75">CURRENT PRICE</div>
                                 <div className="font-bold text-xl">{`${currentPrice}`}</div>
                             </div>
                         </div>

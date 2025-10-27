@@ -41,11 +41,11 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
     const [wasInverted, setWasInverted] = useState(false);
 
     const limitOrderPoolAddress =
-        token0 && token1 && !showWrap && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+        token0 && token1 && !showWrap && CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId]
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId],
               }) as Address)
             : undefined;
 
@@ -124,8 +124,8 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
                 ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
                 : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : wasInverted
-              ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-              : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+            ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
         if (priceTick === undefined) {
             return { blockCreation: true, message: "Unable to calculate price tick" };
@@ -158,8 +158,8 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
                 ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
                 : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : wasInverted
-              ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-              : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+            ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
         if (priceTick === undefined) return [true, true];
 
