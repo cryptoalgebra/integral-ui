@@ -1,4 +1,5 @@
 import { BASES_TO_CHECK_TRADES_AGAINST } from "config";
+import { BOOSTED_TOKENS } from "config/tokens";
 import { Currency, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
@@ -11,7 +12,10 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
     const bases: Token[] = useMemo(() => {
         if (!chainId) return [];
 
-        return BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [];
+        const baseTokens = BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [];
+        const boostedTokens = Object.values(BOOSTED_TOKENS[chainId] ?? {});
+
+        return [...baseTokens, ...boostedTokens];
     }, [chainId]);
 
     const basePairs: [Token, Token][] = useMemo(

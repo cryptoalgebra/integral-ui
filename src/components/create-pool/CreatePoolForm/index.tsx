@@ -16,13 +16,7 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import {
-    STABLECOINS,
-    CUSTOM_POOL_DEPLOYER_TITLES,
-    CUSTOM_POOL_DEPLOYER_ADDRESSES,
-    NONFUNGIBLE_POSITION_MANAGER,
-    enabledModules,
-} from "config";
+import { TOKENS, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES, NONFUNGIBLE_POSITION_MANAGER, enabledModules } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
@@ -181,7 +175,7 @@ const CreatePoolForm = () => {
 
         return () => {
             selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-            selectCurrency(SwapField.OUTPUT, STABLECOINS[chainid].USDC.address as Address);
+            selectCurrency(SwapField.OUTPUT, TOKENS[chainid].USDC.address as Address);
             typeStartPriceInput("");
         };
     }, []);

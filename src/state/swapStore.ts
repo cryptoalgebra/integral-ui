@@ -1,4 +1,4 @@
-import { DEFAULT_CHAIN_ID, enabledModules, STABLECOINS } from "config";
+import { DEFAULT_CHAIN_ID, enabledModules, TOKENS } from "config";
 import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { BestTradeExactIn, BestTradeExactOut, useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
@@ -73,7 +73,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDC.address as Address,
+        currencyId: TOKENS[DEFAULT_CHAIN_ID].USDC.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,
@@ -181,10 +181,12 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     const isExactIn: boolean = independentField === SwapField.INPUT;
 
-    const parsedAmount = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
-        [typedValue, isExactIn, inputCurrency, outputCurrency]
-    );
+    const parsedAmount = useMemo(() => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined), [
+        typedValue,
+        isExactIn,
+        inputCurrency,
+        outputCurrency,
+    ]);
     const bestTradeExactIn = useBestTradeExactIn(
         isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
         outputCurrency ?? undefined
@@ -202,7 +204,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         enabledModules.smartRouter
     );
 
-    const trade = enabledModules.smartRouter ? smartTrade : ((isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined);
+    const trade = enabledModules.smartRouter ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
 
     const [addressA, addressB] = [
         inputCurrency?.isNative ? undefined : inputCurrency?.address || "",
@@ -324,8 +326,8 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                       independentField === SwapField.INPUT
                           ? parsedAmount
                           : limitOrderPrice
-                            ? parsedLimitOrderInput
-                            : toggledTrade?.inputAmount,
+                          ? parsedLimitOrderInput
+                          : toggledTrade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
                           ? limitOrderPrice
@@ -336,10 +338,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                                   : undefined
                               : parsedAmount
                           : limitOrderPrice
-                            ? outputCurrency && parsedAmount
-                                ? parsedLimitOrderOutput
-                                : undefined
-                            : toggledTrade?.outputAmount,
+                          ? outputCurrency && parsedAmount
+                              ? parsedLimitOrderOutput
+                              : undefined
+                          : toggledTrade?.outputAmount,
               };
     }, [
         showWrap,

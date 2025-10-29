@@ -9,7 +9,7 @@ import { RewardToken } from "../types/voting";
 import { Address, formatUnits } from "viem";
 import { useAllTokens } from "@/hooks/tokens/useAllTokens";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
-import { STABLECOINS } from "config/tokens";
+import { TOKENS } from "config/tokens";
 import { useNativePriceUSD } from "@/hooks/common/useNativePriceUSD";
 import { VeTOKENRewards } from "../types/veTOKEN";
 
@@ -55,7 +55,7 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
     }, [veTOKENIds, gaugeList, currentPeriod, chainId]);
 
     const { nativePriceUSD } = useNativePriceUSD();
-    const { formatted: tokenPriceUSD } = useUSDCPrice(STABLECOINS[chainId].TOKEN);
+    const { formatted: tokenPriceUSD } = useUSDCPrice(TOKENS[chainId].TOKEN);
 
     const { data: results, isLoading, refetch } = useReadContracts({
         contracts,
@@ -95,7 +95,7 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
             if (rebaseResult) {
                 const [amounts] = rebaseResult as [bigint[], Address[]];
                 res[idx].rebaseAmount = amounts?.[0] ?? 0n;
-                res[idx].rebaseAmountUsd = Number(formatUnits(res[idx].rebaseAmount, STABLECOINS[chainId].TOKEN.decimals)) * tokenPriceUSD;
+                res[idx].rebaseAmountUsd = Number(formatUnits(res[idx].rebaseAmount, TOKENS[chainId].TOKEN.decimals)) * tokenPriceUSD;
             }
         });
 
