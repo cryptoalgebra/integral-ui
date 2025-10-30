@@ -185,7 +185,7 @@ const PoolPage = () => {
                         position: null,
                         almShares: vault.shares,
                         almVaultAddress: vault.vault.id,
-                    }) as FormattedPosition
+                    } as FormattedPosition)
             ) || [];
 
         return [...almPositionsData, ...positionsData];

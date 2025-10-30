@@ -22,10 +22,11 @@
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
-            "config/*": ["./config/*"]
+            "config/*": ["./config/*"],
+            "sdk-updates/*": ["./sdk-updates/*"]
         }
     },
-    "include": ["src", "config"],
+    "include": ["src", "config", "sdk-updates"],
     "exclude": ["src/generated.ts"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }

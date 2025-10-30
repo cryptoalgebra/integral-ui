@@ -22,11 +22,7 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
 
     const { formatted: currencyAPriceUSD } = useUSDCPrice(vaults?.[0]?.token0);
     const { formatted: currencyBPriceUSD } = useUSDCPrice(vaults?.[0]?.token1);
-    const {
-        data: userVaults,
-        isLoading,
-        mutate,
-    } = useSWR(
+    const { data: userVaults, isLoading, mutate } = useSWR(
         ["userVaults", account, vaults, poolAddress, currencyAPriceUSD, currencyBPriceUSD, provider],
         async (): Promise<UserALMVault[]> => {
             if (!provider || !account || !vaults) {
@@ -84,11 +80,7 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
         }
     );
 
-    const {
-        data: stakedUserVaults,
-        isLoading: isStakedUserVaultsLoading,
-        mutate: mutateStaked,
-    } = useSWR(
+    const { data: stakedUserVaults, isLoading: isStakedUserVaultsLoading, mutate: mutateStaked } = useSWR(
         ["stakedUserVaults", account, vaults, poolAddress, currencyAPriceUSD, currencyBPriceUSD, provider],
         async (): Promise<UserALMVault[]> => {
             if (!provider || !account || !vaults) {

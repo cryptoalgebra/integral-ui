@@ -61,6 +61,7 @@ export default defineConfig({
             { find: "@", replacement: path.resolve(__dirname, "./src") },
             { find: "jsbi", replacement: path.resolve(__dirname, "node_modules/jsbi/dist/jsbi-cjs.js") },
             { find: "config", replacement: path.resolve(__dirname, "./config") },
+            { find: "sdk-updates", replacement: path.resolve(__dirname, "./sdk-updates") },
             ...disabledAliases,
         ],
     },

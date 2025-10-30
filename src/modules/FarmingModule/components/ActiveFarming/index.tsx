@@ -29,8 +29,13 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const depositsForActiveFarming = deposits.filter((d) => farming.farming.id.toLowerCase() === d.eternalFarming?.toLowerCase());
 
-    const { formattedRewardEarned, formattedBonusRewardEarned, rewardEarnedUSD, bonusRewardEarnedUSD, totalRewardsEarnedUSD } =
-        useFarmingRewardsEarned(farming.farming, depositsForActiveFarming);
+    const {
+        formattedRewardEarned,
+        formattedBonusRewardEarned,
+        rewardEarnedUSD,
+        bonusRewardEarnedUSD,
+        totalRewardsEarnedUSD,
+    } = useFarmingRewardsEarned(farming.farming, depositsForActiveFarming);
 
     const APR = useFarmingAPR({ farmingId: farming.farming.id });
 
@@ -99,7 +104,9 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                             {isSameReward ? (
                                 <>
                                     <CurrencyLogo size={32} currency={rewardTokenCurrency} />
-                                    <p>{`${formatAmount(rewardRatePerDay + bonusRewardRatePerDay, 2)} ${farming.rewardToken.symbol} / day`}</p>
+                                    <p>{`${formatAmount(rewardRatePerDay + bonusRewardRatePerDay, 2)} ${
+                                        farming.rewardToken.symbol
+                                    } / day`}</p>
                                 </>
                             ) : (
                                 <div className="flex w-full gap-4 max-md:flex-col">
@@ -121,7 +128,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
                 <div className="w-full flex gap-3">
                     <Button
-                        variant={'primary'}
+                        variant={"primary"}
                         disabled={(!rewardEarnedUSD && !bonusRewardEarnedUSD) || isLoading}
                         onClick={handleHarvestAll}
                         className="w-1/2"

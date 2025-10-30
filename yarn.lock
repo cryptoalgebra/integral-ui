@@ -5156,6 +5156,14 @@
     "@typescript-eslint/types" "6.7.4"
     eslint-visitor-keys "^3.4.1"
 
+"@uniswap/permit2-sdk@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@uniswap/permit2-sdk/-/permit2-sdk-1.4.0.tgz#eafb48e89bd747b893a88d3cabd2422a81528b80"
+  integrity sha512-l/aGhfhB93M76vXs4eB8QNwhELE6bs66kh7F1cyobaPtINaVpMmlJv+j3KmHeHwAZIsh7QXyYzhDxs07u0Pe4Q==
+  dependencies:
+    ethers "^5.7.0"
+    tiny-invariant "^1.1.0"
+
 "@vitejs/plugin-react-swc@^3.3.2":
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-react-swc/-/plugin-react-swc-3.4.0.tgz#53ca6a07423abadec92f967e188d5ba49b350830"
@@ -8395,7 +8403,7 @@ ethereumjs-util@^7.1.4:
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^5.6.8:
+ethers@^5.6.8, ethers@^5.7.0:
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.8.0.tgz#97858dc4d4c74afce83ea7562fe9493cedb4d377"
   integrity sha512-DUq+7fHrCg1aPDFCHx6UIPb3nmt2XMpM7Y/g2gLhsl3lIBqeAfOJIl1qEvRf2uq3BiKxmh6Fh5pfp2ieyek7Kg==

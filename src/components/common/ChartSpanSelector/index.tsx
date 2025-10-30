@@ -23,11 +23,11 @@ export function ChartSpanSelector({ chartSpan, handleChangeChartSpan }: IChartSp
                     size={"sm"}
                     key={span}
                     onClick={() => handleChangeChartSpan(span as ChartSpanType)}
-                    variant={'icon'}
+                    variant={"icon"}
                     disabled={chartSpan === span}
                     className={cn(
-                        'border rounded-xl disabled:opacity-100 hover:bg-white/5',
-                        chartSpan === span ? 'bg-white/5 border-white/20' : 'border-none'
+                        "border rounded-xl disabled:opacity-100 hover:bg-text-100/5",
+                        chartSpan === span ? "bg-text-100/5 border-text-100/20" : "border-none"
                     )}
                 >
                     {label}

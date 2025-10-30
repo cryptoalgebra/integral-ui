@@ -21,7 +21,7 @@ const TokenSelectorView = {
     NOT_FOUND: "NOT_FOUND",
 };
 
-type TokenSelectorViewType = (typeof TokenSelectorView)[keyof typeof TokenSelectorView];
+type TokenSelectorViewType = typeof TokenSelectorView[keyof typeof TokenSelectorView];
 
 const Search = ({
     data,

@@ -2,99 +2,136 @@ import { Currency, Pool, Route } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useSwapPools } from "./useSwapPools";
 import { useChainId } from "wagmi";
-import { BOOSTED_TOKEN_MAPPING } from "config/tokens";
+import { getBoostedToken } from "config/tokens";
+import { BoostedRoute } from "sdk-updates/boostedRoute";
+import { isBoostedPool } from "@/utils/pool/isBoostedPool";
+import { BoostedToken } from "sdk-updates/boostedToken";
 
-/**
- * Returns true if poolA is equivalent to poolB
- * @param poolA one of the two pools
- * @param poolB the other pool
- */
 function poolEquals(poolA: Pool, poolB: Pool): boolean {
     return poolA === poolB || (poolA.token0.equals(poolB.token0) && poolA.token1.equals(poolB.token1));
 }
 
+/**
+ * Unified route computation that handles both normal and boosted pools
+ * Returns both normal Routes and BoostedRoutes
+ */
 function computeAllRoutes(
     currencyIn: Currency,
     currencyOut: Currency,
     pools: Pool[],
     chainId: number,
     currentPath: Pool[] = [],
-    allPaths: Route<Currency, Currency>[] = [],
+    hasBoostedPool = false,
     startCurrencyIn: Currency = currencyIn,
-    maxHops = 2
-): Route<Currency, Currency>[] {
+    maxHops = 3
+): { normalRoutes: Route<Currency, Currency>[]; boostedRoutes: BoostedRoute<Currency, Currency>[] } {
+    const normalRoutes: Route<Currency, Currency>[] = [];
+    const boostedRoutes: BoostedRoute<Currency, Currency>[] = [];
+
     const tokenIn = currencyIn?.wrapped;
     const tokenOut = currencyOut?.wrapped;
 
-    if (!tokenIn || !tokenOut) throw new Error("Missing tokenIn/tokenOut");
+    if (!tokenIn || !tokenOut) return { normalRoutes, boostedRoutes };
 
     for (const pool of pools) {
-        try {
-            if (!pool.involvesToken(tokenIn) || currentPath.find((pathPool) => poolEquals(pool, pathPool))) continue;
+        if (currentPath.some((p) => poolEquals(p, pool))) continue;
 
-            const outputToken = pool.token0.equals(tokenIn) ? pool.token1 : pool.token0;
-            if (outputToken.equals(tokenOut)) {
-                allPaths.push(new Route([...currentPath, pool], startCurrencyIn, currencyOut));
-            } else if (maxHops > 1) {
-                computeAllRoutes(outputToken, currencyOut, pools, chainId, [...currentPath, pool], allPaths, startCurrencyIn, maxHops - 1);
+        const isBoosted = isBoostedPool(pool);
+        const pathHasBoosted = hasBoostedPool || isBoosted;
+
+        // For boosted pools, check if we can connect via boosted token wrapper
+        let canConnect = false;
+        let nextToken = null;
+
+        if (isBoosted) {
+            // Try to connect via boosted token
+            const boostedIn = getBoostedToken(tokenIn);
+            if (boostedIn && pool.involvesToken(boostedIn)) {
+                canConnect = true;
+                nextToken = pool.token0.equals(boostedIn) ? pool.token1 : pool.token0;
             }
-        } catch (e) {
-            console.error(e);
-            continue;
+        } else {
+            // Normal pool connection
+            if (pool.involvesToken(tokenIn)) {
+                canConnect = true;
+                nextToken = pool.token0.equals(tokenIn) ? pool.token1 : pool.token0;
+            }
+        }
+
+        if (!canConnect || !nextToken) continue;
+
+        // Check if we reached the destination
+        const reachedDestination = isBoosted
+            ? nextToken instanceof BoostedToken
+                ? nextToken.underlying.equals(tokenOut)
+                : getBoostedToken(tokenOut)?.equals(nextToken)
+            : nextToken.equals(tokenOut);
+
+        if (reachedDestination) {
+            const newPath = [...currentPath, pool];
+
+            if (pathHasBoosted) {
+                // Create BoostedRoute if path contains at least one boosted pool
+                boostedRoutes.push(new BoostedRoute(newPath, startCurrencyIn, currencyOut));
+            } else {
+                // Create normal Route if no boosted pools in path
+                normalRoutes.push(new Route(newPath, startCurrencyIn, currencyOut));
+            }
+        } else if (maxHops > 1) {
+            // Continue searching with the next token
+            const nextCurrency = nextToken instanceof BoostedToken ? nextToken.underlying : nextToken;
+
+            const subRoutes = computeAllRoutes(
+                nextCurrency,
+                currencyOut,
+                pools,
+                chainId,
+                [...currentPath, pool],
+                pathHasBoosted,
+                startCurrencyIn,
+                maxHops - 1
+            );
+
+            normalRoutes.push(...subRoutes.normalRoutes);
+            boostedRoutes.push(...subRoutes.boostedRoutes);
         }
     }
 
-    return allPaths;
+    return { normalRoutes, boostedRoutes };
 }
 
-/**
- * Returns all the routes from an input currency to an output currency
- * @param currencyIn the input currency
- * @param currencyOut the output currency
- */
-export function useAllRoutes(currencyIn?: Currency, currencyOut?: Currency): { loading: boolean; routes: Route<Currency, Currency>[] } {
+/** ────────────────────────────────
+ * HOOK
+ * ──────────────────────────────── */
+export function useAllRoutes(
+    currencyIn?: Currency,
+    currencyOut?: Currency
+): {
+    loading: boolean;
+    boostedRoutes: BoostedRoute<Currency, Currency>[];
+    normalRoutes: Route<Currency, Currency>[];
+} {
     const chainId = useChainId();
-
     const { pools, isLoading: poolsLoading } = useSwapPools(currencyIn, currencyOut);
 
-    return useMemo(() => {
+    const { normalRoutes, boostedRoutes } = useMemo(() => {
         if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
             return {
-                loading: true,
-                routes: [],
+                normalRoutes: [],
+                boostedRoutes: [],
             };
 
-        const boostedTokenMapping = BOOSTED_TOKEN_MAPPING[chainId];
-
-        // Получаем все возможные пути со всеми пулами (включая boosted)
-        const allRoutes = computeAllRoutes(currencyIn, currencyOut, pools, chainId, [], [], currencyIn, 1);
-
-        if (!boostedTokenMapping) return { loading: false, routes: allRoutes };
-
-        // Для каждого маршрута проверяем, содержит ли он бустед пулы
-        // Если да, то создаем новый Route с теми же пулами, но с underlying токенами как вход/выход
-        const processedRoutes = allRoutes.map((route) => {
-            const hasBoostedPools = route.pools.some((pool) => {
-                const token0Mapping = boostedTokenMapping[pool.token0.address];
-                const token1Mapping = boostedTokenMapping[pool.token1.address];
-                return token0Mapping?.wrapped.equals(pool.token0) || token1Mapping?.wrapped.equals(pool.token1);
-            });
-
-            if (hasBoostedPools) {
-                // Находим underlying токены для входа и выхода
-                const underlyingIn = boostedTokenMapping[currencyIn.wrapped.address]?.underlying || currencyIn;
-                const underlyingOut = boostedTokenMapping[currencyOut.wrapped.address]?.underlying || currencyOut;
-
-                // Создаем новый Route с теми же пулами, но с underlying токенами
-                return new Route(route.pools, underlyingIn, underlyingOut);
-            }
-
-            return route;
-        });
+        const routes = computeAllRoutes(currencyIn, currencyOut, pools, chainId, [], false, currencyIn, 1);
 
         return {
-            loading: false,
-            routes: processedRoutes,
+            normalRoutes: routes.normalRoutes,
+            boostedRoutes: routes.boostedRoutes,
         };
     }, [chainId, currencyIn, currencyOut, pools, poolsLoading]);
+
+    return {
+        normalRoutes,
+        boostedRoutes,
+        loading: poolsLoading,
+    };
 }

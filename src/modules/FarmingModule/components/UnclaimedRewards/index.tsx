@@ -39,7 +39,7 @@ export const UnclaimedRewards = ({ unclaimedRewards }: UnclaimedRewardsProps) =>
                     <UnclaimedReward key={reward.id} amount={reward.amount} reward={reward.rewardAddress as Address} />
                 ))}
             </div>
-            <Button variant={'primary'} disabled={isLoading} onClick={handleHarvestUnclaimed} className="w-full">
+            <Button variant={"primary"} disabled={isLoading} onClick={handleHarvestUnclaimed} className="w-full">
                 {isLoading ? <Loader /> : "Collect Rewards"}
             </Button>
         </div>

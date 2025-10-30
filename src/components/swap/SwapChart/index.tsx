@@ -13,7 +13,7 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { currencies } = derivedSwap;
     const [tokenA, tokenB] = [currencies.INPUT, currencies.OUTPUT];
 
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
 
     const poolId = useMemo(() => {
         if (!tokenA || !tokenB) return undefined;

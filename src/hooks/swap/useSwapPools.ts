@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO, Currency, Pool, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, Currency, Pool, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
 import { useChainId } from "wagmi";
@@ -6,6 +6,7 @@ import { useMultiplePoolsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import useSWR from "swr";
+import { tryCreateBoostedToken } from "@/utils/token/tryCreateBoostedToken";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -56,8 +57,20 @@ export function useSwapPools(
         if (!poolsData?.pools) return;
 
         return poolsData.pools.map((pool) => {
-            const token0 = new Token(chainId, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name);
-            const token1 = new Token(chainId, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name);
+            const token0 = tryCreateBoostedToken(
+                chainId,
+                pool.token0.id,
+                Number(pool.token0.decimals),
+                pool.token0.symbol,
+                pool.token0.name
+            );
+            const token1 = tryCreateBoostedToken(
+                chainId,
+                pool.token1.id,
+                Number(pool.token1.decimals),
+                pool.token1.symbol,
+                pool.token1.name
+            );
 
             return new Pool(
                 token0,
@@ -71,8 +84,6 @@ export function useSwapPools(
             );
         });
     });
-
-    console.log("comb", poolsAddresses);
 
     return {
         pools: pools || [],

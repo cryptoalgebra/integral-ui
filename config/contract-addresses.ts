@@ -35,6 +35,16 @@ export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0x822ddb9EECc3794790B8316585FebA5b8F7C7507",
 };
 
+/* Omega Router */
+export const OMEGA_ROUTER: Record<number, Address> = {
+    [ChainId.Base]: "0x81b90734659fc4cee39438e99aa6629be2ac24a2",
+    [ChainId.BaseSepolia]: null,
+};
+export const PERMIT2: Record<number, Address> = {
+    [ChainId.Base]: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+    [ChainId.BaseSepolia]: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+};
+
 /* Ve 3.3 */
 export const TOKEN_ADDRESS: Record<number, Address> = {
     [ChainId.Base]: null,

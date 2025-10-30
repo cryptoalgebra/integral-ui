@@ -1,25 +1,24 @@
 import { Currency, CurrencyAmount, Route, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address } from "viem";
-
 import { TradeState, TradeStateType } from "@/types/trade-state";
-
 import { useAllRoutes } from "./useAllRoutes";
+import { useBoostedQuotesResults } from "./useBoostedQuotesResults";
 import { useQuotesResults } from "./useQuotesResults";
+import { BoostedRoute } from "sdk-updates/boostedRoute";
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
 
 export interface BestTradeExactIn {
     state: TradeStateType;
     trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null;
-    fee?: bigint[] | null;
+    fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
 }
 
 export interface BestTradeExactOut {
     state: TradeStateType;
     trade: Trade<Currency, Currency, TradeType.EXACT_OUTPUT> | null;
-    fee?: bigint[] | null;
+    fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
 }
 
@@ -28,14 +27,16 @@ export interface BestTradeExactOut {
  * @param amountIn the amount to swap in
  * @param currencyOut the desired output currency
  */
-export function useBestTradeExactIn(
-    amountIn?: CurrencyAmount<Currency>,
-    currencyOut?: Currency,
-    deployer?: Address | null
-): BestTradeExactIn {
-    const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, deployer);
+export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency): BestTradeExactIn {
+    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut);
 
-    const { data: quotesResults, isLoading: isQuotesLoading, refetch } = useQuotesResults({
+    const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
+        exactInput: true,
+        amountIn,
+        currencyOut,
+    });
+
+    const { data: normalQuotesResults, isLoading: isNormalQuotesLoading, refetch: refetchNormal } = useQuotesResults({
         exactInput: true,
         amountIn,
         currencyOut,
@@ -46,41 +47,51 @@ export function useBestTradeExactIn(
             return {
                 state: TradeState.INVALID,
                 trade: null,
-                refetch,
+                refetch: () => {
+                    refetchBoosted();
+                    refetchNormal();
+                },
             };
         }
 
-        if (routesLoading || isQuotesLoading) {
+        if (routesLoading || isBoostedQuotesLoading || isNormalQuotesLoading) {
             return {
                 state: TradeState.LOADING,
                 trade: null,
             };
         }
 
-        const { bestRoute, amountOut, fee, priceAfterSwap } = (quotesResults || []).reduce(
+        // Combine boosted and normal routes/quotes
+        const allRoutes = [...boostedRoutes, ...normalRoutes];
+        const allQuotesResults = [...(boostedQuotesResults || []), ...(normalQuotesResults || [])];
+
+        const { bestRoute, amountOut, fee, priceAfterSwap } = allQuotesResults.reduce(
             (
                 currentBest: {
-                    bestRoute: Route<Currency, Currency> | null;
-                    amountOut: any | null;
-                    fee: bigint[] | null;
+                    bestRoute: Route<Currency, Currency> | BoostedRoute<Currency, Currency> | null;
+                    amountOut: bigint | null;
+                    fee: number[] | null;
                     priceAfterSwap: bigint[] | null;
                 },
-                { result }: any,
+                result,
                 i
             ) => {
                 if (!result) return currentBest;
 
+                // result[0] = amountOutList, берем последний элемент
+                const resultAmountOut = result[0][result[0].length - 1];
+
                 if (currentBest.amountOut === null) {
                     return {
-                        bestRoute: routes[i],
-                        amountOut: result[0][result[0].length - 1],
+                        bestRoute: allRoutes[i],
+                        amountOut: resultAmountOut,
                         fee: result[5],
                         priceAfterSwap: result[2],
                     };
-                } else if (currentBest.amountOut < result[0]) {
+                } else if (currentBest.amountOut < resultAmountOut) {
                     return {
-                        bestRoute: routes[i],
-                        amountOut: result[0][result[0].length - 1],
+                        bestRoute: allRoutes[i],
+                        amountOut: resultAmountOut,
                         fee: result[5],
                         priceAfterSwap: result[2],
                     };
@@ -109,15 +120,30 @@ export function useBestTradeExactIn(
             state: TradeState.VALID,
             fee,
             trade: Trade.createUncheckedTrade({
-                route: bestRoute,
+                route: bestRoute as Route<Currency, Currency>,
                 tradeType: TradeType.EXACT_INPUT,
                 inputAmount: amountIn,
                 outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()),
             }),
             priceAfterSwap,
-            refetch,
+            refetch: () => {
+                refetchBoosted();
+                refetchNormal();
+            },
         };
-    }, [amountIn?.quotient.toString(), currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
+    }, [
+        amountIn,
+        currencyOut,
+        boostedQuotesResults,
+        normalQuotesResults,
+        boostedRoutes,
+        normalRoutes,
+        routesLoading,
+        isBoostedQuotesLoading,
+        isNormalQuotesLoading,
+        refetchBoosted,
+        refetchNormal,
+    ]);
 
     return trade;
 }
@@ -128,9 +154,15 @@ export function useBestTradeExactIn(
  * @param amountOut the amount to swap out
  */
 export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
-    const { routes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
+    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
-    const { data: quotesResults, isLoading: isQuotesLoading, refetch } = useQuotesResults({
+    const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
+        exactInput: false,
+        currencyIn,
+        amountOut,
+    });
+
+    const { data: normalQuotesResults, isLoading: isNormalQuotesLoading, refetch: refetchNormal } = useQuotesResults({
         exactInput: false,
         currencyIn,
         amountOut,
@@ -141,41 +173,52 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             return {
                 state: TradeState.INVALID,
                 trade: null,
-                refetch,
+                refetch: () => {
+                    refetchBoosted();
+                    refetchNormal();
+                },
             };
         }
 
-        if (routesLoading || isQuotesLoading) {
+        if (routesLoading || isBoostedQuotesLoading || isNormalQuotesLoading) {
             return {
                 state: TradeState.LOADING,
                 trade: null,
             };
         }
 
-        const { bestRoute, amountIn, fee, priceAfterSwap } = (quotesResults || []).reduce(
+        // Combine boosted and normal routes/quotes
+        const allRoutes = [...boostedRoutes, ...normalRoutes];
+        const allQuotesResults = [...(boostedQuotesResults || []), ...(normalQuotesResults || [])];
+
+        const { bestRoute, amountIn, fee, priceAfterSwap } = allQuotesResults.reduce(
             (
                 currentBest: {
-                    bestRoute: Route<Currency, Currency> | null;
-                    amountIn: any | null;
-                    fee: bigint[] | null;
+                    bestRoute: Route<Currency, Currency> | BoostedRoute<Currency, Currency> | null;
+                    amountIn: bigint | null;
+                    fee: number[] | null;
                     priceAfterSwap: bigint[] | null;
                 },
-                { result }: any,
+                result,
                 i
             ) => {
                 if (!result) return currentBest;
 
+                // result[1] = amountInList, берем последний элемент
+                const resultAmountIn = result[1][result[1].length - 1];
+
                 if (currentBest.amountIn === null) {
                     return {
-                        bestRoute: routes[i],
-                        amountIn: result[1][result[1].length - 1],
+                        bestRoute: allRoutes[i],
+                        amountIn: resultAmountIn,
                         fee: result[5],
                         priceAfterSwap: result[2],
                     };
-                } else if (currentBest.amountIn > result[0]) {
+                } else if (currentBest.amountIn > resultAmountIn) {
+                    // Для exactOutput лучший маршрут - тот, что требует меньше входного токена
                     return {
-                        bestRoute: routes[i],
-                        amountIn: result[1][result[1].length - 1],
+                        bestRoute: allRoutes[i],
+                        amountIn: resultAmountIn,
                         fee: result[5],
                         priceAfterSwap: result[2],
                     };
@@ -204,15 +247,30 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             state: TradeState.VALID,
             fee,
             trade: Trade.createUncheckedTrade({
-                route: bestRoute,
+                route: bestRoute as Route<Currency, Currency>,
                 tradeType: TradeType.EXACT_OUTPUT,
                 inputAmount: CurrencyAmount.fromRawAmount(currencyIn, amountIn.toString()),
                 outputAmount: amountOut,
             }),
             priceAfterSwap,
-            refetch,
+            refetch: () => {
+                refetchBoosted();
+                refetchNormal();
+            },
         };
-    }, [amountOut?.quotient.toString(), currencyIn, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
+    }, [
+        amountOut,
+        currencyIn,
+        boostedQuotesResults,
+        normalQuotesResults,
+        boostedRoutes,
+        normalRoutes,
+        routesLoading,
+        isBoostedQuotesLoading,
+        isNormalQuotesLoading,
+        refetchBoosted,
+        refetchNormal,
+    ]);
 
     return trade;
 }

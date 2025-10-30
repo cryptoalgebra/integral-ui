@@ -1,13 +1,12 @@
 import { ChainId, Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
-import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
+import USDTLogo from "@/assets/tokens/usdt.png";
 import EtherLogo from "@/assets/tokens/ether.svg";
-import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
-import { STABLECOINS } from "config/tokens";
+import { TOKENS } from "config/tokens";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
@@ -21,21 +20,17 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    [STABLECOINS[ChainId.Base].USDC.address.toLowerCase()]: {
+    [TOKENS[ChainId.Base].USDC.address.toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
-    [STABLECOINS[ChainId.BaseSepolia].USDC.address.toLowerCase()]: {
+    [TOKENS[ChainId.Base].USDT.address.toLowerCase()]: {
+        symbol: "USDT",
+        logo: USDTLogo,
+    },
+    [TOKENS[ChainId.BaseSepolia].USDC.address.toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
-    },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
-        symbol: "BTC",
-        logo: BTCLogo,
-    },
-    ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
-        symbol: "TOKEN",
-        logo: TOKENLogo,
     },
 };
 

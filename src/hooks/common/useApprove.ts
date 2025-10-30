@@ -60,8 +60,8 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
             isLoading || isPending
                 ? ApprovalState.PENDING
                 : isSuccess && approvalState === ApprovalState.APPROVED
-                  ? ApprovalState.APPROVED
-                  : approvalState,
+                ? ApprovalState.APPROVED
+                : approvalState,
         approvalCallback,
     };
 }
@@ -82,4 +82,8 @@ export function useApproveCallbackFromTrade(
         [trade, allowedSlippage, isSmartTrade]
     );
     return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
+}
+
+export function useRevokeApprove(token: Currency | undefined, spender: Address) {
+    return useApprove(token && CurrencyAmount.fromRawAmount(token, "0"), spender);
 }
