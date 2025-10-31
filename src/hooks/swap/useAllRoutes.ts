@@ -2,102 +2,125 @@ import { Currency, Pool, Route } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useSwapPools } from "./useSwapPools";
 import { useChainId } from "wagmi";
-import { getBoostedToken } from "config/tokens";
 import { BoostedRoute } from "sdk-updates/boostedRoute";
-import { isBoostedPool } from "@/utils/pool/isBoostedPool";
-import { BoostedToken } from "sdk-updates/boostedToken";
+import { BoostedSwapType, determineSwapType, canPoolBeUsedForSwapType } from "@/utils/boosted/swapTypeUtils";
 
-function poolEquals(poolA: Pool, poolB: Pool): boolean {
-    return poolA === poolB || (poolA.token0.equals(poolB.token0) && poolA.token1.equals(poolB.token1));
+// Helper to create unique key for route
+function getRouteKey(pools: Pool[], input: Currency, output: Currency): string {
+    return `${input.wrapped.address}-${pools.map((p) => `${p.token0.address}-${p.token1.address}-${p.deployer}`).join("-")}-${
+        output.wrapped.address
+    }`;
 }
 
 /**
- * Unified route computation that handles both normal and boosted pools
- * Returns both normal Routes and BoostedRoutes
+ * Compute boosted routes between input and output currencies
+ *
+ * Handles 6 boosted swap types:
+ * - WRAP_ONLY: underlying → boosted (no pool)
+ * - UNWRAP_ONLY: boosted → underlying (no pool)
+ * - UNDERLYING_TO_UNDERLYING: underlying → pool → underlying
+ * - UNDERLYING_TO_BOOSTED: underlying → pool → boosted
+ * - BOOSTED_TO_UNDERLYING: boosted → pool → underlying
+ * - BOOSTED_TO_BOOSTED: boosted → pool → boosted
  */
-function computeAllRoutes(
+function computeBoostedRoutes(
     currencyIn: Currency,
     currencyOut: Currency,
     pools: Pool[],
-    chainId: number,
-    currentPath: Pool[] = [],
-    hasBoostedPool = false,
-    startCurrencyIn: Currency = currencyIn,
-    maxHops = 3
-): { normalRoutes: Route<Currency, Currency>[]; boostedRoutes: BoostedRoute<Currency, Currency>[] } {
-    const normalRoutes: Route<Currency, Currency>[] = [];
+    swapType: BoostedSwapType
+): BoostedRoute<Currency, Currency>[] {
+    const tokenIn = currencyIn.wrapped;
+    const tokenOut = currencyOut.wrapped;
     const boostedRoutes: BoostedRoute<Currency, Currency>[] = [];
+    const seenRoutes = new Set<string>();
 
-    const tokenIn = currencyIn?.wrapped;
-    const tokenOut = currencyOut?.wrapped;
-
-    if (!tokenIn || !tokenOut) return { normalRoutes, boostedRoutes };
-
-    for (const pool of pools) {
-        if (currentPath.some((p) => poolEquals(p, pool))) continue;
-
-        const isBoosted = isBoostedPool(pool);
-        const pathHasBoosted = hasBoostedPool || isBoosted;
-
-        // For boosted pools, check if we can connect via boosted token wrapper
-        let canConnect = false;
-        let nextToken = null;
-
-        if (isBoosted) {
-            // Try to connect via boosted token
-            const boostedIn = getBoostedToken(tokenIn);
-            if (boostedIn && pool.involvesToken(boostedIn)) {
-                canConnect = true;
-                nextToken = pool.token0.equals(boostedIn) ? pool.token1 : pool.token0;
+    // ═══════════════════════════════════════════════════════════
+    // CASE 1: WRAP_ONLY (no pools needed)
+    // ═══════════════════════════════════════════════════════════
+    if (swapType === BoostedSwapType.WRAP_ONLY) {
+        try {
+            const route = new BoostedRoute([], currencyIn, currencyOut);
+            const key = `WRAP_ONLY-${tokenIn.address}-${tokenOut.address}`;
+            if (!seenRoutes.has(key)) {
+                boostedRoutes.push(route);
+                seenRoutes.add(key);
             }
-        } else {
-            // Normal pool connection
-            if (pool.involvesToken(tokenIn)) {
-                canConnect = true;
-                nextToken = pool.token0.equals(tokenIn) ? pool.token1 : pool.token0;
-            }
+        } catch (e) {
+            console.error("Failed to create WRAP_ONLY route:", e);
         }
+        return boostedRoutes;
+    }
 
-        if (!canConnect || !nextToken) continue;
-
-        // Check if we reached the destination
-        const reachedDestination = isBoosted
-            ? nextToken instanceof BoostedToken
-                ? nextToken.underlying.equals(tokenOut)
-                : getBoostedToken(tokenOut)?.equals(nextToken)
-            : nextToken.equals(tokenOut);
-
-        if (reachedDestination) {
-            const newPath = [...currentPath, pool];
-
-            if (pathHasBoosted) {
-                // Create BoostedRoute if path contains at least one boosted pool
-                boostedRoutes.push(new BoostedRoute(newPath, startCurrencyIn, currencyOut));
-            } else {
-                // Create normal Route if no boosted pools in path
-                normalRoutes.push(new Route(newPath, startCurrencyIn, currencyOut));
+    // ═══════════════════════════════════════════════════════════
+    // CASE 2: UNWRAP_ONLY (no pools needed)
+    // ═══════════════════════════════════════════════════════════
+    if (swapType === BoostedSwapType.UNWRAP_ONLY) {
+        try {
+            const route = new BoostedRoute([], currencyIn, currencyOut);
+            const key = `UNWRAP_ONLY-${tokenIn.address}-${tokenOut.address}`;
+            if (!seenRoutes.has(key)) {
+                boostedRoutes.push(route);
+                seenRoutes.add(key);
             }
-        } else if (maxHops > 1) {
-            // Continue searching with the next token
-            const nextCurrency = nextToken instanceof BoostedToken ? nextToken.underlying : nextToken;
+        } catch (e) {
+            console.error("Failed to create UNWRAP_ONLY route:", e);
+        }
+        return boostedRoutes;
+    }
 
-            const subRoutes = computeAllRoutes(
-                nextCurrency,
-                currencyOut,
-                pools,
-                chainId,
-                [...currentPath, pool],
-                pathHasBoosted,
-                startCurrencyIn,
-                maxHops - 1
-            );
-
-            normalRoutes.push(...subRoutes.normalRoutes);
-            boostedRoutes.push(...subRoutes.boostedRoutes);
+    // ═══════════════════════════════════════════════════════════
+    // CASE 3-6: BOOSTED swaps through pools
+    // ═══════════════════════════════════════════════════════════
+    for (const pool of pools) {
+        try {
+            if (canPoolBeUsedForSwapType(pool, tokenIn, tokenOut, swapType)) {
+                const key = getRouteKey([pool], currencyIn, currencyOut);
+                if (!seenRoutes.has(key)) {
+                    const route = new BoostedRoute([pool], currencyIn, currencyOut);
+                    boostedRoutes.push(route);
+                    seenRoutes.add(key);
+                }
+            }
+        } catch (e) {
+            // Skip invalid routes
         }
     }
 
-    return { normalRoutes, boostedRoutes };
+    return boostedRoutes;
+}
+
+/**
+ * Compute regular (non-boosted) routes between input and output currencies
+ *
+ * Only handles NORMAL swap type (underlying → pool → underlying, no boosted tokens)
+ */
+function computeRegularRoutes(currencyIn: Currency, currencyOut: Currency, pools: Pool[]): Route<Currency, Currency>[] {
+    const tokenIn = currencyIn.wrapped;
+    const tokenOut = currencyOut.wrapped;
+    const normalRoutes: Route<Currency, Currency>[] = [];
+    const seenRoutes = new Set<string>();
+
+    // Look for normal pools (non-boosted) connecting tokenIn and tokenOut
+    for (const pool of pools) {
+        try {
+            const matchesDirectly =
+                (pool.token0.equals(tokenIn) && pool.token1.equals(tokenOut)) ||
+                (pool.token0.equals(tokenOut) && pool.token1.equals(tokenIn));
+
+            if (matchesDirectly) {
+                const key = getRouteKey([pool], currencyIn, currencyOut);
+                if (!seenRoutes.has(key)) {
+                    const route = new Route([pool], currencyIn, currencyOut);
+                    normalRoutes.push(route);
+                    seenRoutes.add(key);
+                }
+            }
+        } catch (e) {
+            // Skip invalid routes
+        }
+    }
+
+    return normalRoutes;
 }
 
 /** ────────────────────────────────
@@ -121,13 +144,19 @@ export function useAllRoutes(
                 boostedRoutes: [],
             };
 
-        const routes = computeAllRoutes(currencyIn, currencyOut, pools, chainId, [], false, currencyIn, 1);
+        const tokenIn = currencyIn.wrapped;
+        const tokenOut = currencyOut.wrapped;
+
+        // Determine swap type
+        const swapType = determineSwapType(tokenIn, tokenOut);
 
         return {
-            normalRoutes: routes.normalRoutes,
-            boostedRoutes: routes.boostedRoutes,
+            normalRoutes: computeRegularRoutes(currencyIn, currencyOut, pools),
+            boostedRoutes: computeBoostedRoutes(currencyIn, currencyOut, pools, swapType),
         };
     }, [chainId, currencyIn, currencyOut, pools, poolsLoading]);
+
+    console.log("[COMPUTED ROUTES]", { normalRoutes, boostedRoutes });
 
     return {
         normalRoutes,

@@ -1,10 +1,11 @@
-import { Currency, CurrencyAmount, Route, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Route, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { TradeState, TradeStateType } from "@/types/trade-state";
 import { useAllRoutes } from "./useAllRoutes";
 import { useBoostedQuotesResults } from "./useBoostedQuotesResults";
 import { useQuotesResults } from "./useQuotesResults";
 import { BoostedRoute } from "sdk-updates/boostedRoute";
+import { Trade } from "sdk-updates/trade";
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
 
