@@ -7,6 +7,7 @@ import { useDerivedSwapInfo } from "@/state/swapStore.ts";
 import { SwapPageProps, SwapPageView } from "./types";
 // import PageTitle from "@/components/common/PageTitle";
 import SwapChart from "@/components/swap/SwapChart";
+import { RouterSelector } from "@/components/swap/RouterSelector";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
@@ -24,6 +25,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
             <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
                 <div className="flex flex-col gap-2 col-span-1 w-full">
                     <div className="flex flex-col gap-1.5 col-span-1 w-full bg-dark-gradient border border-card-border p-2 rounded-xl">
+                        {!isLimitOrder && <RouterSelector />}
                         <SwapPair derivedSwap={derivedSwap} />
                         {isLimitOrder ? <LimitOrder derivedSwap={derivedSwap} /> : <SwapParams derivedSwap={derivedSwap} />}
                         {!isLimitOrder && <SwapButton derivedSwap={derivedSwap} />}

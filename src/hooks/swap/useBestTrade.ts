@@ -6,6 +6,7 @@ import { useBoostedQuotesResults } from "./useBoostedQuotesResults";
 import { useQuotesResults } from "./useQuotesResults";
 import { BoostedRoute } from "sdk-updates/boostedRoute";
 import { Trade } from "sdk-updates/trade";
+import { RouterType, useSwapState } from "@/state/swapStore";
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
 
@@ -29,6 +30,7 @@ export interface BestTradeExactOut {
  * @param currencyOut the desired output currency
  */
 export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency): BestTradeExactIn {
+    const { routerType } = useSwapState();
     const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut);
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
@@ -62,11 +64,13 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             };
         }
 
-        // Combine boosted and normal routes/quotes
-        const allRoutes = [...boostedRoutes, ...normalRoutes];
-        const allQuotesResults = [...(boostedQuotesResults || []), ...(normalQuotesResults || [])];
+        // Omega Router: use all routes (boosted + normal)
+        // Native Router: use only normal routes (doesn't support boosted)
+        const activeRoutes = routerType === RouterType.OMEGA ? [...boostedRoutes, ...normalRoutes] : normalRoutes;
+        const activeQuotesResults =
+            routerType === RouterType.OMEGA ? [...(boostedQuotesResults || []), ...(normalQuotesResults || [])] : normalQuotesResults || [];
 
-        const { bestRoute, amountOut, fee, priceAfterSwap } = allQuotesResults.reduce(
+        const { bestRoute, amountOut, fee, priceAfterSwap } = activeQuotesResults.reduce(
             (
                 currentBest: {
                     bestRoute: Route<Currency, Currency> | BoostedRoute<Currency, Currency> | null;
@@ -79,19 +83,18 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             ) => {
                 if (!result) return currentBest;
 
-                // result[0] = amountOutList, берем последний элемент
                 const resultAmountOut = result[0][result[0].length - 1];
 
                 if (currentBest.amountOut === null) {
                     return {
-                        bestRoute: allRoutes[i],
+                        bestRoute: activeRoutes[i],
                         amountOut: resultAmountOut,
                         fee: result[5],
                         priceAfterSwap: result[2],
                     };
                 } else if (currentBest.amountOut < resultAmountOut) {
                     return {
-                        bestRoute: allRoutes[i],
+                        bestRoute: activeRoutes[i],
                         amountOut: resultAmountOut,
                         fee: result[5],
                         priceAfterSwap: result[2],
@@ -144,6 +147,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
         isNormalQuotesLoading,
         refetchBoosted,
         refetchNormal,
+        routerType,
     ]);
 
     return trade;
@@ -155,6 +159,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
  * @param amountOut the amount to swap out
  */
 export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
+    const { routerType } = useSwapState();
     const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
@@ -188,11 +193,13 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             };
         }
 
-        // Combine boosted and normal routes/quotes
-        const allRoutes = [...boostedRoutes, ...normalRoutes];
-        const allQuotesResults = [...(boostedQuotesResults || []), ...(normalQuotesResults || [])];
+        // Omega Router: use all routes (boosted + normal)
+        // Native Router: use only normal routes (doesn't support boosted)
+        const activeRoutes = routerType === RouterType.OMEGA ? [...boostedRoutes, ...normalRoutes] : normalRoutes;
+        const activeQuotesResults =
+            routerType === RouterType.OMEGA ? [...(boostedQuotesResults || []), ...(normalQuotesResults || [])] : normalQuotesResults || [];
 
-        const { bestRoute, amountIn, fee, priceAfterSwap } = allQuotesResults.reduce(
+        const { bestRoute, amountIn, fee, priceAfterSwap } = activeQuotesResults.reduce(
             (
                 currentBest: {
                     bestRoute: Route<Currency, Currency> | BoostedRoute<Currency, Currency> | null;
@@ -210,15 +217,14 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
 
                 if (currentBest.amountIn === null) {
                     return {
-                        bestRoute: allRoutes[i],
+                        bestRoute: activeRoutes[i],
                         amountIn: resultAmountIn,
                         fee: result[5],
                         priceAfterSwap: result[2],
                     };
                 } else if (currentBest.amountIn > resultAmountIn) {
-                    // Для exactOutput лучший маршрут - тот, что требует меньше входного токена
                     return {
-                        bestRoute: allRoutes[i],
+                        bestRoute: activeRoutes[i],
                         amountIn: resultAmountIn,
                         fee: result[5],
                         priceAfterSwap: result[2],
@@ -271,6 +277,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
         isNormalQuotesLoading,
         refetchBoosted,
         refetchNormal,
+        routerType,
     ]);
 
     return trade;

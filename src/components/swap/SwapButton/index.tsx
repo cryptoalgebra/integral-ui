@@ -2,7 +2,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER } from "config";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { IDerivedSwapInfo, RouterType, useSwapState } from "@/state/swapStore";
 import { useUserState } from "@/state/userStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
@@ -17,7 +17,6 @@ import SmartRouterModule from "@/modules/SmartRouterModule";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { useOmegaSwapCallback } from "@/hooks/swap/useOmegaSwapCallback";
 import { TradeState } from "@/types/trade-state";
-import { BoostedRoute } from "../../../../sdk-updates/boostedRoute";
 import { AllowanceState, usePermit2 } from "@/hooks/common/usePermit2";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
 
@@ -32,7 +31,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const { isExpertMode } = useUserState();
 
-    const { independentField, typedValue } = useSwapState();
+    const { independentField, typedValue, routerType } = useSwapState();
     const {
         allowedSlippage,
         parsedAmount,
@@ -87,23 +86,12 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const chainId = useChainId();
     const isSmartTrade = trade && "routes" in trade;
 
-    // Determine if we should use OmegaRouter (only for boosted routes)
-    const shouldUseOmegaRouter = useMemo(() => {
-        if (!trade || isSmartTrade) return false;
+    const shouldUseOmegaRouter = routerType === RouterType.OMEGA;
 
-        // Check if route is a BoostedRoute
-        const route = trade.swaps[0]?.route;
-        const isBoostedRoute = route && route instanceof BoostedRoute;
-
-        // Use OmegaRouter ONLY for boosted routes (native router doesn't support Permit2)
-        return isBoostedRoute;
-    }, [trade, isSmartTrade]);
-
-    // Use Permit2 ONLY for OmegaRouter (native router uses old approve flow)
     const inputAmount = useMemo(() => {
-        if (!trade || !shouldUseOmegaRouter || isSmartTrade) return undefined; // Only for OmegaRouter regular trades
+        if (!trade || !shouldUseOmegaRouter || isSmartTrade) return undefined;
         const maxAmount = trade.maximumAmountIn(allowedSlippage);
-        // Only return token amounts (Permit2 doesn't work with native currency)
+        // Permit2 doesn't work with native currency
         if (!maxAmount || maxAmount.currency.isNative) return undefined;
         return maxAmount;
     }, [trade, allowedSlippage, shouldUseOmegaRouter, isSmartTrade]);
@@ -284,8 +272,6 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                     "Swap Anyway"
                 ) : swapInputError || activeSwapError ? (
                     swapInputError || activeSwapError
-                ) : shouldUseOmegaRouter ? (
-                    "Swap (Boosted)"
                 ) : (
                     "Swap"
                 )}

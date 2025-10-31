@@ -82,8 +82,15 @@ export function useBoostedQuotesResults({
                                 let adjustedAmount = quoteAmount;
 
                                 if (exactInput) {
+                                    // ExactInput: wrap input (ETH -> boosted WETH shares)
                                     const boostedIn = route.tokenPath[1] as BoostedToken;
                                     adjustedAmount = await boostedIn.previewDeposit(client!, quoteAmount);
+                                } else {
+                                    // ExactOutput: wrap output to get required boosted shares from pool
+                                    // For both UNDERLYING_TO_UNDERLYING and UNDERLYING_TO_BOOSTED
+                                    // we need to know how many boosted tokens the pool should return
+                                    const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
+                                    adjustedAmount = await boostedOut.previewDeposit(client!, quoteAmount);
                                 }
 
                                 return {
@@ -193,7 +200,21 @@ export function useBoostedQuotesResults({
                     let finalAmountIn = amountInList;
 
                     switch (swapType) {
-                        case BoostedSwapType.UNDERLYING_TO_UNDERLYING:
+                        case BoostedSwapType.UNDERLYING_TO_UNDERLYING: {
+                            if (exactInput) {
+                                // ExactInput: unwrap output (boosted USDC shares -> USDC)
+                                const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
+                                const unwrapped = await boostedOut.previewRedeem(client!, amountOutList[amountOutList.length - 1]);
+                                finalAmountOut = [...amountOutList.slice(0, -1), unwrapped];
+                            } else {
+                                // ExactOutput: unwrap input (boosted WETH shares -> WETH)
+                                const boostedIn = route.tokenPath[1] as BoostedToken;
+                                const unwrapped = await boostedIn.previewRedeem(client!, amountInList[amountInList.length - 1]);
+                                finalAmountIn = [...amountInList.slice(0, -1), unwrapped];
+                            }
+                            break;
+                        }
+
                         case BoostedSwapType.BOOSTED_TO_UNDERLYING: {
                             if (exactInput) {
                                 const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;

@@ -25,9 +25,15 @@ import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pool
 import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
 const { useSmartRouterBestTrade } = SmartRouterModule.hooks;
 
+export enum RouterType {
+    OMEGA = "OMEGA",
+    NATIVE = "NATIVE",
+}
+
 interface SwapState {
     readonly independentField: SwapFieldType;
     readonly typedValue: string;
+    readonly routerType: RouterType;
     readonly [SwapField.INPUT]: {
         readonly currencyId: Address | undefined;
     };
@@ -46,6 +52,7 @@ interface SwapState {
         limitOrderPriceWasInverted: (wasInverted: boolean) => void;
         limitOrderPriceFocused: (isFocused: boolean) => void;
         limitOrderPriceLastFocused: () => void;
+        setRouterType: (routerType: RouterType) => void;
     };
 }
 
@@ -69,6 +76,7 @@ export interface IDerivedSwapInfo {
 export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: "",
+    routerType: RouterType.OMEGA,
     [SwapField.INPUT]: {
         currencyId: ADDRESS_ZERO,
     },
@@ -128,6 +136,10 @@ export const useSwapState = create<SwapState>((set, get) => ({
         limitOrderPriceLastFocused: () =>
             set({
                 lastFocusedField: SwapField.LIMIT_ORDER_PRICE,
+            }),
+        setRouterType: (routerType) =>
+            set({
+                routerType,
             }),
     },
 }));
