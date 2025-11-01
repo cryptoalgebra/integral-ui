@@ -20,6 +20,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
+    ["0xa0E430870c4604CcfC7B38Ca7845B1FF653D0ff1".toLowerCase()]: {
+        symbol: "ETH",
+        logo: EtherLogo,
+    },
     [TOKENS[ChainId.Base].USDC.address.toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
@@ -29,6 +33,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         logo: USDTLogo,
     },
     [TOKENS[ChainId.BaseSepolia].USDC.address.toLowerCase()]: {
+        symbol: "USDC",
+        logo: USDCLogo,
+    },
+    ["0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A".toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
     },

@@ -7,6 +7,10 @@ import { CreateManualPosition } from "./CreateManualPosition";
 import { Address } from "viem";
 import { enabledModules } from "config/app-modules";
 import ALMModule from "@/modules/ALMModule";
+import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
+import { useClients } from "@/hooks/graphql/useClients";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
+import { useChainId } from "wagmi";
 
 const { useALMVaultsByPool } = ALMModule.hooks;
 const { CreateAutomatedPosition } = ALMModule.components;
@@ -18,21 +22,19 @@ const NewPositionPage = () => {
 
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
-    // const { infoClient } = useClients();
+    const chainId = useChainId();
+    const { infoClient } = useClients();
 
-    // const { data, loading: isCustomPoolDeployerLoading } = useCustomPoolDeployerQuery({
-    //     variables: { poolId: poolAddress as string },
-    //     skip: !poolAddress,
-    //     client: infoClient,
-    // });
+    const { data, loading: isCustomPoolDeployerLoading } = useCustomPoolDeployerQuery({
+        variables: { poolId: poolAddress as string },
+        skip: !poolAddress,
+        client: infoClient,
+    });
 
-    // const isALMPool =
-    //     data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
-    //         ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId].toLowerCase()
-    //         : false;
-
-    const isALMPool = true;
-    const isCustomPoolDeployerLoading = false;
+    const isALMPool =
+        data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId]
+            ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId].toLowerCase()
+            : false;
 
     const { vaults } = useALMVaultsByPool(isALMPool ? poolAddress : undefined);
 

@@ -1,5 +1,4 @@
-import Loader from "@/components/common/Loader";
-import { Button } from "@/components/ui/button";
+
 import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
@@ -14,6 +13,8 @@ import JSBI from "jsbi";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/common/Loader";
 
 interface AddLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -99,21 +100,21 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
-    if (mintInfo.errorMessage) return <Button variant={'primary'} disabled>{mintInfo.errorMessage}</Button>;
+    if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 
     if (showApproveA || showApproveB)
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button
-                        variant={'primary'}
                         disabled={approvalStateA === ApprovalState.PENDING}
                         className="w-full"
+                        variant="primary"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
                     >
                         {approvalStateA === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`}
@@ -121,9 +122,9 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
                 )}
                 {showApproveB && (
                     <Button
-                        variant={'primary'}
                         disabled={approvalStateB === ApprovalState.PENDING}
                         className="w-full"
+                        variant="primary"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
                     >
                         {approvalStateB === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_B?.symbol}`}
@@ -134,7 +135,6 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     return (
         <Button
-            variant={'primary'}
             disabled={!isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
         >

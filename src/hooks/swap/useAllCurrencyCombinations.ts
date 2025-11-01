@@ -3,8 +3,9 @@ import { getBoostedToken } from "config/tokens";
 import { Currency, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
+import { BoostedToken } from "sdk-updates/boostedToken";
 
-export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Currency): [Token, Token][] {
+export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Currency) {
     const chainId = useChainId();
 
     const [tokenA, tokenB] = chainId ? [currencyA?.wrapped, currencyB?.wrapped] : [undefined, undefined];
@@ -15,7 +16,7 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
         return [getBoostedToken(tokenA)?.wrapped, getBoostedToken(tokenB)?.wrapped];
     }, [tokenA, tokenB]);
 
-    const bases: Token[] = useMemo(() => {
+    const bases: (Token | BoostedToken)[] = useMemo(() => {
         if (!chainId) return [];
 
         const baseTokens = BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [];
@@ -34,7 +35,7 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
     return useMemo(() => {
         if (!tokenA || !tokenB) return [];
 
-        const pairs: [Token, Token][] = [
+        const pairs: (Token | BoostedToken)[][] = [
             // Базовая пара
             [tokenA, tokenB],
 

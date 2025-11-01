@@ -4,7 +4,6 @@ import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { usePositionAPR } from "@/hooks/positions/usePositionAPR";
 import { getPoolAPR } from "@/utils/pool/getPoolAPR";
-import AddLiquidityButton from "../AddLiquidityButton";
 import { Address } from "viem";
 import { useEffect, useState } from "react";
 import EnterAmounts from "../EnterAmounts";
@@ -12,6 +11,9 @@ import IncreaseLiquidityButton from "@/components/position/IncreaseLiquidityButt
 import { ManageLiquidity } from "@/types/manage-liquidity";
 import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
+import { AddOmegaLiquidityButton } from "../AddOmegaLiquidityButton";
+import { isBoostedPool } from "@/utils/pool/isBoostedPool";
+import AddLiquidityButton from "../AddLiquidityButton";
 
 interface AmountsSectionProps {
     tokenId?: number;
@@ -29,6 +31,8 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidi
 
     const [poolAPR, setPoolAPR] = useState<number>();
     const apr = usePositionAPR(poolAddress, mintInfo.position);
+
+    const isBoosted = mintInfo.pool && isBoostedPool(mintInfo.pool);
 
     useEffect(() => {
         if (!poolAddress) return;
@@ -67,9 +71,12 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidi
                     handleCloseModal={handleCloseModal}
                 />
             )}
-            {manageLiquidity === ManageLiquidity.ADD && (
-                <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} poolAddress={poolAddress} />
-            )}
+            {manageLiquidity === ManageLiquidity.ADD &&
+                (isBoosted ? (
+                    <AddOmegaLiquidityButton mintInfo={mintInfo} poolAddress={poolAddress} />
+                ) : (
+                    <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} poolAddress={poolAddress} />
+                ))}
         </>
     );
 };

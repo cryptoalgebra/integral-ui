@@ -29,14 +29,6 @@ export function useOmegaSwapCallArguments(
             })
         );
 
-        console.log("omega params", {
-            feeOnTransfer: false,
-            recipient: account,
-            slippageTolerance: allowedSlippage,
-            deadline: Date.now() + txDeadline * 1000,
-            inputTokenPermit: permitSignature,
-        });
-
         return swapMethods.map(({ calldata, value }) => {
             return {
                 calldata,

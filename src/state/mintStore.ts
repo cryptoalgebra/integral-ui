@@ -15,6 +15,10 @@ import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
 import { PresetsType } from "@/types/presets";
 import { Address } from "viem";
 import { priceToClosestTick, tryParseTick } from "@/utils/common/priceToClosestTick";
+import { BoostedToken } from "sdk-updates/boostedToken";
+import { useBoostedConversion } from "@/hooks/positions/useBoostedConversion";
+import { useDebouncedValue } from "@/hooks/common/useDebouncedValue";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 export type FullRange = true;
 
@@ -42,6 +46,8 @@ interface MintState {
     };
     readonly initialTokenPrice: string;
     readonly currentStep: number;
+    readonly token0InputMode: "underlying" | "boosted";
+    readonly token1InputMode: "underlying" | "boosted";
     readonly actions: {
         updateDynamicFee: (dynamicFee: number) => void;
         resetMintState: () => void;
@@ -54,6 +60,8 @@ interface MintState {
         setAddLiquidityTxHash: (txHash: string) => void;
         setInitialTokenPrice: (typedValue: string) => void;
         updateCurrentStep: (currentStep: number) => void;
+        setToken0InputMode: (mode: "underlying" | "boosted") => void;
+        setToken1InputMode: (mode: "underlying" | "boosted") => void;
     };
 }
 
@@ -67,8 +75,10 @@ export interface IDerivedMintInfo {
     };
     currencies: { [field in Field]?: Currency };
     currencyBalances: { [field in Field]?: CurrencyAmount<Currency> };
+    underlyingBalances: { [field in Field]?: CurrencyAmount<Currency> };
     dependentField: Field;
     parsedAmounts: { [field in Field]?: CurrencyAmount<Currency> };
+    poolAmounts: { [field in Field]?: CurrencyAmount<Currency> };
     position: Position | undefined;
     noLiquidity?: boolean;
     errorMessage?: string;
@@ -99,6 +109,8 @@ const initialState = {
     initialUSDPrices: { [Field.CURRENCY_A]: "", [Field.CURRENCY_B]: "" },
     initialTokenPrice: "",
     currentStep: 0,
+    token0InputMode: "underlying" as const, // по умолчанию юзер вводит underlying
+    token1InputMode: "underlying" as const,
 };
 
 export const useMintState = create<MintState>((set, get) => ({
@@ -125,10 +137,14 @@ export const useMintState = create<MintState>((set, get) => ({
         setAddLiquidityTxHash: (txHash: string) => set({ txHash }),
         setInitialTokenPrice: (typedValue: string) => set({ initialTokenPrice: typedValue }),
         updateCurrentStep: (currentStep: number) => set({ currentStep }),
+        setToken0InputMode: (mode: "underlying" | "boosted") => set({ token0InputMode: mode }),
+        setToken1InputMode: (mode: "underlying" | "boosted") => set({ token1InputMode: mode }),
     },
 }));
 
-export function useMintActionHandlers(noLiquidity: boolean | undefined): {
+export function useMintActionHandlers(
+    noLiquidity: boolean | undefined
+): {
     onFieldAInput: (typedValue: string) => void;
     onFieldBInput: (typedValue: string) => void;
     onLeftRangeInput: (typedValue: string) => void;
@@ -168,7 +184,15 @@ export function useDerivedMintInfo(
 ): IDerivedMintInfo {
     const { address: account } = useAccount();
 
-    const { independentField, typedValue, leftRangeTypedValue, rightRangeTypedValue, startPriceTypedValue } = useMintState();
+    const {
+        independentField,
+        typedValue,
+        leftRangeTypedValue,
+        rightRangeTypedValue,
+        startPriceTypedValue,
+        token0InputMode,
+        token1InputMode,
+    } = useMintState();
 
     const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A;
 
@@ -182,10 +206,11 @@ export function useDerivedMintInfo(
     );
 
     // formatted with tokens
-    const [tokenA, tokenB, baseToken] = useMemo(
-        () => [currencyA?.wrapped, currencyB?.wrapped, baseCurrency?.wrapped],
-        [currencyA, currencyB, baseCurrency]
-    );
+    const [tokenA, tokenB, baseToken] = useMemo(() => [currencyA?.wrapped, currencyB?.wrapped, baseCurrency?.wrapped], [
+        currencyA,
+        currencyB,
+        baseCurrency,
+    ]);
 
     const [token0, token1] = useMemo(
         () =>
@@ -198,25 +223,57 @@ export function useDerivedMintInfo(
     );
 
     const [addressA, addressB] = [
-        currencyA?.isNative ? undefined : token0?.address || "",
-        currencyB?.isNative ? undefined : token1?.address || "",
+        currencyA?.isNative ? undefined : currencyA?.address || "",
+        currencyB?.isNative ? undefined : currencyB?.address || "",
     ] as Address[];
 
-    const { data: token0Balance } = useBalance({
+    const { data: tokenABalance } = useBalance({
         address: account,
         token: addressA,
     });
-    const { data: token1Balance } = useBalance({
+    const { data: tokenBBalance } = useBalance({
         address: account,
         token: addressB,
     });
 
+    // Get underlying token addresses for boosted tokens
+    const [underlyingTokenA, underlyingTokenB] = useMemo(() => {
+        const underlyingA = currencyA instanceof BoostedToken ? unwrappedToken(currencyA.underlying) : undefined;
+        const underlyingB = currencyB instanceof BoostedToken ? unwrappedToken(currencyB.underlying) : undefined;
+        return [underlyingA, underlyingB];
+    }, [currencyA, currencyB]);
+
+    // Get underlying token balances
+    const { data: underlyingTokenABalance } = useBalance({
+        address: account,
+        token: underlyingTokenA?.isNative ? undefined : (underlyingTokenA?.address as Address),
+    });
+    const { data: underlyingTokenBBalance } = useBalance({
+        address: account,
+        token: underlyingTokenB?.isNative ? undefined : (underlyingTokenB?.address as Address),
+    });
+
+    // Pool token balances (boosted or regular)
     const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
         [Field.CURRENCY_A]:
-            currencyA && token0Balance ? CurrencyAmount.fromRawAmount(currencyA, token0Balance.value.toString()) : undefined,
+            currencyA && tokenABalance ? CurrencyAmount.fromRawAmount(currencyA, tokenABalance.value.toString()) : undefined,
         [Field.CURRENCY_B]:
-            currencyB && token1Balance ? CurrencyAmount.fromRawAmount(currencyB, token1Balance.value.toString()) : undefined,
+            currencyB && tokenBBalance ? CurrencyAmount.fromRawAmount(currencyB, tokenBBalance.value.toString()) : undefined,
     };
+
+    // Underlying token balances (for display when inputMode is "underlying")
+    const underlyingBalances: { [field in Field]?: CurrencyAmount<Currency> } = useMemo(() => {
+        return {
+            [Field.CURRENCY_A]:
+                currencyA instanceof BoostedToken && underlyingTokenABalance
+                    ? CurrencyAmount.fromRawAmount(currencyA.underlying, underlyingTokenABalance.value.toString())
+                    : undefined,
+            [Field.CURRENCY_B]:
+                currencyB instanceof BoostedToken && underlyingTokenBBalance
+                    ? CurrencyAmount.fromRawAmount(currencyB.underlying, underlyingTokenBBalance.value.toString())
+                    : undefined,
+        };
+    }, [currencyA, currencyB, underlyingTokenABalance, underlyingTokenBBalance]);
 
     const [poolState, pool] = usePool(poolAddress as Address);
 
@@ -297,20 +354,20 @@ export function useDerivedMintInfo(
                 typeof existingPosition?.tickLower === "number"
                     ? existingPosition.tickLower
                     : (invertPrice && typeof rightRangeTypedValue === "boolean") ||
-                        (!invertPrice && typeof leftRangeTypedValue === "boolean")
-                      ? tickSpaceLimits[Bound.LOWER]
-                      : invertPrice
-                        ? tryParseTick(token1, token0, rightRangeTypedValue.toString(), tickSpacing)
-                        : tryParseTick(token0, token1, leftRangeTypedValue.toString(), tickSpacing),
+                      (!invertPrice && typeof leftRangeTypedValue === "boolean")
+                    ? tickSpaceLimits[Bound.LOWER]
+                    : invertPrice
+                    ? tryParseTick(token1, token0, rightRangeTypedValue.toString(), tickSpacing)
+                    : tryParseTick(token0, token1, leftRangeTypedValue.toString(), tickSpacing),
             [Bound.UPPER]:
                 typeof existingPosition?.tickUpper === "number"
                     ? existingPosition.tickUpper
                     : (!invertPrice && typeof rightRangeTypedValue === "boolean") ||
-                        (invertPrice && typeof leftRangeTypedValue === "boolean")
-                      ? tickSpaceLimits[Bound.UPPER]
-                      : invertPrice
-                        ? tryParseTick(token1, token0, leftRangeTypedValue.toString(), tickSpacing)
-                        : tryParseTick(token0, token1, rightRangeTypedValue.toString(), tickSpacing),
+                      (invertPrice && typeof leftRangeTypedValue === "boolean")
+                    ? tickSpaceLimits[Bound.UPPER]
+                    : invertPrice
+                    ? tryParseTick(token1, token0, leftRangeTypedValue.toString(), tickSpacing)
+                    : tryParseTick(token0, token1, rightRangeTypedValue.toString(), tickSpacing),
         };
     }, [existingPosition, feeAmount, invertPrice, leftRangeTypedValue, rightRangeTypedValue, token0, token1, tickSpaceLimits, tickSpacing]);
 
@@ -342,7 +399,34 @@ export function useDerivedMintInfo(
         !invalidRange && price && lowerPrice && upperPrice && (price.lessThan(lowerPrice) || price.greaterThan(upperPrice))
     );
 
-    const independentAmount: CurrencyAmount<Currency> | undefined = tryParseAmount(typedValue, currencies[independentField]);
+    const independentInputMode = independentField === Field.CURRENCY_A ? token0InputMode : token1InputMode;
+
+    const independentCurrency = currencies[independentField];
+
+    const independentDisplayCurrency = useMemo(() => {
+        if (!independentCurrency) return undefined;
+        if (!(independentCurrency instanceof BoostedToken)) return independentCurrency;
+        return independentInputMode === "underlying" ? unwrappedToken(independentCurrency.underlying) : independentCurrency;
+    }, [independentCurrency, independentInputMode]);
+
+    const debouncedTypedValue = useDebouncedValue(typedValue, 300);
+
+    const userIndependentAmount: CurrencyAmount<Currency> | undefined = tryParseAmount(typedValue, independentDisplayCurrency);
+
+    const debouncedIndependentAmount: CurrencyAmount<Currency> | undefined = tryParseAmount(
+        debouncedTypedValue,
+        independentDisplayCurrency
+    );
+
+    const needsConversion = independentCurrency instanceof BoostedToken && independentInputMode === "underlying";
+
+    const { outputAmount: convertedAmount } = useBoostedConversion(
+        needsConversion ? debouncedIndependentAmount : undefined,
+        independentCurrency,
+        "underlying-to-boosted"
+    );
+
+    const independentAmount = needsConversion ? convertedAmount : debouncedIndependentAmount;
 
     const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
         // we wrap the currencies just to get the price in terms of the other token
@@ -378,13 +462,35 @@ export function useDerivedMintInfo(
             const dependentTokenAmount = wrappedIndependentAmount.currency.equals(poolForPosition.token0)
                 ? position.amount1
                 : position.amount0;
+
             return dependentCurrency && CurrencyAmount.fromRawAmount(dependentCurrency, dependentTokenAmount.quotient);
         }
 
         return undefined;
     }, [independentAmount, outOfRange, dependentField, currencyB, currencyA, tickLower, tickUpper, poolForPosition, invalidRange]);
 
+    const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA;
+    const dependentInputMode = dependentField === Field.CURRENCY_A ? token0InputMode : token1InputMode;
+    const needsDependentConversion = dependentCurrency instanceof BoostedToken && dependentInputMode === "underlying";
+
+    const { outputAmount: convertedDependentAmount } = useBoostedConversion(
+        needsDependentConversion ? dependentAmount : undefined,
+        dependentCurrency,
+        "boosted-to-underlying"
+    );
+
+    const displayDependentAmount = needsDependentConversion ? convertedDependentAmount : dependentAmount;
+
     const parsedAmounts: {
+        [field in Field]: CurrencyAmount<Currency> | undefined;
+    } = useMemo(() => {
+        return {
+            [Field.CURRENCY_A]: independentField === Field.CURRENCY_A ? userIndependentAmount : displayDependentAmount,
+            [Field.CURRENCY_B]: independentField === Field.CURRENCY_A ? displayDependentAmount : userIndependentAmount,
+        };
+    }, [displayDependentAmount, userIndependentAmount, independentField]);
+
+    const poolAmounts: {
         [field in Field]: CurrencyAmount<Currency> | undefined;
     } = useMemo(() => {
         return {
@@ -419,10 +525,10 @@ export function useDerivedMintInfo(
 
         // mark as 0 if disabled because out of range
         const amount0 = !deposit0Disabled
-            ? parsedAmounts?.[tokenA.equals(poolForPosition.token0) ? Field.CURRENCY_A : Field.CURRENCY_B]?.quotient
+            ? poolAmounts?.[tokenA.equals(poolForPosition.token0) ? Field.CURRENCY_A : Field.CURRENCY_B]?.quotient
             : ZERO;
         const amount1 = !deposit1Disabled
-            ? parsedAmounts?.[tokenA.equals(poolForPosition.token0) ? Field.CURRENCY_B : Field.CURRENCY_A]?.quotient
+            ? poolAmounts?.[tokenA.equals(poolForPosition.token0) ? Field.CURRENCY_B : Field.CURRENCY_A]?.quotient
             : ZERO;
 
         if (amount0 !== undefined && amount1 !== undefined) {
@@ -437,7 +543,7 @@ export function useDerivedMintInfo(
         } else {
             return undefined;
         }
-    }, [parsedAmounts, poolForPosition, tokenA, tokenB, deposit0Disabled, deposit1Disabled, invalidRange, tickLower, tickUpper]);
+    }, [poolAmounts, poolForPosition, tokenA, tokenB, deposit0Disabled, deposit1Disabled, invalidRange, tickLower, tickUpper]);
 
     let errorMessage: string | undefined;
     let errorCode: number | undefined;
@@ -464,14 +570,30 @@ export function useDerivedMintInfo(
 
     const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts;
 
-    if (currencyAAmount && currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)) {
-        errorMessage = `Insufficient ${currencies[Field.CURRENCY_A]?.symbol} balance`;
-        errorCode = errorCode ?? 4;
+    // Check balance for Currency A - use underlying balance if inputMode is "underlying"
+    if (currencyAAmount && !depositADisabled) {
+        const currencyA = currencies[Field.CURRENCY_A];
+        const isUnderlyingInput = token0InputMode === "underlying" && currencyA instanceof BoostedToken;
+        const balanceToCheck = isUnderlyingInput ? underlyingBalances[Field.CURRENCY_A] : currencyBalances[Field.CURRENCY_A];
+
+        if (balanceToCheck && balanceToCheck.lessThan(currencyAAmount)) {
+            const displaySymbol = isUnderlyingInput && currencyA instanceof BoostedToken ? underlyingTokenA?.symbol : currencyA?.symbol;
+            errorMessage = `Insufficient ${displaySymbol} balance`;
+            errorCode = errorCode ?? 4;
+        }
     }
 
-    if (currencyBAmount && currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)) {
-        errorMessage = `Insufficient ${currencies[Field.CURRENCY_B]?.symbol} balance`;
-        errorCode = errorCode ?? 5;
+    // Check balance for Currency B - use underlying balance if inputMode is "underlying"
+    if (currencyBAmount && !depositBDisabled) {
+        const currencyB = currencies[Field.CURRENCY_B];
+        const isUnderlyingInput = token1InputMode === "underlying" && currencyB instanceof BoostedToken;
+        const balanceToCheck = isUnderlyingInput ? underlyingBalances[Field.CURRENCY_B] : currencyBalances[Field.CURRENCY_B];
+
+        if (balanceToCheck && balanceToCheck.lessThan(currencyBAmount)) {
+            const displaySymbol = isUnderlyingInput && currencyB instanceof BoostedToken ? underlyingTokenB?.symbol : currencyB?.symbol;
+            errorMessage = `Insufficient ${displaySymbol} balance`;
+            errorCode = errorCode ?? 5;
+        }
     }
 
     const invalidPool = poolState === PoolState.INVALID;
@@ -482,7 +604,9 @@ export function useDerivedMintInfo(
         pool: poolForPosition,
         poolState,
         currencyBalances,
+        underlyingBalances,
         parsedAmounts,
+        poolAmounts,
         ticks,
         price,
         pricesAtTicks,
