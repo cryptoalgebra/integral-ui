@@ -72,13 +72,6 @@ function computeBoostedRoutes(
     // ═══════════════════════════════════════════════════════════
     for (const pool of pools) {
         try {
-            console.log("CAN BE OR NOT", {
-                pool,
-                tokenIn,
-                tokenOut,
-                swapType,
-                canBeUsed: canPoolBeUsedForSwapType(pool, tokenIn, tokenOut, swapType),
-            });
             if (canPoolBeUsedForSwapType(pool, tokenIn, tokenOut, swapType)) {
                 const key = getRouteKey([pool], currencyIn, currencyOut);
                 if (!seenRoutes.has(key)) {
@@ -98,7 +91,9 @@ function computeBoostedRoutes(
 /**
  * Compute regular (non-boosted) routes between input and output currencies
  *
- * Only handles NORMAL swap type (underlying → pool → underlying, no boosted tokens)
+ * Handles:
+ * - Direct routes (1 hop): tokenIn → pool → tokenOut
+ * - Multi-hop routes (2+ hops): tokenIn → pool1 → intermediateToken → pool2 → tokenOut
  */
 function computeRegularRoutes(currencyIn: Currency, currencyOut: Currency, pools: Pool[]): Route<Currency, Currency>[] {
     const tokenIn = currencyIn.wrapped;
@@ -106,7 +101,7 @@ function computeRegularRoutes(currencyIn: Currency, currencyOut: Currency, pools
     const normalRoutes: Route<Currency, Currency>[] = [];
     const seenRoutes = new Set<string>();
 
-    // Look for normal pools (non-boosted) connecting tokenIn and tokenOut
+    // 1 hop
     for (const pool of pools) {
         try {
             const matchesDirectly =
@@ -123,6 +118,41 @@ function computeRegularRoutes(currencyIn: Currency, currencyOut: Currency, pools
             }
         } catch (e) {
             // Skip invalid routes
+        }
+    }
+
+    // 2 hop
+    const poolsWithTokenIn = pools.filter((pool) => pool.token0.equals(tokenIn) || pool.token1.equals(tokenIn));
+
+    // For each pool connected to tokenIn, find pools that connect to tokenOut
+    for (const firstPool of poolsWithTokenIn) {
+        // Get the intermediate token (the other token in the first pool)
+        const intermediateToken = firstPool.token0.equals(tokenIn) ? firstPool.token1 : firstPool.token0;
+
+        // Skip if intermediate token is the same as output (would be direct route)
+        if (intermediateToken.equals(tokenOut)) continue;
+
+        // Find pools that connect intermediate token to tokenOut
+        for (const secondPool of pools) {
+            // Skip same pool
+            if (firstPool === secondPool) continue;
+
+            try {
+                const connectsToOutput =
+                    (secondPool.token0.equals(intermediateToken) && secondPool.token1.equals(tokenOut)) ||
+                    (secondPool.token1.equals(intermediateToken) && secondPool.token0.equals(tokenOut));
+
+                if (connectsToOutput) {
+                    const key = getRouteKey([firstPool, secondPool], currencyIn, currencyOut);
+                    if (!seenRoutes.has(key)) {
+                        const route = new Route([firstPool, secondPool], currencyIn, currencyOut);
+                        normalRoutes.push(route);
+                        seenRoutes.add(key);
+                    }
+                }
+            } catch (e) {
+                // Skip invalid routes
+            }
         }
     }
 
@@ -161,8 +191,6 @@ export function useAllRoutes(
             boostedRoutes: computeBoostedRoutes(currencyIn, currencyOut, pools, swapType),
         };
     }, [chainId, currencyIn, currencyOut, pools, poolsLoading]);
-
-    console.log("pop", pools);
 
     console.log("[COMPUTED ROUTES]", { normalRoutes, boostedRoutes });
 

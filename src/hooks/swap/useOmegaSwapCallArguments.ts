@@ -19,6 +19,14 @@ export function useOmegaSwapCallArguments(
 
         const swapMethods = [];
 
+        console.log("[TRADE TO SWAP]", trade, {
+            feeOnTransfer: false,
+            recipient: account,
+            slippageTolerance: allowedSlippage,
+            deadline: Date.now() + txDeadline * 1000,
+            inputTokenPermit: permitSignature,
+        });
+
         swapMethods.push(
             OmegaRouter.swapCallParameters(trade, {
                 feeOnTransfer: false,
