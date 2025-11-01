@@ -1511,10 +1511,10 @@
     toformat "^2.0.0"
     viem "^2.31.3"
 
-"@cryptoalgebra/omega-router-sdk@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.0.4.tgz#56bee729e7f913e9c329e212fdd9aa8a35235c7a"
-  integrity sha512-vWg8b+t91z+kz8HdF6TLfcUUMVpdPerYId19TOhEnboWuVaTH/ADNpZqhAK7uT7P67xqes/B8woBNc+Ig0XztA==
+"@cryptoalgebra/omega-router-sdk@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.0.6.tgz#561f4c17a07686ffd66f1a0b5809eaab6e120d0a"
+  integrity sha512-JNopWNZNeAQAD+GhG4PnRuQo0mfcn44i7dxQl7J5hGaNceBc0i6sgJOC/9xC4ErPzRyUEkXjhXo8l6xUC5GU8w==
   dependencies:
     "@cryptoalgebra/integral-sdk" "npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.0.3"
     bignumber.js "^9.0.2"

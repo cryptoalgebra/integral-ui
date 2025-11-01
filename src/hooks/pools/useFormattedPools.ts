@@ -10,6 +10,8 @@ import ALMModule from "@/modules/ALMModule";
 import { Address } from "viem";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
+const BOOSTED_POOLS = ["0x022eed53773a7d7131bdff1d050dad0ca2ac9704"];
+
 export function useFormattedPools(tokenAddress?: Address) {
     const { address: account } = useAccount();
 
@@ -92,6 +94,7 @@ export function useFormattedPools(tokenAddress?: Address) {
                     isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
                     hasALM: Boolean(openVaults?.length),
                     hasActiveFarming: Boolean(activeFarming),
+                    isBoosted: BOOSTED_POOLS.includes(id.toLowerCase()),
                     deployer: deployer.toLowerCase(),
                 };
             });

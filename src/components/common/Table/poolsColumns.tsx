@@ -18,6 +18,8 @@ const { ALMTag } = ALMModule.components;
 import FarmingModule from "@/modules/FarmingModule";
 const { FarmTag } = FarmingModule.components;
 
+import { BoostedTag } from "@/components/common/BoostedTag";
+
 interface Pair {
     token0: TokenFieldsFragment;
     token1: TokenFieldsFragment;
@@ -62,6 +64,7 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: Pool) => {
             <div className="flex items-center gap-2">
                 {hasActiveFarming && <FarmTag poolAddress={id} />}
                 {hasALM && <ALMTag poolAddress={id} />}
+                <BoostedTag currencyA={currencyA} currencyB={currencyB} />
             </div>
             {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}
             {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}

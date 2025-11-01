@@ -9,7 +9,7 @@ export function ALMTag({ poolAddress }: { poolAddress: Address }) {
 
     if (isLoading || !vaults || vaults.length === 0) {
         return (
-            <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-alm border border-text-200 text-text-200 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs">
+            <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-sky-500/20 border border-sky-800 text-sky-800 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs">
                 ALM
             </div>
         );
@@ -18,7 +18,7 @@ export function ALMTag({ poolAddress }: { poolAddress: Address }) {
     return (
         <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-alm border border-text-200 text-text-200 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs">
+                <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-sky-500/20 border border-sky-800 text-sky-800 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs">
                     ALM
                 </div>
             </HoverCardTrigger>
