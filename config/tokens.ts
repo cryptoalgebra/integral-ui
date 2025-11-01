@@ -1,5 +1,4 @@
-import { BoostedToken } from "../sdk-updates/boostedToken";
-import { ChainId, Token, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Token, WNATIVE, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
 
 export const TOKENS = {
     [ChainId.Base]: {

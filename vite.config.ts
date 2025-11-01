@@ -51,9 +51,9 @@ export default defineConfig({
         ignoreDisabledModules(disabledModules.map((m) => m.moduleDir)),
         eslint({
             emitWarning: false,
-            emitError: false,
+            emitError: true,
             failOnWarning: false,
-            failOnError: false,
+            failOnError: true,
         }),
     ],
     resolve: {
@@ -61,8 +61,6 @@ export default defineConfig({
             { find: "@", replacement: path.resolve(__dirname, "./src") },
             { find: "jsbi", replacement: path.resolve(__dirname, "node_modules/jsbi/dist/jsbi-cjs.js") },
             { find: "config", replacement: path.resolve(__dirname, "./config") },
-            { find: "sdk-updates", replacement: path.resolve(__dirname, "./sdk-updates") },
-            { find: "omega-router-sdk", replacement: path.resolve(__dirname, "./omega-router-sdk") },
             ...disabledAliases,
         ],
     },

@@ -1,11 +1,9 @@
 import useSWR from "swr";
 import { useChainId, usePublicClient, useReadContracts } from "wagmi";
 import { quoterV2ABI, QUOTER_V2 } from "config";
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, BoostedToken, encodeBoostedRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
 import { useAllRoutes } from "./useAllRoutes";
-import { encodeBoostedRouteToPath } from "sdk-updates/encodeBoostedRouteToPath";
-import { BoostedToken } from "sdk-updates/boostedToken";
-import { BoostedSwapType, determineSwapType } from "@/utils/boosted/swapTypeUtils";
+import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
 
 type QuoteResult = [
     bigint[], // amountOutList

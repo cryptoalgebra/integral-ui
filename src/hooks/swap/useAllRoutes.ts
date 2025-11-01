@@ -1,9 +1,8 @@
-import { Currency, Pool, Route } from "@cryptoalgebra/custom-pools-sdk";
+import { BoostedSwapType, determineSwapType, canPoolBeUsedForSwapType } from "@cryptoalgebra/omega-router-sdk";
+import { BoostedRoute, Currency, Pool, Route } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useSwapPools } from "./useSwapPools";
 import { useChainId } from "wagmi";
-import { BoostedRoute } from "sdk-updates/boostedRoute";
-import { BoostedSwapType, determineSwapType, canPoolBeUsedForSwapType } from "@/utils/boosted/swapTypeUtils";
 
 // Helper to create unique key for route
 function getRouteKey(pools: Pool[], input: Currency, output: Currency): string {
@@ -69,10 +68,17 @@ function computeBoostedRoutes(
     }
 
     // ═══════════════════════════════════════════════════════════
-    // CASE 3-6: BOOSTED swaps through pools
+    // CASE 3: BOOSTED swaps through pools
     // ═══════════════════════════════════════════════════════════
     for (const pool of pools) {
         try {
+            console.log("CAN BE OR NOT", {
+                pool,
+                tokenIn,
+                tokenOut,
+                swapType,
+                canBeUsed: canPoolBeUsedForSwapType(pool, tokenIn, tokenOut, swapType),
+            });
             if (canPoolBeUsedForSwapType(pool, tokenIn, tokenOut, swapType)) {
                 const key = getRouteKey([pool], currencyIn, currencyOut);
                 if (!seenRoutes.has(key)) {
@@ -155,6 +161,8 @@ export function useAllRoutes(
             boostedRoutes: computeBoostedRoutes(currencyIn, currencyOut, pools, swapType),
         };
     }, [chainId, currencyIn, currencyOut, pools, poolsLoading]);
+
+    console.log("pop", pools);
 
     console.log("[COMPUTED ROUTES]", { normalRoutes, boostedRoutes });
 

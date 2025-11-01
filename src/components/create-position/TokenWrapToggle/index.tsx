@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { BoostedToken } from "sdk-updates/boostedToken";
-import { Currency, Field, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Field, tryParseAmount, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { ArrowLeftRight, Info } from "lucide-react";
 import { useMemo, useState } from "react";
 import { usePublicClient } from "wagmi";

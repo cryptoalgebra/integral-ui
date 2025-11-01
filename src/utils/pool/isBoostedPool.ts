@@ -1,5 +1,4 @@
-import { Pool } from "@cryptoalgebra/custom-pools-sdk";
-import { BoostedToken } from "sdk-updates/boostedToken";
+import { Pool, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
 
 /**
  * Checks whether a given pool contains at least one "boosted" (ERC-4626) token.

@@ -1,10 +1,9 @@
 import { useMemo } from "react";
-import { ExtendedNative, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { ExtendedNative, Token, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useReadContracts } from "wagmi";
 import { Address, erc20Abi, erc4626Abi } from "viem";
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config/default-chain";
-import { BoostedToken } from "sdk-updates/boostedToken";
 
 export function useAlgebraToken(address: Address | undefined, chainId: number): Token | ExtendedNative | BoostedToken | undefined {
     const isNative = address === ADDRESS_ZERO;

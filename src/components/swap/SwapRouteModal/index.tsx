@@ -13,11 +13,9 @@ import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route as SmartRoute, Pool, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Currency, TradeType, Route as SDKRoute } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, TradeType, Route as SDKRoute, BoostedToken, BoostedRoute } from "@cryptoalgebra/custom-pools-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
 import { formatAmount } from "@/utils";
-import { BoostedRoute } from "sdk-updates/boostedRoute";
-import { BoostedToken } from "sdk-updates/boostedToken";
 
 interface ISwapRouteModal {
     isOpen: boolean;

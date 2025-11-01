@@ -21,9 +21,7 @@
         "noFallthroughCasesInSwitch": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"],
-            "config/*": ["./config/*"],
-            "sdk-updates/*": ["./sdk-updates/*"]
+            "@/*": ["./src/*"]
         }
     },
     "include": ["src", "config", "sdk-updates"],

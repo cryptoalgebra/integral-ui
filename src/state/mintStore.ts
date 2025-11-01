@@ -4,7 +4,7 @@ import { ZERO } from "@cryptoalgebra/custom-pools-sdk";
 
 import { Bound, Field, Rounding } from "@cryptoalgebra/custom-pools-sdk";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
 
 import { getTickToPrice } from "@cryptoalgebra/custom-pools-sdk";
 
@@ -15,7 +15,6 @@ import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
 import { PresetsType } from "@/types/presets";
 import { Address } from "viem";
 import { priceToClosestTick, tryParseTick } from "@/utils/common/priceToClosestTick";
-import { BoostedToken } from "sdk-updates/boostedToken";
 import { useBoostedConversion } from "@/hooks/positions/useBoostedConversion";
 import { useDebouncedValue } from "@/hooks/common/useDebouncedValue";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";

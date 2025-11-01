@@ -1475,10 +1475,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.2.0.tgz#4db64888ec2a1cc58c1a5b1c64912ff75ace4754"
-  integrity sha512-Nh0Rm/tHiziRkL9xbwHdOOvz5Mc2GV6TNL0nV8qD7vkfb+Zf+/OCRYdjP++t3QIeDcEJvinIufR8xLXjhc4tWQ==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.0.3.tgz#7d52d76f227090b73766d66b62528dc33bd9ec8f"
+  integrity sha512-t0PhX5+wMiRTP73gRpwhEB1Bl3fijYFyjEdvyN0TT/CQaoUjLVqAyCM6MDPSETUqK6DzJYQ0rcgBgDelPnjvlA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -1491,6 +1491,35 @@
     tiny-invariant "^1.3.1"
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
+    viem "^2.31.3"
+
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.0.3.tgz#7d52d76f227090b73766d66b62528dc33bd9ec8f"
+  integrity sha512-t0PhX5+wMiRTP73gRpwhEB1Bl3fijYFyjEdvyN0TT/CQaoUjLVqAyCM6MDPSETUqK6DzJYQ0rcgBgDelPnjvlA==
+  dependencies:
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/solidity" "^5.7.0"
+    "@ethersproject/units" "^5.7.0"
+    big.js "^6.2.1"
+    decimal.js-light "^2.5.1"
+    jsbi "^3.2.5"
+    numeral "^2.0.6"
+    tiny-invariant "^1.3.1"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+    viem "^2.31.3"
+
+"@cryptoalgebra/omega-router-sdk@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.0.4.tgz#56bee729e7f913e9c329e212fdd9aa8a35235c7a"
+  integrity sha512-vWg8b+t91z+kz8HdF6TLfcUUMVpdPerYId19TOhEnboWuVaTH/ADNpZqhAK7uT7P67xqes/B8woBNc+Ig0XztA==
+  dependencies:
+    "@cryptoalgebra/integral-sdk" "npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.0.3"
+    bignumber.js "^9.0.2"
+    ethers "^5.7.0"
+    viem "^2.38.5"
 
 "@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.4.9":
   version "1.4.9"
@@ -5738,6 +5767,16 @@ abitype@1.0.8, abitype@^1.0.4, abitype@^1.0.6, abitype@^1.0.8:
   resolved "https://registry.yarnpkg.com/abitype/-/abitype-1.0.8.tgz#3554f28b2e9d6e9f35eb59878193eabd1b9f46ba"
   integrity sha512-ZeiI6h3GnW06uYDLx0etQtX/p8E24UaHHBj57RSjK7YBFe7iuVn07EDpOeP451D06sF27VOz9JJPlIKJmXgkEg==
 
+abitype@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/abitype/-/abitype-1.1.0.tgz#510c5b3f92901877977af5e864841f443bf55406"
+  integrity sha512-6Vh4HcRxNMLA0puzPjM5GBgT4aAcFGKZzSgAXvuZ27shJP6NEpielTuqbBmZILR5/xd0PizkBGy5hReKz9jl5A==
+
+abitype@^1.0.9:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/abitype/-/abitype-1.1.1.tgz#b50ed400f8bfca5452eb4033445c309d3e1117c8"
+  integrity sha512-Loe5/6tAgsBukY95eGaPSDmQHIjRZYQq8PB1MpsNccDIK8WiV+Uw6WzaIXipvaxTEL2yEB0OpEaQv3gs8pkS9Q==
+
 abort-controller@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/abort-controller/-/abort-controller-3.0.0.tgz#eaf54d53b62bae4138e809ca225c8439a6efb392"
@@ -6411,6 +6450,11 @@ bignumber.js@^9.0.1:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
   integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
+
+bignumber.js@^9.0.2:
+  version "9.3.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.3.1.tgz#759c5aaddf2ffdc4f154f7b493e1c8770f88c4d7"
+  integrity sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==
 
 bl@^4.1.0:
   version "4.1.0"
@@ -11791,6 +11835,20 @@ ox@0.8.1:
     abitype "^1.0.8"
     eventemitter3 "5.0.1"
 
+ox@0.9.6:
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/ox/-/ox-0.9.6.tgz#5cf02523b6db364c10ee7f293ff1e664e0e1eab7"
+  integrity sha512-8SuCbHPvv2eZLYXrNmC0EC12rdzXQLdhnOMlHDW2wiCPLxBrOOJwX5L5E61by+UjTPOryqQiRSnjIKCI+GykKg==
+  dependencies:
+    "@adraffy/ens-normalize" "^1.11.0"
+    "@noble/ciphers" "^1.3.0"
+    "@noble/curves" "1.9.1"
+    "@noble/hashes" "^1.8.0"
+    "@scure/bip32" "^1.7.0"
+    "@scure/bip39" "^1.6.0"
+    abitype "^1.0.9"
+    eventemitter3 "5.0.1"
+
 p-each-series@^2.1.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/p-each-series/-/p-each-series-2.2.0.tgz#105ab0357ce72b202a8a8b94933672657b5e2a9a"
@@ -14655,6 +14713,20 @@ viem@2.x, viem@>=2.29.0, viem@^2.1.1, viem@^2.31.3:
     ox "0.8.1"
     ws "8.18.2"
 
+viem@^2.38.5:
+  version "2.38.6"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.38.6.tgz#ab315bef8f872bce86f0f145e9b008b5e94f1904"
+  integrity sha512-aqO6P52LPXRjdnP6rl5Buab65sYa4cZ6Cpn+k4OLOzVJhGIK8onTVoKMFMT04YjDfyDICa/DZyV9HmvLDgcjkw==
+  dependencies:
+    "@noble/curves" "1.9.1"
+    "@noble/hashes" "1.8.0"
+    "@scure/bip32" "1.7.0"
+    "@scure/bip39" "1.6.0"
+    abitype "1.1.0"
+    isows "1.0.7"
+    ox "0.9.6"
+    ws "8.18.3"
+
 vite-plugin-eslint@^1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/vite-plugin-eslint/-/vite-plugin-eslint-1.8.1.tgz#0381b8272e7f0fd8b663311b64f7608d55d8b04c"
@@ -14945,6 +15017,11 @@ ws@8.18.2:
   version "8.18.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.2.tgz#42738b2be57ced85f46154320aabb51ab003705a"
   integrity sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==
+
+ws@8.18.3:
+  version "8.18.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
+  integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==
 
 ws@^7.0.0:
   version "7.5.10"

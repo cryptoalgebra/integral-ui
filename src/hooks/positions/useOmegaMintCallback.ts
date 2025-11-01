@@ -5,7 +5,7 @@ import { useTransactionAwait } from "../common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { OMEGA_ROUTER } from "config/contract-addresses";
-import { MintOptions, OmegaRouter } from "omega-router-sdk/src/omegaRouter";
+import { OmegaMintOptions, OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
 
 export enum MintCallbackState {
     INVALID = "INVALID",
@@ -14,7 +14,7 @@ export enum MintCallbackState {
 
 export function useOmegaMintCallback(
     position: Position | null | undefined,
-    options: MintOptions | null | undefined,
+    options: OmegaMintOptions | null | undefined,
     poolAddress?: Address
 ) {
     const { address: account } = useAccount();

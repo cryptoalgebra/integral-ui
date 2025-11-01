@@ -3,12 +3,11 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER } from "config";
 import { IDerivedMintInfo, useMintState } from "@/state/mintStore";
 import { useUserState } from "@/state/userStore";
-import { Field, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Field, Percent, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
-import { BoostedToken } from "sdk-updates/boostedToken";
 import { useOmegaMintCallback } from "@/hooks/positions/useOmegaMintCallback";
 import { AllowanceState, usePermit2 } from "@/hooks/common/usePermit2";
 
@@ -174,11 +173,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
         if (needsSetupApproval) {
             return (
                 <Button variant={"primary"} onClick={permit2Token0.approve} disabled={isLoading}>
-                    {isLoading ? (
-                        <Loader />
-                    ) : (
-                        `Approve ${token.symbol}`
-                    )}
+                    {isLoading ? <Loader /> : `Approve ${token.symbol}`}
                 </Button>
             );
         }
