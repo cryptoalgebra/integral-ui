@@ -1,17 +1,28 @@
-name: Deploy to integral.algebra.finance
+name: Deploy to app.clamm.io
 
 on:
     workflow_dispatch:
+        inputs:
+            target:
+                description: "Environment"
+                required: true
+                default: "clamm"
+                type: choice
+                options:
+                    - clamm
 
 jobs:
     deploy:
         name: Build
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout current branch
+            - name: Checkout
               uses: actions/checkout@v3
-              with:
-                  ref: ${{ github.ref_name }}
+
+            - name: Set clamm target path
+              if: ${{ inputs.target == 'clamm' }}
+              run: |
+                  echo "TARGET_PATH=${{ secrets.CLAMM_DEPLOYMENT_PATH }}" >> $GITHUB_ENV
 
             - name: Set up node
               uses: actions/setup-node@v3
@@ -25,9 +36,10 @@ jobs:
             - name: Build
               run: CI=false yarn build
 
+            #setup key
             - run: set -eu
             - run: mkdir "$HOME/.ssh"
             - run: echo "${{ secrets.SHHKEYM }}" > "$HOME/.ssh/SHHKEYM"
             - run: chmod 600 "$HOME/.ssh/SHHKEYM"
-
-            - run: cd dist && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ secrets.DEPLOYMENT_PATH }}
+            #deploy
+            - run: cd dist && rsync -e "ssh -i $HOME/.ssh/SHHKEYM -o StrictHostKeyChecking=no" -a --compress --delete . ${{ env.TARGET_PATH }}
