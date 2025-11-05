@@ -1,26 +1,26 @@
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 export const CHAIN_NAME = {
-    [ChainId.SophonOSTestnet]: "SophonOSTestnet",
+    [ChainId.Rayls]: "Rayls",
 };
 
 export const NATIVE_SYMBOL = {
-    [ChainId.SophonOSTestnet]: "WSOPH",
+    [ChainId.Rayls]: "ETH",
 };
 
 export const NATIVE_NAME = {
-    [ChainId.SophonOSTestnet]: "SOPH",
+    [ChainId.Rayls]: "ETH",
 };
 
 export const CHAIN_ID = {
-    [ChainId.SophonOSTestnet]: ChainId.SophonOSTestnet,
+    [ChainId.Rayls]: ChainId.Rayls,
 };
 
 export const CHAIN_IMAGE = {
-    [ChainId.SophonOSTestnet]: "https://www.ethereum-ecosystem.com/logos/base_icon.png",
+    [ChainId.Rayls]: "https://www.ethereum-ecosystem.com/logos/base_icon.png",
 };
 
-export const DEFAULT_CHAIN_ID = ChainId.SophonOSTestnet;
+export const DEFAULT_CHAIN_ID = ChainId.Rayls;
 export const DEFAULT_CHAIN_NAME = CHAIN_NAME[DEFAULT_CHAIN_ID];
 export const DEFAULT_NATIVE_SYMBOL = NATIVE_SYMBOL[DEFAULT_CHAIN_ID];
 export const DEFAULT_NATIVE_NAME = NATIVE_NAME[DEFAULT_CHAIN_ID];

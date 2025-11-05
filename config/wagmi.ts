@@ -33,30 +33,24 @@ import {
 import { defineChain } from "viem";
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 531050204,
-    network: "sophon-os-testnet",
-    name: "SophonOSTestnet",
-    nativeCurrency: { name: "SOPH", symbol: "SOPH", decimals: 18 },
+    id: 123123,
+    network: "rayls",
+    name: "Rayls",
+    nativeCurrency: { name: "WETH", symbol: "WETH", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://zksync-os-testnet-sophon.zksync.dev"],
+            http: ["https://devnet-rpc.rayls.com"],
         },
         public: {
-            http: ["https://zksync-os-testnet-sophon.zksync.dev"],
+            http: ["https://devnet-rpc.rayls.com"],
         },
     },
     blockExplorers: {
         default: {
-            name: "SophonOSTestnet",
-            url: "https://block-explorer.zksync-os-testnet-sophon.zksync.dev",
+            name: "RaylsScan",
+            url: "https://devnet-explorer.rayls.com/",
         },
-    },
-    contracts: {
-        multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1468,
-        },
-    },
+    }
 });
 
 /* configure supported networks here */
