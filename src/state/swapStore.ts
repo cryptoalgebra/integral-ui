@@ -176,8 +176,8 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         wasInverted,
     } = useSwapState();
 
-    const inputCurrency = useCurrency(inputCurrencyId);
-    const outputCurrency = useCurrency(outputCurrencyId);
+    const inputCurrency = useCurrency(inputCurrencyId, false);
+    const outputCurrency = useCurrency(outputCurrencyId, false);
 
     const isExactIn: boolean = independentField === SwapField.INPUT;
 

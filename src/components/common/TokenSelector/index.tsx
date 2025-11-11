@@ -87,7 +87,7 @@ const TokenRow = ({
     otherCurrency: Currency | null | undefined;
     style: React.CSSProperties;
 }) => {
-    const currency = useCurrency(token.id as Address);
+    const currency = useCurrency(token.id as Address, false);
 
     const { data: balance, isLoading } = useBalance({
         address: account,

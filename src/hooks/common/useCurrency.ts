@@ -11,7 +11,7 @@ export function useCurrency(address: Address | undefined, asNative: boolean = tr
 
     const isNative = address === ADDRESS_ZERO;
 
-    const token = useAlgebraToken(isNative || isWNative ? ADDRESS_ZERO : address, chainId);
+    const token = useAlgebraToken(isNative ? ADDRESS_ZERO : address, chainId);
 
     const extendedEther = ExtendedNative.onChain(chainId, NATIVE_SYMBOL[chainId], NATIVE_NAME[chainId]);
 
