@@ -166,6 +166,8 @@ export function useNFTPermit({ tokenId, spender }: UseNFTPermitParams) {
                 description: error instanceof Error ? error.message : "Failed to sign NFT permit",
                 variant: "destructive",
             });
+
+            console.log(error);
             throw error;
         }
     }, [address, chainId, tokenId, spender, nonce, signTypedDataAsync, toast]);

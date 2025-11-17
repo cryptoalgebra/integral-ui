@@ -12,7 +12,7 @@ import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
-import { Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent, ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
 import { OMEGA_ROUTER } from "config/contract-addresses";
 import { useEffect, useMemo, useState } from "react";
@@ -50,8 +50,8 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     // Determine if tokens are boosted
     const token0 = positionSDK?.pool.token0;
     const token1 = positionSDK?.pool.token1;
-    const isBoostedToken0 = token0 && (token0.isBoosted);
-    const isBoostedToken1 = token1 && (token1.isBoosted);
+    const isBoostedToken0 = token0 && token0.isBoosted;
+    const isBoostedToken1 = token1 && token1.isBoosted;
 
     // NFT Permit for OmegaRouter
     const { permitState, permitCallback, permitSignature, isLoading: isPermitLoading } = useNFTPermit({
@@ -62,29 +62,54 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     const needsPermit = permitState === NFTPermitState.NOT_PERMITTED;
 
     const { calldata, value } = useMemo(() => {
-        if (!positionSDK || !positionId || !liquidityPercentage || !feeValue0 || !feeValue1 || !account || percent === 0 || !permitSignature)
+        if (
+            !positionSDK ||
+            !positionId ||
+            !liquidityPercentage ||
+            !feeValue0 ||
+            !feeValue1 ||
+            !account ||
+            percent === 0 ||
+            !permitSignature
+        )
             return { calldata: undefined, value: undefined };
 
-
-        return OmegaRouter.removeCallParameters(positionSDK, {
-            tokenId: String(positionId),
-            liquidityPercentage,
-            slippageTolerance: new Percent(1, 100),
-            deadline: Date.now() + txDeadline * 1000,
-            burnToken: liquidityPercentage.equalTo(new Percent(1)),
-            token0Unwrap,
-            token1Unwrap,
-            permit: permitSignature,
-            recipient: account,
-        });
-    }, [positionId, positionSDK, txDeadline, feeValue0, feeValue1, liquidityPercentage, account, percent, token0Unwrap, token1Unwrap, permitSignature]);
+        try {
+            return OmegaRouter.removeCallParameters(positionSDK, {
+                tokenId: positionId,
+                liquidityPercentage,
+                slippageTolerance: new Percent(1, 100),
+                deadline: Date.now() + txDeadline * 1000,
+                burnToken: liquidityPercentage.equalTo(new Percent(1)),
+                token0Unwrap,
+                token1Unwrap,
+                permit: permitSignature,
+                recipient: account,
+            });
+        } catch (error) {
+            console.error(error);
+            return { calldata: undefined, value: undefined };
+        }
+    }, [
+        positionId,
+        positionSDK,
+        txDeadline,
+        feeValue0,
+        feeValue1,
+        liquidityPercentage,
+        account,
+        percent,
+        token0Unwrap,
+        token1Unwrap,
+        permitSignature,
+    ]);
 
     const removeLiquidityConfig = useMemo(() => {
         if (!calldata) return undefined;
 
         return {
             to: OMEGA_ROUTER[chainId],
-            data: calldata as `0x${string}`,
+            data: calldata as Address,
             value: BigInt(value || 0),
         };
     }, [calldata, value, chainId]);
@@ -205,10 +230,11 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         token1={liquidityValue1?.currency}
                     />
 
-                    {(isBoostedToken0 || isBoostedToken1) && (
+                    {((isBoostedToken0 && liquidityValue0?.greaterThan(ZERO)) ||
+                        (isBoostedToken1 && liquidityValue1?.greaterThan(ZERO))) && (
                         <div className="flex flex-col gap-3 p-4 bg-card-dark rounded-2xl border border-card-border">
                             <h3 className="text-sm font-semibold text-muted-foreground">Receive tokens as:</h3>
-                            
+
                             {isBoostedToken0 && (
                                 <div className="flex items-center justify-between">
                                     <div className="flex flex-col gap-1">
@@ -216,20 +242,14 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                                             {token0Unwrap ? unwrappedToken(token0.underlying).symbol : token0.symbol}
                                         </span>
                                         <span className="text-xs text-muted-foreground">
-                                            {token0Unwrap 
-                                                ? `Receive ${unwrappedToken(token0.underlying).symbol} (underlying)` 
+                                            {token0Unwrap
+                                                ? `Receive ${unwrappedToken(token0.underlying).symbol} (underlying)`
                                                 : `Receive ${token0.symbol} (boosted)`}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">
-                                            {token0Unwrap ? "Underlying" : "Boosted"}
-                                        </span>
-                                        <Switch 
-                                            checked={token0Unwrap} 
-                                            onCheckedChange={setToken0Unwrap}
-                                            disabled={isRemoveLoading}
-                                        />
+                                        <span className="text-xs text-muted-foreground">{token0Unwrap ? "Underlying" : "Boosted"}</span>
+                                        <Switch checked={token0Unwrap} onCheckedChange={setToken0Unwrap} disabled={isRemoveLoading} />
                                     </div>
                                 </div>
                             )}
@@ -241,38 +261,22 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                                             {token1Unwrap ? unwrappedToken(token1.underlying).symbol : token1.symbol}
                                         </span>
                                         <span className="text-xs text-muted-foreground">
-                                            {token1Unwrap 
-                                                ? `Receive ${unwrappedToken(token1.underlying).symbol} (underlying)` 
+                                            {token1Unwrap
+                                                ? `Receive ${unwrappedToken(token1.underlying).symbol} (underlying)`
                                                 : `Receive ${token1.symbol} (boosted)`}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">
-                                            {token1Unwrap ? "Underlying" : "Boosted"}
-                                        </span>
-                                        <Switch 
-                                            checked={token1Unwrap} 
-                                            onCheckedChange={setToken1Unwrap}
-                                            disabled={isRemoveLoading}
-                                        />
+                                        <span className="text-xs text-muted-foreground">{token1Unwrap ? "Underlying" : "Boosted"}</span>
+                                        <Switch checked={token1Unwrap} onCheckedChange={setToken1Unwrap} disabled={isRemoveLoading} />
                                     </div>
                                 </div>
                             )}
                         </div>
                     )}
 
-                    <Button 
-                        variant={'primary'} 
-                        disabled={isDisabled} 
-                        onClick={handleRemoveLiquidity}
-                    >
-                        {isRemoveLoading || isPending || isPermitLoading ? (
-                            <Loader />
-                        ) : needsPermit ? (
-                            "Sign Permit"
-                        ) : (
-                            "Remove Liquidity"
-                        )}
+                    <Button variant={"primary"} disabled={isDisabled} onClick={handleRemoveLiquidity}>
+                        {isRemoveLoading || isPending || isPermitLoading ? <Loader /> : needsPermit ? "Sign Permit" : "Remove Liquidity"}
                     </Button>
                 </div>
             </DialogContent>

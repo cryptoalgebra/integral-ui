@@ -10,6 +10,7 @@ import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { useOmegaMintCallback } from "@/hooks/positions/useOmegaMintCallback";
 import { AllowanceState, usePermit2 } from "@/hooks/common/usePermit2";
+import { OmegaMintOptions } from "@cryptoalgebra/omega-router-sdk";
 
 interface AddOmegaLiquidityButtonProps {
     mintInfo: IDerivedMintInfo;
@@ -76,7 +77,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
     const useNative = token0ForApproval?.currency.isNative || token1ForApproval?.currency.isNative;
 
-    const mintOptions = useMemo(() => {
+    const mintOptions: OmegaMintOptions | null = useMemo(() => {
         if (!account) return null;
 
         const amount0Underlying = shouldWrapToken0 && token0ForApproval ? token0ForApproval : undefined;
@@ -89,8 +90,8 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
             useNative,
             createPool: mintInfo.noLiquidity,
             deployer: mintInfo.pool?.deployer as Address,
-            token0Permit,
-            token1Permit,
+            token0Permit: token0Permit || null,
+            token1Permit: token1Permit || null,
             amount0Underlying,
             amount1Underlying,
             tokenId,
