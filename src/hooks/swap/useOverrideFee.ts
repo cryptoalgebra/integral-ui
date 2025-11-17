@@ -84,16 +84,24 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                 for (const route of trade.swaps) {
                     const splitFees = [];
 
+                    const isBoostedRoute = route.route.isBoosted;
+
+                    if (isBoostedRoute && route.route.pools.length === 0) {
+                        continue;
+                    }
+
                     for (let idx = 0; idx < route.route.pools.length; idx++) {
-                        const amountIn = BigInt(route.inputAmount.quotient.toString());
-                        const amountOut = BigInt(route.outputAmount.quotient.toString());
+                        const pool = route.route.pools[idx];
 
                         const poolAddress = computePoolAddress({
-                            tokenA: route.inputAmount.currency.wrapped,
-                            tokenB: route.outputAmount.currency.wrapped,
+                            tokenA: pool.token0.wrapped,
+                            tokenB: pool.token1.wrapped,
                         }) as Address;
 
                         const isZeroToOne = route.inputAmount.currency.wrapped.sortsBefore(route.outputAmount.currency.wrapped);
+
+                        const amountIn = BigInt(route.inputAmount.quotient.toString());
+                        const amountOut = BigInt(route.outputAmount.quotient.toString());
 
                         const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
                             address: poolAddress,
@@ -128,7 +136,9 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                         } else {
                             splitFees.push(pluginFee);
                         }
+                    }
 
+                    if (splitFees.length > 0) {
                         fees.push(splitFees);
                     }
                 }

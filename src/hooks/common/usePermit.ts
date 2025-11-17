@@ -46,7 +46,11 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
         chainId: token?.chainId,
         functionName: "allowance",
         args: queryEnabled ? [address as Address, token.address as Address, spender as Address] : undefined,
-        query: { enabled: queryEnabled },
+        query: {
+            enabled: queryEnabled,
+            // Refetch periodically to check expiration
+            refetchInterval: 30000, // 30 seconds
+        },
     });
 
     const { permitAllowance, expiration: permitExpiration, nonce } = useMemo(() => {

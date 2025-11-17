@@ -1,10 +1,20 @@
-import { ADDRESS_ZERO, Currency, CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import {
+    ADDRESS_ZERO,
+    AnyToken,
+    Currency,
+    CurrencyAmount,
+    Pool,
+    Position,
+    Price,
+    priceToClosestTick,
+    tryParseTick,
+} from "@cryptoalgebra/custom-pools-sdk";
 
 import { ZERO } from "@cryptoalgebra/custom-pools-sdk";
 
 import { Bound, Field, Rounding } from "@cryptoalgebra/custom-pools-sdk";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/custom-pools-sdk";
 
 import { getTickToPrice } from "@cryptoalgebra/custom-pools-sdk";
 
@@ -14,7 +24,6 @@ import { create } from "zustand";
 import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
 import { PresetsType } from "@/types/presets";
 import { Address } from "viem";
-import { priceToClosestTick, tryParseTick } from "@/utils/common/priceToClosestTick";
 import { useBoostedConversion } from "@/hooks/positions/useBoostedConversion";
 import { useDebouncedValue } from "@/hooks/common/useDebouncedValue";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
@@ -68,9 +77,9 @@ export interface IDerivedMintInfo {
     pool?: Pool | null;
     poolState: PoolStateType;
     ticks: { [bound in Bound]?: number | undefined };
-    price?: Price<Token, Token>;
+    price?: Price<AnyToken, AnyToken>;
     pricesAtTicks: {
-        [bound in Bound]?: Price<Token, Token> | undefined;
+        [bound in Bound]?: Price<AnyToken, AnyToken> | undefined;
     };
     currencies: { [field in Field]?: Currency };
     currencyBalances: { [field in Field]?: CurrencyAmount<Currency> };
@@ -237,8 +246,9 @@ export function useDerivedMintInfo(
 
     // Get underlying token addresses for boosted tokens
     const [underlyingTokenA, underlyingTokenB] = useMemo(() => {
-        const underlyingA = currencyA instanceof BoostedToken ? unwrappedToken(currencyA.underlying) : undefined;
-        const underlyingB = currencyB instanceof BoostedToken ? unwrappedToken(currencyB.underlying) : undefined;
+        if (!currencyA || !currencyB) return [];
+        const underlyingA = currencyA?.isBoosted ? unwrappedToken(currencyA.wrapped.underlying) : undefined;
+        const underlyingB = currencyB?.isBoosted ? unwrappedToken(currencyB.wrapped.underlying) : undefined;
         return [underlyingA, underlyingB];
     }, [currencyA, currencyB]);
 
@@ -264,11 +274,11 @@ export function useDerivedMintInfo(
     const underlyingBalances: { [field in Field]?: CurrencyAmount<Currency> } = useMemo(() => {
         return {
             [Field.CURRENCY_A]:
-                currencyA instanceof BoostedToken && underlyingTokenABalance
+                currencyA?.isBoosted && underlyingTokenABalance
                     ? CurrencyAmount.fromRawAmount(currencyA.underlying, underlyingTokenABalance.value.toString())
                     : undefined,
             [Field.CURRENCY_B]:
-                currencyB instanceof BoostedToken && underlyingTokenBBalance
+                currencyB?.isBoosted && underlyingTokenBBalance
                     ? CurrencyAmount.fromRawAmount(currencyB.underlying, underlyingTokenBBalance.value.toString())
                     : undefined,
         };
@@ -286,7 +296,7 @@ export function useDerivedMintInfo(
     const invertPrice = Boolean(baseToken && token0 && !baseToken.equals(token0));
 
     // always returns the price with 0 as base token
-    const price: Price<Token, Token> | undefined = useMemo(() => {
+    const price: Price<AnyToken, AnyToken> | undefined = useMemo(() => {
         // if no liquidity use typed value
         if (noLiquidity) {
             const parsedQuoteAmount = tryParseAmount(startPriceTypedValue, invertPrice ? token0 : token1);
@@ -404,7 +414,7 @@ export function useDerivedMintInfo(
 
     const independentDisplayCurrency = useMemo(() => {
         if (!independentCurrency) return undefined;
-        if (!(independentCurrency instanceof BoostedToken)) return independentCurrency;
+        if (!independentCurrency.isBoosted) return independentCurrency;
         return independentInputMode === "underlying" ? unwrappedToken(independentCurrency.underlying) : independentCurrency;
     }, [independentCurrency, independentInputMode]);
 
@@ -417,7 +427,7 @@ export function useDerivedMintInfo(
         independentDisplayCurrency
     );
 
-    const needsConversion = independentCurrency instanceof BoostedToken && independentInputMode === "underlying";
+    const needsConversion = independentCurrency?.isBoosted && independentInputMode === "underlying";
 
     const { outputAmount: convertedAmount } = useBoostedConversion(
         needsConversion ? debouncedIndependentAmount : undefined,
@@ -470,7 +480,7 @@ export function useDerivedMintInfo(
 
     const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA;
     const dependentInputMode = dependentField === Field.CURRENCY_A ? token0InputMode : token1InputMode;
-    const needsDependentConversion = dependentCurrency instanceof BoostedToken && dependentInputMode === "underlying";
+    const needsDependentConversion = dependentCurrency?.isBoosted && dependentInputMode === "underlying";
 
     const { outputAmount: convertedDependentAmount } = useBoostedConversion(
         needsDependentConversion ? dependentAmount : undefined,
@@ -571,12 +581,18 @@ export function useDerivedMintInfo(
 
     // Check balance for Currency A - use underlying balance if inputMode is "underlying"
     if (currencyAAmount && !depositADisabled) {
-        const currencyA = currencies[Field.CURRENCY_A];
-        const isUnderlyingInput = token0InputMode === "underlying" && currencyA instanceof BoostedToken;
+        const currencyA = currencyAAmount.currency;
+        const currencyB = currencyBAmount?.currency;
+        const isUnderlyingInput = token0InputMode === "underlying";
         const balanceToCheck = isUnderlyingInput ? underlyingBalances[Field.CURRENCY_A] : currencyBalances[Field.CURRENCY_A];
 
-        if (balanceToCheck && balanceToCheck.lessThan(currencyAAmount)) {
-            const displaySymbol = isUnderlyingInput && currencyA instanceof BoostedToken ? underlyingTokenA?.symbol : currencyA?.symbol;
+        const referredAmount =
+            currencyA && currencyB && currencyBAmount && currencyA.wrapped.equals(currencyB.wrapped)
+                ? currencyBAmount.add(currencyAAmount)
+                : currencyAAmount;
+
+        if (balanceToCheck && balanceToCheck.lessThan(referredAmount)) {
+            const displaySymbol = isUnderlyingInput && currencyA.isBoosted ? underlyingTokenA?.symbol : currencyA?.symbol;
             errorMessage = `Insufficient ${displaySymbol} balance`;
             errorCode = errorCode ?? 4;
         }
@@ -584,12 +600,18 @@ export function useDerivedMintInfo(
 
     // Check balance for Currency B - use underlying balance if inputMode is "underlying"
     if (currencyBAmount && !depositBDisabled) {
-        const currencyB = currencies[Field.CURRENCY_B];
-        const isUnderlyingInput = token1InputMode === "underlying" && currencyB instanceof BoostedToken;
+        const currencyA = currencyAAmount?.currency;
+        const currencyB = currencyBAmount.currency;
+        const isUnderlyingInput = token1InputMode === "underlying";
         const balanceToCheck = isUnderlyingInput ? underlyingBalances[Field.CURRENCY_B] : currencyBalances[Field.CURRENCY_B];
 
-        if (balanceToCheck && balanceToCheck.lessThan(currencyBAmount)) {
-            const displaySymbol = isUnderlyingInput && currencyB instanceof BoostedToken ? underlyingTokenB?.symbol : currencyB?.symbol;
+        const referredAmount =
+            currencyA && currencyB && currencyAAmount && currencyA.wrapped.equals(currencyB.wrapped)
+                ? currencyAAmount.add(currencyBAmount)
+                : currencyBAmount;
+
+        if (referredAmount && balanceToCheck && balanceToCheck.lessThan(referredAmount)) {
+            const displaySymbol = isUnderlyingInput && currencyB.isBoosted ? underlyingTokenB?.symbol : currencyB?.symbol;
             errorMessage = `Insufficient ${displaySymbol} balance`;
             errorCode = errorCode ?? 5;
         }

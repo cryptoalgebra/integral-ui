@@ -1,8 +1,13 @@
-import { BASES_TO_CHECK_TRADES_AGAINST } from "config";
-import { getBoostedToken } from "config/tokens";
-import { Currency, Token, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { BASES_TO_CHECK_TRADES_AGAINST, BOOSTED_TOKENS } from "config";
+import { Currency, Token, BoostedToken, AnyToken } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
+
+const getBoostedToken = (token: AnyToken): BoostedToken | undefined => {
+    const chainId = token.chainId;
+    const boostedTokens = BOOSTED_TOKENS[chainId] || {};
+    return Object.values(boostedTokens).find((bt) => bt.underlying.equals(token));
+};
 
 export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Currency) {
     const chainId = useChainId();

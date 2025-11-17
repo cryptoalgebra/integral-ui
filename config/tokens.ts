@@ -31,20 +31,3 @@ export const BOOSTED_TOKENS = {
         ),
     },
 };
-
-export const getBoostedToken = (token: Token): BoostedToken | undefined => {
-    const chainId = token.chainId;
-    const boostedTokens = BOOSTED_TOKENS[chainId] || {};
-    return Object.values(boostedTokens as Record<string, BoostedToken>).find((bt) => bt.underlying.equals(token));
-};
-
-export const getUnderlyingToken = (token: BoostedToken | Token): Token | undefined => {
-    // if (!boostedToken) return undefined;
-
-    if (token instanceof BoostedToken) {
-        return token.underlying;
-    }
-    const chainId = token.chainId;
-    const boostedTokens = BOOSTED_TOKENS[chainId] || {};
-    return Object.values(boostedTokens as Record<string, BoostedToken>).find((bt) => bt.equals(token))?.underlying;
-};

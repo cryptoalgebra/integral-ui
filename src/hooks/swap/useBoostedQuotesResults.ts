@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { useChainId, usePublicClient, useReadContracts } from "wagmi";
+import { useChainId, useReadContracts } from "wagmi";
 import { quoterV2ABI, QUOTER_V2 } from "config";
 import { Currency, CurrencyAmount, BoostedToken, encodeBoostedRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
 import { useAllRoutes } from "./useAllRoutes";
@@ -32,13 +32,12 @@ export function useBoostedQuotesResults({
     refetch: () => void;
 } {
     const chainId = useChainId();
-    const client = usePublicClient();
     const { boostedRoutes: routes, loading: routesLoading } = useAllRoutes(
         exactInput ? amountIn?.currency : currencyIn,
         !exactInput ? amountOut?.currency : currencyOut
     );
 
-    const enabled = !!client && !routesLoading && !!routes?.length;
+    const enabled = !routesLoading && !!routes?.length;
     const amount = exactInput ? amountIn : amountOut;
 
     // ═══════════════════════════════════════════════════════════════════
@@ -47,7 +46,6 @@ export function useBoostedQuotesResults({
     const { data: prepared, isLoading: prepareLoading } = useSWR(
         enabled && amount ? ["prepare", routes, amount.quotient.toString(), exactInput] : null,
         async () => {
-            if (!client) return [];
             const quoteAmount = BigInt(amount!.quotient.toString());
 
             return Promise.all(
@@ -61,16 +59,16 @@ export function useBoostedQuotesResults({
                             case BoostedSwapType.WRAP_ONLY: {
                                 const boostedToken = tokenOut as BoostedToken;
                                 const result = exactInput
-                                    ? await boostedToken.previewDeposit(client!, quoteAmount)
-                                    : await boostedToken.previewRedeem(client!, quoteAmount);
+                                    ? await boostedToken.previewDeposit(quoteAmount)
+                                    : await boostedToken.previewRedeem(quoteAmount);
                                 return { route, swapType, directResult: result };
                             }
 
                             case BoostedSwapType.UNWRAP_ONLY: {
                                 const boostedToken = tokenIn as BoostedToken;
                                 const result = exactInput
-                                    ? await boostedToken.previewRedeem(client!, quoteAmount)
-                                    : await boostedToken.previewDeposit(client!, quoteAmount);
+                                    ? await boostedToken.previewRedeem(quoteAmount)
+                                    : await boostedToken.previewDeposit(quoteAmount);
                                 return { route, swapType, directResult: result };
                             }
 
@@ -82,13 +80,13 @@ export function useBoostedQuotesResults({
                                 if (exactInput) {
                                     // ExactInput: wrap input (ETH -> boosted WETH shares)
                                     const boostedIn = route.tokenPath[1] as BoostedToken;
-                                    adjustedAmount = await boostedIn.previewDeposit(client!, quoteAmount);
+                                    adjustedAmount = await boostedIn.previewDeposit(quoteAmount);
                                 } else {
                                     // ExactOutput: wrap output to get required boosted shares from pool
                                     // For both UNDERLYING_TO_UNDERLYING and UNDERLYING_TO_BOOSTED
                                     // we need to know how many boosted tokens the pool should return
                                     const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                    adjustedAmount = await boostedOut.previewDeposit(client!, quoteAmount);
+                                    adjustedAmount = await boostedOut.previewDeposit(quoteAmount);
                                 }
 
                                 return {
@@ -104,7 +102,7 @@ export function useBoostedQuotesResults({
 
                                 if (!exactInput) {
                                     const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                    adjustedAmount = await boostedOut.previewDeposit(client!, quoteAmount);
+                                    adjustedAmount = await boostedOut.previewDeposit(quoteAmount);
                                 }
 
                                 return {
@@ -136,8 +134,6 @@ export function useBoostedQuotesResults({
         { revalidateOnFocus: false }
     );
 
-    console.log("prepared", prepared);
-
     // ═══════════════════════════════════════════════════════════════════
     // STEP 2: Get quotes from QuoterV2 (skip direct wrap/unwrap)
     // ═══════════════════════════════════════════════════════════════════
@@ -160,7 +156,6 @@ export function useBoostedQuotesResults({
     const { data: results, isLoading: processLoading } = useSWR(
         prepared ? ["process", prepared, quotes, exactInput] : null,
         async () => {
-            if (!client) return [];
             const processed: QuoteResult[] = [];
             let quoterIdx = 0;
 
@@ -202,12 +197,12 @@ export function useBoostedQuotesResults({
                             if (exactInput) {
                                 // ExactInput: unwrap output (boosted USDC shares -> USDC)
                                 const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                const unwrapped = await boostedOut.previewRedeem(client!, amountOutList[amountOutList.length - 1]);
+                                const unwrapped = await boostedOut.previewRedeem(amountOutList[amountOutList.length - 1]);
                                 finalAmountOut = [...amountOutList.slice(0, -1), unwrapped];
                             } else {
                                 // ExactOutput: unwrap input (boosted WETH shares -> WETH)
                                 const boostedIn = route.tokenPath[1] as BoostedToken;
-                                const unwrapped = await boostedIn.previewRedeem(client!, amountInList[amountInList.length - 1]);
+                                const unwrapped = await boostedIn.previewRedeem(amountInList[amountInList.length - 1]);
                                 finalAmountIn = [...amountInList.slice(0, -1), unwrapped];
                             }
                             break;
@@ -216,7 +211,7 @@ export function useBoostedQuotesResults({
                         case BoostedSwapType.BOOSTED_TO_UNDERLYING: {
                             if (exactInput) {
                                 const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                const unwrapped = await boostedOut.previewRedeem(client!, amountOutList[amountOutList.length - 1]);
+                                const unwrapped = await boostedOut.previewRedeem(amountOutList[amountOutList.length - 1]);
                                 finalAmountOut = [...amountOutList.slice(0, -1), unwrapped];
                             }
                             break;
@@ -225,7 +220,7 @@ export function useBoostedQuotesResults({
                         case BoostedSwapType.UNDERLYING_TO_BOOSTED: {
                             if (!exactInput) {
                                 const boostedIn = route.tokenPath[1] as BoostedToken;
-                                const unwrapped = await boostedIn.previewRedeem(client!, amountInList[amountInList.length - 1]);
+                                const unwrapped = await boostedIn.previewRedeem(amountInList[amountInList.length - 1]);
                                 finalAmountIn = [...amountInList.slice(0, -1), unwrapped];
                             }
                             break;

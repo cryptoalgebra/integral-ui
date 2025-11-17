@@ -1,7 +1,7 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
 import { formatAmount } from "@/utils";
-import { Currency, Field, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Field } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
@@ -25,9 +25,10 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd, field }: Ent
     const currentInputMode = isToken0 ? token0InputMode : token1InputMode;
 
     const displayCurrency = useMemo(() => {
-        if (!(currency instanceof BoostedToken)) return currency;
+        if (!currency) return;
+        if (!currency.isBoosted) return currency;
 
-        return currentInputMode === "underlying" ? unwrappedToken((currency as BoostedToken).underlying) : currency;
+        return currentInputMode === "underlying" ? unwrappedToken(currency?.wrapped.underlying) : currency;
     }, [currency, currentInputMode]);
 
     const { data: balance, isLoading } = useBalance({

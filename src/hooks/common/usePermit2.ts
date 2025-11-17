@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { AnyToken, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { PermitSignature, PermitState } from "./usePermit";
 import { useChainId } from "wagmi";
 import { useCallback, useMemo } from "react";
@@ -17,7 +17,7 @@ export enum AllowanceState {
 
 interface AllowanceRequired {
     state: AllowanceState.REQUIRED;
-    token: Token;
+    token: AnyToken;
     approveAndPermit: () => void;
     approve: () => void;
     permit: () => void;
@@ -49,18 +49,32 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
     // Revoke allowance
     const { approvalCallback: revoke, approvalState: revokeState } = useRevokeApprove(token, permit2Address);
 
-    // Check if permit is needed
+    // Check if ERC20 approval to Permit2 is needed
     const needsTokenApproval = useNeedAllowance(token, amount, permit2Address);
+
+    // Check if Permit2 signature is needed
+    // permitState includes expiration check inside usePermit
     const needsPermitSignature = permitState === PermitState.NOT_PERMITTED || permitState === PermitState.LOADING;
 
     const approveAndPermit = useCallback(async () => {
+        // Always check permit state at the moment of action
+        // to ensure expiration hasn't occurred since last render
         if (needsTokenApproval) {
-            approve();
+            await approve();
         }
-        if (needsPermitSignature) {
-            permitCallback();
+
+        // Re-check if permit is needed (could be expired or insufficient)
+        if (permitState === PermitState.NOT_PERMITTED) {
+            await permitCallback();
         }
-    }, [needsTokenApproval, approve, needsPermitSignature, permitCallback]);
+    }, [needsTokenApproval, approve, permitState, permitCallback]);
+
+    const permit = useCallback(async () => {
+        // Check expiration before permitting
+        if (permitState === PermitState.NOT_PERMITTED) {
+            await permitCallback();
+        }
+    }, [permitState, permitCallback]);
 
     const isPermitLoading = permitState === PermitState.LOADING;
     const isApprovalLoading = approvalState === ApprovalState.PENDING;
@@ -80,7 +94,7 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
                 token,
                 approveAndPermit,
                 approve,
-                permit: permitCallback,
+                permit,
                 revoke,
                 needsSetupApproval: needsTokenApproval,
                 needsPermitSignature,
@@ -92,5 +106,5 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
             state: AllowanceState.ALLOWED,
             permitSignature,
         };
-    }, [token, needsTokenApproval, needsPermitSignature, approveAndPermit, approve, permitCallback, revoke, isLoading, permitSignature]);
+    }, [token, needsTokenApproval, needsPermitSignature, approveAndPermit, approve, permit, revoke, isLoading, permitSignature]);
 }

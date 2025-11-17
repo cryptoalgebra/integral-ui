@@ -122,7 +122,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             state: TradeState.VALID,
             fee,
             trade: Trade.createUncheckedTrade({
-                route: bestRoute as Route<Currency, Currency>,
+                route: bestRoute,
                 tradeType: TradeType.EXACT_INPUT,
                 inputAmount: amountIn,
                 outputAmount: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()),
@@ -252,7 +252,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             state: TradeState.VALID,
             fee,
             trade: Trade.createUncheckedTrade({
-                route: bestRoute as Route<Currency, Currency>,
+                route: bestRoute,
                 tradeType: TradeType.EXACT_OUTPUT,
                 inputAmount: CurrencyAmount.fromRawAmount(currencyIn, amountIn.toString()),
                 outputAmount: amountOut,

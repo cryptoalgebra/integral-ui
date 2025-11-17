@@ -1,4 +1,4 @@
-import { Pool, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { Pool } from "@cryptoalgebra/custom-pools-sdk";
 
 /**
  * Checks whether a given pool contains at least one "boosted" (ERC-4626) token.
@@ -7,6 +7,5 @@ import { Pool, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
  * @returns `true` if the pool contains at least one boosted token, otherwise `false`.
  */
 export const isBoostedPool = (pool: Pool) => {
-    return pool.token0 instanceof BoostedToken || pool.token1 instanceof BoostedToken;
-    // return isBoostedPair(pool.token0, pool.token1);
+    return pool.token0.isBoosted || pool.token1.isBoosted;
 };

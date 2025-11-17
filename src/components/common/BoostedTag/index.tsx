@@ -1,7 +1,7 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Zap } from "lucide-react";
-import { BoostedToken, Currency, isBoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 interface BoostedTagProps {
     currencyA: Currency | undefined;
@@ -9,11 +9,11 @@ interface BoostedTagProps {
 }
 
 export function BoostedTag({ currencyA: token0, currencyB: token1 }: BoostedTagProps) {
-    const isBoostedToken0 = token0 && isBoostedToken(token0.wrapped);
-    const isBoostedToken1 = token1 && isBoostedToken(token1.wrapped);
+    const isBoostedToken0 = token0 && token0.isBoosted;
+    const isBoostedToken1 = token1 && token1.isBoosted;
 
-    const token0Underlying = isBoostedToken0 ? (token0 as BoostedToken).underlying : undefined;
-    const token1Underlying = isBoostedToken1 ? (token1 as BoostedToken).underlying : undefined;
+    const token0Underlying = isBoostedToken0 ? token0.underlying : undefined;
+    const token1Underlying = isBoostedToken1 ? token1.underlying : undefined;
 
     const hasBoostedTokens = isBoostedToken0 || isBoostedToken1;
 

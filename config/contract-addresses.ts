@@ -37,7 +37,7 @@ export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
 
 /* Omega Router */
 export const OMEGA_ROUTER: Record<number, Address> = {
-    [ChainId.Base]: "0x81b90734659fc4cee39438e99aa6629be2ac24a2",
+    [ChainId.Base]: "0x2aFc700775b3BdA098337ACdbB56F6EA97d866a4",
     [ChainId.BaseSepolia]: null,
 };
 export const PERMIT2: Record<number, Address> = {
