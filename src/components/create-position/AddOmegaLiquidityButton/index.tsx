@@ -54,9 +54,11 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
     const token0ForApproval = isSorted ? mintInfo.parsedAmounts[Field.CURRENCY_A] : mintInfo.parsedAmounts[Field.CURRENCY_B];
     const token1ForApproval = isSorted ? mintInfo.parsedAmounts[Field.CURRENCY_B] : mintInfo.parsedAmounts[Field.CURRENCY_A];
 
+    const isSameTokens = token0ForApproval && token1ForApproval && token0ForApproval.currency.equals(token1ForApproval.currency);
+
     // Use Permit2 for both tokens (skip native tokens)
     const permit2Token0 = usePermit2({
-        amount: token0ForApproval?.currency.isNative ? undefined : token0ForApproval,
+        amount: token0ForApproval?.currency.isNative || isSameTokens ? undefined : token0ForApproval,
         spender: OMEGA_ROUTER[chainId],
     });
 
