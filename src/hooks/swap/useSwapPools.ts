@@ -24,8 +24,6 @@ export function useSwapPools(
 
     const allCurrencyCombinations = useAllCurrencyCombinations(currencyIn, currencyOut);
 
-    console.log(allCurrencyCombinations, "ALL");
-
     const { infoClient } = useClients();
 
     const poolsAddresses = useMemo(() => {

@@ -17,8 +17,6 @@ export function useOmegaSwapCallArguments(
     const { data, isLoading } = useSWR(["swapCallParameters", trade, allowedSlippage, permitSignature, txDeadline], async () => {
         if (!trade || !account) return {};
 
-        console.log('[TRADE]', trade);
-
         const { calldata, value } = await OmegaRouter.swapCallParameters(trade, {
             feeOnTransfer: false,
             recipient: account,
