@@ -17,7 +17,7 @@ export const CHAIN_ID = {
 };
 
 export const CHAIN_IMAGE = {
-    [ChainId.SophonOSTestnet]: "https://www.ethereum-ecosystem.com/logos/base_icon.png",
+    [ChainId.SophonOSTestnet]: "/sophon-logo.png",
 };
 
 export const DEFAULT_CHAIN_ID = ChainId.SophonOSTestnet;

@@ -1,15 +1,11 @@
 @theme {
-    --screen-xs: 380px;
-    --screen-sm: 640px;
-    --screen-md: 768px;
-    --screen-lg: 1024px;
-    --screen-xl: 1280px;
-    --screen-2xl: 1400px;
+    --breakpoint-sm: 360px; /* mobile min 360px, max 575px */
+    --breakpoint-md: 576px; /* tablet min 576px, max 1295px */
+    --breakpoint-lg: 1296px; /* desktop min 1296px, no max */
+    --breakpoint-xl: 1512px; /* large desktop */
+    --breakpoint-2xl: 1728px; /* extra large desktop */
 
-    --background-image-dark-gradient: radial-gradient(circle,rgba(48, 48, 56, 1) 0%, rgba(26, 26, 33, 1) 100%);
-    --background-image-primary-gradient: linear-gradient(180deg, rgb(216 166 255) 0%, rgb(144 30 231) 100%);
-    --background-image-destructive-gradient: linear-gradient(180deg,rgb(255, 108, 152) 0%, rgb(157, 40, 73) 100%);
-    --color-app-background: linear-gradient(15deg, rgb(16, 16, 18) 0%, rgb(41, 41, 55) 100%);
+    --color-app-background: var(--bg-100);
 
     --color-primary-50: var(--primary-50);
     --color-primary-100: var(--primary-100);

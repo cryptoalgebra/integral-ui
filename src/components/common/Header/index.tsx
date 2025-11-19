@@ -1,6 +1,5 @@
 import { Navigation } from "@/components/common/Navigation";
-import AlgebraLogo from "@/assets/algebra-logo.svg";
-import AlgebraIntegral from "@/assets/algebra-itegral.svg";
+import SophonLogo from "@/assets/sophon-logo.png";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Clock, WalletIcon } from "lucide-react";
@@ -16,7 +15,7 @@ import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 
 const Header = () => (
-    <header className="md:sticky top-2 z-10 flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
+    <header className="md:sticky top-2 z-10 flex h-full backdrop-blur-[6px] max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4 mx-auto max-[480px]:px-4 w-full">
         <nav className="w-fit flex gap-8 h-full py-2">
             <Algebra />
             <Navigation />
@@ -29,10 +28,9 @@ export const Algebra = () => (
     <div className="flex items-center gap-2 w-full py-2">
         <NavLink to={"/"}>
             <div className="flex items-center gap-2 md:mr-2 rounded-3xl duration-200">
-                <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
-                    <img src={AlgebraLogo} width={25} height={25} />
+                <div className="flex items-center justify-center w-[50px] h-[50px] rounded-lg">
+                    <img src={SophonLogo} width={75} height={75} />
                 </div>
-                <img className="max-lg:hidden" src={AlgebraIntegral} width={140} height={25} />
             </div>
         </NavLink>
     </div>
@@ -70,7 +68,7 @@ const Account = () => {
                             </Button>
                         ) : (
                             <Button
-                                variant={"icon"} 
+                                variant={"icon"}
                                 size={"md"}
                                 className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200 border border-card-border px-4"
                                 aria-label="Transaction history"
@@ -81,7 +79,12 @@ const Account = () => {
                     </TransactionHistoryPopover>
                 )}
                 <Settings />
-                <Button className="flex gap-2 h-full rounded-lg border border-card-border" variant={"icon"} size={"sm"} onClick={() => open({ view: "Networks" })}>
+                <Button
+                    className="flex gap-2 h-full rounded-lg border border-card-border"
+                    variant={"icon"}
+                    size={"sm"}
+                    onClick={() => open({ view: "Networks" })}
+                >
                     <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
                 </Button>
                 <Button
@@ -93,7 +96,7 @@ const Account = () => {
                     variant={"icon"}
                     size={"sm"}
                 >
-                    <WalletIcon size={16} className="md:hidden" /> 
+                    <WalletIcon size={16} className="md:hidden" />
                     <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
                 </Button>
             </div>
