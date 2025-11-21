@@ -17,16 +17,20 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const poolId = useMemo(() => {
         if (!tokenA || !tokenB) return undefined;
-        return computePoolAddress({
-            tokenA: tokenA.wrapped,
-            tokenB: tokenB.wrapped,
-        });
+        try {
+            return computePoolAddress({
+                tokenA: tokenA.wrapped,
+                tokenB: tokenB.wrapped,
+            });
+        } catch (error) {
+            return undefined;
+        }
     }, [tokenA, tokenB]);
 
     const [poolStateType] = usePool(poolId as Address);
     const isPoolExists = poolStateType === PoolState.EXISTS;
 
-    const isSorted = tokenA && tokenB && tokenA.wrapped.sortsBefore(tokenB.wrapped);
+    const isSorted = tokenA && tokenB && !tokenA.wrapped.equals(tokenB.wrapped) && tokenA.wrapped.sortsBefore(tokenB.wrapped);
 
     const { chartData, loading: isLoading } = usePoolChartData(poolId, span, POOL_CHART_TYPE.PRICE, isSorted);
 

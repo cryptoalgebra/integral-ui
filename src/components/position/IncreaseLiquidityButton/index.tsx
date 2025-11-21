@@ -88,7 +88,7 @@ export const IncreaseLiquidityButton = ({
     const increaseLiquidityConfig = calldata
         ? {
               address: NONFUNGIBLE_POSITION_MANAGER[chainId],
-              args: [calldata as `0x${string}`[]] as const,
+              args: [calldata as Address[]] as const,
               value: BigInt(value || 0),
           }
         : undefined;
@@ -109,19 +109,36 @@ export const IncreaseLiquidityButton = ({
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button
+                size={"md"}
+                variant={"destructive"}
+                onClick={() => open({ view: "Networks" })}
+            >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
+        );
 
-    if (mintInfo.errorMessage) return <Button variant={'primary'} disabled>{mintInfo.errorMessage}</Button>;
+    if (mintInfo.errorMessage)
+        return (
+            <Button size={"md"} variant={"primary"} disabled>
+                {mintInfo.errorMessage}
+            </Button>
+        );
 
     if (showApproveA || showApproveB)
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button
-                        variant={'primary'}
+                        variant={"primary"}
+                        size={"md"}
                         disabled={approvalStateA === ApprovalState.PENDING}
                         className="w-full"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
@@ -131,7 +148,8 @@ export const IncreaseLiquidityButton = ({
                 )}
                 {showApproveB && (
                     <Button
-                        variant={'primary'}
+                        variant={"primary"}
+                        size={"md"}
                         disabled={approvalStateB === ApprovalState.PENDING}
                         className="w-full"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
@@ -144,7 +162,8 @@ export const IncreaseLiquidityButton = ({
 
     return (
         <Button
-            variant={'primary'}
+            variant={"primary"}
+            size={"md"}
             disabled={!isReady || isIncreaseLiquidityLoading || isPending}
             onClick={() => increaseLiquidityConfig && increaseLiquidity(increaseLiquidityConfig)}
         >

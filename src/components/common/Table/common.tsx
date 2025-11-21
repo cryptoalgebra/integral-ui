@@ -13,9 +13,9 @@ export const HeaderItem = ({ children, className, sort, isAsc }: HeaderItemProps
         <span
             onClick={() => sort && sort()}
             className={cn(
-                "inline-flex items-center gap-2 rounded-xl px-2 py-1 duration-300 -ml-2 select-none",
+                "inline-flex items-center gap-2 rounded-md px-2 py-1 duration-300 -ml-2 select-none",
                 className,
-                sort && "hover:bg-card-hover border border-transparent hover:border-card-border cursor-pointer"
+                sort && "hover:bg-primary/10 cursor-pointer"
             )}
         >
             {children}

@@ -37,10 +37,9 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd }: EnterAmoun
     }
 
     return (
-        <div className="flex w-full bg-card-dark p-3 rounded-lg">
+        <div className="flex w-full bg-card border border-card-border p-3 rounded-lg">
             <div className="flex flex-col gap-2 ">
                 <div className="flex items-center gap-4 min-h-10">
-
                     <div className="relative w-12 h-12">
                         <CurrencyLogo currency={currency} size={48} />
                         {currency && (
@@ -49,12 +48,11 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd }: EnterAmoun
                     </div>
 
                     <div>
-                        <div className="text-sm text-text-200">{currency ? currency.name : ''}</div>
+                        <div className="text-sm text-text-200">{currency ? currency.name : ""}</div>
                         <div className="flex items-center gap-2">
                             <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
                         </div>
                     </div>
-
                 </div>
                 {currency && (
                     <div className={"flex text-sm whitespace-nowrap"}>

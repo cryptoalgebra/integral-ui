@@ -51,7 +51,7 @@ const LiquidityStats = ({
     );
 
     return (
-        <div className="flex flex-col gap-3 h-fit">
+        <div className="flex flex-col gap-3 h-fit ">
             <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-4 h-fit">
                 <h2 className="font-semibold mb-2">Pool Liquidity</h2>
                 <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.tvlUSD || 0, 4)}</p>
@@ -107,7 +107,11 @@ const LiquidityStats = ({
                         <span className="text-text-100/50">Fees (24h)</span>
                         <span className="font-semibold">
                             ${formatAmount(statistics?.fees24H || 0, 2)}{" "}
-                            <span className={`text-xs font-medium ${(statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
+                            <span
+                                className={`text-xs font-medium ${
+                                    (statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"
+                                }`}
+                            >
                                 <span>{(statistics?.feesPercentChange || 0) > 0 ? "+" : ""}</span>
                                 <span>{formatPercent.format((statistics?.feesPercentChange || 0) / 100)}</span>
                             </span>
@@ -183,10 +187,12 @@ export function AnalyticsPoolPage() {
 
     return (
         <PageContainer>
-            <div className="mb-8">
-                <PageTitle title="Explore pool" showSettings={false} />
+            <div className="border-b w-full md:mb-12 mb-4">
+                <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between md:my-12 mb-4">
+                    <PageTitle title={"Explore pool"} showSettings={false} />
+                </div>
             </div>
-            <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-3 max-w-[1280px] mx-auto mb-8">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
                     <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={token0} tokenB={token1} />
@@ -208,26 +214,17 @@ export function AnalyticsPoolPage() {
                     />
                 </div>
                 <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-3 w-full">
                         <Link className="col-span-1 w-full " to={"/swap"}>
-                            <Button 
-                                variant={'primary'} 
-                                size={"lg"}
-                                className="gap-2 rounded-xl w-full h-full max-md:text-sm"
-                            >
+                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
                                 <ArrowDownUp size={20} />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
-                            <Button
-                                variant={"primaryLink"}
-                                size={"lg"}
-                                className="gap-2 rounded-xl"
-                            >
-                                         <Plus size={20} />
+                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
+                                <Plus size={20} />
                                 Create Position
-                           
                             </Button>
                         </Link>
                     </div>
@@ -235,9 +232,7 @@ export function AnalyticsPoolPage() {
                 </div>
             </div>
 
-            <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full mt-4">
-                <TransactionsList poolId={poolId} />
-            </div>
+            <TransactionsList poolId={poolId} />
         </PageContainer>
     );
 }

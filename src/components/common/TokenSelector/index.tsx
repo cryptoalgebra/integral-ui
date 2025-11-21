@@ -14,6 +14,8 @@ import { useTokensState } from "@/state/tokensStore";
 import { Copy } from "lucide-react";
 import { cn } from "@/utils/common/cn";
 import { formatAmount } from "@/utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const TokenSelectorView = {
     DEFAULT_LIST: "DEFAULT_LIST",
@@ -21,7 +23,7 @@ const TokenSelectorView = {
     NOT_FOUND: "NOT_FOUND",
 };
 
-type TokenSelectorViewType = (typeof TokenSelectorView)[keyof typeof TokenSelectorView];
+type TokenSelectorViewType = typeof TokenSelectorView[keyof typeof TokenSelectorView];
 
 const Search = ({
     data,
@@ -62,11 +64,11 @@ const Search = ({
     }, [result, tokenEntity, pattern, onSearch]);
 
     return (
-        <input
+        <Input
+            value={query}
             type="text"
             placeholder="Search name or paste address"
             autoComplete="off"
-            className="w-full px-4 py-3 bg-card-dark rounded-xl border"
             onChange={(e) => handleInput(e.target.value)}
         />
     );
@@ -87,7 +89,7 @@ const TokenRow = ({
     otherCurrency: Currency | null | undefined;
     style: React.CSSProperties;
 }) => {
-    const currency = useCurrency(token.id as Address);
+    const currency = useCurrency(token.id as Address, token.id === ADDRESS_ZERO ? true : false);
 
     const { data: balance, isLoading } = useBalance({
         address: account,
@@ -100,9 +102,13 @@ const TokenRow = ({
         return formatAmount(balance.formatted, 6);
     }, [balance, isLoading]);
 
-    const lock = otherCurrency?.isNative
-        ? token.id === ADDRESS_ZERO
-        : token.id.toLowerCase() === otherCurrency?.wrapped.address.toLowerCase();
+    // Block selection only if it's exactly the same token (same native or same address)
+    // Allow selection of native/wrapped pairs for wrap operations
+    const lock = !otherCurrency
+        ? false
+        : otherCurrency.isNative
+        ? token.id === ADDRESS_ZERO // If other is native, block only native (not wrapped)
+        : token.id.toLowerCase() === otherCurrency.wrapped.address.toLowerCase() && token.id !== ADDRESS_ZERO; // If other is wrapped, block only that wrapped (not native)
 
     const [isCopied, setIsCopied] = useState(false);
 
@@ -115,9 +121,11 @@ const TokenRow = ({
     };
 
     return (
-        <button
+        <Button
+            variant={"secondary"}
+            size={"md"}
             disabled={lock}
-            className="flex items-center justify-between w-full py-2 px-3 text-left bg-card rounded-2xl duration-75 hover:bg-card-hover disabled:hover:bg-card disabled:opacity-60"
+            className="flex items-center justify-between w-full py-2 px-3 text-left duration-75 disabled:hover:bg-card disabled:opacity-60"
             onClick={() => currency && onSelect(currency)}
             style={{ ...style, height: 76 - 16 }}
         >
@@ -126,7 +134,7 @@ const TokenRow = ({
                     <CurrencyLogo currency={currency} size={32} />
                 </div>
                 <div>
-                    <div className="flex gap-2 text-base font-bold">
+                    <div className="flex gap-2 ">
                         <div>{token.symbol}</div>
                         <button
                             className={cn(
@@ -138,11 +146,11 @@ const TokenRow = ({
                             <Copy size={12} />
                         </button>
                     </div>
-                    <div className="text-sm">{token.name}</div>
+                    <div className="text-sm text-muted-foreground">{token.name}</div>
                 </div>
             </div>
             <div>{isLoading ? "Loading..." : balance ? balanceString : ""}</div>
-        </button>
+        </Button>
     );
 };
 

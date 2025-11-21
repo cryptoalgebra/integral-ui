@@ -185,7 +185,7 @@ const PoolPage = () => {
                         position: null,
                         almShares: vault.shares,
                         almVaultAddress: vault.vault.id,
-                    }) as FormattedPosition
+                    } as FormattedPosition)
             ) || [];
 
         return [...almPositionsData, ...positionsData];
@@ -208,7 +208,7 @@ const PoolPage = () => {
         <PageContainer>
             <PoolHeader />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full mt-3 max-w-[1280px] mx-auto">
                 <div className="col-span-2">
                     <MyPositionsToolbar
                         currencyA={poolEntity && unwrappedToken(poolEntity.token0)}
@@ -264,10 +264,10 @@ const PoolPage = () => {
 };
 
 const NoPositions = ({ poolId }: { poolId: Address }) => (
-    <div className="flex flex-col items-start gap-4 p-6 bg-card border border-card-border rounded-xl animate-fade-in">
+    <div className="flex flex-col items-start gap-4 p-6 bg-card-dark border border-card-border rounded-xl animate-fade-in">
         <h2 className="text-2xl font-bold text-left">You don't have positions for this pool</h2>
         <p className="text-md font-semibold">Let's create one!</p>
-        <Button variant={"primary"} className="gap-2" asChild>
+        <Button variant={"primary"} size={"md"} className="gap-2" asChild>
             <Link to={`/pool/${poolId}/new-position`}>
                 Create Position
                 <MoveRightIcon />
@@ -280,10 +280,10 @@ const NoAccount = () => {
     const { open } = useAppKit();
 
     return (
-        <div className="flex flex-col items-start p-6 bg-card border border-card-border rounded-xl animate-fade-in">
+        <div className="flex flex-col items-start p-6 bg-card-dark border border-card-border rounded-xl animate-fade-in">
             <h2 className="text-2xl font-bold">Connect Wallet</h2>
             <p className="text-md font-semibold my-4">Connect your account to view or create positions</p>
-            <Button variant={"primary"} size={"lg"} onClick={() => open()}>
+            <Button variant={"primary"} size={"md"} onClick={() => open()}>
                 Connect Wallet
             </Button>
         </div>

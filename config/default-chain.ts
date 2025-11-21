@@ -5,7 +5,7 @@ export const CHAIN_NAME = {
 };
 
 export const NATIVE_SYMBOL = {
-    [ChainId.SophonOSTestnet]: "WSOPH",
+    [ChainId.SophonOSTestnet]: "SOPH",
 };
 
 export const NATIVE_NAME = {

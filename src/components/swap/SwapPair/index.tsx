@@ -45,6 +45,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const handleInputSelect = useCallback(
         (inputCurrency: Currency) => {
+            console.log("inputCurrency", inputCurrency);
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
         [onCurrencySelection]
@@ -52,6 +53,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
+            console.log("outputCurrency", outputCurrency);
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
         [onCurrencySelection]
@@ -84,8 +86,8 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         [independentField]: typedValue,
         [dependentField]:
             showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
-                ? (parsedAmounts[independentField]?.toExact() ?? "")
-                : (parsedAmounts[dependentField]?.toExact() ?? ""),
+                ? parsedAmounts[independentField]?.toExact() ?? ""
+                : parsedAmounts[dependentField]?.toExact() ?? "",
     };
 
     const percentDifference = useMemo(() => {

@@ -54,9 +54,7 @@ export function NavButtons() {
     const { pathname } = useLocation();
 
     const setNavlinkClasses = (paths: string[]) =>
-        paths.some((path) => matchPath(path, pathname))
-            ? "font-bold border-b border-primary"
-            : "text-muted-foreground/70 hover:text-white/50";
+        paths.some((path) => matchPath(path, pathname)) ? "font-bold text-primary" : "text-muted-foreground/70 hover:text-primary/80";
 
     return (
         <>
@@ -69,7 +67,7 @@ export function NavButtons() {
                         setNavlinkClasses(item.active)
                     )}
                 >
-                    <div className="text-lg md:hidden">{item.icon}</div>
+                    <div className="md:hidden">{item.icon}</div>
                     <span className="font-medium max-md:text-sm">{item.title}</span>
                 </NavLink>
             ))}
@@ -86,7 +84,7 @@ export function Navigation() {
 }
 export function MobileNavigation() {
     return (
-        <nav className="fixed flex gap-2 bottom-4 left-1/2 h-full max-h-[64px] md:hidden -translate-x-1/2 z-50 border border-card-border bg-card backdrop-blur-xl shadow-lg p-2 rounded-xl">
+        <nav className="fixed flex gap-2 bottom-4 left-1/2 h-full max-h-[48px] md:hidden -translate-x-1/2 z-50 border border-card-border bg-card backdrop-blur-xl shadow-lg p-2 rounded-xl">
             <NavButtons />
         </nav>
     );

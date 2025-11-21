@@ -102,23 +102,23 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
     }, []);
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full text-left max-w-[1280px] mx-auto">
             <div className="col-span-2">
                 <div className="flex flex-col w-full">
-                    <div className="w-full p-3 md:p-6 bg-card flex flex-col gap-3 text-left rounded-xl border border-card-border">
+                    <div className="w-full p-3 md:p-6 bg-card-dark flex flex-col gap-3 text-left rounded-xl border border-card-border">
                         <div className="flex items-center justify-between w-full">
                             <h2 className="font-semibold text-lg md:text-2xl text-left">Select Range</h2>
                             <div className="flex h-fit w-fit gap-0.5 rounded-xl border border-lighter p-0.5">
                                 <Button
                                     className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
-                                    variant={wasManuallyToggled ? "iconActive" : "icon"}
+                                    variant={wasManuallyToggled ? "iconActive" : "ghost"}
                                     onClick={handleCurrencyToggle}
                                 >
                                     {currency0?.symbol}
                                 </Button>
                                 <Button
                                     className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
-                                    variant={!wasManuallyToggled ? "iconActive" : "icon"}
+                                    variant={!wasManuallyToggled ? "iconActive" : "ghost"}
                                     onClick={handleCurrencyToggle}
                                 >
                                     {currency1?.symbol}
@@ -161,7 +161,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
 
             <div className="flex flex-col">
                 {/* <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2> */}
-                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
+                <div className="flex flex-col w-full h-fit gap-2 bg-card-dark border border-card-border rounded-xl p-2">
                     <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} manageLiquidity={ManageLiquidity.ADD} />
                 </div>
             </div>

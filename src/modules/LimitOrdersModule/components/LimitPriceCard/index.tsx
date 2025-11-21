@@ -60,7 +60,7 @@ export const LimitPriceCard = ({
     }, [currency, otherCurrency]);
 
     return (
-        <div className={`flex flex-col gap-4 bg-card-dark p-3 border boder-card-border rounded-lg ${disabled ? "disabled" : ""} `}>
+        <div className={`flex flex-col gap-4 bg-card p-3 border boder-card-border rounded-lg ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
                 <div className="text-sm font-semibold">
                     {currency
@@ -109,18 +109,18 @@ export const LimitPriceCard = ({
                 />
                 <div className="flex gap-2">
                     <Button
-                        variant={'outline'}
+                        variant={"outline"}
                         size={"icon"}
-                        className="w-6 h-6 bg-card-dark rounded-full border border-card-border"
+                        className="w-6 h-6 bg-card rounded-full border border-card-border"
                         disabled={plusDisabled || disabled}
                         onClick={() => tickStep(1)}
                     >
                         +
                     </Button>
                     <Button
-                        variant={'outline'}
+                        variant={"outline"}
                         size={"icon"}
-                        className="w-6 h-6 bg-card-dark rounded-full border border-card-border"
+                        className="w-6 h-6 bg-card rounded-full border border-card-border"
                         disabled={minusDisabled || disabled}
                         onClick={() => tickStep(-1)}
                     >

@@ -18,10 +18,10 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
+            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr gap-3 mb-8 w-full">
                 <SwapTypeSelector isLimitOrder={isLimitOrder} />
             </div>
-            <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
+            <div className="grid md:grid-cols-3 grid-cols-1 md:gap-3 gap-y-3 mb-3 w-full max-w-[1280px] mx-auto">
                 <div className="flex flex-col gap-2 col-span-1 w-full">
                     <div className="flex flex-col gap-1.5 col-span-1 w-full bg-dark-gradient border border-card-border p-2 rounded-xl">
                         <SwapPair derivedSwap={derivedSwap} />

@@ -7,15 +7,17 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
     const { pools, isLoading } = useFormattedPools(tokenId);
 
     return (
-        <div className="flex flex-col gap-4">
-            <PoolsTable
-                columns={poolsColumns}
-                data={pools}
-                defaultSortingID={"tvlUSD"}
-                link={isExplore ? "analytics/pools" : "pool"}
-                showPagination={true}
-                loading={isLoading}
-            />
+        <div className="pb-4 bg-card-dark border border-card-border rounded-lg w-full max-w-[1280px] mx-auto">
+            <div className="flex flex-col gap-4">
+                <PoolsTable
+                    columns={poolsColumns}
+                    data={pools}
+                    defaultSortingID={"tvlUSD"}
+                    link={isExplore ? "analytics/pools" : "pool"}
+                    showPagination={true}
+                    loading={isLoading}
+                />
+            </div>
         </div>
     );
 };

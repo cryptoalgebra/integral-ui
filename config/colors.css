@@ -1,32 +1,19 @@
 :root {
+    /* BRAND */
     --primary-100: #fafafa;
     --primary-200: #f5f5f5;
     --primary-300: #dedede;
 
+    /* ACCENT */
     --accent-100: #ff6467;
     --accent-200: #ffb1b3;
 
-    --text-100: #fafafa;
-    --text-200: #f5f5f5;
-    --text-300: #dedede;
-    --text-400: #262626;
+    /* TEXT */
+    --text-100: #fafafa; /* text color */
+    --text-200: #a1a1a1; /* muted text color */
 
-    --bg-100: #0a0a0a;
-    --bg-200: #171717;
-    --bg-300: #262626;
-
-    --gray-100: #262626;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --text-100: #fafafa;
-        --text-200: #f5f5f5;
-        --text-300: #dedede;
-        --text-400: #262626;
-
-        --bg-100: #0a0a0a;
-        --bg-200: #171717;
-        --bg-300: #262626;
-    }
+    /* BACKGROUND */
+    --bg-100: #0a0a0a; /* app background */
+    --bg-200: #171717; /* card background */
+    --bg-300: #ffffff1a; /* border color */
 }

@@ -23,11 +23,11 @@ export function IncreaseLiquidityModal({ tokenId, currencyA, currencyB, mintInfo
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant={'primaryLink'} disabled={false} className="whitespace-nowrap w-full">
+                <Button variant={"primary"} size={"md"} disabled={false} className="whitespace-nowrap w-full">
                     Add Liquidity
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[500px] rounded-xl! bg-card">
+            <DialogContent className="max-w-[500px] rounded-xl! bg-card-dark">
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none mt-2 max-md:mx-auto">Enter Amounts</DialogTitle>
                 </DialogHeader>

@@ -126,11 +126,11 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant={"outline"} className="w-full">
+                <Button variant={"secondary"} size={'md'} className="w-full">
                     Remove Liquidity
                 </Button>
             </DialogTrigger>
-            <DialogContent className="md:min-w-[500px] rounded-xl! bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="md:min-w-[500px] rounded-lg! bg-card-dark" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
                 </DialogHeader>
@@ -143,7 +143,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                             <Button
                                 key={`liquidity-percent-${v}`}
                                 disabled={isRemoveLoading}
-                                variant={sliderValue[0] === v ? "iconHover" : "icon"}
+                                variant={sliderValue[0] === v ? "secondary" : "icon"}
                                 className="border border-card-border"
                                 size={"sm"}
                                 onClick={() => setSliderValue([v])}
@@ -172,7 +172,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         token1={liquidityValue1?.currency}
                     />
 
-                    <Button variant={'primary'} disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
+                    <Button variant={'primary'} size={'md'} disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
                         {isRemoveLoading || isPending ? <Loader /> : "Remove Liquidity"}
                     </Button>
                 </div>

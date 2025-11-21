@@ -122,14 +122,16 @@ export function TransactionsList({ tokenId, poolId }: { tokenId?: Address; poolI
     const isLoading = mintsLoading || swapsLoading || burnsLoading || collectsLoading;
 
     return (
-        <div className="flex w-full flex-col gap-4">
-            <TransactionsTable
-                columns={transactionsColumns}
-                data={sortedTxs}
-                defaultSortingID={"time"}
-                showPagination
-                loading={isLoading}
-            />
+        <div className="pb-4 bg-card-dark border border-card-border rounded-lg w-full max-w-[1280px] mx-auto">
+            <div className="flex w-full flex-col gap-4">
+                <TransactionsTable
+                    columns={transactionsColumns}
+                    data={sortedTxs}
+                    defaultSortingID={"time"}
+                    showPagination
+                    loading={isLoading}
+                />
+            </div>
         </div>
     );
 }

@@ -183,12 +183,12 @@ export const LimitOrdersList = () => {
     const limitOrdersForTable = useMemo(() => (tab ? openedOrders : closedOrders), [openedOrders, closedOrders, tab]);
 
     return (
-        <div className="flex flex-col gap-8 w-full">
+        <div className="flex flex-col gap-8 w-full max-w-[1280px] mx-auto">
             {isLimitOrdersLoading ? (
                 <LimitOrdersLoading />
             ) : (
                 <>
-                    <div className="bg-card border gap-4 border-card-border rounded-xl">
+                    <div className="bg-card-dark border gap-4 border-card-border rounded-xl">
                         <div className="flex gap-2 p-3">
                             <Button
                                 size="md"

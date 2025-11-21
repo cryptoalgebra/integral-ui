@@ -12,8 +12,8 @@ const Settings = () => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant={"icon"} size={"md"} className="border border-card-border">
-                    <SettingsIcon />
+                <Button variant={"secondary"} size={"sm"} className="gap-2">
+                    <SettingsIcon size={20} /> <span className="max-md:hidden">Settings</span>
                 </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -108,9 +108,11 @@ const SlippageTolerance = () => {
             {slippageError || tooLow || tooHigh ? (
                 <div>
                     {slippageError ? (
-                        <div className="bg-red-900 text-red-200 border border-red-500 px-2 py-1 rounded-lg">Enter a valid slippage percentage</div>
+                        <div className="bg-red-900/20 text-red-200 border border-red-500 px-2 py-1 rounded-lg text-sm">
+                            Enter a valid slippage percentage
+                        </div>
                     ) : (
-                        <div className="bg-yellow-900 text-yellow-200 border border-yellow-500 px-2 py-1 rounded-lg">
+                        <div className="bg-yellow-900/20 text-yellow-200 border border-yellow-500 px-2 py-1 rounded-lg text-sm">
                             {tooLow ? "Your transaction may fail" : "Your transaction may be frontrun"}
                         </div>
                     )}
@@ -181,7 +183,7 @@ const ExpertMode = () => {
                 <label htmlFor="expert-mode">Expert mode</label>
                 <Switch id="expert-mode" checked={isExpertMode} onCheckedChange={setIsExpertMode} />
             </div>
-            <p className="whitespace-break-spaces">Allows high slippage trades. Use at your own risk.</p>
+            <p className="whitespace-break-spaces text-muted-foreground">Allows high slippage trades. Use at your own risk.</p>
         </div>
     );
 };
@@ -198,7 +200,7 @@ const Multihop = () => {
                 <label htmlFor="multihop">Multihop</label>
                 <Switch id="multihop" checked={isMultihop} onCheckedChange={setIsMultihop} />
             </div>
-            <p className="whitespace-break-spaces">Optimized trades across multiple liquidity pools.</p>
+            <p className="whitespace-break-spaces text-muted-foreground">Optimized trades across multiple liquidity pools.</p>
         </div>
     );
 };
@@ -215,7 +217,7 @@ const SplitTrade = () => {
                 <label htmlFor="split">Split trade</label>
                 <Switch id="split" checked={isSplit} onCheckedChange={setIsSplit} />
             </div>
-            <p className="whitespace-break-spaces">Split trades across identical pools with different plugins.</p>
+            <p className="whitespace-break-spaces text-muted-foreground">Split trades across identical pools with different plugins.</p>
         </div>
     );
 };

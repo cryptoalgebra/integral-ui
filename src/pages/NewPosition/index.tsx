@@ -44,16 +44,19 @@ const NewPositionPage = () => {
 
     return (
         <PageContainer>
-            <div className="w-full grid grid-flow-col auto-cols-fr gap-3 max-md:flex-col max-md:flex mb-3">
-                <div className="col-span-2 mb-8">
-                    <PageTitle title={"Create Position"} showSettings={false} />
+            <div className="border-b w-full md:mb-12 mb-4">
+                <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between md:my-12 mb-4">
+                    <PageTitle title={"Create position"} showSettings={true} />
                 </div>
+            </div>
+            <div className="w-full grid grid-flow-col auto-cols-fr gap-3 max-md:flex-col max-md:flex mb-3 max-w-[1280px] mx-auto">
+                <div className="col-span-2" />
                 {!isCustomPoolDeployerLoading && isALMPool && enabledModules.alm && (
-                    <div className="flex items-center h-full max-h-16 col-span-1 p-2 bg-card rounded-xl justify-between gap-2 border border-card-border">
+                    <div className="flex items-center h-full max-h-16 col-span-1 p-2 rounded-xl justify-between gap-2 border border-card-border">
                         <Button
                             onClick={() => setIsALM(false)}
                             size={"md"}
-                            variant={isALM ? "ghost" : "primaryLink"}
+                            variant={isALM ? "ghost" : "secondary"}
                             className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
                         >
                             Manually
@@ -62,7 +65,7 @@ const NewPositionPage = () => {
                             onClick={() => setIsALM(true)}
                             size={"md"}
                             disabled={isALM === null}
-                            variant={!isALM ? "ghost" : "primaryLink"}
+                            variant={!isALM ? "ghost" : "secondary"}
                             className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
                         >
                             Automated

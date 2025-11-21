@@ -25,7 +25,7 @@ export const enabledModules: Record<AppFeatureModule, boolean> = {
 
     [AppFeatureModule.Analytics]: true,
     [AppFeatureModule.Farming]: true,
-    [AppFeatureModule.LimitOrders]: false,
+    [AppFeatureModule.LimitOrders]: true,
     [AppFeatureModule.ALM]: false,
 
     [AppFeatureModule.VE_33]: false,

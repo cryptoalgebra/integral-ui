@@ -42,12 +42,11 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         smartTradeCallOptions,
     } = derivedSwap;
 
-    const {
-        wrapType,
-        execute: onWrap,
-        loading: isWrapLoading,
-        inputError: wrapInputError,
-    } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
+        currencies[SwapField.INPUT],
+        currencies[SwapField.OUTPUT],
+        typedValue
+    );
 
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
@@ -110,11 +109,11 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         smartTradeCallOptions.value
     );
 
-    const {
-        callback: swapCallback,
-        isLoading: swapLoading,
-        error: swapError,
-    } = useSwapCallback(!isSmartTrade ? trade : null, allowedSlippage, approvalState);
+    const { callback: swapCallback, isLoading: swapLoading, error: swapError } = useSwapCallback(
+        !isSmartTrade ? trade : null,
+        allowedSlippage,
+        approvalState
+    );
 
     const isSwapLoading = swapLoading || smartSwapLoading;
 
@@ -140,30 +139,52 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
-    if (showWrap && wrapInputError) return <Button disabled>{wrapInputError}</Button>;
+    if (showWrap && wrapInputError)
+        return (
+            <Button variant={"primary"} disabled>
+                {wrapInputError}
+            </Button>
+        );
 
     if (showWrap)
         return (
-            <Button variant={'primary'} onClick={() => onWrap && onWrap()}>
+            <Button variant={"primary"} onClick={() => onWrap && onWrap()}>
                 {isWrapLoading ? <Loader /> : wrapType === WrapType.WRAP ? "Wrap" : "Unwrap"}
             </Button>
         );
 
     if (routeNotFound && userHasSpecifiedInputOutput)
-        return <Button variant={'primary'} disabled>{isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}</Button>;
+        return (
+            <Button variant={"primary"} disabled>
+                {isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}
+            </Button>
+        );
 
     if (trade && insufficientBalance) {
-        return <Button variant={'primary'} disabled>{isLoadingRoute ? <Loader /> : `Insufficient ${trade.inputAmount.currency.symbol} amount`}</Button>;
+        return (
+            <Button variant={"primary"} disabled>
+                {isLoadingRoute ? <Loader /> : `Insufficient ${trade.inputAmount.currency.symbol} amount`}
+            </Button>
+        );
     }
 
     if (showApproveFlow)
         return (
-            <Button variant={'primary'} disabled={approvalState !== ApprovalState.NOT_APPROVED} onClick={() => approvalCallback && approvalCallback()}>
+            <Button
+                variant={"primary"}
+                disabled={approvalState !== ApprovalState.NOT_APPROVED}
+                onClick={() => approvalCallback && approvalCallback()}
+            >
                 {approvalState === ApprovalState.PENDING ? (
                     <Loader />
                 ) : approvalState === ApprovalState.APPROVED ? (
@@ -176,7 +197,11 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     return (
         <>
-            <Button variant={'primary'} onClick={() => handleSwap()} disabled={!isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute}>
+            <Button
+                variant={"primary"}
+                onClick={() => handleSwap()}
+                disabled={!isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute}
+            >
                 {isSwapLoading ? (
                     <Loader />
                 ) : priceImpactTooHigh ? (

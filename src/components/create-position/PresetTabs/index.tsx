@@ -186,10 +186,10 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
     }
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 h-fit bg-card gap-3 rounded-xl p-1">
+        <div className="grid grid-cols-2 md:grid-cols-4 h-fit bg-card-dark gap-3 rounded-xl p-1">
             {presets.map((range) => (
                 <Button
-                    variant={preset === range.type ? "iconHover" : "icon"}
+                    variant={preset === range.type ? "iconActive" : "icon"}
                     size={"sm"}
                     key={`preset-range-${range.title}`}
                     onClick={() => onPresetSelect(range)}

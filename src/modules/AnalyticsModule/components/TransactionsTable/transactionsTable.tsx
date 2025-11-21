@@ -117,6 +117,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Swap"));
                         }}
                         className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        size="sm"
                         variant={currentTxTypes?.includes("Swap") ? "iconActive" : "outline"}
                     >
                         <ArrowDownUp size={16} />
@@ -129,6 +130,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Mint"));
                         }}
                         className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        size="sm"
                         variant={currentTxTypes?.includes("Mint") ? "iconActive" : "outline"}
                     >
                         <ImagePlus size={16} />
@@ -141,6 +143,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Burn"));
                         }}
                         className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        size="sm"
                         variant={currentTxTypes?.includes("Burn") ? "iconActive" : "outline"}
                     >
                         <Flame size={16} />
@@ -153,6 +156,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                             } else setFilterTxTypes(currentTxTypes.filter((t) => t !== "Collect"));
                         }}
                         className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                        size="sm"
                         variant={currentTxTypes?.includes("Collect") ? "iconActive" : "outline"}
                     >
                         <Coins size={16} />
@@ -166,6 +170,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                             "flex h-10 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4 max-lg:hidden max-md:col-span-2",
                             currentTxTypes.length < 4 ? "" : "hidden"
                         )}
+                        size="sm"
                         variant={"outline"}
                     >
                         <span>Reset</span>
@@ -178,11 +183,11 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
             </div>
 
             <Table>
-                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 border-t border-opacity-60">
+                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 bg-card border-t border-opacity-60">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl font-semibold [&_svg]:mt-auto">
+                                <TableHead key={header.id} className="font-semibold rounded-0 [&_svg]:mt-auto">
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
@@ -191,7 +196,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                 </TableHeader>
                 <TableBody className="hover:bg-transparent text-[16px]">
                     {!table.getRowModel().rows.length ? (
-                        <TableRow className="hover:bg-card h-full">
+                        <TableRow className="hover:bg-transparent h-full">
                             <TableCell colSpan={columns.length} className="h-24 text-center">
                                 No results.
                             </TableCell>

@@ -95,11 +95,11 @@ export function TokensTable({
             )}
 
             <Table>
-                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 border-t border-opacity-60">
+                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 bg-card border-t border-opacity-60">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl font-semibold [&_svg]:mt-auto">
+                                <TableHead key={header.id} className="font-semibold rounded-0 [&_svg]:mt-auto">
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
@@ -109,7 +109,7 @@ export function TokensTable({
 
                 <TableBody className="hover:bg-transparent text-[16px]">
                     {!table.getRowModel().rows.length ? (
-                        <TableRow className="hover:bg-card h-full">
+                        <TableRow className="hover:bg-transparent h-full">
                             <TableCell colSpan={columns.length} className="h-24 text-center">
                                 No results.
                             </TableCell>

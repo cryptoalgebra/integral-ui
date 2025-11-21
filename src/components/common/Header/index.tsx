@@ -11,12 +11,11 @@ import { TransactionCard } from "../TransactionCard";
 import { useAccount } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
-import { cn, truncateHash } from "@/utils";
-import Settings from "../Settings";
+import { truncateHash } from "@/utils";
 
 const Header = () => (
-    <header className="md:sticky top-2 z-10 flex h-full backdrop-blur-[6px] max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4 mx-auto max-[480px]:px-4 w-full">
-        <nav className="w-fit flex gap-8 h-full py-2">
+    <header className="md:sticky border-b md:px-4 top-0 z-10 flex h-full backdrop-blur-[6px] max-h-16 justify-between md:justify-between items-center gap-4 mx-auto w-full">
+        <nav className="w-fit flex gap-4 h-full py-2">
             <Algebra />
             <Navigation />
         </nav>
@@ -54,48 +53,27 @@ const Account = () => {
 
     return (
         <div className="flex h-full justify-end max-h-[64px] gap-4 whitespace-nowrap items-center">
-            <div className="flex p-2 gap-2 h-full">
+            <div className="flex gap-2 h-full items-center">
                 {showTxHistory && (
                     <TransactionHistoryPopover>
                         {pendingTxCount > 0 ? (
-                            <Button
-                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-lg transition-all duration-200"
-                                aria-label="Transaction history"
-                            >
-                                <Loader />
+                            <Button variant={"secondary"} size={"sm"} aria-label="Transaction history">
+                                <Loader color="white" />
                                 <span>{pendingTxCount}</span>
                                 <span>Pending</span>
                             </Button>
                         ) : (
-                            <Button
-                                variant={"icon"}
-                                size={"md"}
-                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200 border border-card-border px-4"
-                                aria-label="Transaction history"
-                            >
-                                <Clock size={20} />
+                            <Button variant={"secondary"} size={"sm"} aria-label="Transaction history">
+                                <Clock size={18} />
                             </Button>
                         )}
                     </TransactionHistoryPopover>
                 )}
-                <Settings />
-                <Button
-                    className="flex gap-2 h-full rounded-lg border border-card-border"
-                    variant={"icon"}
-                    size={"sm"}
-                    onClick={() => open({ view: "Networks" })}
-                >
+                {/* <Settings /> */}
+                <Button variant={"secondary"} size={"sm"} onClick={() => open({ view: "Networks" })}>
                     <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
                 </Button>
-                <Button
-                    className={cn(
-                        "flex gap-2 h-full rounded-lg border border-card-border",
-                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75"
-                    )}
-                    onClick={() => open()}
-                    variant={"icon"}
-                    size={"sm"}
-                >
+                <Button onClick={() => open()} variant={"primary"} size={"sm"}>
                     <WalletIcon size={16} className="md:hidden" />
                     <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
                 </Button>

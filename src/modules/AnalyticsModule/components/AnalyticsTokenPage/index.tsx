@@ -157,10 +157,12 @@ export function AnalyticsTokenPage() {
 
     return (
         <PageContainer>
-            <div className="mb-8">
-                <PageTitle title="Explore token" showSettings={false} />
+            <div className="border-b w-full md:mb-12 mb-4">
+                <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between md:my-12 mb-4">
+                    <PageTitle title={"Explore token"} showSettings={false} />
+                </div>
             </div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 w-full">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3 w-full max-w-[1280px] mx-auto">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
                     <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={currency} tokenB={null} />
@@ -198,13 +200,13 @@ export function AnalyticsTokenPage() {
                 </div>
             </div>
 
-            <nav className="w-full text-xl pb-3 border-b my-4">
+            <nav className="w-full text-lg pb-3 border-b my-4 max-w-[1280px] mx-auto">
                 <ul className="flex gap-8 whitespace-nowrap">
                     <button
                         type={"button"}
                         onClick={() => setTableView("pools")}
                         className={`select-none font-semibold duration-200 ${
-                            tableView === "pools" ? "text-primary-200" : "hover:text-primary-200"
+                            tableView === "pools" ? "text-primary" : "hover:text-primary/80 text-primary/50"
                         }`}
                     >
                         Pools
@@ -214,15 +216,14 @@ export function AnalyticsTokenPage() {
                         type={"button"}
                         onClick={() => setTableView("transactions")}
                         className={`select-none font-semibold duration-200 ${
-                            tableView === "transactions" ? "text-primary-200" : "hover:text-primary-200"
+                            tableView === "transactions" ? "text-primary" : "hover:text-primary/80 text-primary/50"
                         }`}
                     >
                         Transactions
                     </button>
                 </ul>
             </nav>
-
-            <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full">{tables[tableView]}</div>
+            {tables[tableView]}
         </PageContainer>
     );
 }

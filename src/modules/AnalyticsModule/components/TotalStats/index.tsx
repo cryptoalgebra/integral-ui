@@ -36,13 +36,13 @@ export default function TotalStats({ currentTVL, currentVolume, currentFees, isL
     ];
 
     return (
-        <div className="flex h-full w-full flex-col gap-3 overflow-hidden lg:flex-row">
+        <div className="flex h-full w-full flex-col gap-3 overflow-hidden lg:flex-row max-w-[1280px] mx-auto">
             {cards.map((card) => (
                 <div
                     key={card.title}
-                    className={`flex flex-1 items-center justify-between rounded-xl border border-card-border bg-card px-4 py-3 md:flex-col md:items-start md:justify-start md:px-6 md:py-4`}
+                    className={`flex flex-1 items-center justify-between rounded-lg border border-card-border bg-card px-4 py-3 md:flex-col md:items-start md:justify-start md:px-6 md:py-4`}
                 >
-                    <div className="text-title whitespace-nowrap text-[16px] md:text-[14px]">{card.title}</div>
+                    <div className="text-title whitespace-nowrap text-[16px] md:text-[14px] text-muted-foreground">{card.title}</div>
                     {!isLoading ? (
                         <div className="flex w-full flex-col items-center md:flex-row">
                             <div className="text-title ml-auto text-[24px] font-semibold md:ml-0 md:text-[32px]">

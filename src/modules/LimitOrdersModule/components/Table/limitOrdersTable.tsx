@@ -72,11 +72,11 @@ export const LimitOrdersTable = <TData, TValue>({
         />
       </div>} */}
             <Table>
-                <TableHeader className="[&_tr]:border-b-0">
+                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 bg-card border-t border-opacity-60">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl font-semibold">
+                                <TableHead key={header.id} className="font-semibold [&_svg]:mt-auto">
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
@@ -92,9 +92,9 @@ export const LimitOrdersTable = <TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card-dark"} ${
-                                        (action || link) && "cursor-pointer"
-                                    } ${action || link ? "hover:bg-card-hover" : "hover:bg-card-dark"}`}
+                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card-dark"} ${(action ||
+                                        link) &&
+                                        "cursor-pointer"} ${action || link ? "hover:bg-card-hover" : "hover:bg-card-dark"}`}
                                     onClick={() => {
                                         if (action) {
                                             action(row.original.id);
@@ -112,7 +112,7 @@ export const LimitOrdersTable = <TData, TValue>({
                             );
                         })
                     ) : (
-                        <TableRow className="hover:bg-card h-full">
+                        <TableRow className="hover:bg-transparent h-full">
                             <TableCell colSpan={columns.length} className="h-24 text-center">
                                 No results.
                             </TableCell>

@@ -104,7 +104,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
                 variant={'primary'}
                 disabled={!collect || zeroRewards || isLoading || isPending}
                 onClick={() => collectConfig && collect(collectConfig)}
-                className="min-w-[108px] rounded-2xl"
+                className="min-w-[108px]"
             >
                 {isLoading || isPending ? <Loader /> : "Collect fees"}
             </Button>

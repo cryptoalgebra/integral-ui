@@ -93,7 +93,7 @@ export function Chart({
 
         if (chartRef.current.hasChildNodes()) chartRef.current.innerHTML = "";
 
-        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--text-400").trim();
+        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--text-200").trim();
 
         const chart = LightWeightCharts.createChart(chartRef.current, {
             width: chartRef.current.parentElement?.clientWidth,
@@ -149,7 +149,7 @@ export function Chart({
 
         if (chartView === CHART_VIEW.AREA || chartView === CHART_VIEW.LINE) {
             series = chart?.addAreaSeries({
-                topColor: `${primary200}`,
+                topColor: `${primary200}99`,
                 bottomColor: `${primary200}00`,
                 lineColor: primary200,
                 lineWidth: 2,
@@ -236,7 +236,7 @@ export function Chart({
                         )}
                     </div>
 
-                    <div className="mb-5 text-sm text-[#b7b7b7]">{displayValue !== undefined ? displayDate : null}</div>
+                    <div className="mb-5 text-sm text-muted-foreground">{displayValue !== undefined ? displayDate : null}</div>
                 </div>
 
                 <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">

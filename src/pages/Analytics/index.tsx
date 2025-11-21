@@ -1,4 +1,5 @@
 import PageContainer from "@/components/common/PageContainer";
+import PageTitle from "@/components/common/PageTitle";
 import AnalyticsModule from "@/modules/AnalyticsModule";
 import { ReactNode } from "react";
 import { matchPath, NavLink, useLocation } from "react-router-dom";
@@ -33,10 +34,10 @@ function Navigation() {
     const { pathname, search } = useLocation();
 
     const setNavlinkClasses = (paths: string[]) =>
-        paths.some((path) => matchPath(path, pathname)) ? "text-primary-200" : "hover:text-primary-200";
+        paths.some((path) => matchPath(path, pathname)) ? "text-primary" : "hover:text-primary/80 text-primary/50";
 
     return (
-        <nav className="w-full text-xl pb-3 border-b my-6">
+        <nav className="w-full text-lg pb-3 border-b my-6">
             <ul className="flex gap-8 whitespace-nowrap">
                 {tabs.map((tab) => (
                     <NavLink
@@ -55,10 +56,15 @@ function Navigation() {
 function AnalyticsPage({ children }: { children: ReactNode }) {
     return (
         <PageContainer>
-            <div className="flex flex-col items-start w-full">
+            <div className="border-b w-full md:mb-12 mb-4">
+                <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between md:my-12 mb-4">
+                    <PageTitle title={"Analytics"} showSettings={false} />
+                </div>
+            </div>
+            <div className="flex flex-col items-start w-full max-w-[1280px] mx-auto">
                 <DexCharts />
                 <Navigation />
-                <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full">{children}</div>
+                {children}
             </div>
         </PageContainer>
     );

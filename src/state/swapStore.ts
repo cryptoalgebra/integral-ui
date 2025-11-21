@@ -176,15 +176,17 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         wasInverted,
     } = useSwapState();
 
-    const inputCurrency = useCurrency(inputCurrencyId);
-    const outputCurrency = useCurrency(outputCurrencyId);
+    const inputCurrency = useCurrency(inputCurrencyId, inputCurrencyId === ADDRESS_ZERO);
+    const outputCurrency = useCurrency(outputCurrencyId, outputCurrencyId === ADDRESS_ZERO);
 
     const isExactIn: boolean = independentField === SwapField.INPUT;
 
-    const parsedAmount = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
-        [typedValue, isExactIn, inputCurrency, outputCurrency]
-    );
+    const parsedAmount = useMemo(() => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined), [
+        typedValue,
+        isExactIn,
+        inputCurrency,
+        outputCurrency,
+    ]);
     const bestTradeExactIn = useBestTradeExactIn(
         isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
         outputCurrency ?? undefined
@@ -202,7 +204,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         enabledModules.smartRouter
     );
 
-    const trade = enabledModules.smartRouter ? smartTrade : ((isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined);
+    const trade = enabledModules.smartRouter ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
 
     const [addressA, addressB] = [
         inputCurrency?.isNative ? undefined : inputCurrency?.address || "",
@@ -324,8 +326,8 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                       independentField === SwapField.INPUT
                           ? parsedAmount
                           : limitOrderPrice
-                            ? parsedLimitOrderInput
-                            : toggledTrade?.inputAmount,
+                          ? parsedLimitOrderInput
+                          : toggledTrade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
                           ? limitOrderPrice
@@ -336,10 +338,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                                   : undefined
                               : parsedAmount
                           : limitOrderPrice
-                            ? outputCurrency && parsedAmount
-                                ? parsedLimitOrderOutput
-                                : undefined
-                            : toggledTrade?.outputAmount,
+                          ? outputCurrency && parsedAmount
+                              ? parsedLimitOrderOutput
+                              : undefined
+                          : toggledTrade?.outputAmount,
               };
     }, [
         showWrap,

@@ -17,17 +17,17 @@ const titles = {
 
 export function ChartSpanSelector({ chartSpan, handleChangeChartSpan }: IChartSpanSelector) {
     return (
-        <div className="flex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-card-border p-1">
             {Object.entries(titles).map(([span, label]) => (
                 <Button
                     size={"sm"}
                     key={span}
                     onClick={() => handleChangeChartSpan(span as ChartSpanType)}
-                    variant={'icon'}
+                    variant={"icon"}
                     disabled={chartSpan === span}
                     className={cn(
-                        'border rounded-xl disabled:opacity-100 hover:bg-white/5',
-                        chartSpan === span ? 'bg-white/5 border-white/20' : 'border-none'
+                        "border-0 rounded-md disabled:opacity-100 hover:bg-white/5",
+                        chartSpan === span ? "bg-primary/10" : "border-none"
                     )}
                 >
                     {label}

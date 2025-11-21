@@ -3,7 +3,6 @@ import { CHART_SPAN, CHART_TYPE, CHART_VIEW, ChartSpanType, ChartTypeType, Chart
 import { Chart } from "../";
 import { getPercentChange } from "@/utils";
 import TotalStats from "../TotalStats";
-import PageTitle from "@/components/common/PageTitle";
 import { useDexChartData } from "@/hooks/analytics";
 
 function ChartComponent({
@@ -98,16 +97,13 @@ export function DexCharts() {
     }, [dexDayDatas]);
 
     return (
-        <div className="flex flex-col gap-3 w-full">
-            <div className="flex items-center justify-between mb-8">
-                <PageTitle title="Analytics" showSettings={false} />
-            </div>
+        <div className="flex flex-col gap-3 w-full max-w-[1280px] mx-auto">
             <TotalStats isLoading={loading} currentTVL={currentTVL} currentVolume={currentVolume24H} currentFees={currentFees24H} />
             <div className="grid grid-rows-2 gap-3 lg:grid-cols-2 lg:grid-rows-1">
-                <div className="rounded-xl border border-card-border bg-card pt-4">
+                <div className="rounded-lg border border-card-border bg-card pt-4">
                     <ChartComponent selector={"tvlUSD"} title={"TVL"} chartView={CHART_VIEW.AREA} chartType={CHART_TYPE.TVL} height={180} />
                 </div>
-                <div className="rounded-xl border border-card-border bg-card pt-4">
+                <div className="rounded-lg border border-card-border bg-card pt-4">
                     <ChartComponent
                         selector={"volumeUSD"}
                         title={"Volume"}

@@ -1,36 +1,37 @@
+import Settings from "@/components/common/Settings";
 import { cn } from "@/utils";
 import { NavLink } from "react-router-dom";
 
 export function SwapTypeSelector({ isLimitOrder }: { isLimitOrder: boolean }) {
     return (
-        <div className="flex items-center h-full col-span-1 max-h-16 text-4xl font-bold rounded-xl whitespace-nowrap">
-            <NavLink className="w-full h-full" to="/swap">
-                <h1
-                    className={
-                        cn(
-                            "leading-tight bg-gradient-to-b bg-clip-text text-transparent pr-8 duration-200",
-                            isLimitOrder ? 'from-white via-slate-200 to-slate-600 hover:opacity-70' : 'from-primary-200 via-primary-200'
-                        )
-                    }
-                >
-                    Swap
-                </h1>
-            </NavLink>
-            <div className="flex items-center h-full pt-1">
-                <div className="w-2 h-2 bg-white/5 border border-white/25 rotate-45" />
+        <div className="border-b w-full md:mb-12">
+            <div className="w-full max-w-[1280px] mx-auto flex items-center text-xl md:text-3xl justify-between md:my-12 mb-4">
+                <div className="w-fit flex gap-8 items-center">
+                    <NavLink className="w-full h-full" to="/swap">
+                        <h1
+                            className={cn(
+                                "leading-tight text-primary  duration-200 whitespace-nowrap font-semibold",
+                                isLimitOrder ? "text-muted-foreground/70 hover:text-primary/80" : "text-primary"
+                            )}
+                        >
+                            Swap
+                        </h1>
+                    </NavLink>
+                    <div className="h-8 w-[2px] bg-muted" />
+                    <NavLink className="w-full h-full" to="/limit-order">
+                        <h1
+                            className={cn(
+                                "leading-tight text-primary  duration-200 whitespace-nowrap font-semibold",
+                                !isLimitOrder ? "text-muted-foreground/70 hover:text-primary/80" : "text-primary"
+                            )}
+                        >
+                            Limit Order
+                        </h1>
+                    </NavLink>
+                </div>
+
+                <Settings />
             </div>
-            <NavLink className={"w-full h-full"} to="/limit-order">
-                <h1 
-                    className={
-                        cn(
-                            "leading-tight bg-gradient-to-b bg-clip-text text-transparent pl-8 duration-200",
-                            isLimitOrder ? 'from-primary-200 via-primary-200' : 'from-white via-slate-200 to-slate-600 hover:opacity-70'
-                        )
-                    }
-                >
-                    Limit Order
-                </h1>
-            </NavLink>
         </div>
     );
 }

@@ -11,13 +11,18 @@ export function useCurrency(address: Address | undefined, asNative: boolean = tr
 
     const isNative = address === ADDRESS_ZERO;
 
-    const token = useAlgebraToken(isNative || isWNative ? ADDRESS_ZERO : address, chainId);
+    const token = useAlgebraToken(isNative ? ADDRESS_ZERO : address, chainId);
 
     const extendedEther = ExtendedNative.onChain(chainId, NATIVE_SYMBOL[chainId], NATIVE_NAME[chainId]);
 
-    if (asNative) return isNative || isWNative ? extendedEther : token;
+    // If ADDRESS_ZERO is passed, return native token
+    if (isNative) return extendedEther;
 
-    if (isWNative) return extendedEther.wrapped;
+    // If WETH address is passed and asNative is true, return native
+    // If WETH address is passed and asNative is false, return wrapped token
+    if (isWNative) {
+        return asNative ? extendedEther : extendedEther.wrapped;
+    }
 
-    return isNative ? extendedEther : token;
+    return token;
 }

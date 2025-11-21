@@ -85,7 +85,7 @@ const MyPositionsTable = <TData, TValue>({
             return (
                 <TableRow
                     key={"open-positions"}
-                    className="hover:bg-transparent h-full cursor-pointer"
+                    className="bg-card hover:bg-card h-full cursor-pointer"
                     onClick={() => {
                         if (isStatusActive) setExpandActive(!expandActive);
                         if (isStatusOnFarming) setExpandOnFarming(!expandOnFarming);
@@ -136,14 +136,15 @@ const MyPositionsTable = <TData, TValue>({
                         <TableRow
                             key={row.id}
                             data-state={row.getIsSelected() && "selected"}
-                            className={`border-card-border ${isSelected ? "bg-card-dark" : "bg-card"} ${
-                                (action || link) && "cursor-pointer"
-                            } ${action || link ? (isSelected ? "hover:bg-muted" : "hover:bg-card-hover") : "hover:bg-card-dark"} ${
-                                isStatusActive && !expandActive && "collapse border-0 opacity-0"
-                            } ${isStatusOnFarming && !expandOnFarming && "collapse border-0 opacity-0"}
-                            ${isStatusClosed && !expandClosed && "collapse border-0 opacity-0"} ${
-                                isStatusALM && !expandALM && "collapse border-0 opacity-0"
-                            }`}
+                            className={`border-card-border ${isSelected ? "bg-card-hover" : "bg-transparent"} ${(action || link) &&
+                                "cursor-pointer"} ${
+                                action || link ? (isSelected ? "hover:bg-card-hover" : "hover:bg-card-hover") : "hover:bg-card-dark"
+                            } ${isStatusActive && !expandActive && "collapse border-0 opacity-0"} ${isStatusOnFarming &&
+                                !expandOnFarming &&
+                                "collapse border-0 opacity-0"}
+                            ${isStatusClosed && !expandClosed && "collapse border-0 opacity-0"} ${isStatusALM &&
+                                !expandALM &&
+                                "collapse border-0 opacity-0"}`}
                             onClick={() => {
                                 if (action) {
                                     action(row.original);
@@ -172,16 +173,19 @@ const MyPositionsTable = <TData, TValue>({
             <Table>
                 <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30">
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                        <TableRow key={headerGroup.id} className="bg-card hover:bg-card">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl font-semibold [&_svg]:mt-auto">
+                                <TableHead
+                                    key={header.id}
+                                    className=" font-semibold first:rounded-tl-lg last:rounded-tr-lg [&_svg]:mt-auto"
+                                >
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
                         </TableRow>
                     ))}
                 </TableHeader>
-                <TableBody className="[&_tr]:border-opacity-30 hover:bg-transparent text-[16px]">
+                <TableBody className="[&_tr]:border-opacity-30 text-[16px]">
                     {table.getRowModel().rows?.length === 0 ||
                     (!filterStatus.Open && !filterStatus.Closed && !filterStatus.OnFarming) ||
                     (noActivePositions && noFarmingPositions && !filterStatus.Closed) ||
@@ -190,7 +194,7 @@ const MyPositionsTable = <TData, TValue>({
                     (noFarmingPositions && noClosedPositions && !filterStatus.Open) ||
                     (noFarmingPositions && !filterStatus.Open && !filterStatus.Closed) ||
                     (noClosedPositions && !filterStatus.Open && !filterStatus.OnFarming) ? (
-                        <TableRow className="hover:bg-card h-full border-0">
+                        <TableRow className="hover:bg-transparent h-full border-0">
                             <TableCell colSpan={columns.length} className="h-24 text-center">
                                 No results.
                             </TableCell>

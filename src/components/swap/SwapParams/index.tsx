@@ -64,7 +64,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         <div className="rounded">
             <div className="flex justify-between">
                 <button
-                    className="flex items-center w-full text-md mb-1 text-center bg-card-dark border border-card-border py-1 px-3 rounded-lg"
+                    className="flex items-center w-full mb-1 text-sm text-center bg-card border border-card-border py-1 px-3 rounded-lg"
                     onClick={() => toggleExpanded(!isExpanded)}
                 >
                     {fee !== undefined ? (
@@ -84,15 +84,15 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             </div>
             <div
                 className={cn(
-                    'h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg',
-                    isExpanded && isSmartTrade ? "h-[160px]" : isExpanded && "h-[142px]",
-                    isExpanded && 'border border-card-border'
+                    "h-0 duration-300 will-change-[height] overflow-hidden bg-card rounded-lg",
+                    isExpanded && isSmartTrade ? "h-[160px]" : isExpanded && "h-[130px]",
+                    isExpanded && "border border-card-border"
                 )}
             >
-                <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
+                <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl text-sm">
                     {isSmartTrade ? (
                         <div className="flex items-center justify-between">
-                            <span className="font-semibold">Route</span>
+                            <span className="">Route</span>
                             <span>
                                 <SwapRouteModal
                                     isOpen={isOpen}
@@ -101,11 +101,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                                     fees={fees}
                                     tradeType={trade?.tradeType}
                                 >
-                                    <Button 
-                                        size={"sm"}
-                                        variant={'outline'}
-                                        onClick={() => setIsOpen(true)}
-                                    >
+                                    <Button size={"sm"} variant={"outline"} onClick={() => setIsOpen(true)}>
                                         Show
                                     </Button>
                                 </SwapRouteModal>
@@ -113,7 +109,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                         </div>
                     ) : (
                         <div className="flex items-center justify-between">
-                            <span className="font-semibold">Route</span>
+                            <span className="text-muted-foreground">Route</span>
                             <span>
                                 {trade?.swaps &&
                                     [
@@ -124,34 +120,36 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                         </div>
                     )}
                     <div className="flex items-center justify-between">
-                        <span className="font-semibold">
+                        <span className="text-muted-foreground">
                             {trade.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent"}
                         </span>
                         <span>{minimumAmountOut}</span>
                     </div>
                     {/*<div className="flex items-center justify-between">*/}
-                    {/*    <span className="font-semibold">LP Fee</span>*/}
+                    {/*    <span className="text-muted-foreground">LP Fee</span>*/}
                     {/*    <span>{LPFeeString}</span>*/}
                     {/*</div>*/}
                     <div className="flex items-center justify-between">
-                        <span className="font-semibold">Price impact</span>
+                        <span className="text-muted-foreground">Price impact</span>
                         <span>
                             <PriceImpact priceImpact={priceImpact} />
                         </span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="font-semibold">Slippage tolerance</span>
+                        <span className="text-muted-foreground">Slippage tolerance</span>
                         <span>{allowedSlippage.toFixed(2)}%</span>
                     </div>
                 </div>
             </div>
         </div>
     ) : trade !== undefined && isTradeLoading ? (
-        <div className="flex justify-center mb-1 bg-card-dark border border-card-border py-3 px-3 rounded-lg">
+        <div className="flex justify-center mb-1 bg-card border border-card-border py-3 px-3 rounded-lg">
             <Loader size={17} className="text-text" />
         </div>
     ) : (
-        <div className="text-md mb-1 text-center opacity-70 bg-card-dark border border-card-border py-2 px-3 rounded-lg">Select an amount for swap</div>
+        <div className="text-md mb-1 text-center opacity-70 bg-card border border-card-border py-2 px-3 rounded-lg">
+            Select an amount for swap
+        </div>
     );
 };
 
