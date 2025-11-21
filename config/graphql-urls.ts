@@ -5,14 +5,14 @@ export const USE_UNISWAP_PLACEHOLDER_DATA = false;
 export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // actually it's Thena Fusion BSC Mainnet
 
 export const INFO_GRAPH_URL = {
-    [ChainId.Rayls]: "https://devnet-thegraph.rayls.com/query/subgraphs/name/analytics",
+    [ChainId.MantraDukong]: "https://api.goldsky.com/api/public/project_cmg0b4ikf6yt101y6gqjjey1d/subgraphs/analytics/v1.0.0/gn",
 };
 
 export const FARMING_GRAPH_URL = {
-    [ChainId.Rayls]: "https://devnet-thegraph.rayls.com/query/subgraphs/name/farms",
+    [ChainId.MantraDukong]: "https://api.goldsky.com/api/public/project_cmg0b4ikf6yt101y6gqjjey1d/subgraphs/farming/v1.0.0/gn",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.Rayls]:
+    [ChainId.MantraDukong]:
         "https://api.studio.thegraph.com/query/82608/ve-limits/version/latest",
 };

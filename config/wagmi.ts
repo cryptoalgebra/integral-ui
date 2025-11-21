@@ -32,29 +32,28 @@ import {
 } from "./contract-addresses";
 import { defineChain } from "viem";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 123123,
-    network: "rayls",
-    name: "Rayls",
-    nativeCurrency: { name: "WETH", symbol: "WETH", decimals: 18 },
+export const mantraDuKongEVMTestnet = /*#__PURE__*/ defineChain({
+    id: 5887,
+    name: 'MANTRA DuKong EVM Testnet',
+    nativeCurrency: {
+      decimals: 18,
+      name: 'OM',
+      symbol: 'OM',
+    },
     rpcUrls: {
-        default: {
-            http: ["https://devnet-rpc.rayls.com"],
-        },
-        public: {
-            http: ["https://devnet-rpc.rayls.com"],
-        },
+      default: { http: ['https://evm.dukong.mantrachain.io'] },
     },
     blockExplorers: {
-        default: {
-            name: "RaylsScan",
-            url: "https://devnet-explorer.rayls.com/",
-        },
-    }
-});
+      default: {
+        name: 'MANTRAScan',
+        url: 'https://mantrascan.io/dukong',
+      },
+    },
+    testnet: true,
+  })
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [mantraDuKongEVMTestnet];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
