@@ -63,7 +63,11 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
     });
 
     const permit2Token1 = usePermit2({
-        amount: token1ForApproval?.currency.isNative ? undefined : token1ForApproval,
+        amount: token1ForApproval?.currency.isNative
+            ? undefined
+            : isSameTokens
+            ? token1ForApproval.add(token0ForApproval)
+            : token1ForApproval,
         spender: OMEGA_ROUTER[chainId],
     });
 
