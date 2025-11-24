@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { cn, formatAmount } from "@/utils";
 import { Currency, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
@@ -121,10 +121,13 @@ const TokenCard = ({
         }
     }, [percentDifference, usdValue, value]);
 
-    const handleTokenSelect = (newCurrency: Currency) => {
-        setIsOpen(false);
-        handleTokenSelection(newCurrency);
-    };
+    const handleTokenSelect = useCallback(
+        (newCurrency: Currency) => {
+            setIsOpen(false);
+            handleTokenSelection(newCurrency);
+        },
+        [handleTokenSelection]
+    );
 
     return (
         <div className="flex w-full px-4 py-4 bg-card-dark border border-card-border rounded-lg">

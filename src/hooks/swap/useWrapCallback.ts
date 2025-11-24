@@ -19,7 +19,7 @@ export default function useWrapCallback(
     inputCurrency: Currency | undefined,
     outputCurrency: Currency | undefined,
     typedValue: string | undefined
-): { wrapType: (typeof WrapType)[keyof typeof WrapType]; execute?: undefined | (() => void); loading?: boolean; inputError?: string } {
+): { wrapType: typeof WrapType[keyof typeof WrapType]; execute?: undefined | (() => void); loading?: boolean; inputError?: string } {
     const chainId = useChainId();
     const { address: account } = useAccount();
 
@@ -76,8 +76,8 @@ export default function useWrapCallback(
                 inputError: sufficientBalance
                     ? undefined
                     : hasInputAmount
-                      ? `Insufficient ${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
-                      : `Enter ${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
+                    ? `Insufficient ${DEFAULT_NATIVE_SYMBOL} balance`
+                    : `Enter ${DEFAULT_NATIVE_SYMBOL} amount`,
             };
         } else if (weth.equals(inputCurrency) && outputCurrency.isNative) {
             return {
@@ -87,8 +87,8 @@ export default function useWrapCallback(
                 inputError: sufficientBalance
                     ? undefined
                     : hasInputAmount
-                      ? `Insufficient W${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
-                      : `Enter W${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
+                    ? `Insufficient W${DEFAULT_NATIVE_SYMBOL} balance`
+                    : `Enter W${DEFAULT_NATIVE_SYMBOL} amount`,
             };
         } else {
             return NOT_APPLICABLE;
