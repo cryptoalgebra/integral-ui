@@ -18,6 +18,7 @@ import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { useOmegaSwapCallback } from "@/hooks/swap/useOmegaSwapCallback";
 import { TradeState } from "@/types/trade-state";
 import { AllowanceState, usePermit2 } from "@/hooks/common/usePermit2";
+import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
 
 const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
@@ -43,6 +44,8 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         smartTradeCallOptions,
     } = derivedSwap;
 
+    const isSmartTrade = trade && "routes" in trade;
+
     const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
         currencies[SwapField.INPUT],
         currencies[SwapField.OUTPUT],
@@ -50,6 +53,11 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     );
 
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
+
+    const erc4626WrapType =
+        !isSmartTrade && trade && trade.swaps[0].route.pools.length === 0
+            ? determineSwapType(trade.inputAmount.currency.wrapped, trade.outputAmount.currency.wrapped)
+            : null;
 
     const parsedAmountA =
         independentField === SwapField.INPUT
@@ -84,7 +92,6 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         currencyBalances[SwapField.INPUT]?.lessThan(trade.inputAmount.quotient.toString());
 
     const chainId = useChainId();
-    const isSmartTrade = trade && "routes" in trade;
 
     const shouldUseOmegaRouter = routerType === RouterType.OMEGA;
 
@@ -272,6 +279,10 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                     "Swap Anyway"
                 ) : swapInputError || activeSwapError ? (
                     swapInputError || activeSwapError
+                ) : erc4626WrapType === BoostedSwapType.WRAP_ONLY ? (
+                    "Wrap"
+                ) : erc4626WrapType === BoostedSwapType.UNWRAP_ONLY ? (
+                    "Unwrap"
                 ) : (
                     "Swap"
                 )}
