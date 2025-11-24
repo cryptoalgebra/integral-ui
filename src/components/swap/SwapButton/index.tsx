@@ -42,17 +42,10 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         toggledTrade: trade,
         tradeState,
         smartTradeCallOptions,
+        refetchBalances,
     } = derivedSwap;
 
     const isSmartTrade = trade && "routes" in trade;
-
-    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
-        currencies[SwapField.INPUT],
-        currencies[SwapField.OUTPUT],
-        typedValue
-    );
-
-    const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
     const erc4626WrapType =
         !isSmartTrade && trade && trade.swaps[0].route.pools.length === 0
@@ -126,28 +119,47 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         return warningSeverity(priceImpact);
     }, [priceImpact]);
 
+    const permitSignature = permit2Allowance.state === AllowanceState.ALLOWED ? permit2Allowance.permitSignature : undefined;
+    const refetchPermit2Data = permit2Allowance.state !== AllowanceState.LOADING ? permit2Allowance.refetchPermit2Data : undefined;
+
+    const onTransactionSuccess = useCallback(() => {
+        refetchBalances();
+        if (shouldUseOmegaRouter) {
+            refetchPermit2Data?.();
+        }
+    }, [refetchBalances, refetchPermit2Data, shouldUseOmegaRouter]);
+
+    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
+        currencies[SwapField.INPUT],
+        currencies[SwapField.OUTPUT],
+        typedValue,
+        onTransactionSuccess
+    );
+
+    const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
+
     const { callback: smartSwapCallback, isLoading: smartSwapLoading } = useSmartRouterCallback(
         trade?.inputAmount?.currency,
         trade?.outputAmount?.currency,
         trade?.inputAmount?.toFixed(),
         smartTradeCallOptions.calldata,
-        smartTradeCallOptions.value
+        smartTradeCallOptions.value,
+        onTransactionSuccess
     );
-
-    // Get Permit2 signature if available
-    const permitSignature = permit2Allowance.state === AllowanceState.ALLOWED ? permit2Allowance.permitSignature : undefined;
 
     // Use OmegaRouter callback for boosted routes and Permit2-signed swaps
     const { callback: omegaSwapCallback, isLoading: omegaSwapLoading, error: omegaSwapError } = useOmegaSwapCallback(
         shouldUseOmegaRouter && !isSmartTrade ? trade : null,
         allowedSlippage,
-        permitSignature
+        permitSignature,
+        onTransactionSuccess
     );
 
     // Use regular SwapRouter callback for normal routes without Permit2
     const { callback: swapCallback, isLoading: swapLoading, error: swapError } = useSwapCallback(
         !isSmartTrade && !shouldUseOmegaRouter ? trade : null,
-        allowedSlippage
+        allowedSlippage,
+        onTransactionSuccess
     );
 
     const isSwapLoading = swapLoading || smartSwapLoading || omegaSwapLoading;

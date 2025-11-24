@@ -18,7 +18,8 @@ const NOT_APPLICABLE = { wrapType: WrapType.NOT_APPLICABLE };
 export default function useWrapCallback(
     inputCurrency: Currency | undefined,
     outputCurrency: Currency | undefined,
-    typedValue: string | undefined
+    typedValue: string | undefined,
+    onTransactionSuccess?: () => void
 ): { wrapType: typeof WrapType[keyof typeof WrapType]; execute?: undefined | (() => void); loading?: boolean; inputError?: string } {
     const chainId = useChainId();
     const { address: account } = useAccount();
@@ -38,6 +39,7 @@ export default function useWrapCallback(
         title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL}`,
         tokenA: WNATIVE[chainId].address as Address,
         type: TransactionType.SWAP,
+        callback: onTransactionSuccess,
     });
 
     const unwrapConfig = inputAmount
@@ -53,6 +55,7 @@ export default function useWrapCallback(
         title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL}`,
         tokenA: WNATIVE[chainId].address as Address,
         type: TransactionType.SWAP,
+        callback: onTransactionSuccess,
     });
 
     const { data: balance } = useBalance({

@@ -31,7 +31,8 @@ interface SuccessfulCall extends SwapCallEstimate {
 export function useOmegaSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
-    permitSignature?: PermitSignature
+    permitSignature?: PermitSignature,
+    onTransactionSuccess?: () => void
 ) {
     const { address: account } = useAccount();
 
@@ -89,6 +90,7 @@ export function useOmegaSwapCallback(
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
         type: TransactionType.SWAP,
+        callback: onTransactionSuccess,
     });
 
     return useMemo(() => {

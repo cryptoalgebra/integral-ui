@@ -71,6 +71,7 @@ export interface IDerivedSwapInfo {
     poolAddress: Address | undefined;
     parsedAmounts: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     isExactIn: boolean;
+    refetchBalances: () => void;
 }
 
 export const useSwapState = create<SwapState>((set, get) => ({
@@ -223,11 +224,11 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         outputCurrency?.isNative ? undefined : outputCurrency?.address || "",
     ] as Address[];
 
-    const { data: inputCurrencyBalance } = useBalance({
+    const { data: inputCurrencyBalance, refetch: refetchInputBalance } = useBalance({
         address: account,
         token: addressA,
     });
-    const { data: outputCurrencyBalance } = useBalance({
+    const { data: outputCurrencyBalance, refetch: refetchOutputBalance } = useBalance({
         address: account,
         token: addressB,
     });
@@ -238,6 +239,11 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         [SwapField.OUTPUT]:
             outputCurrency && outputCurrencyBalance && CurrencyAmount.fromRawAmount(outputCurrency, outputCurrencyBalance.value.toString()),
     };
+
+    const refetchBalances = useCallback(() => {
+        refetchInputBalance();
+        refetchOutputBalance();
+    }, [refetchInputBalance, refetchOutputBalance]);
 
     const currencies: { [field in SwapFieldType]?: Currency } = {
         [SwapField.INPUT]: inputCurrency ?? undefined,
@@ -383,5 +389,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         poolAddress,
         isExactIn,
         parsedAmounts,
+        refetchBalances,
     };
 }

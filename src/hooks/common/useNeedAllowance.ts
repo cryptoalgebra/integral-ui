@@ -10,7 +10,7 @@ export function useNeedAllowance(
 ) {
     const { address: account } = useAccount();
 
-    const { data: allowance } = useReadContract({
+    const { data: allowance, refetch } = useReadContract({
         address: currency?.wrapped.address as Address,
         abi: erc20Abi,
         functionName: "allowance",
@@ -20,5 +20,9 @@ export function useNeedAllowance(
         },
     });
 
-    return Boolean(!currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString()));
+    const needAllowance = Boolean(
+        !currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString())
+    );
+
+    return { needAllowance, refetchAllowance: refetch };
 }

@@ -16,7 +16,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;
     const [shouldPolling, setShouldPolling] = useState(false);
 
-    const needAllowance = useNeedAllowance(token, amountToApprove, spender, shouldPolling);
+    const { needAllowance, refetchAllowance } = useNeedAllowance(token, amountToApprove, spender, shouldPolling);
 
     const approvalState: ApprovalStateType = useMemo(() => {
         if (!amountToApprove || !spender) return ApprovalState.UNKNOWN;
@@ -40,6 +40,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
         title: `Approve ${formatAmount(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
         tokenA: token?.address as Address,
         type: TransactionType.SWAP,
+        callback: refetchAllowance,
     });
 
     useEffect(() => {

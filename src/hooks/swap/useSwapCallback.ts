@@ -29,7 +29,11 @@ interface FailedCall extends SwapCallEstimate {
     error: Error;
 }
 
-export function useSwapCallback(trade: Trade<Currency, Currency, TradeType> | null | undefined, allowedSlippage: Percent) {
+export function useSwapCallback(
+    trade: Trade<Currency, Currency, TradeType> | null | undefined,
+    allowedSlippage: Percent,
+    onTransactionSuccess?: () => void
+) {
     const { address: account } = useAccount();
 
     const chainId = useChainId();
@@ -105,6 +109,7 @@ export function useSwapCallback(trade: Trade<Currency, Currency, TradeType> | nu
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
         type: TransactionType.SWAP,
+        callback: onTransactionSuccess,
     });
 
     return useMemo(() => {

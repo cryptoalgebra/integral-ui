@@ -11,7 +11,8 @@ export function useSmartRouterCallback(
     currencyB: Currency | undefined,
     amount: string | undefined,
     calldata: Address | undefined,
-    value: string | undefined
+    value: string | undefined,
+    onTransactionSuccess?: () => void
 ) {
     const [txHash, setTxHash] = useState<Address>();
 
@@ -71,6 +72,7 @@ export function useSmartRouterCallback(
         type: TransactionType.SWAP,
         tokenA: currencyA?.wrapped.address as Address,
         tokenB: currencyB?.wrapped.address as Address,
+        callback: onTransactionSuccess,
     });
 
     return useMemo(

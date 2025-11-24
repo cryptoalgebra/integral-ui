@@ -40,7 +40,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
 
     // Check Permit2 allowance
     const queryEnabled = !!address && !!token?.address && !!spender && !!permit2Address;
-    const { data: permitData } = useReadContract({
+    const { data: permitData, refetch: refetchPermit } = useReadContract({
         address: permit2Address,
         abi: PERMIT2_ABI,
         chainId: token?.chainId,
@@ -169,5 +169,6 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
         permitState,
         permitCallback,
         permitSignature: isSigned ? signature : undefined,
+        refetchPermit,
     };
 }

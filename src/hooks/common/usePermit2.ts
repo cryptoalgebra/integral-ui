@@ -22,6 +22,7 @@ interface AllowanceRequired {
     approve: () => void;
     permit: () => void;
     revoke: () => void;
+    refetchPermit2Data: () => void;
     needsSetupApproval: boolean;
     needsPermitSignature: boolean;
     isLoading: boolean;
@@ -32,6 +33,7 @@ export type Allowance =
     | {
           state: AllowanceState.ALLOWED;
           permitSignature?: PermitSignature;
+          refetchPermit2Data: () => void;
       }
     | AllowanceRequired;
 
@@ -41,7 +43,7 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
     const permit2Address = PERMIT2[chainId] as Address;
 
     // Get permit state and callback using usePermit hook
-    const { permitState, permitCallback, permitSignature } = usePermit(amount, spender);
+    const { permitState, permitCallback, permitSignature, refetchPermit } = usePermit(amount, spender);
 
     // Approval functions - using useApprove hook
     const { approvalCallback: approve, approvalState } = useApprove(amount, permit2Address);
@@ -50,7 +52,7 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
     const { approvalCallback: revoke, approvalState: revokeState } = useRevokeApprove(token, permit2Address);
 
     // Check if ERC20 approval to Permit2 is needed
-    const needsTokenApproval = useNeedAllowance(token, amount, permit2Address);
+    const { needAllowance: needsTokenApproval, refetchAllowance } = useNeedAllowance(token, amount, permit2Address);
 
     // Check if Permit2 signature is needed
     // permitState includes expiration check inside usePermit
@@ -82,6 +84,12 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
 
     const isLoading = isPermitLoading || isApprovalLoading || isRevokeLoading;
 
+    // Combined refetch callback
+    const refetchPermit2Data = useCallback(() => {
+        refetchPermit();
+        refetchAllowance();
+    }, [refetchPermit, refetchAllowance]);
+
     // Determine state
     return useMemo(() => {
         if (!token) {
@@ -96,6 +104,7 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
                 approve,
                 permit,
                 revoke,
+                refetchPermit2Data,
                 needsSetupApproval: needsTokenApproval,
                 needsPermitSignature,
                 isLoading,
@@ -105,6 +114,18 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
         return {
             state: AllowanceState.ALLOWED,
             permitSignature,
+            refetchPermit2Data,
         };
-    }, [token, needsTokenApproval, needsPermitSignature, approveAndPermit, approve, permit, revoke, isLoading, permitSignature]);
+    }, [
+        token,
+        needsTokenApproval,
+        needsPermitSignature,
+        approveAndPermit,
+        approve,
+        permit,
+        revoke,
+        isLoading,
+        permitSignature,
+        refetchPermit2Data,
+    ]);
 }
