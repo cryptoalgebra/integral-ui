@@ -7,8 +7,6 @@ import { getPoolAPR } from "@/utils/pool/getPoolAPR";
 import { Address } from "viem";
 import { useEffect, useState } from "react";
 import EnterAmounts from "../EnterAmounts";
-import IncreaseLiquidityButton from "@/components/position/IncreaseLiquidityButton";
-import { ManageLiquidity } from "@/types/manage-liquidity";
 import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
 import { AddOmegaLiquidityButton } from "../AddOmegaLiquidityButton";
@@ -20,13 +18,12 @@ interface AmountsSectionProps {
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
-    manageLiquidity: ManageLiquidity;
     handleCloseModal?: () => void;
 }
 
 type NewPositionPageParams = Record<"pool", Address>;
 
-const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidity, handleCloseModal }: AmountsSectionProps) => {
+const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseModal }: AmountsSectionProps) => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
     const [poolAPR, setPoolAPR] = useState<number>();
@@ -46,7 +43,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidi
                 <HoverCardTrigger className="px-2">
                     <TokenRatio mintInfo={mintInfo} />
                 </HoverCardTrigger>
-                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-xl border border-card-border text-white w-fit">
+                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-xl border border-card-border text-text-100 w-fit">
                     <div className="flex items-center">
                         <span className="font-bold">Token Ratio</span>
                     </div>
@@ -62,21 +59,23 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidi
                     <div className="text-lg font-bold text-cyan-300">{poolAPR !== undefined ? `${formatAmount(poolAPR, 2)}%` : null}</div>
                 </div>
             </div>
-            {manageLiquidity === ManageLiquidity.INCREASE && (
-                <IncreaseLiquidityButton
+            {isBoosted ? (
+                <AddOmegaLiquidityButton
+                    mintInfo={mintInfo}
+                    poolAddress={poolAddress}
                     tokenId={tokenId}
+                    handleCloseModal={handleCloseModal}
+                />
+            ) : (
+                <AddLiquidityButton
                     baseCurrency={currencyA}
                     quoteCurrency={currencyB}
                     mintInfo={mintInfo}
+                    poolAddress={poolAddress}
+                    tokenId={tokenId}
                     handleCloseModal={handleCloseModal}
                 />
             )}
-            {manageLiquidity === ManageLiquidity.ADD &&
-                (isBoosted ? (
-                    <AddOmegaLiquidityButton mintInfo={mintInfo} poolAddress={poolAddress} />
-                ) : (
-                    <AddLiquidityButton baseCurrency={currencyA} quoteCurrency={currencyB} mintInfo={mintInfo} poolAddress={poolAddress} />
-                ))}
         </>
     );
 };

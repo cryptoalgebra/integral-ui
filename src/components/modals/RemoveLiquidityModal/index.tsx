@@ -3,19 +3,22 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
+import { Switch } from "@/components/ui/switch";
 import { Deposit } from "@/graphql/generated/graphql";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
+import { useNFTPermit, NFTPermitState } from "@/hooks/common/useNFTPermit";
 import { useClients } from "@/hooks/graphql/useClients";
 import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
-import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/custom-pools-sdk";
-import { NONFUNGIBLE_POSITION_MANAGER } from "config/contract-addresses";
+import { Percent, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
+import { OMEGA_ROUTER } from "config/contract-addresses";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId, useSendTransaction } from "wagmi";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 interface RemoveLiquidityModalProps {
     positionId: number;
@@ -23,6 +26,8 @@ interface RemoveLiquidityModalProps {
 
 const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     const [sliderValue, setSliderValue] = useState([50]);
+    const [token0Unwrap, setToken0Unwrap] = useState(false);
+    const [token1Unwrap, setToken1Unwrap] = useState(false);
 
     const { txDeadline } = useUserState();
     const { address: account } = useAccount();
@@ -42,32 +47,74 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { position: positionSDK, liquidityPercentage, feeValue0, feeValue1, liquidityValue0, liquidityValue1 } = derivedInfo;
 
+    // Determine if tokens are boosted
+    const token0 = positionSDK?.pool.token0;
+    const token1 = positionSDK?.pool.token1;
+    const isBoostedToken0 = token0 && token0.isBoosted;
+    const isBoostedToken1 = token1 && token1.isBoosted;
+
+    // NFT Permit for OmegaRouter
+    const { permitState, permitCallback, permitSignature, isLoading: isPermitLoading } = useNFTPermit({
+        tokenId: positionId,
+        spender: chainId ? OMEGA_ROUTER[chainId] : undefined,
+    });
+
+    const needsPermit = permitState === NFTPermitState.NOT_PERMITTED;
+
     const { calldata, value } = useMemo(() => {
-        if (!positionSDK || !positionId || !liquidityPercentage || !feeValue0 || !feeValue1 || !account || percent === 0)
+        if (
+            !positionSDK ||
+            !positionId ||
+            !liquidityPercentage ||
+            !feeValue0 ||
+            !feeValue1 ||
+            !account ||
+            percent === 0 ||
+            !permitSignature
+        )
             return { calldata: undefined, value: undefined };
 
-        return NonfungiblePositionManager.removeCallParameters(positionSDK, {
-            tokenId: String(positionId),
-            liquidityPercentage,
-            slippageTolerance: new Percent(1, 100),
-            deadline: Date.now() + txDeadline * 1000,
-            collectOptions: {
-                expectedCurrencyOwed0: feeValue0,
-                expectedCurrencyOwed1: feeValue1,
+        try {
+            return OmegaRouter.removeCallParameters(positionSDK, {
+                tokenId: positionId,
+                liquidityPercentage,
+                slippageTolerance: new Percent(1, 100),
+                deadline: Date.now() + txDeadline * 1000,
+                burnToken: liquidityPercentage.equalTo(new Percent(1)),
+                token0Unwrap,
+                token1Unwrap,
+                permit: permitSignature,
                 recipient: account,
-            },
-        });
-    }, [positionId, positionSDK, txDeadline, feeValue0, feeValue1, liquidityPercentage, account, percent]);
+            });
+        } catch (error) {
+            console.error(error);
+            return { calldata: undefined, value: undefined };
+        }
+    }, [
+        positionId,
+        positionSDK,
+        txDeadline,
+        feeValue0,
+        feeValue1,
+        liquidityPercentage,
+        account,
+        percent,
+        token0Unwrap,
+        token1Unwrap,
+        permitSignature,
+    ]);
 
-    const removeLiquidityConfig = calldata
-        ? {
-              address: NONFUNGIBLE_POSITION_MANAGER[chainId],
-              args: [calldata as `0x${string}`[]] as const,
-              value: BigInt(value || 0),
-          }
-        : calldata;
+    const removeLiquidityConfig = useMemo(() => {
+        if (!calldata) return undefined;
 
-    const { data: removeLiquidityData, writeContract: removeLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
+        return {
+            to: OMEGA_ROUTER[chainId],
+            data: calldata as Address,
+            value: BigInt(value || 0),
+        };
+    }, [calldata, value, chainId]);
+
+    const { data: removeLiquidityData, sendTransactionAsync: removeLiquidity, isPending } = useSendTransaction();
 
     const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData, {
         title: "Remove liquidity",
@@ -76,11 +123,22 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         type: TransactionType.POOL,
     });
 
-    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity || isPending;
+    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || isPending || isPermitLoading || (!needsPermit && !removeLiquidityConfig);
+
+    const handleRemoveLiquidity = async () => {
+        if (needsPermit) {
+            await permitCallback();
+            return;
+        }
+
+        if (!removeLiquidityConfig) return;
+
+        removeLiquidity(removeLiquidityConfig);
+    };
 
     useEffect(() => {
         onPercentSelect(sliderValue[0]);
-    }, [sliderValue]);
+    }, [sliderValue, onPercentSelect]);
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -121,7 +179,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
             });
 
         return () => clearInterval(interval);
-    }, [isSuccess]);
+    }, [isSuccess, refetchPosition, refetchAllPositions, sliderValue, farmingClient, positionId]);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -172,8 +230,53 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         token1={liquidityValue1?.currency}
                     />
 
-                    <Button variant={'primary'} disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
-                        {isRemoveLoading || isPending ? <Loader /> : "Remove Liquidity"}
+                    {((isBoostedToken0 && liquidityValue0?.greaterThan(ZERO)) ||
+                        (isBoostedToken1 && liquidityValue1?.greaterThan(ZERO))) && (
+                        <div className="flex flex-col gap-3 p-4 bg-card-dark rounded-2xl border border-card-border">
+                            <h3 className="text-sm font-semibold text-muted-foreground">Receive tokens as:</h3>
+
+                            {isBoostedToken0 && (
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-sm font-medium">
+                                            {token0Unwrap ? unwrappedToken(token0.underlying).symbol : token0.symbol}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {token0Unwrap
+                                                ? `Receive ${unwrappedToken(token0.underlying).symbol} (underlying)`
+                                                : `Receive ${token0.symbol} (boosted)`}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-muted-foreground">{token0Unwrap ? "Underlying" : "Boosted"}</span>
+                                        <Switch checked={token0Unwrap} onCheckedChange={setToken0Unwrap} disabled={isRemoveLoading} />
+                                    </div>
+                                </div>
+                            )}
+
+                            {isBoostedToken1 && (
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-sm font-medium">
+                                            {token1Unwrap ? unwrappedToken(token1.underlying).symbol : token1.symbol}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {token1Unwrap
+                                                ? `Receive ${unwrappedToken(token1.underlying).symbol} (underlying)`
+                                                : `Receive ${token1.symbol} (boosted)`}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-muted-foreground">{token1Unwrap ? "Underlying" : "Boosted"}</span>
+                                        <Switch checked={token1Unwrap} onCheckedChange={setToken1Unwrap} disabled={isRemoveLoading} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <Button variant={"primary"} disabled={isDisabled} onClick={handleRemoveLiquidity}>
+                        {isRemoveLoading || isPending || isPermitLoading ? <Loader /> : needsPermit ? "Sign Permit" : "Remove Liquidity"}
                     </Button>
                 </div>
             </DialogContent>

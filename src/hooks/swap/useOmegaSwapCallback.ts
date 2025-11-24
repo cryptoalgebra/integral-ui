@@ -22,11 +22,11 @@ interface SuccessfulCall extends SwapCallEstimate {
     gasEstimate: bigint;
 }
 
-interface FailedCall extends SwapCallEstimate {
-    calldata: Address;
-    value: bigint;
-    error: Error;
-}
+// interface FailedCall extends SwapCallEstimate {
+//     calldata: Address;
+//     value: bigint;
+//     error: Error;
+// }
 
 export function useOmegaSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
@@ -41,47 +41,29 @@ export function useOmegaSwapCallback(
     const [bestCall, setBestCall] = useState<SuccessfulCall>();
     const [callError, setCallError] = useState<Error>();
 
-    const swapCalldata = useOmegaSwapCallArguments(trade, allowedSlippage, permitSignature);
+    const { data: swapCalldata } = useOmegaSwapCallArguments(trade, allowedSlippage, permitSignature);
 
     useEffect(() => {
         async function findBestCall() {
-            if (!swapCalldata || swapCalldata.length === 0 || swapCalldata.every((call) => call.calldata.length === 0)) return;
+            if (!swapCalldata?.calldata || swapCalldata.calldata.length === 0) return;
             if (!account || !client) return;
 
             setBestCall(undefined);
             setCallError(undefined);
 
-            const calls = await Promise.all(
-                swapCalldata.map(async ({ calldata, value: _value }) => {
-                    const value = BigInt(_value);
+            try {
+                const gasEstimate = await estimateGas(client, {
+                    to: OMEGA_ROUTER[chainId],
+                    data: swapCalldata.calldata as Address,
+                    account,
+                    value: BigInt(swapCalldata.value),
+                });
 
-                    try {
-                        const gasEstimate = await estimateGas(client, {
-                            to: OMEGA_ROUTER[chainId],
-                            data: calldata as `0x${string}`,
-                            account,
-                            ...(value > 0n && { value }),
-                        });
-
-                        return { calldata, value, gasEstimate };
-                    } catch (error) {
-                        // console.error(error);
-                        return { calldata, value, error: error as Error };
-                    }
-                })
-            );
-
-            const successfulCalls = calls.filter((call): call is SuccessfulCall => "gasEstimate" in call);
-
-            if (successfulCalls.length === 0) {
-                const errors = calls.filter((call): call is FailedCall => "error" in call);
-                setCallError(errors[0].error);
-                throw errors.length > 0 ? errors[errors.length - 1].error : new Error("All gas estimations failed.");
+                setBestCall({ calldata: swapCalldata.calldata as Address, value: BigInt(swapCalldata.value), gasEstimate });
+            } catch (error) {
+                console.error(error);
+                setCallError(error as Error);
             }
-
-            const bestCallOption = successfulCalls.reduce((a, b) => (a.gasEstimate < b.gasEstimate ? a : b));
-
-            setBestCall(bestCallOption);
         }
 
         findBestCall();
@@ -92,7 +74,7 @@ export function useOmegaSwapCallback(
             bestCall
                 ? {
                       to: OMEGA_ROUTER[chainId],
-                      data: bestCall.calldata as `0x${string}`,
+                      data: bestCall.calldata as Address,
                       value: BigInt(bestCall.value),
                       gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
                   }

@@ -1475,10 +1475,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.0.3.tgz#7d52d76f227090b73766d66b62528dc33bd9ec8f"
-  integrity sha512-t0PhX5+wMiRTP73gRpwhEB1Bl3fijYFyjEdvyN0TT/CQaoUjLVqAyCM6MDPSETUqK6DzJYQ0rcgBgDelPnjvlA==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.1.4.tgz#352d80336cfd09b42370803b12ad42b3192ad2fd"
+  integrity sha512-kR/SHxRENnqRJeTIfUpV2GWQS9v0uqn2NpJO93IrPQKaWNRfo91tLeb9ZQKQpPHNBJjyRGF9oqqkzNlhTsOtKw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -1493,10 +1493,10 @@
     toformat "^2.0.0"
     viem "^2.31.3"
 
-"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.0.3.tgz#7d52d76f227090b73766d66b62528dc33bd9ec8f"
-  integrity sha512-t0PhX5+wMiRTP73gRpwhEB1Bl3fijYFyjEdvyN0TT/CQaoUjLVqAyCM6MDPSETUqK6DzJYQ0rcgBgDelPnjvlA==
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.1.4.tgz#352d80336cfd09b42370803b12ad42b3192ad2fd"
+  integrity sha512-kR/SHxRENnqRJeTIfUpV2GWQS9v0uqn2NpJO93IrPQKaWNRfo91tLeb9ZQKQpPHNBJjyRGF9oqqkzNlhTsOtKw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -1511,12 +1511,13 @@
     toformat "^2.0.0"
     viem "^2.31.3"
 
-"@cryptoalgebra/omega-router-sdk@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.0.6.tgz#561f4c17a07686ffd66f1a0b5809eaab6e120d0a"
-  integrity sha512-JNopWNZNeAQAD+GhG4PnRuQo0mfcn44i7dxQl7J5hGaNceBc0i6sgJOC/9xC4ErPzRyUEkXjhXo8l6xUC5GU8w==
+"@cryptoalgebra/omega-router-sdk@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.1.7.tgz#34a2515d3ff6fe01f9029567c2e3711fed503bed"
+  integrity sha512-RUVyFORBfdESVuDKFpgT0dXpoVLa1vhTDuZkJoH7SCsEx3AQSz47BRCfV6yJsN00HBE3ssQRUu60P/kUHZFyxw==
   dependencies:
-    "@cryptoalgebra/integral-sdk" "npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.0.3"
+    "@cryptoalgebra/integral-sdk" "npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.1.4"
+    "@uniswap/permit2-sdk" "^1.4.0"
     bignumber.js "^9.0.2"
     ethers "^5.7.0"
     viem "^2.38.5"

@@ -12,10 +12,11 @@ import { ArrowRight } from "lucide-react";
 import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
-import { Route as SmartRoute, Pool, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Currency, TradeType, Route as SDKRoute, BoostedToken, BoostedRoute } from "@cryptoalgebra/custom-pools-sdk";
+import { Route as SmartRoute, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Currency, TradeType, Route as SDKRoute, BoostedRoute } from "@cryptoalgebra/custom-pools-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
 import { formatAmount } from "@/utils";
+import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
 
 interface ISwapRouteModal {
     isOpen: boolean;
@@ -107,9 +108,10 @@ const BoostedRouteDisplay = ({ route, fees }: { route: BoostedRoute<Currency, Cu
             const from = route.tokenPath[i];
             const to = route.tokenPath[i + 1];
 
-            // Check if this is a wrap/unwrap step
-            const isWrap = from instanceof BoostedToken === false && to instanceof BoostedToken;
-            const isUnwrap = from instanceof BoostedToken && to instanceof BoostedToken === false;
+            const swapType = determineSwapType(from, to);
+
+            const isWrap = swapType === BoostedSwapType.WRAP_ONLY;
+            const isUnwrap = swapType === BoostedSwapType.UNWRAP_ONLY;
 
             if (isWrap || isUnwrap) {
                 result.push({
@@ -137,14 +139,7 @@ const BoostedRouteDisplay = ({ route, fees }: { route: BoostedRoute<Currency, Cu
     ));
 };
 
-const RouteSplit = ({
-    route,
-    fees,
-}: {
-    route: { pools: Pool[]; path: Currency[]; percent: number; amountInList?: bigint[]; amountOutList?: bigint[] };
-    fees: number[][];
-    tradeType: TradeType;
-}) => {
+const RouteSplit = ({ route, fees }: { route: SmartRoute; fees: number[][]; tradeType: TradeType }) => {
     const { splits, splitFees } = useMemo(() => {
         const splits = [];
         const splitFees = [];
@@ -170,7 +165,7 @@ const RouteSplit = ({
                     <RoutePool
                         key={`route-pool-${idx}`}
                         pool={{
-                            path: splits[idx],
+                            path: splits[idx] as any,
                             fee: splitFees[idx],
                             address: pool.address,
                             deployer: pool.deployer,
@@ -187,8 +182,8 @@ export const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, chi
 
     // Determine route type
     const isSmartRoute = routes.length > 0 && "percent" in routes[0];
-    const isBoostedRoute = routes.length > 0 && routes[0] instanceof BoostedRoute;
-    const isSDKRoute = routes.length > 0 && !isSmartRoute && !isBoostedRoute && "pools" in routes[0];
+    const isBoostedSDKRoute = !isSmartRoute && routes.length > 0 && (routes[0] as BoostedRoute<Currency, Currency>).isBoosted;
+    const isSDKRoute = routes.length > 0 && !isSmartRoute && !isBoostedSDKRoute && "pools" in routes[0];
 
     return (
         <Credenza open={isOpen}>
@@ -211,7 +206,7 @@ export const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, chi
                                 tradeType={tradeType}
                             />
                         ))}
-                    {isBoostedRoute &&
+                    {isBoostedSDKRoute &&
                         (routes as BoostedRoute<Currency, Currency>[]).map((route, idx) => (
                             <BoostedRouteDisplay key={`boosted-route-${idx}`} route={route} fees={fees[idx] || []} />
                         ))}

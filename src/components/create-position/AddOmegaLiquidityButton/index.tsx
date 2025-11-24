@@ -3,23 +3,26 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER } from "config";
 import { IDerivedMintInfo, useMintState } from "@/state/mintStore";
 import { useUserState } from "@/state/userStore";
-import { Field, Percent, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { Field, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { useOmegaMintCallback } from "@/hooks/positions/useOmegaMintCallback";
 import { AllowanceState, usePermit2 } from "@/hooks/common/usePermit2";
+import { OmegaMintOptions } from "@cryptoalgebra/omega-router-sdk";
 
 interface AddOmegaLiquidityButtonProps {
     mintInfo: IDerivedMintInfo;
-    poolAddress: Address | undefined;
+    poolAddress?: Address;
+    tokenId?: number;
+    handleCloseModal?: () => void;
 }
 
 const ZERO_PERCENT = new Percent("0");
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiquidityButtonProps) => {
+export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handleCloseModal }: AddOmegaLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -30,6 +33,8 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
 
     const { txDeadline } = useUserState();
 
+    const isIncreaseMode = tokenId !== undefined;
+
     const { token0InputMode: tokenAInputMode, token1InputMode: tokenBInputMode } = useMintState();
 
     const { token0, token1 } = mintInfo?.position?.pool || {};
@@ -39,8 +44,8 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
         return tokenA && tokenB && tokenA.wrapped.sortsBefore(tokenB.wrapped);
     }, [tokenA, tokenB]);
 
-    const isBoostedToken0 = token0 instanceof BoostedToken;
-    const isBoostedToken1 = token1 instanceof BoostedToken;
+    const isBoostedToken0 = token0 && token0.isBoosted;
+    const isBoostedToken1 = token1 && token1.isBoosted;
 
     const shouldWrapToken0 = isBoostedToken0 ? (isSorted ? tokenAInputMode === "underlying" : tokenBInputMode === "underlying") : false;
     const shouldWrapToken1 = isBoostedToken1 ? (isSorted ? tokenBInputMode === "underlying" : tokenAInputMode === "underlying") : false;
@@ -49,16 +54,11 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
     const token0ForApproval = isSorted ? mintInfo.parsedAmounts[Field.CURRENCY_A] : mintInfo.parsedAmounts[Field.CURRENCY_B];
     const token1ForApproval = isSorted ? mintInfo.parsedAmounts[Field.CURRENCY_B] : mintInfo.parsedAmounts[Field.CURRENCY_A];
 
-    console.log("tokeni", {
-        shouldWrapToken0,
-        shouldWrapToken1,
-        token0ForApproval,
-        token1ForApproval,
-    });
+    const isSameTokens = token0ForApproval && token1ForApproval && token0ForApproval.currency.equals(token1ForApproval.currency);
 
     // Use Permit2 for both tokens (skip native tokens)
     const permit2Token0 = usePermit2({
-        amount: token0ForApproval?.currency.isNative ? undefined : token0ForApproval,
+        amount: token0ForApproval?.currency.isNative || isSameTokens ? undefined : token0ForApproval,
         spender: OMEGA_ROUTER[chainId],
     });
 
@@ -79,7 +79,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
 
     const useNative = token0ForApproval?.currency.isNative || token1ForApproval?.currency.isNative;
 
-    const mintOptions = useMemo(() => {
+    const mintOptions: OmegaMintOptions | null = useMemo(() => {
         if (!account) return null;
 
         const amount0Underlying = shouldWrapToken0 && token0ForApproval ? token0ForApproval : undefined;
@@ -92,10 +92,11 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
             useNative,
             createPool: mintInfo.noLiquidity,
             deployer: mintInfo.pool?.deployer as Address,
-            token0Permit,
-            token1Permit,
+            token0Permit: token0Permit || null,
+            token1Permit: token1Permit || null,
             amount0Underlying,
             amount1Underlying,
+            tokenId,
         };
     }, [
         mintInfo,
@@ -108,14 +109,14 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
         token1Permit,
         token0ForApproval,
         token1ForApproval,
+        tokenId,
     ]);
-
-    console.log("mintOptions", mintOptions);
 
     const { callback: addLiquidity, isLoading: isAddingLiquidityLoading, error: mintError } = useOmegaMintCallback(
         mintInfo.position,
         mintOptions,
-        poolAddress
+        poolAddress,
+        handleCloseModal
     );
 
     // Check if we need approval or permit for token0
@@ -235,7 +236,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress }: AddOmegaLiqui
                 }
             }}
         >
-            {isAddingLiquidityLoading ? <Loader /> : "Create Position"}
+            {isAddingLiquidityLoading ? <Loader /> : isIncreaseMode ? "Add Liquidity" : "Create Position"}
         </Button>
     );
 };

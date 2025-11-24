@@ -6,6 +6,7 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { OMEGA_ROUTER } from "config/contract-addresses";
 import { OmegaMintOptions, OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
+import { usePosition, usePositions } from "../positions/usePositions";
 
 export enum MintCallbackState {
     INVALID = "INVALID",
@@ -15,10 +16,17 @@ export enum MintCallbackState {
 export function useOmegaMintCallback(
     position: Position | null | undefined,
     options: OmegaMintOptions | null | undefined,
-    poolAddress?: Address
+    poolAddress?: Address,
+    onSuccess?: () => void
 ) {
     const { address: account } = useAccount();
     const chainId = useChainId();
+
+    const tokenId = options?.tokenId ? Number(options.tokenId) : undefined;
+    const isIncreaseMode = tokenId !== undefined;
+
+    const { refetch: refetchAllPositions } = usePositions();
+    const { refetch: refetchPosition } = usePosition(tokenId);
 
     const mintConfig = useMemo(() => {
         if (!position || !options || !account) return undefined;
@@ -38,12 +46,12 @@ export function useOmegaMintCallback(
     const { isLoading, isSuccess } = useTransactionAwait(
         mintData,
         {
-            title: "Add liquidity",
+            title: isIncreaseMode ? `Add Liquidity to #${tokenId}` : "Add liquidity",
             tokenA: position?.pool.token0.wrapped.address as Address,
             tokenB: position?.pool.token1.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        poolAddress ? `/pool/${poolAddress}` : undefined
+        isIncreaseMode ? undefined : (poolAddress ? `/pool/${poolAddress}` : undefined)
     );
 
     useEffect(() => {
@@ -51,6 +59,13 @@ export function useOmegaMintCallback(
             console.error(error);
         }
     }, [error]);
+
+    useEffect(() => {
+        if (!isSuccess) return;
+        if (isIncreaseMode) {
+            Promise.all([refetchPosition(), refetchAllPositions()]).then(() => onSuccess?.());
+        }
+    }, [isSuccess, isIncreaseMode, refetchPosition, refetchAllPositions, onSuccess]);
 
     return useMemo(() => {
         if (!position || !options) {

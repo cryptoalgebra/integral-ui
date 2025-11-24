@@ -23,9 +23,9 @@ export function useBoostedConversion(
     const swrKey = useMemo(() => {
         if (!inputAmount || !poolToken || !client) return null;
 
-        if (!(poolToken instanceof BoostedToken)) return null;
+        if (!poolToken.isBoosted) return null;
 
-        return ["boosted-conversion", direction, poolToken.address, inputAmount.quotient.toString()];
+        return ["boosted-conversion", direction, poolToken.wrapped.address, inputAmount.quotient.toString()];
     }, [inputAmount, poolToken, direction, client]);
 
     const fetcher = async () => {
@@ -35,14 +35,14 @@ export function useBoostedConversion(
         const amount = BigInt(inputAmount.quotient.toString());
 
         if (direction === "underlying-to-boosted") {
-            const boostedShares = await boostedToken.previewDeposit(client, amount);
+            const boostedShares = await boostedToken.previewDeposit(amount);
             return {
                 outputAmount: boostedShares.toString(),
                 rate: Number(boostedShares) / Number(amount),
                 outputCurrency: boostedToken,
             };
         } else {
-            const underlyingAmount = await boostedToken.previewRedeem(client, amount);
+            const underlyingAmount = await boostedToken.previewRedeem(amount);
             return {
                 outputAmount: underlyingAmount.toString(),
                 rate: Number(underlyingAmount) / Number(amount),
@@ -68,7 +68,7 @@ export function useBoostedConversion(
             };
         }
 
-        if (!(poolToken instanceof BoostedToken)) {
+        if (!poolToken.isBoosted) {
             return {
                 inputAmount,
                 outputAmount: inputAmount,

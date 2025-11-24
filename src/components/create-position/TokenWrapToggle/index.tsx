@@ -14,26 +14,21 @@ interface TokenWrapToggleProps {
     onAmountChange: (value: string) => void;
 }
 
-/**
- * Компонент для переключения между underlying и boosted токенами
- * Меняет inputMode в store, что триггерит пересчет через useBoostedConversion
- */
 const TokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: TokenWrapToggleProps) => {
     const client = usePublicClient();
     const [isConverting, setIsConverting] = useState(false);
 
     const { token0InputMode, token1InputMode, actions } = useMintState();
-    const isBoostedToken = currency instanceof BoostedToken;
+    const isBoosted = currency && currency.isBoosted;
 
-    // Определяем какой токен (0 или 1) на основе Field
     const isToken0 = field === Field.CURRENCY_A;
     const currentInputMode = isToken0 ? token0InputMode : token1InputMode;
 
     const displayToken = useMemo(() => {
-        if (!isBoostedToken) return currency;
+        if (!isBoosted) return currency;
         const boosted = currency as BoostedToken;
         return currentInputMode === "underlying" ? boosted.underlying : boosted;
-    }, [currency, isBoostedToken, currentInputMode]);
+    }, [currency, isBoosted, currentInputMode]);
 
     // Calculate conversion for display
     const userAmount = useMemo(() => {
@@ -44,7 +39,7 @@ const TokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: Toke
     const { outputAmount: poolAmount, isConverting: isCalculating } = useBoostedConversion(userAmount, currency, "underlying-to-boosted");
 
     const handleToggleWrap = async () => {
-        if (!isBoostedToken || !client) return;
+        if (!isBoosted || !client) return;
 
         setIsConverting(true);
 
@@ -60,10 +55,10 @@ const TokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: Toke
 
             if (currentInputMode === "underlying") {
                 // Switching from underlying to boosted
-                convertedAmount = await boosted.previewDeposit(client, amount);
+                convertedAmount = await boosted.previewDeposit(amount);
             } else {
                 // Switching from boosted to underlying
-                convertedAmount = await boosted.previewRedeem(client, amount);
+                convertedAmount = await boosted.previewRedeem(amount);
             }
 
             const newDecimals = newMode === "underlying" ? boosted.underlying.decimals : boosted.decimals;
@@ -85,7 +80,7 @@ const TokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: Toke
         }
     };
 
-    if (!isBoostedToken) return null;
+    if (!isBoosted) return null;
 
     const showConversionInfo = currentInputMode === "underlying" && poolAmount && currentValue && Number(currentValue) > 0;
 

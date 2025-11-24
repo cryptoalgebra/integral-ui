@@ -8,12 +8,11 @@ import { usePositions } from "../positions/usePositions";
 
 import ALMModule from "@/modules/ALMModule";
 import { Address } from "viem";
+import { BOOSTED_TOKENS } from "config/tokens";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
-const BOOSTED_POOLS = ["0x022eed53773a7d7131bdff1d050dad0ca2ac9704"];
-
 export function useFormattedPools(tokenAddress?: Address) {
-    const { address: account } = useAccount();
+    const { address: account, chainId } = useAccount();
 
     const { infoClient, farmingClient } = useClients();
 
@@ -42,7 +41,7 @@ export function useFormattedPools(tokenAddress?: Address) {
         isFarmingsAPRLoading;
 
     const formattedPools = useMemo(() => {
-        if (isLoading || !pools) return [];
+        if (isLoading || !pools || !chainId) return [];
 
         return pools.pools
             .filter((pool) => {
@@ -77,6 +76,14 @@ export function useFormattedPools(tokenAddress?: Address) {
 
                 const avgApr = farmApr + poolAvgApr;
 
+                const isBoostedToken0 = Object.values(BOOSTED_TOKENS[chainId]).find(
+                    (bt) => bt.address.toLowerCase() === token0.id.toLowerCase()
+                );
+                const isBoostedToken1 = Object.values(BOOSTED_TOKENS[chainId]).find(
+                    (bt) => bt.address.toLowerCase() === token1.id.toLowerCase()
+                );
+                const isBoosted = isBoostedToken0 || isBoostedToken1;
+
                 return {
                     id: id as Address,
                     pair: {
@@ -94,7 +101,7 @@ export function useFormattedPools(tokenAddress?: Address) {
                     isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
                     hasALM: Boolean(openVaults?.length),
                     hasActiveFarming: Boolean(activeFarming),
-                    isBoosted: BOOSTED_POOLS.includes(id.toLowerCase()),
+                    isBoosted,
                     deployer: deployer.toLowerCase(),
                 };
             });
