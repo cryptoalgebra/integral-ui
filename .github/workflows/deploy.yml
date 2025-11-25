@@ -1,4 +1,4 @@
-name: Deploy to integral.algebra.finance
+name: Deploy to sophon.algebra.finance
 
 on:
     workflow_dispatch:
