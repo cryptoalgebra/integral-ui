@@ -109,7 +109,7 @@ const PoolsTable = <TData, TValue>({
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
                     <div className="grid grid-cols-2 gap-3 md:flex w-full sm:w-fit">
-                        {enabledModules.farming && (
+                        {enabledModules.FarmingModule && (
                             <Button
                                 onClick={() => toggleFilter("hasActiveFarming")}
                                 variant={isFilterActive("hasActiveFarming") ? "iconActive" : "outline"}
@@ -120,7 +120,7 @@ const PoolsTable = <TData, TValue>({
                                 <span>Farm Pools</span>
                             </Button>
                         )}
-                        {enabledModules.alm && (
+                        {enabledModules.ALMModule && (
                             <Button
                                 onClick={() => toggleFilter("hasALM")}
                                 variant={isFilterActive("hasALM") ? "iconActive" : "outline"}
@@ -131,15 +131,17 @@ const PoolsTable = <TData, TValue>({
                                 <span>ALM Pools</span>
                             </Button>
                         )}
-                        <Button
-                            onClick={() => toggleFilter("isBoosted")}
-                            variant={isFilterActive("isBoosted") ? "iconActive" : "outline"}
-                            size="md"
-                            className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
-                        >
-                            <Zap className="text-purple-800" size={16} />
-                            <span>Boosted</span>
-                        </Button>
+                        {enabledModules.BoostedPoolsModule && (
+                            <Button
+                                onClick={() => toggleFilter("isBoosted")}
+                                variant={isFilterActive("isBoosted") ? "iconActive" : "outline"}
+                                size="md"
+                                className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                            >
+                                <Zap className="text-purple-800" size={16} />
+                                <span>Boosted</span>
+                            </Button>
+                        )}
                         <Button
                             onClick={() => toggleFilter("isMyPool")}
                             variant={isFilterActive("isMyPool") ? "iconActive" : "outline"}

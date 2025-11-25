@@ -4,28 +4,15 @@ import { PERMIT2_ABI } from "config/abis/permit2";
 import { Address, UserRejectedRequestError } from "viem";
 import { useCallback, useMemo, useState } from "react";
 import { PERMIT2 } from "config/contract-addresses";
-import { AllowanceTransfer, MaxAllowanceTransferAmount, PermitSingle } from "@uniswap/permit2-sdk";
+import { AllowanceTransfer, MaxAllowanceTransferAmount } from "@uniswap/permit2-sdk";
 import { useToast } from "@/components/ui/use-toast";
+import { Permit, PermitSignature, PermitState } from "../types";
 
 const PERMIT_EXPIRATION = 30 * 24 * 60 * 60 * 1000; // 30 days
 const PERMIT_SIG_EXPIRATION = 30 * 60 * 1000; // 30 minutes
 
 function toDeadline(expiration: number): number {
     return Math.floor((Date.now() + expiration) / 1000);
-}
-
-interface Permit extends PermitSingle {
-    sigDeadline: number;
-}
-
-export interface PermitSignature extends Permit {
-    signature: string;
-}
-
-export enum PermitState {
-    LOADING = 0,
-    NOT_PERMITTED = 1,
-    PERMITTED = 2,
 }
 
 export type PermitStateType = PermitState.LOADING | PermitState.NOT_PERMITTED | PermitState.PERMITTED;

@@ -5,9 +5,11 @@ import { Currency, Field } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
-import TokenWrapToggle from "../TokenWrapToggle";
 import { useMintState } from "@/state/mintStore";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+
+const { BoostedTokenWrapToggle } = BoostedPoolsModule.components;
 
 interface EnterAmountsCardProps {
     currency: Currency | undefined;
@@ -100,7 +102,7 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd, field }: Ent
                 </div>
             </div>
 
-            <TokenWrapToggle currency={currency} field={field} currentValue={value} onAmountChange={handleChange} />
+            <BoostedTokenWrapToggle currency={currency} field={field} currentValue={value} onAmountChange={handleChange} />
         </div>
     );
 };

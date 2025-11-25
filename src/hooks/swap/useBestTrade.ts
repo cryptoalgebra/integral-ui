@@ -2,9 +2,11 @@ import { Currency, CurrencyAmount, Route, TradeType, Trade, BoostedRoute } from 
 import { useMemo } from "react";
 import { TradeState, TradeStateType } from "@/types/trade-state";
 import { useAllRoutes } from "./useAllRoutes";
-import { useBoostedQuotesResults } from "./useBoostedQuotesResults";
 import { useQuotesResults } from "./useQuotesResults";
 import { RouterType, useSwapState } from "@/state/swapStore";
+
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+const { useBoostedQuotesResults } = BoostedPoolsModule.hooks;
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
 

@@ -9,9 +9,12 @@ import { useEffect, useState } from "react";
 import EnterAmounts from "../EnterAmounts";
 import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
-import { AddOmegaLiquidityButton } from "../AddOmegaLiquidityButton";
 import { isBoostedPool } from "@/utils/pool/isBoostedPool";
 import AddLiquidityButton from "../AddLiquidityButton";
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+import { enabledModules } from "config";
+
+const { AddOmegaLiquidityButton } = BoostedPoolsModule.components;
 
 interface AmountsSectionProps {
     tokenId?: number;
@@ -29,7 +32,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
     const [poolAPR, setPoolAPR] = useState<number>();
     const apr = usePositionAPR(poolAddress, mintInfo.position);
 
-    const isBoosted = mintInfo.pool && isBoostedPool(mintInfo.pool);
+    const shouldUseOmegaRouter = mintInfo.pool && isBoostedPool(mintInfo.pool) && enabledModules.BoostedPoolsModule;
 
     useEffect(() => {
         if (!poolAddress) return;
@@ -59,7 +62,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
                     <div className="text-lg font-bold text-cyan-300">{poolAPR !== undefined ? `${formatAmount(poolAPR, 2)}%` : null}</div>
                 </div>
             </div>
-            {isBoosted ? (
+            {shouldUseOmegaRouter ? (
                 <AddOmegaLiquidityButton
                     mintInfo={mintInfo}
                     poolAddress={poolAddress}

@@ -1,8 +1,8 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER } from "config";
+import { DEFAULT_CHAIN_NAME, enabledModules, OMEGA_ROUTER } from "config";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { IDerivedSwapInfo, RouterType, useSwapState } from "@/state/swapStore";
+import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { useUserState } from "@/state/userStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
@@ -13,13 +13,21 @@ import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
-import SmartRouterModule from "@/modules/SmartRouterModule";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
-import { useOmegaSwapCallback } from "@/hooks/swap/useOmegaSwapCallback";
 import { TradeState } from "@/types/trade-state";
-import { AllowanceState, usePermit2 } from "@/hooks/common/usePermit2";
 import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
+
+import SmartRouterModule from "@/modules/SmartRouterModule";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
+
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+const { useOmegaSwapCallback, usePermit2 } = BoostedPoolsModule.hooks;
+
+export enum AllowanceState {
+    LOADING = 0,
+    REQUIRED = 1,
+    ALLOWED = 2,
+}
 
 const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { open } = useAppKit();
@@ -32,7 +40,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const { isExpertMode } = useUserState();
 
-    const { independentField, typedValue, routerType } = useSwapState();
+    const { independentField, typedValue } = useSwapState();
     const {
         allowedSlippage,
         parsedAmount,
@@ -86,7 +94,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const chainId = useChainId();
 
-    const shouldUseOmegaRouter = routerType === RouterType.OMEGA;
+    const shouldUseOmegaRouter = enabledModules.BoostedPoolsModule;
 
     const inputAmount = useMemo(() => {
         if (!trade || !shouldUseOmegaRouter || isSmartTrade) return undefined;

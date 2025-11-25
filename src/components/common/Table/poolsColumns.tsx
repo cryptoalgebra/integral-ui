@@ -18,7 +18,8 @@ const { ALMTag } = ALMModule.components;
 import FarmingModule from "@/modules/FarmingModule";
 const { FarmTag } = FarmingModule.components;
 
-import { BoostedTag } from "@/components/common/BoostedTag";
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+const { BoostedTag } = BoostedPoolsModule.components;
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -106,7 +107,7 @@ export const poolsColumns: ColumnDef<Pool>[] = ([
                 .toLowerCase()
                 .includes(value),
     },
-    enabledModules.customPools && {
+    enabledModules.CustomPoolsModule && {
         accessorKey: "deployer",
         header: ({ column }) => (
             <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>

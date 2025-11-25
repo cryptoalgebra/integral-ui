@@ -140,7 +140,12 @@ export const AddLiquidityButton = ({
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
@@ -177,6 +182,7 @@ export const AddLiquidityButton = ({
         <Button
             disabled={!isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
+            variant={"primary"}
         >
             {isAddingLiquidityLoading || isPending ? <Loader /> : isIncreaseMode ? "Add Liquidity" : "Create Position"}
         </Button>

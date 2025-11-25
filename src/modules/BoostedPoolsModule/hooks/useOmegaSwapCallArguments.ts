@@ -1,9 +1,9 @@
 import { useUserState } from "@/state/userStore";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount } from "wagmi";
-import { PermitSignature } from "../common/usePermit";
 import { OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
 import useSWR from "swr";
+import { PermitSignature } from "../types";
 
 export function useOmegaSwapCallArguments(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,

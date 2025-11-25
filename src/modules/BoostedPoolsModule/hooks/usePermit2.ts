@@ -1,19 +1,13 @@
 import { AnyToken, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { PermitSignature, PermitState } from "./usePermit";
 import { useChainId } from "wagmi";
 import { useCallback, useMemo } from "react";
 import { PERMIT2 } from "config/contract-addresses";
-import { useNeedAllowance } from "./useNeedAllowance";
-import { useApprove, useRevokeApprove } from "./useApprove";
+import { useNeedAllowance } from "../../../hooks/common/useNeedAllowance";
+import { useApprove, useRevokeApprove } from "../../../hooks/common/useApprove";
 import { usePermit } from "./usePermit";
 import { ApprovalState } from "@/types/approve-state";
 import { Address } from "viem";
-
-export enum AllowanceState {
-    LOADING = 0,
-    REQUIRED = 1,
-    ALLOWED = 2,
-}
+import { AllowanceState, PermitSignature, PermitState } from "../types";
 
 interface AllowanceRequired {
     state: AllowanceState.REQUIRED;

@@ -5,7 +5,7 @@ import { ArrowLeftRight, Info } from "lucide-react";
 import { useMemo, useState } from "react";
 import { usePublicClient } from "wagmi";
 import { useMintState } from "@/state/mintStore";
-import { useBoostedConversion } from "@/hooks/positions/useBoostedConversion";
+import { useBoostedConversion } from "../../hooks";
 
 interface TokenWrapToggleProps {
     currency: Currency | undefined;
@@ -14,7 +14,7 @@ interface TokenWrapToggleProps {
     onAmountChange: (value: string) => void;
 }
 
-const TokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: TokenWrapToggleProps) => {
+export const BoostedTokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: TokenWrapToggleProps) => {
     const client = usePublicClient();
     const [isConverting, setIsConverting] = useState(false);
 
@@ -142,5 +142,3 @@ const TokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: Toke
         </div>
     );
 };
-
-export default TokenWrapToggle;

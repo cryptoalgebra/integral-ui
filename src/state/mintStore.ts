@@ -9,24 +9,23 @@ import {
     priceToClosestTick,
     tryParseTick,
 } from "@cryptoalgebra/custom-pools-sdk";
-
 import { ZERO } from "@cryptoalgebra/custom-pools-sdk";
-
 import { Bound, Field, Rounding } from "@cryptoalgebra/custom-pools-sdk";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/custom-pools-sdk";
-
 import { getTickToPrice } from "@cryptoalgebra/custom-pools-sdk";
-
 import { useCallback, useMemo } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { create } from "zustand";
 import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
 import { PresetsType } from "@/types/presets";
 import { Address } from "viem";
-import { useBoostedConversion } from "@/hooks/positions/useBoostedConversion";
 import { useDebouncedValue } from "@/hooks/common/useDebouncedValue";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
+
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+import { enabledModules } from "config";
+const { useBoostedConversion } = BoostedPoolsModule.hooks;
 
 export type FullRange = true;
 
@@ -117,8 +116,8 @@ const initialState = {
     initialUSDPrices: { [Field.CURRENCY_A]: "", [Field.CURRENCY_B]: "" },
     initialTokenPrice: "",
     currentStep: 0,
-    token0InputMode: "underlying" as const, // по умолчанию юзер вводит underlying
-    token1InputMode: "underlying" as const,
+    token0InputMode: enabledModules.BoostedPoolsModule ? ("underlying" as const) : ("boosted" as const),
+    token1InputMode: enabledModules.BoostedPoolsModule ? ("underlying" as const) : ("boosted" as const),
 };
 
 export const useMintState = create<MintState>((set, get) => ({
@@ -427,7 +426,7 @@ export function useDerivedMintInfo(
         independentDisplayCurrency
     );
 
-    const needsConversion = independentCurrency?.isBoosted && independentInputMode === "underlying";
+    const needsConversion = enabledModules.BoostedPoolsModule && independentCurrency?.isBoosted && independentInputMode === "underlying";
 
     const { outputAmount: convertedAmount } = useBoostedConversion(
         needsConversion ? debouncedIndependentAmount : undefined,
@@ -480,7 +479,8 @@ export function useDerivedMintInfo(
 
     const dependentCurrency = dependentField === Field.CURRENCY_B ? currencyB : currencyA;
     const dependentInputMode = dependentField === Field.CURRENCY_A ? token0InputMode : token1InputMode;
-    const needsDependentConversion = dependentCurrency?.isBoosted && dependentInputMode === "underlying";
+    const needsDependentConversion =
+        enabledModules.BoostedPoolsModule && dependentCurrency?.isBoosted && dependentInputMode === "underlying";
 
     const { outputAmount: convertedDependentAmount } = useBoostedConversion(
         needsDependentConversion ? dependentAmount : undefined,

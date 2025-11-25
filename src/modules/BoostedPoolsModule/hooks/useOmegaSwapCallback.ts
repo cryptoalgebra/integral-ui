@@ -2,14 +2,14 @@ import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools
 import { useAccount, useChainId, usePublicClient, useSendTransaction } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
-import { useTransactionAwait } from "../common/useTransactionAwait";
+import { useTransactionAwait } from "../../../hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { estimateGas } from "viem/actions";
 import { OMEGA_ROUTER } from "config/contract-addresses";
 import { formatAmount } from "@/utils";
 import { useOmegaSwapCallArguments } from "./useOmegaSwapCallArguments";
-import { PermitSignature } from "../common/usePermit";
+import { PermitSignature } from "../types";
 
 interface SwapCallEstimate {
     calldata: Address;
