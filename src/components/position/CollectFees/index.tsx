@@ -1,18 +1,10 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import Loader from "@/components/common/Loader";
-import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
-import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { TransactionType } from "@/state/pendingTransactionsStore";
 import { formatAmount } from "@/utils";
-import { NonfungiblePositionManager } from "@cryptoalgebra/custom-pools-sdk";
-import { useMemo } from "react";
-import { Address } from "viem";
-import { useAccount } from "wagmi";
+import CollectFeesModal from "@/components/modals/CollectFeesModal";
 
 interface CollectFeesProps {
     mintInfo: IDerivedMintInfo;
@@ -21,40 +13,9 @@ interface CollectFeesProps {
 }
 
 const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps) => {
-    const { address: account } = useAccount();
-
     const pool = mintInfo.pool;
 
     const { amount0, amount1, amount0Usd, amount1Usd } = usePositionFees(pool ?? undefined, positionId, true);
-
-    const zeroRewards = amount0?.equalTo("0") && amount1?.equalTo("0");
-
-    const { calldata, value } = useMemo(() => {
-        if (!account || !amount0 || !amount1) return { calldata: undefined, value: undefined };
-
-        return NonfungiblePositionManager.collectCallParameters({
-            tokenId: positionId.toString(),
-            expectedCurrencyOwed0: amount0,
-            expectedCurrencyOwed1: amount1,
-            recipient: account,
-        });
-    }, [positionId, amount0, amount1, account]);
-
-    const collectConfig = calldata
-        ? {
-              args: [calldata as `0x${string}`[]] as const,
-              value: BigInt(value || 0),
-          }
-        : undefined;
-
-    const { data: collectData, writeContract: collect, isPending } = useWriteNonfungiblePositionManagerMulticall();
-
-    const { isLoading } = useTransactionAwait(collectData, {
-        title: "Collect fees",
-        tokenA: mintInfo.currencies.CURRENCY_A?.wrapped.address as Address,
-        tokenB: mintInfo.currencies.CURRENCY_B?.wrapped.address as Address,
-        type: TransactionType.POOL,
-    });
 
     return (
         <div className="relative flex w-full items-center justify-between">
@@ -99,15 +60,15 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
                     <Skeleton className="w-[100px] h-[30px]" />
                 )}
             </div>
-            <Button
-                size={"md"}
-                variant={'primary'}
-                disabled={!collect || zeroRewards || isLoading || isPending}
-                onClick={() => collectConfig && collect(collectConfig)}
-                className="min-w-[108px] rounded-2xl"
-            >
-                {isLoading || isPending ? <Loader /> : "Collect fees"}
-            </Button>
+
+            <CollectFeesModal
+                mintInfo={mintInfo}
+                positionId={positionId}
+                amount0={amount0}
+                amount1={amount1}
+                amount0Usd={amount0Usd}
+                amount1Usd={amount1Usd}
+            />
         </div>
     );
 };

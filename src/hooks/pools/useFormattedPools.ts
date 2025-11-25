@@ -9,6 +9,7 @@ import { usePositions } from "../positions/usePositions";
 import ALMModule from "@/modules/ALMModule";
 import { Address } from "viem";
 import { BOOSTED_TOKENS } from "config/tokens";
+import { DEFAULT_CHAIN_ID } from "config";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
 export function useFormattedPools(tokenAddress?: Address) {
@@ -41,7 +42,7 @@ export function useFormattedPools(tokenAddress?: Address) {
         isFarmingsAPRLoading;
 
     const formattedPools = useMemo(() => {
-        if (isLoading || !pools || !chainId) return [];
+        if (isLoading || !pools) return [];
 
         return pools.pools
             .filter((pool) => {
@@ -76,10 +77,10 @@ export function useFormattedPools(tokenAddress?: Address) {
 
                 const avgApr = farmApr + poolAvgApr;
 
-                const isBoostedToken0 = Object.values(BOOSTED_TOKENS[chainId]).find(
+                const isBoostedToken0 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
                     (bt) => bt.address.toLowerCase() === token0.id.toLowerCase()
                 );
-                const isBoostedToken1 = Object.values(BOOSTED_TOKENS[chainId]).find(
+                const isBoostedToken1 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
                     (bt) => bt.address.toLowerCase() === token1.id.toLowerCase()
                 );
                 const isBoosted = isBoostedToken0 || isBoostedToken1;
