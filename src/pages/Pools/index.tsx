@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const PoolsPage = () => {
     return (
         <PageContainer>
-            <div className="border-b w-full md:mb-12 mb-4">
+            <div className="border-b  relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen md:mb-12 mb-4 px-4">
                 <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between md:my-12 mb-4">
                     <PageTitle title={"Pools"} showSettings={false} />
                     <Link to={"create"}>

@@ -14,7 +14,7 @@ import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { truncateHash } from "@/utils";
 
 const Header = () => (
-    <header className="md:sticky border-b md:px-4 top-0 z-10 flex h-full backdrop-blur-[6px] max-h-16 justify-between md:justify-between items-center gap-4 mx-auto w-full">
+    <header className="md:sticky border-b px-4 top-0 z-10 flex h-full backdrop-blur-[6px] max-h-16 justify-between md:justify-between items-center gap-4 mx-auto w-full">
         <nav className="w-fit flex gap-4 h-full py-2">
             <Algebra />
             <Navigation />

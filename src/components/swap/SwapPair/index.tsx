@@ -45,7 +45,6 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const handleInputSelect = useCallback(
         (inputCurrency: Currency) => {
-            console.log("inputCurrency", inputCurrency);
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
         [onCurrencySelection]
@@ -53,7 +52,6 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
-            console.log("outputCurrency", outputCurrency);
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
         [onCurrencySelection]
@@ -102,7 +100,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleOutputSelect(STABLECOINS[chainId].USDC);
+        handleOutputSelect(STABLECOINS[chainId].TOK);
     }, [chainId, handleOutputSelect]);
 
     return (

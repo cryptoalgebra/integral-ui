@@ -7,7 +7,7 @@
 html {
     display: grid;
     min-height: 100%;
-    font-family: "Inter";
+    font-family: "Inter", sans-serif;
 }
 
 html,
@@ -34,12 +34,6 @@ body {
     margin: 0 auto;
     padding: 0 0rem;
     text-align: center;
-}
-
-@media (max-width: 480px) {
-    #root {
-        padding: 0 1rem;
-    }
 }
 
 ::-webkit-scrollbar {

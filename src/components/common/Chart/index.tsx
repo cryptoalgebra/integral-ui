@@ -212,7 +212,7 @@ export function Chart({
 
     return (
         <>
-            <div className="text-title flex flex-col-reverse items-start text-left lg:flex-row lg:justify-between px-4">
+            <div className="text-title flex flex-col-reverse items-start text-left lg:flex-row lg:justify-between px-4 md:gap-3">
                 <div>
                     <div className="mb-2 font-semibold">{chartTitle}</div>
 
@@ -239,7 +239,7 @@ export function Chart({
                     <div className="mb-5 text-sm text-muted-foreground">{displayValue !== undefined ? displayDate : null}</div>
                 </div>
 
-                <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
+                <div className="mb-3 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
                     <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>

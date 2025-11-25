@@ -184,7 +184,7 @@ const TokenCard = ({
                     id={`amount-${currency?.symbol}`}
                     onUserInput={(v) => handleInput(v)}
                     className={cn(
-                        `text-right border-none text-xl font-bold w-9/12 p-0 mt-2 disabled:cursor-default disabled:text-text/80 ring-0!`,
+                        `text-right border-none text-xl font-bold w-9/12 p-0 mt-2 disabled:cursor-default disabled:text-text/80 ring-0! duration-1000 `,
                         isLoading ? "animate-pulse" : ""
                     )}
                     placeholder={"0.0"}
@@ -194,7 +194,7 @@ const TokenCard = ({
                 {/* {!isLoading ? <Skeleton className="absolute bottom-0 left-2 z-10 h-6 w-full" /> : null} */}
                 <div
                     className={cn(
-                        "relative bottom-0 ml-auto mt-auto flex h-6 min-w-max items-center gap-1 text-sm text-text-200",
+                        "relative bottom-0 ml-auto mt-auto flex h-6 min-w-max items-center gap-1 text-sm text-text-200 duration-1000",
                         isLoading ? "animate-pulse" : ""
                     )}
                 >

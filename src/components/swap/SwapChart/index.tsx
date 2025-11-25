@@ -37,7 +37,7 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const chartView = CHART_VIEW.LINE;
 
     return (
-        <div className="flex flex-col px-3 w-full h-full min-h-fit relative rounded-xl">
+        <div className="flex flex-col w-full h-full min-h-fit relative rounded-xl">
             {/* <div className="flex flex-col px-4 pt-4 pb-0 gap-6">
                 <CurrenciesInfoHeader tokenA={tokenA} tokenB={tokenB} />
                 <hr className="border" />

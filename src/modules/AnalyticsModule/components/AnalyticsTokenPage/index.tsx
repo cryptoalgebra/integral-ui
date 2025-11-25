@@ -157,7 +157,7 @@ export function AnalyticsTokenPage() {
 
     return (
         <PageContainer>
-            <div className="border-b w-full md:mb-12 mb-4">
+            <div className="border-b md:mb-12 relative left-1/2 right-1/2 px-4 -ml-[50vw] -mr-[50vw] w-screen  mb-4">
                 <div className="w-full max-w-[1280px] mx-auto flex items-center justify-between md:my-12 mb-4">
                     <PageTitle title={"Explore token"} showSettings={false} />
                 </div>

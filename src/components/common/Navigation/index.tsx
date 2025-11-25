@@ -84,7 +84,7 @@ export function Navigation() {
 }
 export function MobileNavigation() {
     return (
-        <nav className="fixed flex gap-2 bottom-4 left-1/2 h-full max-h-[48px] md:hidden -translate-x-1/2 z-50 border border-card-border bg-card backdrop-blur-xl shadow-lg p-2 rounded-xl">
+        <nav className="fixed flex gap-2 bottom-4 left-1/2 h-full max-h-[48px] md:hidden -translate-x-1/2 z-50 border border-card-border bg-card backdrop-blur-xl shadow-lg p-2 rounded-lg">
             <NavButtons />
         </nav>
     );

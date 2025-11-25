@@ -74,7 +74,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                         </div>
                     ) : (
                         <div className="rounded select-none px-1.5 py-1 flex items-center relative">
-                            <Loader size={16} />
+                            <Loader color="white" size={16} />
                         </div>
                     )}
                     <div className={`ml-auto duration-300 ${isExpanded && "rotate-180"}`}>
@@ -144,7 +144,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         </div>
     ) : trade !== undefined && isTradeLoading ? (
         <div className="flex justify-center mb-1 bg-card border border-card-border py-3 px-3 rounded-lg">
-            <Loader size={17} className="text-text" />
+            <Loader color="white" size={17} className="text-text" />
         </div>
     ) : (
         <div className="text-md mb-1 text-center opacity-70 bg-card border border-card-border py-2 px-3 rounded-lg">
