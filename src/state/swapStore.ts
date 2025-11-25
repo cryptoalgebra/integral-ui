@@ -201,12 +201,12 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         outputCurrency,
     ]);
     const bestTradeExactIn = useBestTradeExactIn(
-        isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
+        isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined,
         outputCurrency ?? undefined
     );
     const bestTradeExactOut = useBestTradeExactOut(
         inputCurrency ?? undefined,
-        !isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined
+        !isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined
     );
 
     /* Smart Router trade */
@@ -214,10 +214,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         parsedAmount,
         isExactIn ? outputCurrency : inputCurrency,
         isExactIn,
-        enabledModules.smartRouter
+        enabledModules.SmartRouterModule
     );
 
-    const trade = enabledModules.smartRouter ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
+    const trade = enabledModules.SmartRouterModule ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
 
     const [addressA, addressB] = [
         inputCurrency?.isNative ? undefined : inputCurrency?.address || "",

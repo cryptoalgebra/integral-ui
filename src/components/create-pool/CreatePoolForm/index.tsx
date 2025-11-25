@@ -69,7 +69,7 @@ const CreatePoolForm = () => {
             : undefined;
 
     const customPoolsAddresses =
-        enabledModules.customPools && areCurrenciesSelected && !isSameToken
+        enabledModules.CustomPoolsModule && areCurrenciesSelected && !isSameToken
             ? [
                   CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainid],
                   CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainid],
@@ -211,7 +211,7 @@ const CreatePoolForm = () => {
                 <Summary currencyA={currencyA} currencyB={currencyB} />
             )}
 
-            {enabledModules.customPools ? (
+            {enabledModules.CustomPoolsModule ? (
                 <div className="text-left font-semibold bg-card-dark border border-card-border px-4 py-3 rounded-lg">
                     <div className="mb-3">Plugin</div>
                     <div className="grid grid-cols-2 w-full gap-4 mt-2">

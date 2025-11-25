@@ -50,7 +50,7 @@ const NewPositionPage = () => {
                 <div className="col-span-2 mb-8">
                     <PageTitle title={"Create Position"} showSettings={false} />
                 </div>
-                {!isCustomPoolDeployerLoading && isALMPool && enabledModules.alm && (
+                {!isCustomPoolDeployerLoading && isALMPool && enabledModules.ALMModule && (
                     <div className="flex items-center h-full max-h-16 col-span-1 p-2 bg-card rounded-xl justify-between gap-2 border border-card-border">
                         <Button
                             onClick={() => setIsALM(false)}

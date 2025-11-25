@@ -26,7 +26,7 @@ const menuItems = [
         active: [PATHS.POOLS, PATHS.POOL],
         icon: <Droplets size={20} />,
     },
-    ...(enabledModules.ve33
+    ...(enabledModules.Ve33Module
         ? [
               {
                   title: "veTOKEN",
@@ -42,7 +42,7 @@ const menuItems = [
               },
           ]
         : []),
-    enabledModules.analytics && {
+    enabledModules.AnalyticsModule && {
         title: "Analytics",
         link: "/analytics",
         active: [PATHS.ANALYTICS],

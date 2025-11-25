@@ -1,21 +1,15 @@
 import { useAccount, useReadContract, useSignTypedData, useChainId } from "wagmi";
 import { Address, UserRejectedRequestError, parseSignature } from "viem";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { NONFUNGIBLE_POSITION_MANAGER } from "config/contract-addresses";
 import { useToast } from "@/components/ui/use-toast";
 import { nonfungiblePositionManagerABI } from "config/abis/nonfungiblePositionManager";
+import { useNFTPermitStore, NFTPermitSignature, getPermitKey, isPermitValid } from "@/state/nftPermitStore";
 
 const PERMIT_EXPIRATION = 30 * 60 * 1000; // 30 minutes
 
 function toDeadline(expiration: number): number {
     return Math.floor((Date.now() + expiration) / 1000);
-}
-
-export interface NFTPermitSignature {
-    v: number;
-    r: string;
-    s: string;
-    deadline: number;
 }
 
 export enum NFTPermitState {
@@ -35,13 +29,21 @@ export function useNFTPermit({ tokenId, spender }: UseNFTPermitParams) {
     const { address } = useAccount();
     const chainId = useChainId();
 
-    const [signatureData, setSignatureData] = useState<{ tokenId: string | number; signature: NFTPermitSignature } | null>(null);
+    const { setPermit, permits } = useNFTPermitStore();
 
     const signature = useMemo(() => {
-        if (!signatureData || !tokenId) return undefined;
-        if (signatureData.tokenId.toString() !== tokenId.toString()) return undefined;
-        return signatureData.signature;
-    }, [signatureData, tokenId]);
+        if (!spender || !address || tokenId === undefined) return undefined;
+
+        const permitKey = getPermitKey(tokenId, chainId);
+
+        const storedPermit = permits[permitKey];
+
+        if (!storedPermit) return undefined;
+
+        const isValid = isPermitValid(storedPermit, spender, address);
+
+        return isValid ? storedPermit.signature : undefined;
+    }, [permits, spender, address, tokenId, chainId]);
 
     const queryEnabled = !!tokenId;
     const { data: positionData } = useReadContract({
@@ -57,12 +59,10 @@ export function useNFTPermit({ tokenId, spender }: UseNFTPermitParams) {
         return positionData[0]; // First element is nonce (uint88)
     }, [positionData]);
 
-    // Check if signature is valid
-    const now = useMemo(() => Math.floor(Date.now() / 1000), []);
+    // Check if signature is valid (expiration is already checked in store)
     const isSigned = useMemo(() => {
-        if (!signature || !spender) return false;
-        return signature.deadline >= now;
-    }, [now, signature, spender]);
+        return !!signature;
+    }, [signature]);
 
     // Sign typed data hook
     const { signTypedDataAsync, isPending } = useSignTypedData();
@@ -143,7 +143,13 @@ export function useNFTPermit({ tokenId, spender }: UseNFTPermitParams) {
                 deadline,
             };
 
-            setSignatureData({ tokenId, signature: permitResult });
+            setPermit({
+                tokenId: tokenId.toString(),
+                chainId,
+                spender,
+                signature: permitResult,
+                owner: address,
+            });
 
             // Show success toast
             toast({
@@ -170,7 +176,7 @@ export function useNFTPermit({ tokenId, spender }: UseNFTPermitParams) {
             console.log(error);
             throw error;
         }
-    }, [address, chainId, tokenId, spender, nonce, signTypedDataAsync, toast]);
+    }, [address, chainId, tokenId, spender, nonce, signTypedDataAsync, toast, setPermit]);
 
     return {
         permitState,
