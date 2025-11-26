@@ -5,7 +5,6 @@ import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
 import Loader from "../Loader";
-import { cn } from "@/utils";
 // import { bucketChartData } from "@/utils/chart/bucketChartData";
 
 export function Chart({
@@ -21,7 +20,6 @@ export function Chart({
     tokenA,
     tokenB,
     isChartDataLoading,
-    fadeOut
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
@@ -244,7 +242,7 @@ export function Chart({
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>
             </div>
-            <div className={cn('relative', fadeOut && 'soft-div' )}>
+            <div className='relative'>
                 {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
                     <div className="w-full h-full min-h-[180px] flex items-center justify-center">
                         <Loader className="w-10 h-10" />
