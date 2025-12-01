@@ -22,7 +22,7 @@ export function BoostedAPR({ token0Apr, token1Apr, token0Name, token1Name, baseA
                 <div className="flex items-center gap-1.5 cursor-pointer group">
                     <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500 text-purple-900 text-xs font-semibold transition-all duration-200 group-hover:from-purple-500/30 group-hover:to-blue-500/30 group-hover:border-purple-500/60">
                         <Zap size={10} className="text-purple-900" />
-                        <span>+{formatAmount(boostedAPR * 100, 2)}%</span>
+                        <span>+{formatAmount(boostedAPR, 2)}%</span>
                     </div>
                 </div>
             </HoverCardTrigger>
@@ -42,7 +42,7 @@ export function BoostedAPR({ token0Apr, token1Apr, token0Name, token1Name, baseA
                                     <Zap size={10} className="text-purple-900" />
                                     {token0Name || "Token0 Vault"}
                                 </span>
-                                <span className="font-medium text-purple-800">+{formatAmount(token0Apr * 100, 2)}%</span>
+                                <span className="font-medium text-purple-800">+{formatAmount(token0Apr, 2)}%</span>
                             </div>
                         ) : null}
 
@@ -52,14 +52,14 @@ export function BoostedAPR({ token0Apr, token1Apr, token0Name, token1Name, baseA
                                     <Zap size={10} className="text-purple-900" />
                                     {token1Name || "Token1 Vault"}
                                 </span>
-                                <span className="font-medium text-purple-800">+{formatAmount(token1Apr * 100, 2)}%</span>
+                                <span className="font-medium text-purple-800">+{formatAmount(token1Apr, 2)}%</span>
                             </div>
                         ) : null}
 
                         <div className="pt-1 border-t border-white/10">
                             <div className="flex justify-between items-center">
                                 <span className="font-semibold">Total APR</span>
-                                <span className="font-bold">{formatAmount(totalAPR + boostedAPR * 100, 2)}%</span>
+                                <span className="font-bold">{formatAmount(totalAPR, 2)}%</span>
                             </div>
                         </div>
                     </div>

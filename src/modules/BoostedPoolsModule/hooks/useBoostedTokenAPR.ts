@@ -84,7 +84,7 @@ export function useBoostedTokenAPR(tokenAddress: Address | undefined) {
         }
 
         const dailyGrowth = shareValue / prevShareValue - 1;
-        return dailyGrowth * 365;
+        return dailyGrowth * 365 * 100;
     }, [decimalsNumber, prevTotalAssets, prevTotalSupply, totalAssets, totalSupply]);
 
     const isLoading = blockLoading || currentLoading || historicalLoading;
