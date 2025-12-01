@@ -12,8 +12,8 @@ interface LiquidityChartProps {
     currencyB: Currency | undefined;
     pool: Pool | null | undefined;
     currentPrice: number | undefined;
-    priceLower: Price<Token, Token> | undefined;
-    priceUpper: Price<Token, Token> | undefined;
+    priceLower: Price<Currency, Currency> | undefined;
+    priceUpper: Price<Currency, Currency> | undefined;
 }
 
 // const ZOOM_STEP = 5

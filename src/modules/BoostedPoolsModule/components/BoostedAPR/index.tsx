@@ -36,7 +36,7 @@ export function BoostedAPR({ token0Apr, token1Apr, token0Name, token1Name, baseA
                             <span className="font-medium">{formatAmount(baseAPR || 0, 2)}%</span>
                         </div>
 
-                        {token0Apr && (
+                        {token0Apr ? (
                             <div className="flex justify-between items-center">
                                 <span className="opacity-70 flex items-center gap-1">
                                     <Zap size={10} className="text-purple-900" />
@@ -44,9 +44,9 @@ export function BoostedAPR({ token0Apr, token1Apr, token0Name, token1Name, baseA
                                 </span>
                                 <span className="font-medium text-purple-800">+{formatAmount(token0Apr * 100, 2)}%</span>
                             </div>
-                        )}
+                        ) : null}
 
-                        {token1Apr && (
+                        {token1Apr ? (
                             <div className="flex justify-between items-center">
                                 <span className="opacity-70 flex items-center gap-1">
                                     <Zap size={10} className="text-purple-900" />
@@ -54,7 +54,7 @@ export function BoostedAPR({ token0Apr, token1Apr, token0Name, token1Name, baseA
                                 </span>
                                 <span className="font-medium text-purple-800">+{formatAmount(token1Apr * 100, 2)}%</span>
                             </div>
-                        )}
+                        ) : null}
 
                         <div className="pt-1 border-t border-white/10">
                             <div className="flex justify-between items-center">

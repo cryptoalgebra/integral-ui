@@ -1,11 +1,11 @@
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { Bound, Currency, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Bound, Currency, Price } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import RangeSelectorPart from "../RangeSelectorPart";
 
 export interface RangeSelectorProps {
-    priceLower: Price<Token, Token> | undefined;
-    priceUpper: Price<Token, Token> | undefined;
+    priceLower: Price<Currency, Currency> | undefined;
+    priceUpper: Price<Currency, Currency> | undefined;
     onLeftRangeInput: (typedValue: string) => void;
     onRightRangeInput: (typedValue: string) => void;
     getDecrementLower: () => string;

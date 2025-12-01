@@ -11,8 +11,11 @@ import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
 import { isBoostedPool } from "@/utils/pool/isBoostedPool";
 import AddLiquidityButton from "../AddLiquidityButton";
-import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
 import { enabledModules } from "config";
+
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+const { useBoostedTokenAPR } = BoostedPoolsModule.hooks;
+const { BoostedAPR } = BoostedPoolsModule.components;
 
 const { AddOmegaLiquidityButton } = BoostedPoolsModule.components;
 
@@ -33,6 +36,9 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
     const apr = usePositionAPR(poolAddress, mintInfo.position);
 
     const shouldUseOmegaRouter = mintInfo.pool && isBoostedPool(mintInfo.pool) && enabledModules.BoostedPoolsModule;
+
+    const { data: token0Apr } = useBoostedTokenAPR(currencyA?.wrapped.isBoosted ? (currencyA.wrapped.address as Address) : undefined);
+    const { data: token1Apr } = useBoostedTokenAPR(currencyB?.wrapped.isBoosted ? (currencyB.wrapped.address as Address) : undefined);
 
     useEffect(() => {
         if (!poolAddress) return;
@@ -59,7 +65,20 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
                 </div>
                 <div className="text-right">
                     <div className="text-xs font-bold">POOL APR</div>
-                    <div className="text-lg font-bold text-cyan-300">{poolAPR !== undefined ? `${formatAmount(poolAPR, 2)}%` : null}</div>
+                    <div className="flex gap-2 items-center text-left">
+                        {shouldUseOmegaRouter ? (
+                            <BoostedAPR
+                                baseAPR={poolAPR}
+                                token0Apr={token0Apr}
+                                token1Apr={token1Apr}
+                                token0Name={currencyA?.wrapped.name}
+                                token1Name={currencyB?.wrapped.name}
+                            />
+                        ) : null}
+                        <span className="text-lg font-bold text-cyan-300">
+                            {poolAPR !== undefined ? `${formatAmount(poolAPR, 2)}%` : null}{" "}
+                        </span>
+                    </div>
                 </div>
             </div>
             {shouldUseOmegaRouter ? (

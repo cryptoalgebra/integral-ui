@@ -20,3 +20,8 @@ export const LIMIT_ORDERS_GRAPH_URL = {
     [ChainId.Base]: "https://api.studio.thegraph.com/query/50593/clamm-limits/v1.2.4",
     [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/base-testnet-limits/v0.0.5",
 };
+
+export const BLOCKS_GRAPH_URL = {
+    [ChainId.Base]: "https://api.studio.thegraph.com/query/50593/clamm-blocks/version/latest",
+    [ChainId.BaseSepolia]: "",
+};
