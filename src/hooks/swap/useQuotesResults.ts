@@ -33,7 +33,8 @@ export function useQuotesResults({
     const chainId = useChainId();
     const { normalRoutes: routes, loading: routesLoading } = useAllRoutes(
         exactInput ? amountIn?.currency : currencyIn,
-        !exactInput ? amountOut?.currency : currencyOut
+        !exactInput ? amountOut?.currency : currencyOut,
+        exactInput
     );
 
     const quoteInputs = useMemo(() => {

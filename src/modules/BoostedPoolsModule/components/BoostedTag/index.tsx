@@ -1,6 +1,5 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { Zap } from "lucide-react";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 interface BoostedTagProps {
@@ -23,7 +22,6 @@ export function BoostedTag({ currencyA: token0, currencyB: token1 }: BoostedTagP
         <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-purple-500/20 border border-purple-500 text-purple-900 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs gap-1">
-                    <Zap size={14} />
                     BOOSTED
                 </div>
             </HoverCardTrigger>

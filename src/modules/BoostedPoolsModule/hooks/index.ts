@@ -8,3 +8,4 @@ export * from "./useOmegaCollectCallback";
 export * from "./useNFTPermit";
 export * from "./usePermit";
 export * from "./usePermit2";
+export * from "./useBoostedTokenAPR";
