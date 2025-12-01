@@ -32,6 +32,7 @@ export function useOmegaSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
     permitSignature?: PermitSignature,
+    stepAmountsOut?: string[] | null,
     onTransactionSuccess?: () => void
 ) {
     const { address: account } = useAccount();
@@ -42,7 +43,7 @@ export function useOmegaSwapCallback(
     const [bestCall, setBestCall] = useState<SuccessfulCall>();
     const [callError, setCallError] = useState<Error>();
 
-    const { data: swapCalldata } = useOmegaSwapCallArguments(trade, allowedSlippage, permitSignature);
+    const { data: swapCalldata } = useOmegaSwapCallArguments(trade, allowedSlippage, permitSignature, stepAmountsOut);
 
     useEffect(() => {
         async function findBestCall() {

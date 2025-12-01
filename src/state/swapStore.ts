@@ -72,6 +72,9 @@ export interface IDerivedSwapInfo {
     parsedAmounts: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     isExactIn: boolean;
     refetchBalances: () => void;
+    /** Step amounts out - output amount for each step (for Boosted ExactOutput) */
+    stepAmountsOut?: string[] | null;
+    priceImpact?: Percent | null;
 }
 
 export const useSwapState = create<SwapState>((set, get) => ({
@@ -374,6 +377,12 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         lastFocusedField,
     ]);
 
+    // Extract stepAmounts from trade state (only for non-SmartRouter trades)
+    const stepAmountsOut = "stepAmountsOut" in trade ? trade.stepAmountsOut : null;
+
+    // Extract priceImpact from trade state (only for non-SmartRouter trades)
+    const priceImpact = "priceImpact" in trade ? trade.priceImpact : null;
+
     return {
         currencies,
         currencyBalances,
@@ -390,5 +399,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         isExactIn,
         parsedAmounts,
         refetchBalances,
+        stepAmountsOut,
+        priceImpact,
     };
 }

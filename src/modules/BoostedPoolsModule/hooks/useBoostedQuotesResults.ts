@@ -1,9 +1,18 @@
 import useSWR from "swr";
-import { useChainId, useReadContracts } from "wagmi";
+import { useChainId, usePublicClient } from "wagmi";
 import { quoterV2ABI, QUOTER_V2 } from "config";
-import { Currency, CurrencyAmount, BoostedToken, encodeBoostedRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
-import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
+import {
+    BoostedToken,
+    Currency,
+    CurrencyAmount,
+    encodeRouteToPath,
+    Route,
+    BoostedRoute,
+    BoostedRouteStep,
+    BoostedRouteStepType,
+} from "@cryptoalgebra/custom-pools-sdk";
 import { useAllRoutes } from "@/hooks/swap/useAllRoutes";
+import { readContract } from "viem/actions";
 
 type QuoteResult = [
     bigint[], // amountOutList
@@ -13,6 +22,221 @@ type QuoteResult = [
     bigint, // gasEstimate
     number[] // feeList
 ];
+
+/**
+ * Result of a single step quote calculation
+ */
+interface StepQuoteResult {
+    amountIn: bigint;
+    amountOut: bigint;
+    sqrtPriceX96After: bigint;
+    initializedTicksCrossed: number;
+    gasEstimate: bigint;
+    fee: number;
+}
+
+/**
+ * Quote a single step for exactInput direction
+ */
+async function quoteStepExactInput(step: BoostedRouteStep, amountIn: bigint, chainId: number, client: any): Promise<StepQuoteResult> {
+    switch (step.type) {
+        case BoostedRouteStepType.WRAP: {
+            // ERC4626 deposit: assets → shares
+            // previewDeposit(assets) returns shares
+            const amountOut = await (step.tokenOut as BoostedToken).previewDeposit(amountIn);
+
+            return {
+                amountIn,
+                amountOut,
+                sqrtPriceX96After: BigInt(0),
+                initializedTicksCrossed: 0,
+                gasEstimate: BigInt(0),
+                fee: 0,
+            };
+        }
+
+        case BoostedRouteStepType.UNWRAP: {
+            // ERC4626 redeem: shares → assets
+            // previewRedeem(shares) returns assets
+            const amountOut = await (step.tokenIn as BoostedToken).previewRedeem(amountIn);
+
+            return {
+                amountIn,
+                amountOut,
+                sqrtPriceX96After: BigInt(0),
+                initializedTicksCrossed: 0,
+                gasEstimate: BigInt(0),
+                fee: 0,
+            };
+        }
+
+        case BoostedRouteStepType.SWAP: {
+            const pool = step.pool!;
+            const singleRoute = new Route([pool], step.tokenIn, step.tokenOut);
+            const pathHex = encodeRouteToPath(singleRoute, false);
+
+            const quoteResult = ((await readContract(client, {
+                address: QUOTER_V2[chainId],
+                abi: quoterV2ABI,
+                functionName: "quoteExactInput" as any,
+                args: [pathHex, `0x${amountIn.toString(16)}`] as any,
+            })) as unknown) as QuoteResult;
+
+            const amountOut = quoteResult[0][0];
+
+            return {
+                amountIn,
+                amountOut,
+                sqrtPriceX96After: quoteResult[2][0],
+                initializedTicksCrossed: Number(quoteResult[3][0]),
+                gasEstimate: quoteResult[4],
+                fee: quoteResult[5][0],
+            };
+        }
+
+        default:
+            throw new Error(`Unknown step type: ${step}`);
+    }
+}
+
+/**
+ * Quote a single step for exactOutput direction
+ */
+async function quoteStepExactOutput(step: BoostedRouteStep, amountOut: bigint, chainId: number, client: any): Promise<StepQuoteResult> {
+    switch (step.type) {
+        case BoostedRouteStepType.WRAP: {
+            // ERC4626 mint: we want specific shares, need assets
+            // previewMint(shares) returns required assets
+            const amountIn = await (step.tokenOut as BoostedToken).previewMint(amountOut);
+
+            return {
+                amountIn,
+                amountOut,
+                sqrtPriceX96After: BigInt(0),
+                initializedTicksCrossed: 0,
+                gasEstimate: BigInt(0),
+                fee: 0,
+            };
+        }
+
+        case BoostedRouteStepType.UNWRAP: {
+            // ERC4626 withdraw: we want specific assets, need shares
+            // previewWithdraw(assets) returns required shares
+            const amountIn = await (step.tokenIn as BoostedToken).previewWithdraw(amountOut);
+
+            return {
+                amountIn,
+                amountOut,
+                sqrtPriceX96After: BigInt(0),
+                initializedTicksCrossed: 0,
+                gasEstimate: BigInt(0),
+                fee: 0,
+            };
+        }
+
+        case BoostedRouteStepType.SWAP: {
+            const pool = step.pool!;
+            const singleRoute = new Route([pool], step.tokenIn, step.tokenOut);
+            const pathHex = encodeRouteToPath(singleRoute, true);
+
+            const quoteResult = ((await readContract(client, {
+                address: QUOTER_V2[chainId],
+                abi: quoterV2ABI,
+                functionName: "quoteExactOutput" as any,
+                args: [pathHex, `0x${amountOut.toString(16)}`] as any,
+            })) as unknown) as QuoteResult;
+
+            const amountIn = quoteResult[1][0];
+
+            return {
+                amountIn,
+                amountOut,
+                sqrtPriceX96After: quoteResult[2][0],
+                initializedTicksCrossed: Number(quoteResult[3][0]),
+                gasEstimate: quoteResult[4],
+                fee: quoteResult[5][0],
+            };
+        }
+
+        default:
+            throw new Error(`Unknown step type: ${step}`);
+    }
+}
+
+/**
+ * Calculates quote for exactInput direction (forward through steps)
+ */
+async function calculateExactInputQuote(
+    route: BoostedRoute<Currency, Currency>,
+    amount: bigint,
+    chainId: number,
+    client: any
+): Promise<QuoteResult> {
+    const steps = route.steps;
+
+    const amountOutList: bigint[] = [];
+    const amountInList: bigint[] = [];
+    const sqrtPriceX96AfterList: bigint[] = [];
+    const initializedTicksCrossedList: number[] = [];
+    let totalGasEstimate = BigInt(0);
+    const feeList: number[] = [];
+
+    let currentAmount = amount;
+
+    // Process steps forward
+    for (const step of steps) {
+        const result = await quoteStepExactInput(step, currentAmount, chainId, client);
+
+        amountInList.push(result.amountIn);
+        amountOutList.push(result.amountOut);
+        sqrtPriceX96AfterList.push(result.sqrtPriceX96After);
+        initializedTicksCrossedList.push(result.initializedTicksCrossed);
+        totalGasEstimate += result.gasEstimate;
+        feeList.push(result.fee);
+
+        currentAmount = result.amountOut;
+    }
+
+    return [amountOutList, amountInList, sqrtPriceX96AfterList, initializedTicksCrossedList, totalGasEstimate, feeList];
+}
+
+/**
+ * Calculates quote for exactOutput direction (backward through steps)
+ */
+async function calculateExactOutputQuote(
+    route: BoostedRoute<Currency, Currency>,
+    amount: bigint,
+    chainId: number,
+    client: any
+): Promise<QuoteResult> {
+    const steps = route.steps;
+
+    const amountOutList: bigint[] = [];
+    const amountInList: bigint[] = [];
+    const sqrtPriceX96AfterList: bigint[] = [];
+    const initializedTicksCrossedList: number[] = [];
+    let totalGasEstimate = BigInt(0);
+    const feeList: number[] = [];
+
+    let currentAmount = amount;
+
+    // Process steps backward (from last to first)
+    for (let i = steps.length - 1; i >= 0; i--) {
+        const step = steps[i];
+        const result = await quoteStepExactOutput(step, currentAmount, chainId, client);
+
+        amountInList.push(result.amountIn);
+        amountOutList.push(result.amountOut);
+        sqrtPriceX96AfterList.push(result.sqrtPriceX96After);
+        initializedTicksCrossedList.push(result.initializedTicksCrossed);
+        totalGasEstimate += result.gasEstimate;
+        feeList.push(result.fee);
+
+        currentAmount = result.amountIn;
+    }
+
+    return [amountOutList, amountInList, sqrtPriceX96AfterList, initializedTicksCrossedList, totalGasEstimate, feeList];
+}
 
 export function useBoostedQuotesResults({
     exactInput,
@@ -34,224 +258,44 @@ export function useBoostedQuotesResults({
     const chainId = useChainId();
     const { boostedRoutes: routes, loading: routesLoading } = useAllRoutes(
         exactInput ? amountIn?.currency : currencyIn,
-        !exactInput ? amountOut?.currency : currencyOut
+        !exactInput ? amountOut?.currency : currencyOut,
+        exactInput
     );
 
     const enabled = !routesLoading && !!routes?.length;
     const amount = exactInput ? amountIn : amountOut;
 
-    // ═══════════════════════════════════════════════════════════════════
-    // STEP 1: Prepare inputs for each route
-    // ═══════════════════════════════════════════════════════════════════
-    const { data: prepared, isLoading: prepareLoading } = useSWR(
-        enabled && amount ? ["prepare", routes, amount.quotient.toString(), exactInput] : null,
-        async () => {
-            const quoteAmount = BigInt(amount!.quotient.toString());
+    const client = usePublicClient();
 
-            return Promise.all(
-                routes.map(async (route) => {
-                    const tokenIn = route.input.wrapped;
-                    const tokenOut = route.output.wrapped;
-                    const swapType = determineSwapType(tokenIn, tokenOut);
+    const { data, isLoading, mutate: refetch } = useSWR(["boostedQuotes", routes, amount, exactInput, enabled], async () => {
+        if (!routes || !amount || !client || !enabled) {
+            return [];
+        }
 
-                    try {
-                        switch (swapType) {
-                            case BoostedSwapType.WRAP_ONLY: {
-                                const boostedToken = tokenOut as BoostedToken;
-                                const result = exactInput
-                                    ? await boostedToken.previewDeposit(quoteAmount)
-                                    : await boostedToken.previewRedeem(quoteAmount);
-                                return { route, swapType, directResult: result };
-                            }
+        const amountRaw = BigInt(amount.quotient.toString());
 
-                            case BoostedSwapType.UNWRAP_ONLY: {
-                                const boostedToken = tokenIn as BoostedToken;
-                                const result = exactInput
-                                    ? await boostedToken.previewRedeem(quoteAmount)
-                                    : await boostedToken.previewDeposit(quoteAmount);
-                                return { route, swapType, directResult: result };
-                            }
+        const quotesPromises = routes.map(async (route, i) => {
+            try {
+                return exactInput
+                    ? await calculateExactInputQuote(route, amountRaw, chainId, client)
+                    : await calculateExactOutputQuote(route, amountRaw, chainId, client);
+            } catch (error) {
+                console.error(`[BoostedQuotes] Error calculating quote for route ${i}:`, error);
+                return null;
+            }
+        });
 
-                            case BoostedSwapType.UNDERLYING_TO_UNDERLYING:
-                            case BoostedSwapType.UNDERLYING_TO_BOOSTED: {
-                                const pathHex = encodeBoostedRouteToPath(route, !exactInput);
-                                let adjustedAmount = quoteAmount;
-
-                                if (exactInput) {
-                                    // ExactInput: wrap input (ETH -> boosted WETH shares)
-                                    const boostedIn = route.tokenPath[1] as BoostedToken;
-                                    adjustedAmount = await boostedIn.previewDeposit(quoteAmount);
-                                } else {
-                                    // ExactOutput: wrap output to get required boosted shares from pool
-                                    // For both UNDERLYING_TO_UNDERLYING and UNDERLYING_TO_BOOSTED
-                                    // we need to know how many boosted tokens the pool should return
-                                    const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                    adjustedAmount = await boostedOut.previewDeposit(quoteAmount);
-                                }
-
-                                return {
-                                    route,
-                                    swapType,
-                                    quoterArgs: [pathHex, `0x${adjustedAmount.toString(16)}`] as [string, string],
-                                };
-                            }
-
-                            case BoostedSwapType.BOOSTED_TO_UNDERLYING: {
-                                const pathHex = encodeBoostedRouteToPath(route, !exactInput);
-                                let adjustedAmount = quoteAmount;
-
-                                if (!exactInput) {
-                                    const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                    adjustedAmount = await boostedOut.previewDeposit(quoteAmount);
-                                }
-
-                                return {
-                                    route,
-                                    swapType,
-                                    quoterArgs: [pathHex, `0x${adjustedAmount.toString(16)}`] as [string, string],
-                                };
-                            }
-
-                            case BoostedSwapType.BOOSTED_TO_BOOSTED: {
-                                const pathHex = encodeBoostedRouteToPath(route, !exactInput);
-                                return {
-                                    route,
-                                    swapType,
-                                    quoterArgs: [pathHex, `0x${quoteAmount.toString(16)}`] as [string, string],
-                                };
-                            }
-
-                            default:
-                                return null;
-                        }
-                    } catch (error) {
-                        console.error("Error preparing route:", error);
-                        return null;
-                    }
-                })
-            ).then((results) => results.filter((r) => r !== null));
-        },
-        { revalidateOnFocus: false }
-    );
-
-    // ═══════════════════════════════════════════════════════════════════
-    // STEP 2: Get quotes from QuoterV2 (skip direct wrap/unwrap)
-    // ═══════════════════════════════════════════════════════════════════
-    const { data: quotes, isLoading: quotesLoading, refetch } = useReadContracts({
-        contracts:
-            prepared
-                ?.filter((p) => p.quoterArgs)
-                .map((p) => ({
-                    address: QUOTER_V2[chainId],
-                    abi: quoterV2ABI,
-                    functionName: exactInput ? "quoteExactInput" : "quoteExactOutput",
-                    args: p.quoterArgs,
-                })) ?? [],
-        query: { enabled: !!prepared?.some((p) => p.quoterArgs) },
+        const results = await Promise.all(quotesPromises);
+        return results.filter((r): r is QuoteResult => r !== null);
     });
 
-    // ═══════════════════════════════════════════════════════════════════
-    // STEP 3: Process results
-    // ═══════════════════════════════════════════════════════════════════
-    const { data: results, isLoading: processLoading } = useSWR(
-        prepared ? ["process", prepared, quotes, exactInput] : null,
-        async () => {
-            const processed: QuoteResult[] = [];
-            let quoterIdx = 0;
-
-            for (const prep of prepared!) {
-                const { route, swapType, directResult } = prep;
-
-                try {
-                    // Handle direct wrap/unwrap
-                    if (directResult !== undefined) {
-                        processed.push([
-                            exactInput ? [directResult] : [BigInt(amount!.quotient.toString())],
-                            exactInput ? [BigInt(amount!.quotient.toString())] : [directResult],
-                            [],
-                            [],
-                            0n,
-                            [],
-                        ]);
-                        continue;
-                    }
-
-                    // Handle pool swaps
-                    const quoteData = quotes![quoterIdx++];
-                    if (!quoteData?.result) continue;
-
-                    const [
-                        amountOutList,
-                        amountInList,
-                        sqrtPriceX96AfterList,
-                        initializedTicksCrossedList,
-                        gasEstimate,
-                        feeList,
-                    ] = (quoteData.result as unknown) as QuoteResult;
-
-                    let finalAmountOut = amountOutList;
-                    let finalAmountIn = amountInList;
-
-                    switch (swapType) {
-                        case BoostedSwapType.UNDERLYING_TO_UNDERLYING: {
-                            if (exactInput) {
-                                // ExactInput: unwrap output (boosted USDC shares -> USDC)
-                                const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                const unwrapped = await boostedOut.previewRedeem(amountOutList[amountOutList.length - 1]);
-                                finalAmountOut = [...amountOutList.slice(0, -1), unwrapped];
-                            } else {
-                                // ExactOutput: unwrap input (boosted WETH shares -> WETH)
-                                const boostedIn = route.tokenPath[1] as BoostedToken;
-                                const unwrapped = await boostedIn.previewRedeem(amountInList[amountInList.length - 1]);
-                                finalAmountIn = [...amountInList.slice(0, -1), unwrapped];
-                            }
-                            break;
-                        }
-
-                        case BoostedSwapType.BOOSTED_TO_UNDERLYING: {
-                            if (exactInput) {
-                                const boostedOut = route.tokenPath[route.tokenPath.length - 2] as BoostedToken;
-                                const unwrapped = await boostedOut.previewRedeem(amountOutList[amountOutList.length - 1]);
-                                finalAmountOut = [...amountOutList.slice(0, -1), unwrapped];
-                            }
-                            break;
-                        }
-
-                        case BoostedSwapType.UNDERLYING_TO_BOOSTED: {
-                            if (!exactInput) {
-                                const boostedIn = route.tokenPath[1] as BoostedToken;
-                                const unwrapped = await boostedIn.previewRedeem(amountInList[amountInList.length - 1]);
-                                finalAmountIn = [...amountInList.slice(0, -1), unwrapped];
-                            }
-                            break;
-                        }
-
-                        case BoostedSwapType.BOOSTED_TO_BOOSTED:
-                            // No unwrap needed
-                            break;
-                    }
-
-                    processed.push([
-                        finalAmountOut,
-                        finalAmountIn,
-                        sqrtPriceX96AfterList,
-                        initializedTicksCrossedList,
-                        gasEstimate,
-                        feeList,
-                    ]);
-                } catch (error) {
-                    console.error("Error processing quote:", error);
-                }
-            }
-
-            return processed;
-        },
-        { revalidateOnFocus: false }
-    );
+    if (data) {
+        console.log("[BOOSTED_QUOTES]:", data);
+    }
 
     return {
-        data: results || [],
-        isLoading: prepareLoading || quotesLoading || processLoading,
+        data: data ?? [],
+        isLoading,
         refetch,
     };
 }

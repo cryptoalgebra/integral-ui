@@ -9,13 +9,12 @@ import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount, BoostedRouteStepType } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { TradeState } from "@/types/trade-state";
-import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
@@ -51,14 +50,22 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         tradeState,
         smartTradeCallOptions,
         refetchBalances,
+        stepAmountsOut,
     } = derivedSwap;
 
     const isSmartTrade = trade && "routes" in trade;
 
-    const erc4626WrapType =
-        !isSmartTrade && trade && trade.swaps[0].route.pools.length === 0
-            ? determineSwapType(trade.inputAmount.currency.wrapped, trade.outputAmount.currency.wrapped)
-            : null;
+    const erc4626WrapType = useMemo(() => {
+        if (isSmartTrade || !trade || !trade.swaps[0].route.isBoosted) return null;
+
+        const steps = trade.swaps[0].route.steps;
+        // Only pure wrap/unwrap if there's exactly one step and it's WRAP or UNWRAP
+        if (steps.length === 1) {
+            if (steps[0].type === BoostedRouteStepType.WRAP) return BoostedRouteStepType.WRAP;
+            if (steps[0].type === BoostedRouteStepType.UNWRAP) return BoostedRouteStepType.UNWRAP;
+        }
+        return null;
+    }, [trade, isSmartTrade]);
 
     const parsedAmountA =
         independentField === SwapField.INPUT
@@ -160,6 +167,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         shouldUseOmegaRouter && !isSmartTrade ? trade : null,
         allowedSlippage,
         permitSignature,
+        stepAmountsOut,
         onTransactionSuccess
     );
 
@@ -299,9 +307,9 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                     "Swap Anyway"
                 ) : swapInputError || activeSwapError ? (
                     swapInputError || activeSwapError
-                ) : erc4626WrapType === BoostedSwapType.WRAP_ONLY ? (
+                ) : erc4626WrapType === BoostedRouteStepType.WRAP ? (
                     "Wrap"
-                ) : erc4626WrapType === BoostedSwapType.UNWRAP_ONLY ? (
+                ) : erc4626WrapType === BoostedRouteStepType.UNWRAP ? (
                     "Unwrap"
                 ) : (
                     "Swap"

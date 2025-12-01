@@ -13,10 +13,9 @@ import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route as SmartRoute, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Currency, TradeType, Route as SDKRoute, BoostedRoute } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, TradeType, Route as SDKRoute, BoostedRoute, BoostedRouteStepType } from "@cryptoalgebra/custom-pools-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
 import { formatAmount } from "@/utils";
-import { BoostedSwapType, determineSwapType } from "@cryptoalgebra/omega-router-sdk";
 
 interface ISwapRouteModal {
     isOpen: boolean;
@@ -94,49 +93,24 @@ const RouteHop = ({ token0, token1, fee, type }: { token0: Currency; token1: Cur
 
 // Component for BoostedRoute (with wrap/unwrap steps)
 const BoostedRouteDisplay = ({ route, fees }: { route: BoostedRoute<Currency, Currency>; fees: number[] }) => {
-    const steps = useMemo(() => {
-        const result: Array<{
-            type: "wrap" | "unwrap" | "pool";
-            from: Currency;
-            to: Currency;
-            fee?: number;
-        }> = [];
-
-        // tokenPath includes wrap/unwrap: [USDC, sparkUSDC, mwETH, ETH]
+    const stepsWithFees = useMemo(() => {
         let poolIndex = 0;
-        for (let i = 0; i < route.tokenPath.length - 1; i++) {
-            const from = route.tokenPath[i];
-            const to = route.tokenPath[i + 1];
 
-            const swapType = determineSwapType(from, to);
-
-            const isWrap = swapType === BoostedSwapType.WRAP_ONLY;
-            const isUnwrap = swapType === BoostedSwapType.UNWRAP_ONLY;
-
-            if (isWrap || isUnwrap) {
-                result.push({
-                    type: isWrap ? "wrap" : "unwrap",
-                    from,
-                    to,
-                });
-            } else {
-                // This is a pool swap
-                result.push({
-                    type: "pool",
-                    from,
-                    to,
-                    fee: fees[poolIndex] || 0,
-                });
+        return route.steps.map((step) => {
+            if (step.type === BoostedRouteStepType.SWAP) {
+                const fee = fees[poolIndex] || 0;
                 poolIndex++;
+                return { step, fee };
             }
-        }
+            return { step, fee: 0 };
+        });
+    }, [route.steps, fees]);
 
-        return result;
-    }, [route, fees]);
+    return stepsWithFees.map(({ step, fee }, idx) => {
+        const type = step.type === BoostedRouteStepType.WRAP ? "wrap" : step.type === BoostedRouteStepType.UNWRAP ? "unwrap" : undefined;
 
-    return steps.map((step, idx) => (
-        <RouteHop key={`step-${idx}`} token0={step.from} token1={step.to} fee={step.fee || 0} type={step.type} />
-    ));
+        return <RouteHop key={`step-${idx}`} token0={step.tokenIn} token1={step.tokenOut} fee={fee} type={type} />;
+    });
 };
 
 const RouteSplit = ({ route, fees }: { route: SmartRoute; fees: number[][]; tradeType: TradeType }) => {

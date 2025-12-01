@@ -17,7 +17,7 @@ import { SwapRouteModal } from "../SwapRouteModal";
 const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const { allowedSlippage, currencies, poolAddress, toggledTrade: trade, tradeState } = derivedSwap;
+    const { allowedSlippage, currencies, poolAddress, toggledTrade: trade, tradeState, priceImpact: derivedPriceImpact } = derivedSwap;
     const { typedValue } = useSwapState();
 
     const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
@@ -36,9 +36,9 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         if (isSmartTrade) {
             return SmartRouter.getPriceImpact(trade);
         } else {
-            return trade.priceImpact;
+            return derivedPriceImpact ?? undefined;
         }
-    }, [trade, isSmartTrade]);
+    }, [trade, isSmartTrade, derivedPriceImpact]);
 
     const minimumAmountOut = useMemo(() => {
         if (!trade) return undefined;

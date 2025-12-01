@@ -7,6 +7,7 @@ import { useClients } from "../graphql/useClients";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import useSWR from "swr";
 import { tryCreateBoostedToken } from "@/utils/token/tryCreateBoostedToken";
+import { isDefined } from "@/utils";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -56,33 +57,37 @@ export function useSwapPools(
     const { data: pools, isLoading } = useSWR(["swapPools", poolsData], () => {
         if (!poolsData?.pools) return;
 
-        return poolsData.pools.map((pool) => {
-            const token0 = tryCreateBoostedToken(
-                chainId,
-                pool.token0.id,
-                Number(pool.token0.decimals),
-                pool.token0.symbol,
-                pool.token0.name
-            );
-            const token1 = tryCreateBoostedToken(
-                chainId,
-                pool.token1.id,
-                Number(pool.token1.decimals),
-                pool.token1.symbol,
-                pool.token1.name
-            );
+        return poolsData.pools
+            .map((pool) => {
+                if (pool.liquidity === "0") return null;
 
-            return new Pool(
-                token0,
-                token1,
-                Number(pool.fee),
-                pool.sqrtPrice,
-                pool.deployer,
-                pool.liquidity,
-                Number(pool.tick),
-                Number(pool.tickSpacing)
-            );
-        });
+                const token0 = tryCreateBoostedToken(
+                    chainId,
+                    pool.token0.id,
+                    Number(pool.token0.decimals),
+                    pool.token0.symbol,
+                    pool.token0.name
+                );
+                const token1 = tryCreateBoostedToken(
+                    chainId,
+                    pool.token1.id,
+                    Number(pool.token1.decimals),
+                    pool.token1.symbol,
+                    pool.token1.name
+                );
+
+                return new Pool(
+                    token0,
+                    token1,
+                    Number(pool.fee),
+                    pool.sqrtPrice,
+                    pool.deployer,
+                    pool.liquidity,
+                    Number(pool.tick),
+                    Number(pool.tickSpacing)
+                );
+            })
+            .filter(isDefined);
     });
 
     return {
