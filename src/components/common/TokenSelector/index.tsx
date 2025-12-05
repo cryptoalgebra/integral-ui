@@ -155,20 +155,17 @@ const TokenRow = ({
 };
 
 const ImportTokenRow = ({ token, onImport }: { token: Token; onImport: (token: Token) => void }) => (
-    <div className="flex justify-between w-full text-left">
+    <div className="flex justify-between w-full text-left text-sm p-3 rounded-lg border bg-card-hover">
         <div className="flex items-center gap-4">
             <div>
                 <CurrencyLogo currency={token} size={32} />
             </div>
             <div>
                 <div>{token.symbol}</div>
-                <div>{token.name}</div>
+                <div className="text-sm text-muted-foreground">{token.name}</div>
             </div>
         </div>
-        <button
-            className="px-4 bg-primary-button text-primary-foreground font-bold hover:bg-primary-button/80 rounded-2xl text-md"
-            onClick={() => onImport(token)}
-        >
+        <button className="px-4 bg-primary-button text-black hover:bg-primary-button/80 rounded-lg text-sm" onClick={() => onImport(token)}>
             Import
         </button>
     </div>

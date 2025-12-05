@@ -29,8 +29,13 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const depositsForActiveFarming = deposits.filter((d) => farming.farming.id.toLowerCase() === d.eternalFarming?.toLowerCase());
 
-    const { formattedRewardEarned, formattedBonusRewardEarned, rewardEarnedUSD, bonusRewardEarnedUSD, totalRewardsEarnedUSD } =
-        useFarmingRewardsEarned(farming.farming, depositsForActiveFarming);
+    const {
+        formattedRewardEarned,
+        formattedBonusRewardEarned,
+        rewardEarnedUSD,
+        bonusRewardEarnedUSD,
+        totalRewardsEarnedUSD,
+    } = useFarmingRewardsEarned(farming.farming, depositsForActiveFarming);
 
     const APR = useFarmingAPR({ farmingId: farming.farming.id });
 
@@ -62,7 +67,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
     };
 
     return (
-        <div className="flex items-center flex-col justify-center bg-card border border-card-border/60 rounded-xl mt-3 md:p-6 md:gap-6 gap-3 p-3">
+        <div className="flex items-center flex-col justify-center bg-card-dark border border-card-border/60 rounded-xl mt-3 md:p-6 md:gap-6 gap-3 p-3">
             <div className="flex flex-col gap-3 w-full">
                 <h3 className="md:text-2xl text-xl font-bold text-left">Active Farming</h3>
             </div>
@@ -99,7 +104,9 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                             {isSameReward ? (
                                 <>
                                     <CurrencyLogo size={32} currency={rewardTokenCurrency} />
-                                    <p>{`${formatAmount(rewardRatePerDay + bonusRewardRatePerDay, 2)} ${farming.rewardToken.symbol} / day`}</p>
+                                    <p>{`${formatAmount(rewardRatePerDay + bonusRewardRatePerDay, 2)} ${
+                                        farming.rewardToken.symbol
+                                    } / day`}</p>
                                 </>
                             ) : (
                                 <div className="flex w-full gap-4 max-md:flex-col">
@@ -121,7 +128,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
                 <div className="w-full flex gap-3">
                     <Button
-                        variant={'primary'}
+                        variant={"primary"}
                         disabled={(!rewardEarnedUSD && !bonusRewardEarnedUSD) || isLoading}
                         onClick={handleHarvestAll}
                         className="w-1/2"
