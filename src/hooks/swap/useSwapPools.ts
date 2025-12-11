@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO, Currency, Pool, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, Currency, Pool, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
 import { useChainId } from "wagmi";

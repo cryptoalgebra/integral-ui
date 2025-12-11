@@ -2,7 +2,7 @@ import AmountsSection from "@/components/create-position/AmountsSection";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { useState } from "react";
 
 interface IncreaseLiquidityModalProps {

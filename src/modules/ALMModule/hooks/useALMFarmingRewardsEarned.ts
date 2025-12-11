@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { EternalFarming } from "@/graphql/generated/graphql";
-import { CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { Address, formatUnits } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";

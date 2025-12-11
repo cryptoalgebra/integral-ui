@@ -3,7 +3,7 @@ import { useAccount, useChainId } from "wagmi";
 import { parseEther } from "viem";
 import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
 import { TOKEN_ADDRESS, DEFAULT_CHAIN_ID, VOTING_ESCROW } from "config";
-import { CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useApprove } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";

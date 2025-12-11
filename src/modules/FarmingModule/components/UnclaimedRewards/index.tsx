@@ -10,7 +10,7 @@ import { Reward } from "@/graphql/generated/graphql";
 import { useCurrency } from "@/hooks/common/useCurrency";
 
 import { formatAmount } from "@/utils/common/formatAmount";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useFarmHarvestUnclaimed } from "../../hooks";
 
 interface UnclaimedRewardsProps {

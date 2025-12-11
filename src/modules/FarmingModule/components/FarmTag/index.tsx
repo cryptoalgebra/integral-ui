@@ -5,7 +5,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useEternalFarmingsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useReadAlgebraVirtualPoolRewardReserves } from "@/generated";
 
 export function FarmTag({ poolAddress }: { poolAddress: string }) {

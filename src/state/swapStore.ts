@@ -13,7 +13,7 @@ import {
     TradeType,
     computePoolAddress,
     tryParseAmount,
-} from "@cryptoalgebra/custom-pools-sdk";
+} from "@cryptoalgebra/integral-sdk";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";

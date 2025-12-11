@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";

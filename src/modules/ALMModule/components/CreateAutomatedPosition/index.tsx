@@ -2,7 +2,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useState, useEffect } from "react";
 import { ExtendedVault } from "../../hooks";
 import AddAutomatedLiquidityButton from "../AddAutomatedLiquidityButton";

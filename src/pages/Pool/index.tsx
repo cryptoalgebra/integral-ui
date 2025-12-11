@@ -10,7 +10,7 @@ import { FormattedPosition } from "@/types/formatted-position";
 import { getPositionAPR } from "@/utils/positions/getPositionAPR";
 import { getPositionFees } from "@/utils/positions/getPositionFees";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { CurrencyAmount, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, ZERO } from "@cryptoalgebra/integral-sdk";
 import { MoveRightIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";

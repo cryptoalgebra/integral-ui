@@ -1,6 +1,6 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import TokenRatio from "../TokenRatio";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { usePositionAPR } from "@/hooks/positions/usePositionAPR";
 import { getPoolAPR } from "@/utils/pool/getPoolAPR";

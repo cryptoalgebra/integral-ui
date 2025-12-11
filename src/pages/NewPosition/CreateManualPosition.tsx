@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
-import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/integral-sdk";
 import { useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 

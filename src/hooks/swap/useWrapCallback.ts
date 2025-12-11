@@ -1,4 +1,4 @@
-import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";

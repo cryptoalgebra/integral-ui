@@ -4,7 +4,7 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useWriteSwapRouterMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 
 export function useSmartRouterCallback(
     currencyA: Currency | undefined,

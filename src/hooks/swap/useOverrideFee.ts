@@ -1,7 +1,7 @@
 import { SWAP_ROUTER } from "config";
 import { readAlgebraPoolPlugin, simulateAlgebraBasePluginV1BeforeSwap } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
-import { ADDRESS_ZERO, computePoolAddress, Currency, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, computePoolAddress, Currency, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useEffect, useState } from "react";
 import { useChainId } from "wagmi";

@@ -1,5 +1,5 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef } from "react";
-import { Currency, CurrencyAmount, Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent, TradeType } from "@cryptoalgebra/integral-sdk";
 import { PoolType, SmartRouter, SwapRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
@@ -51,30 +51,22 @@ export function useSmartRouterBestTrade(
         keepPreviousDataRef.current = false;
     }
 
-    const {
-        refresh: refreshPools,
-        pools: candidatePools,
-        loading,
-        syncing,
-    } = useCommonPools(amount?.currency as any, (outputCurrency as any) ?? undefined, {
-        blockNumber: Number(blockNumber),
-        allowInconsistentBlock: true,
-        enabled: true,
-    });
+    const { refresh: refreshPools, pools: candidatePools, loading, syncing } = useCommonPools(
+        amount?.currency as any,
+        (outputCurrency as any) ?? undefined,
+        {
+            blockNumber: Number(blockNumber),
+            allowInconsistentBlock: true,
+            enabled: true,
+        }
+    );
 
     const poolProvider = useMemo(() => SmartRouter.createStaticPoolProvider(candidatePools), [candidatePools]);
 
     const deferQuotientRaw = useDeferredValue(amount?.quotient?.toString());
     const deferQuotient = useDebounce(deferQuotientRaw, 500);
 
-    const {
-        data: trade,
-        isLoading: isLoadingTrade,
-        fetchStatus,
-        isPlaceholderData,
-        error,
-        refetch,
-    } = useQuery({
+    const { data: trade, isLoading: isLoadingTrade, fetchStatus, isPlaceholderData, error, refetch } = useQuery({
         queryKey: [
             "getBestRoute",
             outputCurrency?.chainId,

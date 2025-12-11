@@ -1,5 +1,5 @@
 import { BASES_TO_CHECK_TRADES_AGAINST, BOOSTED_TOKENS } from "config";
-import { Currency, Token, BoostedToken, AnyToken } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Token, BoostedToken, AnyToken } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
 

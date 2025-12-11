@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Percent, Route, TradeType, Trade, BoostedRoute } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent, Route, TradeType, Trade, BoostedRoute } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { TradeState, TradeStateType } from "@/types/trade-state";
 import { useAllRoutes } from "./useAllRoutes";
@@ -17,8 +17,6 @@ export interface BestTradeExactIn {
     fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
     priceImpact?: Percent | null;
-    /** Step amounts out - output amount for each step (for Boosted ExactOutput) */
-    stepAmountsOut?: string[] | null;
 }
 
 export interface BestTradeExactOut {
@@ -27,8 +25,6 @@ export interface BestTradeExactOut {
     fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
     priceImpact?: Percent | null;
-    /** Step amounts out - output amount for each step (for Boosted ExactOutput) */
-    stepAmountsOut?: string[] | null;
 }
 
 /**
@@ -38,7 +34,7 @@ export interface BestTradeExactOut {
  */
 export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency): BestTradeExactIn {
     const { routerType } = useSwapState();
-    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, true);
+    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut);
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
         exactInput: true,
@@ -96,7 +92,6 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                         amountOut: resultAmountOut,
                         fee: result[5],
                         priceAfterSwap: result[2],
-                        stepAmountsOut: null,
                     };
                 } else if (currentBest.amountOut < resultAmountOut) {
                     return {
@@ -104,7 +99,6 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                         amountOut: resultAmountOut,
                         fee: result[5],
                         priceAfterSwap: result[2],
-                        stepAmountsOut: null,
                     };
                 }
 
@@ -125,7 +119,6 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                 fee: null,
                 priceAfterSwap: null,
                 priceImpact: null,
-                stepAmountsOut: null,
             };
         }
 
@@ -142,7 +135,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             }),
             priceAfterSwap,
             priceImpact,
-            stepAmountsOut: null,
+
             refetch: () => {
                 refetchBoosted();
                 refetchNormal();
@@ -173,7 +166,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
  */
 export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
     const { routerType } = useSwapState();
-    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency, false);
+    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
         exactInput: false,
@@ -217,10 +210,9 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             amountIn: bigint | null;
             fee: number[] | null;
             priceAfterSwap: bigint[] | null;
-            stepAmountsOut: string[] | null;
         };
 
-        const { bestRoute, amountIn, fee, priceAfterSwap, stepAmountsOut } = activeQuotesResults.reduce<BestRouteResultOut>(
+        const { bestRoute, amountIn, fee, priceAfterSwap } = activeQuotesResults.reduce<BestRouteResultOut>(
             (currentBest, result, i) => {
                 if (!result) return currentBest;
 
@@ -232,7 +224,6 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                         amountIn: resultAmountIn,
                         fee: result[5],
                         priceAfterSwap: result[2],
-                        stepAmountsOut: [...result[0]].reverse().map((a: bigint) => a.toString()),
                     };
                 } else if (currentBest.amountIn > resultAmountIn) {
                     return {
@@ -240,7 +231,6 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                         amountIn: resultAmountIn,
                         fee: result[5],
                         priceAfterSwap: result[2],
-                        stepAmountsOut: [...result[0]].reverse().map((a: bigint) => a.toString()),
                     };
                 }
 
@@ -251,7 +241,6 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 amountIn: null,
                 fee: null,
                 priceAfterSwap: null,
-                stepAmountsOut: null,
             }
         );
 
@@ -262,7 +251,6 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 fee: null,
                 priceAfterSwap,
                 priceImpact: null,
-                stepAmountsOut: null,
             };
         }
 
@@ -279,7 +267,6 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             }),
             priceAfterSwap,
             priceImpact,
-            stepAmountsOut,
             refetch: () => {
                 refetchBoosted();
                 refetchNormal();

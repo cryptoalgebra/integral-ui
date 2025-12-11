@@ -8,7 +8,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useALMFarmHarvest, useALMFarmUnstake, UserALMVault } from "../../hooks";
 import { useALMFarmingRewardsEarned } from "../../hooks/useALMFarmingRewardsEarned";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 
 interface ActiveFarmingCardProps {
     eternalFarming: EternalFarming;

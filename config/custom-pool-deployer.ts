@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO, ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, ChainId } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 
 export type PoolDeployerType = "BASE" | "LIMIT_ORDERS" | "ALM" | "AI";

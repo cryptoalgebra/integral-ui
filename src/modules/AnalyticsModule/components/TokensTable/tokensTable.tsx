@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Search } from "lucide-react";
-import { Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Token } from "@cryptoalgebra/integral-sdk";
 import { TokenColumn } from "./tokensColumns";
 import { LoadingState } from "@/components/common/Table/loadingState";
 import { Input } from "@/components/ui/input";

@@ -1,4 +1,4 @@
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/integral-sdk";
 
 // Uses Uniswap analytics data to populate charts and DEX stats (for visual purposes only)
 export const USE_UNISWAP_PLACEHOLDER_DATA = false;

@@ -1,4 +1,4 @@
-import { AnyToken, BoostedToken, Currency, Pool, BoostedRoute } from "@cryptoalgebra/custom-pools-sdk";
+import { AnyToken, BoostedToken, Currency, Pool, BoostedRoute } from "@cryptoalgebra/integral-sdk";
 
 /**
  * Check if tokenIn can reach tokenOut via wrap or unwrap (no pool needed)
@@ -93,27 +93,15 @@ function getBoostedVariantsFromPools(token: AnyToken, pools: Pool[]): AnyToken[]
 }
 
 /**
- * Check if pool has both tokens as boosted or both as non-boosted
- */
-function isBothBoostedPool(pool: Pool): boolean {
-    return (pool.token0.isBoosted && pool.token1.isBoosted) || (!pool.token0.isBoosted && !pool.token1.isBoosted);
-}
-
-/**
  * Compute boosted routes between input and output currencies
  */
-export function computeBoostedRoutes(
-    currencyIn: Currency,
-    currencyOut: Currency,
-    pools: Pool[],
-    exactInput: boolean
-): BoostedRoute<Currency, Currency>[] {
+export function computeBoostedRoutes(currencyIn: Currency, currencyOut: Currency, pools: Pool[]): BoostedRoute<Currency, Currency>[] {
     const tokenIn = currencyIn.wrapped;
     const tokenOut = currencyOut.wrapped;
     const boostedRoutes: BoostedRoute<Currency, Currency>[] = [];
 
     // Filter only pools where BOTH tokens are boosted
-    const boostedPools = pools.filter(isBothBoostedPool);
+    const boostedPools = pools;
 
     // ═══════════════════════════════════════════════════════════
     // CASE 1: Direct WRAP / UNWRAP (no pools needed)
@@ -144,11 +132,6 @@ export function computeBoostedRoutes(
         } catch {
             // Skip invalid routes
         }
-    }
-
-    // Multihop allowed only for exact input
-    if (!exactInput) {
-        return boostedRoutes;
     }
 
     // ═══════════════════════════════════════════════════════════

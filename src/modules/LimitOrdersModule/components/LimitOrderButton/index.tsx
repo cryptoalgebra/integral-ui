@@ -3,7 +3,7 @@ import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedSwapInfo } from "@/state/swapStore";
-import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { Token, tryParseTick } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId } from "wagmi";
 import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
 import { ApprovalState } from "@/types/approve-state";

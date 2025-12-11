@@ -1,5 +1,5 @@
 import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useMemo } from "react";
 

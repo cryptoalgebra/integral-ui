@@ -6,7 +6,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useAccount } from "wagmi";
 import { useFarmHarvestAll } from "../../hooks/useFarmHarvest";
 import Loader from "@/components/common/Loader";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useFarmingAPR, useFarmingRewardsEarned } from "../../hooks";
 import { isSameRewards } from "../../utils";
 import { SelectPositionFarmModal } from "..";

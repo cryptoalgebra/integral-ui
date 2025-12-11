@@ -1,7 +1,7 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
+import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useChainId } from "wagmi";

@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSingleTokenQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useMintState } from "@/state/mintStore";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 

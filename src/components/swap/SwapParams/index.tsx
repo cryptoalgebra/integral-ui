@@ -4,7 +4,7 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent, TradeType } from "@cryptoalgebra/integral-sdk";
 import { ChevronDownIcon, ZapIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";

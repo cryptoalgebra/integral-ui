@@ -8,12 +8,12 @@ import {
     Price,
     priceToClosestTick,
     tryParseTick,
-} from "@cryptoalgebra/custom-pools-sdk";
-import { ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { Bound, Field, Rounding } from "@cryptoalgebra/custom-pools-sdk";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/custom-pools-sdk";
-import { getTickToPrice } from "@cryptoalgebra/custom-pools-sdk";
+} from "@cryptoalgebra/integral-sdk";
+import { ZERO } from "@cryptoalgebra/integral-sdk";
+import { Bound, Field, Rounding } from "@cryptoalgebra/integral-sdk";
+import { tryParseAmount } from "@cryptoalgebra/integral-sdk";
+import { tickToPrice, nearestUsableTick, encodeSqrtRatioX96, TickMath } from "@cryptoalgebra/integral-sdk";
+import { getTickToPrice } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useMemo } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { create } from "zustand";

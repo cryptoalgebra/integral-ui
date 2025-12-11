@@ -13,7 +13,7 @@ import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route as SmartRoute, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Currency, TradeType, Route as SDKRoute, BoostedRoute, BoostedRouteStepType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, TradeType, Route as SDKRoute, BoostedRoute, BoostedRouteStepType } from "@cryptoalgebra/integral-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
 import { formatAmount } from "@/utils";
 

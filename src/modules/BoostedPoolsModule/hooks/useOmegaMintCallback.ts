@@ -1,4 +1,4 @@
-import { Position } from "@cryptoalgebra/custom-pools-sdk";
+import { Position } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId, useEstimateGas, useSendTransaction } from "wagmi";
 import {  useEffect, useMemo } from "react";
 import { TransactionType } from "@/state/pendingTransactionsStore";

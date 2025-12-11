@@ -1,4 +1,4 @@
-import { Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { Pool } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";

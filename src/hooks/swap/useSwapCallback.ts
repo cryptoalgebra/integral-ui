@@ -1,4 +1,4 @@
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { useEffect, useMemo, useState } from "react";

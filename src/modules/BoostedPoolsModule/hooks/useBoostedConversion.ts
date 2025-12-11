@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, BoostedToken } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { usePublicClient } from "wagmi";
 import useSWR from "swr";

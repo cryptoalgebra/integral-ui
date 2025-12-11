@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER } from "config";
 import { IDerivedMintInfo, useMintState } from "@/state/mintStore";
 import { useUserState } from "@/state/userStore";
-import { Field, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Field, Percent } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useMemo } from "react";
 import { Address } from "viem";

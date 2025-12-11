@@ -1,5 +1,5 @@
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
-import { Currency, Field } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Field } from "@cryptoalgebra/integral-sdk";
 import { useEffect } from "react";
 import EnterAmountCard from "../EnterAmountsCard";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";

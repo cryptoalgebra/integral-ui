@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 
-import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/integral-sdk";
 
 import { ApprovalState } from "@/types/approve-state";
 

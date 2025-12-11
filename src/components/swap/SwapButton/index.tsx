@@ -9,7 +9,7 @@ import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { tryParseAmount, BoostedRouteStepType } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount, BoostedRouteStepType } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";

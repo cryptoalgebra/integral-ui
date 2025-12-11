@@ -1,4 +1,4 @@
-import { WNATIVE, Token, ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { WNATIVE, Token, ChainId } from "@cryptoalgebra/integral-sdk";
 import { TOKENS } from "./tokens";
 
 type ChainTokenList = {

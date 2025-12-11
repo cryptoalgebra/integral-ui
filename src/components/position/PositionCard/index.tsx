@@ -1,4 +1,4 @@
-import { INITIAL_POOL_FEE, Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Pool } from "@cryptoalgebra/integral-sdk";
 import { FormattedPosition } from "@/types/formatted-position";
 import { Skeleton } from "@/components/ui/skeleton";
 import PositionRangeChart from "../PositionRangeChart";

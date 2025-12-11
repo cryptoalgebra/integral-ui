@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useReadContract, useSignTypedData } from "wagmi";
 import { PERMIT2_ABI } from "config/abis/permit2";
 import { Address, UserRejectedRequestError } from "viem";

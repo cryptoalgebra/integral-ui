@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useUserState } from "@/state/userStore";
-import { Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent } from "@cryptoalgebra/integral-sdk";
 import { SettingsIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -108,7 +108,9 @@ const SlippageTolerance = () => {
             {slippageError || tooLow || tooHigh ? (
                 <div>
                     {slippageError ? (
-                        <div className="bg-red-900 text-red-200 border border-red-500 px-2 py-1 rounded-lg">Enter a valid slippage percentage</div>
+                        <div className="bg-red-900 text-red-200 border border-red-500 px-2 py-1 rounded-lg">
+                            Enter a valid slippage percentage
+                        </div>
                     ) : (
                         <div className="bg-yellow-900 text-yellow-200 border border-yellow-500 px-2 py-1 rounded-lg">
                             {tooLow ? "Your transaction may fail" : "Your transaction may be frontrun"}

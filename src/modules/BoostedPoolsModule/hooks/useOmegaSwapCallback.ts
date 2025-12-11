@@ -1,4 +1,4 @@
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId, usePublicClient, useSendTransaction } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
@@ -32,7 +32,6 @@ export function useOmegaSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
     permitSignature?: PermitSignature,
-    stepAmountsOut?: string[] | null,
     onTransactionSuccess?: () => void
 ) {
     const { address: account } = useAccount();
@@ -43,7 +42,7 @@ export function useOmegaSwapCallback(
     const [bestCall, setBestCall] = useState<SuccessfulCall>();
     const [callError, setCallError] = useState<Error>();
 
-    const { data: swapCalldata } = useOmegaSwapCallArguments(trade, allowedSlippage, permitSignature, stepAmountsOut);
+    const { data: swapCalldata } = useOmegaSwapCallArguments(trade, allowedSlippage, permitSignature);
 
     useEffect(() => {
         async function findBestCall() {

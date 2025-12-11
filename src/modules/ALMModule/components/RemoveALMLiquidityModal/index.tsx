@@ -18,7 +18,7 @@ import {
     withdrawNativeToken,
     withdrawWithSlippage,
 } from "@cryptoalgebra/alm-sdk";
-import { CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Percent } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { Address, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";

@@ -1,6 +1,6 @@
 import { AddLiquidityButton } from "@/components/create-position/AddLiquidityButton";
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 
 interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;

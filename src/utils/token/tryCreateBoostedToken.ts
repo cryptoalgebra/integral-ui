@@ -1,4 +1,4 @@
-import { Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Token } from "@cryptoalgebra/integral-sdk";
 import { BoostedToken } from "./boostedToken";
 import { BOOSTED_TOKENS } from "config/tokens";
 

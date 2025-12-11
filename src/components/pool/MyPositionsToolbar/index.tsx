@@ -1,7 +1,7 @@
 import { FormattedPosition } from "@/types/formatted-position";
 import { formatPlural } from "@/utils/common/formatPlural";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import FilterPopover from "../FilterPopover";
 import { Settings2 } from "lucide-react";

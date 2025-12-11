@@ -1,4 +1,4 @@
-import { Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent } from "@cryptoalgebra/integral-sdk";
 
 export const ONE_BIPS = new Percent(1, 10000);
 export const BIPS_BASE = 10000;

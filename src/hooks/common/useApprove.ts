@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
 import { DEFAULT_CHAIN_ID, SWAP_ROUTER } from "config";

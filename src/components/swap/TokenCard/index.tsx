@@ -2,7 +2,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import TokenSelectorModal from "@/components/modals/TokenSelectorModal";
 import { Input } from "@/components/ui/input";
 import { cn, formatAmount } from "@/utils";
-import { Currency, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Percent } from "@cryptoalgebra/integral-sdk";
 import { ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Address } from "viem";

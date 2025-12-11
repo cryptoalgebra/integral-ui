@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { ExtendedNative, Token, BoostedToken } from "@cryptoalgebra/custom-pools-sdk";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ExtendedNative, Token, BoostedToken } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useReadContracts } from "wagmi";
 import { Address, erc20Abi, erc4626Abi } from "viem";
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config/default-chain";

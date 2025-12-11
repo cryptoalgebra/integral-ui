@@ -1,6 +1,6 @@
 import { TOKENS } from "config";
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
-import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
 import { useClients } from "../graphql/useClients";

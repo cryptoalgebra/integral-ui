@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { Address, erc20Abi } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 

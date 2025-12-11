@@ -1,7 +1,7 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
 import { formatAmount } from "@/utils";
-import { Currency, Field } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Field } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";

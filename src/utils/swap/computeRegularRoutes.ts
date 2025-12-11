@@ -1,4 +1,4 @@
-import { Currency, Pool, Route } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Pool, Route } from "@cryptoalgebra/integral-sdk";
 
 /**
  * Computes regular (non-boosted) routes between input and output currencies

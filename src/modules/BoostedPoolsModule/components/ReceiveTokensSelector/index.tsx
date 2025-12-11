@@ -1,6 +1,6 @@
 import { Switch } from "@/components/ui/switch";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 
 interface ReceiveTokensSelectorProps {
     token0?: Currency;

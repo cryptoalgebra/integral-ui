@@ -8,7 +8,7 @@ import {
     NonfungiblePositionManager,
     ADDRESS_ZERO,
     INITIAL_POOL_FEE,
-} from "@cryptoalgebra/custom-pools-sdk";
+} from "@cryptoalgebra/integral-sdk";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useAccount, useChainId } from "wagmi";
 import { useDerivedMintInfo, useMintState } from "@/state/mintStore";

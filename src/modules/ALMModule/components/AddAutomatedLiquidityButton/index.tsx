@@ -6,7 +6,7 @@ import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
-import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/integral-sdk";
 import { deposit, depositNativeToken, SupportedChainId, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";

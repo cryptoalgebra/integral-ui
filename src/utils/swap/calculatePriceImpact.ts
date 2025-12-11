@@ -1,4 +1,4 @@
-import { Route, Currency, BoostedRoute, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Route, Currency, BoostedRoute, Percent } from "@cryptoalgebra/integral-sdk";
 
 /**
  * Calculate price impact from sqrtPriceX96 before and after swap

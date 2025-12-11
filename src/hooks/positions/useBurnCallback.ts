@@ -2,7 +2,7 @@ import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
-import { CurrencyAmount, NonfungiblePositionManager, Percent, Position } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, NonfungiblePositionManager, Percent, Position } from "@cryptoalgebra/integral-sdk";
 import { NONFUNGIBLE_POSITION_MANAGER } from "config/contract-addresses";
 import { useMemo } from "react";
 import { Address } from "viem";

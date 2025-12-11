@@ -3,7 +3,7 @@ import { useAccount, useChainId } from "wagmi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLimitOrdersListQuery, useMultiplePoolsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
-import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/integral-sdk";
 import { limitOrderColumns, LimitOrdersTable } from "../Table";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import { Button } from "@/components/ui/button";

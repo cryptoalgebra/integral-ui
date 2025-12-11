@@ -1,4 +1,4 @@
-import { AnyToken, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { AnyToken, Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useChainId } from "wagmi";
 import { useCallback, useMemo } from "react";
 import { PERMIT2 } from "config/contract-addresses";
