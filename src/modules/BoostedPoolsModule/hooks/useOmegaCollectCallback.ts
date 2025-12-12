@@ -47,7 +47,8 @@ export const useOmegaCollectCallback = ({
         }
 
         try {
-            return OmegaRouter.collectCallParameters(token0.wrapped, token1.wrapped, {
+            const omegaRouter = new OmegaRouter(OMEGA_ROUTER[chainId]);
+            return omegaRouter.collectCallParameters(token0.wrapped, token1.wrapped, {
                 tokenId: positionId,
                 recipient: account,
                 token0Unwrap,

@@ -1,8 +1,8 @@
 import { Currency, CurrencyAmount, BoostedToken } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
-import { usePublicClient } from "wagmi";
 import useSWR from "swr";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
+import { previewDeposit, previewRedeem } from "../utils";
 
 interface ConversionResult {
     inputAmount: CurrencyAmount<Currency> | undefined;
@@ -18,31 +18,29 @@ export function useBoostedConversion(
     poolToken: Currency | undefined,
     direction: ConversionDirection
 ): ConversionResult {
-    const client = usePublicClient();
-
     const swrKey = useMemo(() => {
-        if (!inputAmount || !poolToken || !client) return null;
+        if (!inputAmount || !poolToken) return null;
 
         if (!poolToken.isBoosted) return null;
 
         return ["boosted-conversion", direction, poolToken.wrapped.address, inputAmount.quotient.toString()];
-    }, [inputAmount, poolToken, direction, client]);
+    }, [inputAmount, poolToken, direction]);
 
     const fetcher = async () => {
-        if (!client || !poolToken || !inputAmount) return null;
+        if (!poolToken || !inputAmount) return null;
 
         const boostedToken = poolToken as BoostedToken;
         const amount = BigInt(inputAmount.quotient.toString());
 
         if (direction === "underlying-to-boosted") {
-            const boostedShares = await boostedToken.previewDeposit(amount);
+            const boostedShares = await previewDeposit(boostedToken, amount);
             return {
                 outputAmount: boostedShares.toString(),
                 rate: Number(boostedShares) / Number(amount),
                 outputCurrency: boostedToken,
             };
         } else {
-            const underlyingAmount = await boostedToken.previewRedeem(amount);
+            const underlyingAmount = await previewRedeem(boostedToken, amount);
             return {
                 outputAmount: underlyingAmount.toString(),
                 rate: Number(underlyingAmount) / Number(amount),

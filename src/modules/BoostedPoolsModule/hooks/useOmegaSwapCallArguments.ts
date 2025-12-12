@@ -1,15 +1,17 @@
 import { useUserState } from "@/state/userStore";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { OmegaRouter, OmegaTrade } from "@cryptoalgebra/omega-router-sdk";
 import useSWR from "swr";
 import { PermitSignature } from "../types";
+import { OMEGA_ROUTER } from "config";
 
 export function useOmegaSwapCallArguments(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
     permitSignature?: PermitSignature
 ) {
+    const chainId = useChainId();
     const { address: account } = useAccount();
 
     const { txDeadline } = useUserState();
@@ -32,7 +34,9 @@ export function useOmegaSwapCallArguments(
                 tradeType: trade.tradeType,
             });
 
-            const { calldata, value } = OmegaRouter.swapCallParameters(omegaTrade, {
+            const omegaRouter = new OmegaRouter(OMEGA_ROUTER[chainId]);
+
+            const { calldata, value } = omegaRouter.swapCallParameters(omegaTrade, {
                 feeOnTransfer: false,
                 recipient: account,
                 slippageTolerance: allowedSlippage,

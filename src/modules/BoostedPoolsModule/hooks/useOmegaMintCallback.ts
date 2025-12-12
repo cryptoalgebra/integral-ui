@@ -30,7 +30,8 @@ export function useOmegaMintCallback(
 
     const mintConfig = useMemo(() => {
         if (!position || !options || !account) return undefined;
-        const mintCalldata = OmegaRouter.addCallParameters(position, options);
+        const omegaRouter = new OmegaRouter(OMEGA_ROUTER[chainId]);
+        const mintCalldata = omegaRouter.addCallParameters(position, options);
 
         return {
             to: OMEGA_ROUTER[chainId],

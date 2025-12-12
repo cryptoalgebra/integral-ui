@@ -3,9 +3,9 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Currency, Field, tryParseAmount, BoostedToken } from "@cryptoalgebra/integral-sdk";
 import { ArrowLeftRight, Info } from "lucide-react";
 import { useMemo, useState } from "react";
-import { usePublicClient } from "wagmi";
 import { useMintState } from "@/state/mintStore";
 import { useBoostedConversion } from "../../hooks";
+import { previewDeposit, previewRedeem } from "../../utils";
 
 interface TokenWrapToggleProps {
     currency: Currency | undefined;
@@ -15,7 +15,6 @@ interface TokenWrapToggleProps {
 }
 
 export const BoostedTokenWrapToggle = ({ currency, field, currentValue, onAmountChange }: TokenWrapToggleProps) => {
-    const client = usePublicClient();
     const [isConverting, setIsConverting] = useState(false);
 
     const { token0InputMode, token1InputMode, actions } = useMintState();
@@ -39,7 +38,7 @@ export const BoostedTokenWrapToggle = ({ currency, field, currentValue, onAmount
     const { outputAmount: poolAmount, isConverting: isCalculating } = useBoostedConversion(userAmount, currency, "underlying-to-boosted");
 
     const handleToggleWrap = async () => {
-        if (!isBoosted || !client) return;
+        if (!isBoosted) return;
 
         setIsConverting(true);
 
@@ -55,10 +54,10 @@ export const BoostedTokenWrapToggle = ({ currency, field, currentValue, onAmount
 
             if (currentInputMode === "underlying") {
                 // Switching from underlying to boosted
-                convertedAmount = await boosted.previewDeposit(amount);
+                convertedAmount = await previewDeposit(boosted, amount);
             } else {
                 // Switching from boosted to underlying
-                convertedAmount = await boosted.previewRedeem(amount);
+                convertedAmount = await previewRedeem(boosted, amount);
             }
 
             const newDecimals = newMode === "underlying" ? boosted.underlying.decimals : boosted.decimals;

@@ -47,7 +47,8 @@ export const useOmegaBurnCallback = ({
             return { calldata: undefined, value: undefined };
 
         try {
-            return OmegaRouter.removeCallParameters(positionSDK, {
+            const omegaRouter = new OmegaRouter(OMEGA_ROUTER[chainId]);
+            return omegaRouter.removeCallParameters(positionSDK, {
                 tokenId: positionId,
                 liquidityPercentage,
                 slippageTolerance: new Percent(1, 100),
@@ -62,7 +63,7 @@ export const useOmegaBurnCallback = ({
             console.error(error);
             return { calldata: undefined, value: undefined };
         }
-    }, [positionId, positionSDK, txDeadline, liquidityPercentage, account, percent, token0Unwrap, token1Unwrap, permitSignature]);
+    }, [positionSDK, positionId, liquidityPercentage, account, percent, permitSignature, chainId, txDeadline, token0Unwrap, token1Unwrap]);
 
     const removeLiquidityConfig = useMemo(() => {
         if (!calldata) return undefined;

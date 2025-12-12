@@ -26,7 +26,8 @@ export function useBoostedQuotesResults({
 
     const { boostedRoutes, loading: routesLoading } = useAllRoutes(
         exactInput ? amountIn?.currency : currencyIn,
-        exactInput ? currencyOut : amountOut?.currency
+        exactInput ? currencyOut : amountOut?.currency,
+        exactInput
     );
 
     const amount = exactInput ? amountIn : amountOut;

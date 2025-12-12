@@ -95,7 +95,12 @@ function getBoostedVariantsFromPools(token: AnyToken, pools: Pool[]): AnyToken[]
 /**
  * Compute boosted routes between input and output currencies
  */
-export function computeBoostedRoutes(currencyIn: Currency, currencyOut: Currency, pools: Pool[]): BoostedRoute<Currency, Currency>[] {
+export function computeBoostedRoutes(
+    currencyIn: Currency,
+    currencyOut: Currency,
+    pools: Pool[],
+    exactInput: boolean
+): BoostedRoute<Currency, Currency>[] {
     const tokenIn = currencyIn.wrapped;
     const tokenOut = currencyOut.wrapped;
     const boostedRoutes: BoostedRoute<Currency, Currency>[] = [];
@@ -127,6 +132,11 @@ export function computeBoostedRoutes(currencyIn: Currency, currencyOut: Currency
             // Only include if route has WRAP or UNWRAP step (otherwise it's not a boosted route)
             const hasWrapOrUnwrap = route.steps.some((step) => step.type === "WRAP" || step.type === "UNWRAP");
             if (!hasWrapOrUnwrap) continue;
+
+            // For exact output trades, skip routes that start with UNWRAP or end with WRAP
+            const isFirstStepUnwrap = route.steps[0].type === "UNWRAP";
+            const isLastStepWrap = route.steps[route.steps.length - 1].type === "WRAP";
+            if (!exactInput && (isFirstStepUnwrap || isLastStepWrap)) continue;
 
             boostedRoutes.push(route);
         } catch {
@@ -174,6 +184,11 @@ export function computeBoostedRoutes(currencyIn: Currency, currencyOut: Currency
                 // Only include if route has WRAP or UNWRAP step (otherwise it's not a boosted route)
                 const hasWrapOrUnwrap = route.steps.some((step) => step.type === "WRAP" || step.type === "UNWRAP");
                 if (!hasWrapOrUnwrap) continue;
+
+                // For exact output trades, skip routes that start with UNWRAP or end with WRAP
+                const isFirstStepUnwrap = route.steps[0].type === "UNWRAP";
+                const isLastStepWrap = route.steps[route.steps.length - 1].type === "WRAP";
+                if (!exactInput && (isFirstStepUnwrap || isLastStepWrap)) continue;
 
                 boostedRoutes.push(route);
             } catch {

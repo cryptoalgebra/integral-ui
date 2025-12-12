@@ -7,7 +7,8 @@ import { computeRegularRoutes } from "@/utils/swap/computeRegularRoutes";
 
 export function useAllRoutes(
     currencyIn?: Currency,
-    currencyOut?: Currency
+    currencyOut?: Currency,
+    exactInput?: boolean
 ): {
     loading: boolean;
     boostedRoutes: BoostedRoute<Currency, Currency>[];
@@ -17,7 +18,7 @@ export function useAllRoutes(
     const { pools, isLoading: poolsLoading } = useSwapPools(currencyIn, currencyOut);
 
     const { normalRoutes, boostedRoutes } = useMemo(() => {
-        if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
+        if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut || exactInput === undefined)
             return {
                 normalRoutes: [],
                 boostedRoutes: [],
@@ -25,9 +26,9 @@ export function useAllRoutes(
 
         return {
             normalRoutes: computeRegularRoutes(currencyIn, currencyOut, pools),
-            boostedRoutes: computeBoostedRoutes(currencyIn, currencyOut, pools),
+            boostedRoutes: computeBoostedRoutes(currencyIn, currencyOut, pools, exactInput),
         };
-    }, [chainId, currencyIn, currencyOut, pools, poolsLoading]);
+    }, [chainId, currencyIn, currencyOut, pools, poolsLoading, exactInput]);
 
     if (normalRoutes.length || boostedRoutes.length) {
         console.log("[COMPUTED ROUTES]", { normalRoutes, boostedRoutes });

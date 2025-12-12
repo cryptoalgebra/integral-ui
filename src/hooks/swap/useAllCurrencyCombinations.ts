@@ -2,6 +2,7 @@ import { BASES_TO_CHECK_TRADES_AGAINST, BOOSTED_TOKENS } from "config";
 import { Currency, Token, BoostedToken, AnyToken } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
+import { isDefined } from "@/utils";
 
 const getBoostedToken = (token: AnyToken): BoostedToken | undefined => {
     const chainId = token.chainId;
@@ -17,49 +18,46 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
     // Find matching boosted tokens that have the same underlying
     const [boostedA, boostedB] = useMemo(() => {
         if (!tokenA || !tokenB) return [];
-        return [getBoostedToken(tokenA)?.wrapped, getBoostedToken(tokenB)?.wrapped];
+        return [getBoostedToken(tokenA), getBoostedToken(tokenB)];
     }, [tokenA, tokenB]);
 
-    const bases: (Token | BoostedToken)[] = useMemo(() => {
-        if (!chainId) return [];
+    const bases: Token[] = useMemo(() => BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [], [chainId]);
 
-        const baseTokens = BASES_TO_CHECK_TRADES_AGAINST[chainId] ?? [];
+    const boostedBases: BoostedToken[] = useMemo(() => bases.map((token) => getBoostedToken(token)).filter(isDefined), [bases]);
 
-        // Add wrapped versions of base tokens
-        const boostedBaseTokens = baseTokens.map((token) => getBoostedToken(token)?.wrapped).filter((token): token is Token => !!token);
-
-        return [...baseTokens, ...boostedBaseTokens];
-    }, [chainId]);
-
-    const basePairs: [Token, Token][] = useMemo(
-        () => bases.flatMap((base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])).filter(([t0, t1]) => !t0.equals(t1)),
-        [bases]
-    );
+    // const basePairs: [Token, Token][] = useMemo(
+    //     () => bases.flatMap((base): [Token, Token][] => bases.map((otherBase) => [base, otherBase])).filter(([t0, t1]) => !t0.equals(t1)),
+    //     [bases]
+    // );
 
     return useMemo(() => {
         if (!tokenA || !tokenB) return [];
 
-        const pairs: (Token | BoostedToken)[][] = [
-            // Базовая пара
+        const pairs: AnyToken[][] = [
+            // Base pair
             [tokenA, tokenB],
 
-            // Если есть wrapped версии обоих токенов, добавляем пару wrapped токенов
-            ...(boostedA && boostedB ? [[boostedA, boostedB] as [Token, Token]] : []),
+            // Boosted pair
+            ...(boostedA && boostedB ? [[boostedA, boostedB]] : []),
 
-            // Комбинации с базовыми токенами
-            ...bases.map((base): [Token, Token] => [tokenA, base]),
-            ...bases.map((base): [Token, Token] => [tokenB, base]),
+            // Hop with bases
+            ...bases.map((base) => [tokenA, base]),
+            ...bases.map((base) => [tokenB, base]),
 
-            // Если есть wrapped версии, добавляем комбинации с ними
-            ...(boostedA ? bases.map((base): [Token, Token] => [boostedA, base]) : []),
-            ...(boostedB ? bases.map((base): [Token, Token] => [boostedB, base]) : []),
+            // Hop with boosted bases
+            ...boostedBases.map((base) => [tokenA, base]),
+            ...boostedBases.map((base) => [tokenB, base]),
 
-            // Все базовые пары
-            ...basePairs,
+            // Boosted hop with bases
+            ...(boostedA ? bases.map((base) => [boostedA, base]) : []),
+            ...(boostedB ? bases.map((base) => [boostedB, base]) : []),
+
+            // Boosted hop with boosted bases
+            ...(boostedA ? boostedBases.map((base) => [boostedA, base]) : []),
+            ...(boostedB ? boostedBases.map((base) => [boostedB, base]) : []),
         ];
 
-        // Фильтруем дубликаты и невалидные пары
-        return pairs
+        const filtered = pairs
             .filter(([t0, t1]) => !t0.equals(t1))
             .filter(([t0, t1], i, otherPairs) => {
                 const firstIndexInOtherPairs = otherPairs.findIndex(
@@ -67,5 +65,7 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
                 );
                 return firstIndexInOtherPairs === i;
             });
-    }, [tokenA, tokenB, boostedA, boostedB, bases, basePairs]);
+
+        return filtered;
+    }, [tokenA, tokenB, boostedA, boostedB, bases, boostedBases]);
 }
