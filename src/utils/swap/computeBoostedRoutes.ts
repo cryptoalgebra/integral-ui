@@ -98,8 +98,7 @@ function getBoostedVariantsFromPools(token: AnyToken, pools: Pool[]): AnyToken[]
 export function computeBoostedRoutes(
     currencyIn: Currency,
     currencyOut: Currency,
-    pools: Pool[],
-    exactInput: boolean
+    pools: Pool[]
 ): BoostedRoute<Currency, Currency>[] {
     const tokenIn = currencyIn.wrapped;
     const tokenOut = currencyOut.wrapped;
@@ -134,9 +133,9 @@ export function computeBoostedRoutes(
             if (!hasWrapOrUnwrap) continue;
 
             // For exact output trades, skip routes that start with UNWRAP or end with WRAP
-            const isFirstStepUnwrap = route.steps[0].type === "UNWRAP";
-            const isLastStepWrap = route.steps[route.steps.length - 1].type === "WRAP";
-            if (!exactInput && (isFirstStepUnwrap || isLastStepWrap)) continue;
+            // const isFirstStepUnwrap = route.steps[0].type === "UNWRAP";
+            // const isLastStepWrap = route.steps[route.steps.length - 1].type === "WRAP";
+            // if (!exactInput && (isFirstStepUnwrap || isLastStepWrap)) continue;
 
             boostedRoutes.push(route);
         } catch {
@@ -186,9 +185,9 @@ export function computeBoostedRoutes(
                 if (!hasWrapOrUnwrap) continue;
 
                 // For exact output trades, skip routes that start with UNWRAP or end with WRAP
-                const isFirstStepUnwrap = route.steps[0].type === "UNWRAP";
-                const isLastStepWrap = route.steps[route.steps.length - 1].type === "WRAP";
-                if (!exactInput && (isFirstStepUnwrap || isLastStepWrap)) continue;
+                // const isFirstStepUnwrap = route.steps[0].type === "UNWRAP";
+                // const isLastStepWrap = route.steps[route.steps.length - 1].type === "WRAP";
+                // if (!exactInput && (isFirstStepUnwrap || isLastStepWrap)) continue;
 
                 boostedRoutes.push(route);
             } catch {
