@@ -1509,10 +1509,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/omega-router-sdk@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.2.0.tgz#5256bcdcb12f142d322aee5da0c9b58a00aefd65"
-  integrity sha512-uOoo4cWZe1irg8hnzoBspjs2d0ArIW7M/V4O7Lv09V/52ywuFzPTKkmBH9P9Vjr8RTb7L9pEjXcfK1YuXDNDgQ==
+"@cryptoalgebra/omega-router-sdk@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/omega-router-sdk/-/omega-router-sdk-0.2.5.tgz#49afb8f8992ed285e4c56387b1e80b4af429c56b"
+  integrity sha512-xHhTfDZTqyB8DxiO9J/d+D4LlB+GsC+8W7jZjDyYREaaGgz4jKLDFIwzlSEo6o536UW+v4o3Tce9Fb0X+nKWow==
   dependencies:
     "@cryptoalgebra/integral-sdk" "npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.2.0"
     "@uniswap/permit2-sdk" "^1.4.0"

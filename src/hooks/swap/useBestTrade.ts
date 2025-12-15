@@ -4,9 +4,9 @@ import { TradeState, TradeStateType } from "@/types/trade-state";
 import { useAllRoutes } from "./useAllRoutes";
 import { useQuotesResults } from "./useQuotesResults";
 import { RouterType, useSwapState } from "@/state/swapStore";
+import { calculatePriceImpact } from "@/utils/swap/calculatePriceImpact";
 
 import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
-import { calculatePriceImpact } from "@/utils/swap/calculatePriceImpact";
 const { useBoostedQuotesResults } = BoostedPoolsModule.hooks;
 
 // const DEFAULT_GAS_QUOTE = 2_000_000
@@ -34,7 +34,7 @@ export interface BestTradeExactOut {
  */
 export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency): BestTradeExactIn {
     const { routerType } = useSwapState();
-    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, true);
+    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut);
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
         exactInput: true,
@@ -166,7 +166,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
  */
 export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
     const { routerType } = useSwapState();
-    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency, false);
+    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
         exactInput: false,

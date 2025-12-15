@@ -4,7 +4,6 @@ import { OMEGA_QUOTER } from "config";
 import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useAllRoutes } from "@/hooks/swap/useAllRoutes";
 import { Address } from "viem";
-import { isDefined } from "@/utils";
 import { OmegaQuoter } from "@cryptoalgebra/omega-router-sdk";
 
 export function useBoostedQuotesResults({
@@ -26,8 +25,7 @@ export function useBoostedQuotesResults({
 
     const { boostedRoutes, loading: routesLoading } = useAllRoutes(
         exactInput ? amountIn?.currency : currencyIn,
-        exactInput ? currencyOut : amountOut?.currency,
-        exactInput
+        exactInput ? currencyOut : amountOut?.currency
     );
 
     const amount = exactInput ? amountIn : amountOut;
@@ -41,17 +39,13 @@ export function useBoostedQuotesResults({
             const quoter = new OmegaQuoter(client, quoterAddress);
             try {
                 const results = await quoter.batchQuote(boostedRoutes, amount, exactInput);
-                return results.filter(isDefined);
+                return results;
             } catch (error) {
                 console.error("[useBoostedQuotesResults] Batch quote error:", error);
                 return [];
             }
         }
     );
-
-    if (data?.length) {
-        console.log("[BOOSTED QUOTES]", data);
-    }
 
     return {
         data: data ?? [],

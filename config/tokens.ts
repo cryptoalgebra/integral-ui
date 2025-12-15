@@ -13,6 +13,7 @@ export const TOKENS = {
     },
 };
 
+// Boosted tokens whose pools exist on the DEX — used when constructing swap routes through boosted pools
 export const BOOSTED_TOKENS = {
     [ChainId.Base]: {
         sparkUSDC: new BoostedToken(

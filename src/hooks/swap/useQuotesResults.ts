@@ -60,10 +60,6 @@ export function useQuotesResults({
         })),
     });
 
-    if (quotesResults?.length) {
-        console.log("[COMPUTED QUOTES]", quotesResults);
-    }
-
     return {
         data: (quotesResults?.map((d) => d?.result) as unknown) as QuoteResult[],
         isLoading: isLoading || routesLoading,

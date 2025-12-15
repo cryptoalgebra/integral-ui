@@ -25,7 +25,11 @@ export function useOmegaSwapCallArguments(
             outputAmount: swap.outputAmount,
         }));
 
-        console.log("[OMEGA SWAP CALL ARGUMENTS] Computing swap call parameters for routes:", routes);
+        console.log("[OMEGA TRADE]:", {
+            route: routes[0],
+            inputAmount: routes[0].inputAmount.toSignificant(24),
+            outputAmount: routes[0].outputAmount.toSignificant(24),
+        });
 
         try {
             const omegaTrade = new OmegaTrade({

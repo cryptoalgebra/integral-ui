@@ -1,5 +1,4 @@
-import { Token } from "@cryptoalgebra/integral-sdk";
-import { BoostedToken } from "./boostedToken";
+import { AnyToken, Token } from "@cryptoalgebra/integral-sdk";
 import { BOOSTED_TOKENS } from "config/tokens";
 
 export function tryCreateBoostedToken(
@@ -8,7 +7,7 @@ export function tryCreateBoostedToken(
     decimals: number,
     symbol?: string | undefined,
     name?: string | undefined
-): Token | BoostedToken {
+): AnyToken {
     const token = new Token(chainId, address, decimals, symbol, name);
 
     const matchedBoostedToken = Object.values(BOOSTED_TOKENS[chainId]).find(
