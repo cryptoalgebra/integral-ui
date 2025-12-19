@@ -15,7 +15,7 @@ import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 
 const Header = () => (
-    <header className="md:sticky top-2 z-10 flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
+    <header className="md:sticky top-2 z-10 bg-white flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
         <nav className="w-fit flex gap-8 h-full py-2">
             <Algebra />
             <Navigation />
@@ -32,7 +32,7 @@ export const Algebra = () => (
                     <img src={AlgebraLogo} width={25} height={25} />
                 </div> */}
                 <img src={AlgebraIntegral} width={40} height={25} />
-                <span className="font-bold text-xl max-lg:hidden">Mapple</span>
+                <span className="font-bold text-xl max-lg:hidden">Maple</span>
             </div>
         </NavLink>
     </div>
