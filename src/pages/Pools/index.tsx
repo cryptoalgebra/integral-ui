@@ -11,12 +11,8 @@ const PoolsPage = () => {
             <div className="w-full flex justify-between mb-8">
                 <PageTitle title={"Pools"} showSettings={false} />
                 <Link to={"create"}>
-                    <Button
-                        variant={'primaryLink'}
-                        size={'md'}
-                        className="whitespace-nowrap rounded-full gap-2 ml-auto"
-                    >
-                        <Plus size={20} className="text-text-100" />
+                    <Button variant={"primaryLink"} size={"md"} className="whitespace-nowrap rounded-full gap-2 ml-auto">
+                        <Plus size={20} className="text-white" />
                         Create a Pool
                     </Button>
                 </Link>

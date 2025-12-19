@@ -11,12 +11,8 @@ const PoolHeader = () => {
             </div>
 
             <Link to={"new-position"}>
-                <Button
-                    variant={'primaryLink'}
-                    size={'md'}
-                    className="whitespace-nowrap rounded-full gap-2 ml-auto"
-                >
-                    <Plus size={20} className="text-text-100" />
+                <Button variant={"primaryLink"} size={"md"} className="whitespace-nowrap rounded-full gap-2 ml-auto">
+                    <Plus size={20} />
                     Create Position
                 </Button>
             </Link>

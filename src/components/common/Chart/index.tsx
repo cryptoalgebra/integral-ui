@@ -149,7 +149,7 @@ export function Chart({
 
         if (chartView === CHART_VIEW.AREA || chartView === CHART_VIEW.LINE) {
             series = chart?.addAreaSeries({
-                topColor: `${primary200}9A`,
+                topColor: `${primary200}`,
                 bottomColor: `${primary200}00`,
                 lineColor: primary200,
                 lineWidth: 2,

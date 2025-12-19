@@ -137,7 +137,7 @@ const TokenCard = ({
                     otherCurrency={otherCurrency}
                 >
                     <button
-                        className="group flex items-center gap-4 py-1 w-fit bg-card rounded-lg text-left"
+                        className="group flex items-center gap-4 py-1 w-fit bg-transparent rounded-lg text-left"
                         onClick={() => setIsOpen(true)}
                     >
                         <div className="relative w-12 h-12">
