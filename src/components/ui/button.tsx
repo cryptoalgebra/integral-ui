@@ -9,8 +9,8 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                primary: "bg-primary-gradient text-primary-foreground hover:opacity-85",
-                primaryLink: "bg-primary-800 text-white border border-primary-200 hover:opacity-65",
+                primary: "bg-primary text-primary-foreground hover:opacity-85",
+                primaryLink: "bg-transparent text-primary border border-primary-200 hover:opacity-65",
                 default: "bg-primary text-primary-foreground hover:bg-primary/90",
                 action: "bg-primary-button text-primary-foreground font-bold hover:bg-primary-button/80",
                 destructive: "bg-destructive-gradient text-destructive-foreground hover:bg-destructive/80 font-semibold hover:opacity-85",

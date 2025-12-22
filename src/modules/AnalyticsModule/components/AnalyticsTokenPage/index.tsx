@@ -188,7 +188,7 @@ export function AnalyticsTokenPage() {
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={"/pools"}>
-                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
+                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl w-full">
                                 <Plus size={20} />
                                 Create Position
                             </Button>
