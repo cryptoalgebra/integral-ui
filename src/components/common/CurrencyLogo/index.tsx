@@ -2,7 +2,7 @@ import { ChainId, Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
-import EtherLogo from "@/assets/tokens/ether.svg";
+import NXPCLogo from "@/assets/tokens/nxpc.png";
 import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,15 +17,11 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0x4200000000000000000000000000000000000006"]: {
-        symbol: "ETH",
-        logo: EtherLogo,
+    ["0x150869eac5C58d3655f860C4316107fB626244d0"]: {
+        symbol: "NXPC",
+        logo: NXPCLogo,
     },
-    [STABLECOINS[ChainId.Base].USDC.address.toLowerCase()]: {
-        symbol: "USDC",
-        logo: USDCLogo,
-    },
-    [STABLECOINS[ChainId.BaseSepolia].USDC.address.toLowerCase()]: {
+    [STABLECOINS[ChainId.Henesys].USDC.address.toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
@@ -66,7 +62,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
     }
 
     if (currency.isNative) {
-        return <img src={EtherLogo} alt={"ETH"} width={size} height={size} className={classString} style={style} />;
+        return <img src={NXPCLogo} alt={"NXPC"} width={size} height={size} className={classString} style={style} />;
     }
 
     return (

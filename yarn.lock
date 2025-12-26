@@ -1475,10 +1475,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.2.0.tgz#4db64888ec2a1cc58c1a5b1c64912ff75ace4754"
-  integrity sha512-Nh0Rm/tHiziRkL9xbwHdOOvz5Mc2GV6TNL0nV8qD7vkfb+Zf+/OCRYdjP++t3QIeDcEJvinIufR8xLXjhc4tWQ==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/maple-sdk@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/maple-sdk/-/maple-sdk-1.0.0.tgz#cd878191a9eee961de3b4f5220d38f04f767af61"
+  integrity sha512-MUuWGspEEipVxU+Tpo+k8PUCFctKYqIoqjMrG18hwZ40TbyU0L5Ridu7GCstamZG7ZbarSwOJtJUv+kcvfBOEw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

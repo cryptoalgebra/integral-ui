@@ -20,13 +20,13 @@ export const moduleNameToPath: Record<AppFeatureModule, string> = {
 
 /* configure enabled modules here */
 export const enabledModules: Record<AppFeatureModule, boolean> = {
-    [AppFeatureModule.CustomPools]: true,
-    [AppFeatureModule.SmartRouter]: true,
+    [AppFeatureModule.CustomPools]: false,
+    [AppFeatureModule.SmartRouter]: false,
 
     [AppFeatureModule.Analytics]: true,
     [AppFeatureModule.Farming]: true,
-    [AppFeatureModule.LimitOrders]: true,
-    [AppFeatureModule.ALM]: true,
+    [AppFeatureModule.LimitOrders]: false,
+    [AppFeatureModule.ALM]: false,
 
     [AppFeatureModule.VE_33]: false,
 };

@@ -33,70 +33,39 @@ import {
 import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
-const baseChain = defineChain({
-    id: 8453,
-    network: "base",
-    name: "Base",
-    nativeCurrency: { name: "Base Ether", symbol: "ETH", decimals: 18 },
+const henesysChain = defineChain({
+    id: 68414,
+    network: "henesys",
+    name: "Henesys",
+    nativeCurrency: { name: "NXPC", symbol: "NXPC", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base.gateway.tenderly.co/4q52tUempJuHciTWl5m1Ef"],
+            http: ["https://henesys-rpc.msu.io"],
         },
         public: {
-            http: ["https://base.gateway.tenderly.co/4q52tUempJuHciTWl5m1Ef"],
+            http: ["https://henesys-rpc.msu.io"],
         },
     },
     blockExplorers: {
         etherscan: {
-            name: "BaseScan",
-            url: "https://basescan.org",
+            name: "MSU Explorer",
+            url: "https://msu-explorer.xangle.io/",
         },
         default: {
-            name: "BaseScan",
-            url: "https://basescan.org",
+            name: "AvaScan",
+            url: "https://avascan.info/blockchain/henesys",
         },
     },
     contracts: {
         multicall3: {
-            address: "0xfe3becd788320465ab649015f34f7771220a88b2",
-            blockCreated: 24170245,
-        },
-    },
-});
-
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: {
-        default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
-        },
-        public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
-        },
-        etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
-        },
-    },
-    contracts: {
-        multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
+            address: "0x49BE8AA6c684b15e0C5450e8Fa0b16Bec1435596",
+            blockCreated: 9047988,
         },
     },
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseChain, baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [henesysChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
