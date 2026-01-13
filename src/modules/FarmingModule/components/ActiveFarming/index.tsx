@@ -37,6 +37,14 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
         totalRewardsEarnedUSD,
     } = useFarmingRewardsEarned(farming.farming, depositsForActiveFarming);
 
+    console.log("[REWARDS EARNED]", {
+        formattedRewardEarned,
+        formattedBonusRewardEarned,
+        rewardEarnedUSD,
+        bonusRewardEarnedUSD,
+        totalRewardsEarnedUSD,
+    });
+
     const APR = useFarmingAPR({ farmingId: farming.farming.id });
 
     const isSameReward = isSameRewards(farming.farming.rewardToken as Address, farming.farming.bonusRewardToken as Address);

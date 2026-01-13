@@ -17,6 +17,8 @@ export function useUnclaimedRewards() {
         pollInterval: 10_000,
     });
 
+    console.log("[UNCLAIMED REWARDS]", unclaimedRewards?.rewards);
+
     return {
         unclaimedRewards,
         loading,
