@@ -16,22 +16,14 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0x4200000000000000000000000000000000000006"]: {
-        symbol: "ETH",
-        logo: EtherLogo,
-    },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    ["0xe045e6c36cf77faa2cfb54466d71a3aef7bbe839"]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
-        symbol: "BTC",
+    ["0x3100000000000000000000000000000000000006"]: {
+        symbol: "WCBTC",
         logo: BTCLogo,
-    },
-    ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
-        symbol: "TOKEN",
-        logo: TOKENLogo,
-    },
+    }
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {

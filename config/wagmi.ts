@@ -32,39 +32,29 @@ import {
 } from "./contract-addresses";
 import { defineChain } from "viem";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+const citreaChain = /*#__PURE__*/ defineChain({
+    id: 4114,
+    network: "citrea",
+    name: "Citrea",
+    nativeCurrency: { name: "WCBTC", symbol: "WCBTC", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://rpc.mainnet.citrea.xyz"],
         },
         public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://rpc.mainnet.citrea.xyz"],
         },
     },
     blockExplorers: {
         default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
-        },
-        etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
-        },
-    },
-    contracts: {
-        multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
-        },
-    },
+            name: "Citrea Explorer",
+            url: "https://explorer.mainnet.citrea.xyz",
+        }
+    }
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [citreaChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
