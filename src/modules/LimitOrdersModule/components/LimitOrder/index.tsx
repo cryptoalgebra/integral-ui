@@ -1,7 +1,7 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
+import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
@@ -92,7 +92,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);
         },
-        [invertPrice, token0, token1, sellPrice, tickSpacing, typeLimitOrderPrice]
+        [invertPrice, token0, token1, sellPrice, tickSpacing, typeLimitOrderPrice],
     );
     const { blockCreation, message } = useMemo(() => {
         const missingFields: string[] = [];
@@ -124,8 +124,8 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
                 ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
                 : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : wasInverted
-              ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-              : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+            ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
         if (priceTick === undefined) {
             return { blockCreation: true, message: "Unable to calculate price tick" };
@@ -158,8 +158,8 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
                 ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
                 : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : wasInverted
-              ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-              : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+            ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
         if (priceTick === undefined) return [true, true];
 
@@ -188,7 +188,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);
         },
-        [token0, token1, tickSpacing]
+        [token0, token1, tickSpacing],
     );
 
     const setToMarketPrice = useCallback(
@@ -198,7 +198,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
             handleSetSellPrice(initialSellPrice, invert);
             limitOrderPriceLastFocused();
         },
-        [initialSellPrice]
+        [initialSellPrice],
     );
 
     useEffect(() => {

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { getFarmingRewards } from "../utils";
 import { Deposit, EternalFarming } from "@/graphql/generated/graphql";
-import { ADDRESS_ZERO, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { Address, formatUnits } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";

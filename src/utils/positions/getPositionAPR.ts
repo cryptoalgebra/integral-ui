@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Price } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Price } from "@cryptoalgebra/integral-sdk";
 
 export function getPositionAPR(
     amount0: CurrencyAmount<Currency>,

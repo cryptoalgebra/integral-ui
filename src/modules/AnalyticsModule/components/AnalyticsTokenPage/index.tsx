@@ -7,7 +7,7 @@ import { Chart } from "@/components/common/Chart";
 import PageTitle from "@/components/common/PageTitle";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { formatAmount, formatPercent } from "@/utils";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Button } from "@/components/ui/button";
 import { ArrowDownUp, Plus } from "lucide-react";

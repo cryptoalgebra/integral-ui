@@ -1,4 +1,4 @@
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/integral-sdk";
 
 // Uses Uniswap analytics data to populate charts and DEX stats (for visual purposes only)
 export const USE_UNISWAP_PLACEHOLDER_DATA = true;
@@ -13,6 +13,9 @@ export const FARMING_GRAPH_URL = {
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.BaseSepolia]:
-        "https://api.studio.thegraph.com/query/82608/ve-limits/version/latest",
+    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/82608/ve-limits/version/latest",
+};
+
+export const BLOCKS_GRAPH_URL = {
+    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/base-testnet-blocks/version/latest",
 };

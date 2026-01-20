@@ -114,7 +114,11 @@ export const transactionsColumns: ColumnDef<TX>[] = [
             </HeaderItem>
         ),
         cell: ({ row }) => <Time {...row.original} />,
-        filterFn: (v, _, value) => [v.original.time].join(" ").toLowerCase().includes(value),
+        filterFn: (v, _, value) =>
+            [v.original.time]
+                .join(" ")
+                .toLowerCase()
+                .includes(value),
         sortingFn: (rowA, rowB) => new Date(rowA.original.time).getTime() - new Date(rowB.original.time).getTime(),
     },
     {

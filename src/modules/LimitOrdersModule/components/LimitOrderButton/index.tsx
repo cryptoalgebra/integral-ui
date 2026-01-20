@@ -3,7 +3,7 @@ import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedSwapInfo } from "@/state/swapStore";
-import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { Token, tryParseTick } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId } from "wagmi";
 import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
 import { ApprovalState } from "@/types/approve-state";
@@ -67,7 +67,7 @@ export const LimitOrderButton = ({
     const needAllowance = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
         inputAmount,
-        LIMIT_ORDER_MANAGER[chainId]
+        LIMIT_ORDER_MANAGER[chainId],
     );
 
     const insufficientBalance = inputAmount && currencyBalances[SwapField.INPUT]?.lessThan(inputAmount.quotient.toString());
@@ -112,7 +112,12 @@ export const LimitOrderButton = ({
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
         return (
@@ -121,24 +126,42 @@ export const LimitOrderButton = ({
             </Button>
         );
 
-    if (!limitOrderPlugin) return <Button variant={'primary'} disabled>This pool doesn't support Limit Orders</Button>;
+    if (!limitOrderPlugin)
+        return (
+            <Button variant={"primary"} disabled>
+                This pool doesn't support Limit Orders
+            </Button>
+        );
 
-    if (!disabled && inputError) return <Button variant={'primary'} disabled>{inputError}</Button>;
+    if (!disabled && inputError)
+        return (
+            <Button variant={"primary"} disabled>
+                {inputError}
+            </Button>
+        );
 
     if (insufficientBalance) {
-        return <Button variant={'primary'} disabled>Insufficient {inputAmount.currency.symbol} amount</Button>;
+        return (
+            <Button variant={"primary"} disabled>
+                Insufficient {inputAmount.currency.symbol} amount
+            </Button>
+        );
     }
 
     if (!disabled && needAllowance)
         return (
-            <Button variant={'primary'} disabled={approvalState === ApprovalState.PENDING} onClick={() => approvalCallback && approvalCallback()}>
+            <Button
+                variant={"primary"}
+                disabled={approvalState === ApprovalState.PENDING}
+                onClick={() => approvalCallback && approvalCallback()}
+            >
                 {approvalState === ApprovalState.PENDING ? <Loader /> : `Approve ${inputAmount?.currency.symbol}`}
             </Button>
         );
 
     return (
         <Button
-            variant={'primary'}
+            variant={"primary"}
             disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING || isPending || !isReady}
             onClick={() => {
                 console.log(
@@ -160,7 +183,7 @@ export const LimitOrderButton = ({
                         limitOrder.tickLower,
                         zeroToOne,
                         BigInt(limitOrder.liquidity.toString()),
-                    ]
+                    ],
                 );
                 placeLimitOrderConfig && placeLimitOrder(placeLimitOrderConfig);
             }}

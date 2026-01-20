@@ -1,6 +1,6 @@
 import { getVaultsByPool, AlgebraVault, getExtendedAlgebraVault, getAllVaults } from "@cryptoalgebra/alm-sdk";
 import useSWR from "swr";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { Address, formatUnits } from "viem";
 import { useChainId } from "wagmi";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";

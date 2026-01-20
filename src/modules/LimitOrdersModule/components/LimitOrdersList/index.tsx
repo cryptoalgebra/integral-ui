@@ -3,7 +3,7 @@ import { useAccount, useChainId } from "wagmi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLimitOrdersListQuery, useMultiplePoolsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
-import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/integral-sdk";
 import { limitOrderColumns, LimitOrdersTable } from "../Table";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import { Button } from "@/components/ui/button";
@@ -50,10 +50,10 @@ export const LimitOrdersList = () => {
                     customPoolDeployer,
                     liquidity,
                     Number(tick),
-                    Number(tickSpacing)
+                    Number(tickSpacing),
                 ),
             }),
-            {}
+            {},
         );
 
         return limitOrders.limitOrders
@@ -96,7 +96,7 @@ export const LimitOrdersList = () => {
                             customPoolDeployer,
                             pool.liquidity,
                             zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
-                            pool.tickSpacing
+                            pool.tickSpacing,
                         ),
                         liquidity: Number(liquidityForPosition),
                         tickLower: Number(tickLower),
@@ -161,7 +161,7 @@ export const LimitOrdersList = () => {
                         },
                         pool,
                     };
-                }
+                },
             )
             .filter(Boolean);
     }, [limitOrders, poolForLimitOrders, chainId]);
@@ -176,7 +176,7 @@ export const LimitOrdersList = () => {
                 }
                 return [[...acc[0], order], acc[1]];
             },
-            [[], []] as any
+            [[], []] as any,
         );
     }, [formattedLimitOrders]);
 

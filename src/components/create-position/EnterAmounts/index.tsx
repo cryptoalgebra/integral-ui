@@ -1,5 +1,5 @@
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
-import { Currency, Field } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Field } from "@cryptoalgebra/integral-sdk";
 import { useEffect } from "react";
 import EnterAmountCard from "../EnterAmountsCard";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
@@ -40,6 +40,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
                     value={formattedAmounts[Field.CURRENCY_A]}
                     valueUsd={usdcAmounts[Field.CURRENCY_A]}
                     handleChange={(value) => onFieldAInput(value)}
+                    field={Field.CURRENCY_A}
                 />
                 {mintInfo.depositADisabled && (
                     <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-lg">
@@ -53,6 +54,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
                     value={formattedAmounts[Field.CURRENCY_B]}
                     valueUsd={usdcAmounts[Field.CURRENCY_B]}
                     handleChange={(value) => onFieldBInput(value)}
+                    field={Field.CURRENCY_B}
                 />
                 {mintInfo.depositBDisabled && (
                     <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-lg">

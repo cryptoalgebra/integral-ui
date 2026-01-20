@@ -1,5 +1,5 @@
 import { usePool } from "@/hooks/pools/usePool";
-import { Currency, CurrencyAmount, Position, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Position, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { Address } from "viem";
 

@@ -1,4 +1,4 @@
-import { Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Token } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 
 export interface VotingData {

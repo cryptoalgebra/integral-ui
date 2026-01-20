@@ -1,12 +1,12 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { Currency, CurrencyAmount, maxAmountSpend, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, maxAmountSpend, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { STABLECOINS } from "config";
+import { TOKENS } from "config";
 import { useChainId } from "wagmi";
 import { TradeState } from "@/types/trade-state";
 
@@ -84,8 +84,8 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         [independentField]: typedValue,
         [dependentField]:
             showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
-                ? (parsedAmounts[independentField]?.toExact() ?? "")
-                : (parsedAmounts[dependentField]?.toExact() ?? ""),
+                ? parsedAmounts[independentField]?.toExact() ?? ""
+                : parsedAmounts[dependentField]?.toExact() ?? "",
     };
 
     const percentDifference = useMemo(() => {
@@ -100,7 +100,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleOutputSelect(STABLECOINS[chainId].USDC);
+        handleOutputSelect(TOKENS[chainId].USDC);
     }, [chainId, handleOutputSelect]);
 
     return (

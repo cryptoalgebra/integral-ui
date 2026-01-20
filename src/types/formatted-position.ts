@@ -1,4 +1,4 @@
-import { Position } from "@cryptoalgebra/custom-pools-sdk";
+import { Position } from "@cryptoalgebra/integral-sdk";
 
 export interface FormattedPosition {
     id: string;

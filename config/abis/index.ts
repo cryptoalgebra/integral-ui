@@ -9,3 +9,4 @@ export * from "./farming";
 export * from "./tokens";
 export * from "./custom-pools";
 export * from "./ve33";
+export * from "./omegaQuoter";

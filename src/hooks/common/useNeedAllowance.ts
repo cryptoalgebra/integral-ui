@@ -1,17 +1,16 @@
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { Currency as CurrencyBN, CurrencyAmount as CurrencyAmountBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { Address, erc20Abi } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 
 export function useNeedAllowance(
-    currency: Currency | CurrencyBN | null | undefined,
-    amount: CurrencyAmount<Currency> | CurrencyAmountBN<CurrencyBN> | undefined,
+    currency: Currency | null | undefined,
+    amount: CurrencyAmount<Currency> | undefined,
     spender: Address | undefined,
     fastPolling: boolean = false
 ) {
     const { address: account } = useAccount();
 
-    const { data: allowance } = useReadContract({
+    const { data: allowance, refetch } = useReadContract({
         address: currency?.wrapped.address as Address,
         abi: erc20Abi,
         functionName: "allowance",
@@ -21,5 +20,9 @@ export function useNeedAllowance(
         },
     });
 
-    return Boolean(!currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString()));
+    const needAllowance = Boolean(
+        !currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString())
+    );
+
+    return { needAllowance, refetchAllowance: refetch };
 }

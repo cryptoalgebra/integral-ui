@@ -1,4 +1,4 @@
-import { encodeSqrtRatioX96, nearestUsableTick, Price, TickMath, Token, tryParsePrice } from "@cryptoalgebra/custom-pools-sdk";
+import { encodeSqrtRatioX96, nearestUsableTick, Price, TickMath, Token, tryParsePrice } from "@cryptoalgebra/integral-sdk";
 import JSBI from "jsbi";
 
 const ABS = (x: any) => (JSBI.lessThan(x, JSBI.BigInt(0)) ? JSBI.multiply(x, JSBI.BigInt(-1)) : x);

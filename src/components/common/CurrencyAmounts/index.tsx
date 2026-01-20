@@ -1,6 +1,6 @@
 import { formatAmount } from "@/utils/common/formatAmount";
 import CurrencyLogo from "../CurrencyLogo";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CurrencyAmountsProps {

@@ -1,6 +1,6 @@
 import { NONFUNGIBLE_POSITION_MANAGER } from "config";
 import { useReadNonfungiblePositionManagerTokenUri } from "@/generated";
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/integral-sdk";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useChainId } from "wagmi";

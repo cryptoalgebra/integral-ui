@@ -5,7 +5,6 @@ import PageContainer from "@/components/common/PageContainer";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 import { useDerivedSwapInfo } from "@/state/swapStore.ts";
 import { SwapPageProps, SwapPageView } from "./types";
-// import PageTitle from "@/components/common/PageTitle";
 import SwapChart from "@/components/swap/SwapChart";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";

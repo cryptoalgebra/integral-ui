@@ -1,7 +1,7 @@
 import { isDefined } from "@/utils/common/isDefined";
 import { tokensColumns, TokensTable } from "../TokensTable";
 import { useAllTokensQuery } from "@/graphql/generated/graphql";
-import { Token, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
+import { Token, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import { useChainId } from "wagmi";

@@ -1,23 +1,32 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "config";
-import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
+import { DEFAULT_CHAIN_NAME, enabledModules, OMEGA_ROUTER } from "config";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { useUserState } from "@/state/userStore";
-import { ApprovalState } from "@/types/approve-state";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount, BoostedRouteStepType } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
-
-import SmartRouterModule from "@/modules/SmartRouterModule";
+import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
+import { ApprovalState } from "@/types/approve-state";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { TradeState } from "@/types/trade-state";
+
+import SmartRouterModule from "@/modules/SmartRouterModule";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
+
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+const { useOmegaSwapCallback, usePermit2 } = BoostedPoolsModule.hooks;
+
+export enum AllowanceState {
+    LOADING = 0,
+    REQUIRED = 1,
+    ALLOWED = 2,
+}
 
 const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { open } = useAppKit();
@@ -40,16 +49,23 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         toggledTrade: trade,
         tradeState,
         smartTradeCallOptions,
+        refetchBalances,
+        stepAmountsOut,
     } = derivedSwap;
 
-    const {
-        wrapType,
-        execute: onWrap,
-        loading: isWrapLoading,
-        inputError: wrapInputError,
-    } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+    const isSmartTrade = trade && "routes" in trade;
 
-    const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
+    const erc4626WrapType = useMemo(() => {
+        if (isSmartTrade || !trade || !trade.swaps[0].route.isBoosted) return null;
+
+        const steps = trade.swaps[0].route.steps;
+        // Only pure wrap/unwrap if there's exactly one step and it's WRAP or UNWRAP
+        if (steps.length === 1) {
+            if (steps[0].type === BoostedRouteStepType.WRAP) return BoostedRouteStepType.WRAP;
+            if (steps[0].type === BoostedRouteStepType.UNWRAP) return BoostedRouteStepType.UNWRAP;
+        }
+        return null;
+    }, [trade, isSmartTrade]);
 
     const parsedAmountA =
         independentField === SwapField.INPUT
@@ -83,9 +99,25 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         trade?.inputAmount &&
         currencyBalances[SwapField.INPUT]?.lessThan(trade.inputAmount.quotient.toString());
 
-    const { approvalState, approvalCallback } = useApproveCallbackFromTrade(trade, allowedSlippage);
+    const chainId = useChainId();
 
-    const isSmartTrade = trade && "routes" in trade;
+    const shouldUseOmegaRouter = enabledModules.BoostedPoolsModule;
+
+    const inputAmount = useMemo(() => {
+        if (!trade || !shouldUseOmegaRouter || isSmartTrade) return undefined;
+        const maxAmount = trade.maximumAmountIn(allowedSlippage);
+        // Permit2 doesn't work with native currency
+        if (!maxAmount || maxAmount.currency.isNative) return undefined;
+        return maxAmount;
+    }, [trade, allowedSlippage, shouldUseOmegaRouter, isSmartTrade]);
+
+    const permit2Allowance = usePermit2({
+        amount: inputAmount,
+        spender: OMEGA_ROUTER[chainId], // OmegaRouter address (Permit2 spender)
+    });
+
+    // Use standard ERC20 approve for native/smart router (not boosted routes)
+    const { approvalState, approvalCallback } = useApproveCallbackFromTrade(!shouldUseOmegaRouter ? trade : null, allowedSlippage);
 
     const priceImpact = useMemo(() => {
         if (!trade) return undefined;
@@ -102,45 +134,89 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         return warningSeverity(priceImpact);
     }, [priceImpact]);
 
+    const permitSignature = permit2Allowance.state === AllowanceState.ALLOWED ? permit2Allowance.permitSignature : undefined;
+    const refetchPermit2Data = permit2Allowance.state !== AllowanceState.LOADING ? permit2Allowance.refetchPermit2Data : undefined;
+
+    const onTransactionSuccess = useCallback(() => {
+        refetchBalances();
+        if (shouldUseOmegaRouter) {
+            refetchPermit2Data?.();
+        }
+    }, [refetchBalances, refetchPermit2Data, shouldUseOmegaRouter]);
+
+    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
+        currencies[SwapField.INPUT],
+        currencies[SwapField.OUTPUT],
+        typedValue,
+        onTransactionSuccess
+    );
+
+    const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
+
     const { callback: smartSwapCallback, isLoading: smartSwapLoading } = useSmartRouterCallback(
         trade?.inputAmount?.currency,
         trade?.outputAmount?.currency,
         trade?.inputAmount?.toFixed(),
         smartTradeCallOptions.calldata,
-        smartTradeCallOptions.value
+        smartTradeCallOptions.value,
+        onTransactionSuccess
     );
 
-    const {
-        callback: swapCallback,
-        isLoading: swapLoading,
-        error: swapError,
-    } = useSwapCallback(!isSmartTrade ? trade : null, allowedSlippage, approvalState);
+    // Use OmegaRouter callback for boosted routes and Permit2-signed swaps
+    const { callback: omegaSwapCallback, isLoading: omegaSwapLoading, error: omegaSwapError } = useOmegaSwapCallback(
+        shouldUseOmegaRouter && !isSmartTrade ? trade : null,
+        allowedSlippage,
+        permitSignature,
+        stepAmountsOut,
+        onTransactionSuccess
+    );
 
-    const isSwapLoading = swapLoading || smartSwapLoading;
+    // Use regular SwapRouter callback for normal routes without Permit2
+    const { callback: swapCallback, isLoading: swapLoading, error: swapError } = useSwapCallback(
+        !isSmartTrade && !shouldUseOmegaRouter ? trade : null,
+        allowedSlippage,
+        onTransactionSuccess
+    );
+
+    const isSwapLoading = swapLoading || smartSwapLoading || omegaSwapLoading;
+    const activeSwapError = shouldUseOmegaRouter ? omegaSwapError : swapError;
 
     const handleSwap = useCallback(async () => {
-        if (!swapCallback && !smartSwapCallback) return;
+        if (!swapCallback && !smartSwapCallback && !omegaSwapCallback) return;
         try {
             if (isSmartTrade) {
                 await smartSwapCallback?.();
+            } else if (shouldUseOmegaRouter) {
+                await omegaSwapCallback?.();
             } else {
                 await swapCallback?.();
             }
         } catch (error) {
             return new Error(`Swap Failed ${error}`);
         }
-    }, [swapCallback, smartSwapCallback, isSmartTrade]);
+    }, [swapCallback, smartSwapCallback, omegaSwapCallback, isSmartTrade, shouldUseOmegaRouter]);
 
-    const isValid = !swapInputError && !swapError;
+    const isValid = !swapInputError && !activeSwapError;
 
     const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
 
-    const showApproveFlow =
-        !swapInputError && (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && !priceImpactTooHigh;
+    // Check if we need approval or permit signature (ONLY for OmegaRouter/boosted routes)
+    const needsApprovalOrPermit =
+        shouldUseOmegaRouter &&
+        permit2Allowance.state === AllowanceState.REQUIRED &&
+        (permit2Allowance.needsSetupApproval || permit2Allowance.needsPermitSignature);
+
+    // Check if we need standard ERC20 approval (for native/smart router)
+    const needsClassicApproval = !shouldUseOmegaRouter && approvalState === ApprovalState.NOT_APPROVED;
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
@@ -149,42 +225,92 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     if (showWrap)
         return (
-            <Button variant={'primary'} onClick={() => onWrap && onWrap()}>
+            <Button variant={"primary"} onClick={() => onWrap && onWrap()}>
                 {isWrapLoading ? <Loader /> : wrapType === WrapType.WRAP ? "Wrap" : "Unwrap"}
             </Button>
         );
 
     if (routeNotFound && userHasSpecifiedInputOutput)
-        return <Button variant={'primary'} disabled>{isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}</Button>;
-
-    if (trade && insufficientBalance) {
-        return <Button variant={'primary'} disabled>{isLoadingRoute ? <Loader /> : `Insufficient ${trade.inputAmount.currency.symbol} amount`}</Button>;
-    }
-
-    if (showApproveFlow)
         return (
-            <Button variant={'primary'} disabled={approvalState !== ApprovalState.NOT_APPROVED} onClick={() => approvalCallback && approvalCallback()}>
-                {approvalState === ApprovalState.PENDING ? (
-                    <Loader />
-                ) : approvalState === ApprovalState.APPROVED ? (
-                    "Approved"
-                ) : (
-                    `Approve ${currencies[SwapField.INPUT]?.symbol}`
-                )}
+            <Button variant={"primary"} disabled>
+                {isLoadingRoute ? <Loader /> : "Insufficient liquidity for this trade."}
             </Button>
         );
 
+    if (trade && insufficientBalance) {
+        return (
+            <Button variant={"primary"} disabled>
+                {isLoadingRoute ? <Loader /> : `Insufficient ${trade.inputAmount.currency.symbol} amount`}
+            </Button>
+        );
+    }
+
+    // Show standard ERC20 approval button for native/smart router
+    if (needsClassicApproval) {
+        const isApproving = approvalState === ApprovalState.PENDING;
+        return (
+            <Button variant={"primary"} onClick={approvalCallback} disabled={isApproving}>
+                {isApproving ? <Loader /> : `Approve ${trade?.inputAmount.currency.symbol}`}
+            </Button>
+        );
+    }
+
+    // Show approval or permit button (for OmegaRouter/boosted routes)
+    if (needsApprovalOrPermit) {
+        const {
+            needsSetupApproval,
+            needsPermitSignature,
+            approveAndPermit,
+            token,
+            isLoading: isPermitOrApprovalLoading,
+        } = permit2Allowance;
+
+        if (needsSetupApproval && needsPermitSignature) {
+            return (
+                <Button variant={"primary"} onClick={approveAndPermit} disabled={isPermitOrApprovalLoading}>
+                    {isPermitOrApprovalLoading ? <Loader /> : "Approve & Sign Permit"}
+                </Button>
+            );
+        }
+
+        if (needsSetupApproval) {
+            return (
+                <Button variant={"primary"} onClick={permit2Allowance.approve} disabled={isPermitOrApprovalLoading}>
+                    {isPermitOrApprovalLoading ? <Loader /> : `Approve ${token.symbol}`}
+                </Button>
+            );
+        }
+
+        if (needsPermitSignature) {
+            return (
+                <Button variant={"primary"} onClick={permit2Allowance.permit} disabled={isPermitOrApprovalLoading}>
+                    {isPermitOrApprovalLoading ? <Loader /> : "Sign Permit"}
+                </Button>
+            );
+        }
+    }
+
     return (
         <>
-            <Button variant={'primary'} onClick={() => handleSwap()} disabled={!isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute}>
+            <Button
+                variant={"primary"}
+                onClick={() => handleSwap()}
+                disabled={
+                    !isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute || needsApprovalOrPermit || needsClassicApproval
+                }
+            >
                 {isSwapLoading ? (
                     <Loader />
                 ) : priceImpactTooHigh ? (
                     "Price Impact Too High"
                 ) : priceImpactSeverity > 2 ? (
                     "Swap Anyway"
-                ) : swapInputError || swapError ? (
-                    swapInputError || swapError
+                ) : swapInputError || activeSwapError ? (
+                    swapInputError || activeSwapError
+                ) : erc4626WrapType === BoostedRouteStepType.WRAP ? (
+                    "Wrap"
+                ) : erc4626WrapType === BoostedRouteStepType.UNWRAP ? (
+                    "Unwrap"
                 ) : (
                     "Swap"
                 )}

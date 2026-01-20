@@ -1,10 +1,9 @@
-import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
 import { useTransactionAwait } from "../common/useTransactionAwait";
-import { ApprovalStateType } from "@/types/approve-state";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useWriteSwapRouterMulticall } from "@/generated";
@@ -33,7 +32,7 @@ interface FailedCall extends SwapCallEstimate {
 export function useSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
-    approvalState: ApprovalStateType
+    onTransactionSuccess?: () => void
 ) {
     const { address: account } = useAccount();
 
@@ -89,7 +88,7 @@ export function useSwapCallback(
         }
 
         findBestCall();
-    }, [swapCalldata, approvalState, account, chainId, client]);
+    }, [swapCalldata, account, chainId, client]);
 
     const swapConfig = useMemo(
         () =>
@@ -110,6 +109,7 @@ export function useSwapCallback(
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
         type: TransactionType.SWAP,
+        callback: onTransactionSuccess,
     });
 
     return useMemo(() => {

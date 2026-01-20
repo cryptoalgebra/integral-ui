@@ -1,5 +1,5 @@
 import { EternalFarming, SinglePoolQuery } from "@/graphql/generated/graphql";
-import { Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Token } from "@cryptoalgebra/integral-sdk";
 
 export interface Farming {
     farming: EternalFarming;

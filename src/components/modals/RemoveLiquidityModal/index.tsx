@@ -3,19 +3,18 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
+import { enabledModules } from "config";
 import { Deposit } from "@/graphql/generated/graphql";
-import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useClients } from "@/hooks/graphql/useClients";
+import { useBurnCallback } from "@/hooks/positions/useBurnCallback";
 import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state/burnStore";
-import { TransactionType } from "@/state/pendingTransactionsStore";
-import { useUserState } from "@/state/userStore";
-import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/custom-pools-sdk";
-import { NONFUNGIBLE_POSITION_MANAGER } from "config/contract-addresses";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+
+import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+const { useOmegaBurnCallback } = BoostedPoolsModule.hooks;
+const { ReceiveTokensSelector } = BoostedPoolsModule.components;
 
 interface RemoveLiquidityModalProps {
     positionId: number;
@@ -23,10 +22,8 @@ interface RemoveLiquidityModalProps {
 
 const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
     const [sliderValue, setSliderValue] = useState([50]);
-
-    const { txDeadline } = useUserState();
-    const { address: account } = useAccount();
-    const chainId = useChainId();
+    const [token0Unwrap, setToken0Unwrap] = useState(false);
+    const [token1Unwrap, setToken1Unwrap] = useState(false);
 
     const { refetch: refetchAllPositions } = usePositions();
 
@@ -42,45 +39,56 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { position: positionSDK, liquidityPercentage, feeValue0, feeValue1, liquidityValue0, liquidityValue1 } = derivedInfo;
 
-    const { calldata, value } = useMemo(() => {
-        if (!positionSDK || !positionId || !liquidityPercentage || !feeValue0 || !feeValue1 || !account || percent === 0)
-            return { calldata: undefined, value: undefined };
+    const token0 = liquidityValue0?.currency;
+    const token1 = liquidityValue1?.currency;
 
-        return NonfungiblePositionManager.removeCallParameters(positionSDK, {
-            tokenId: String(positionId),
-            liquidityPercentage,
-            slippageTolerance: new Percent(1, 100),
-            deadline: Date.now() + txDeadline * 1000,
-            collectOptions: {
-                expectedCurrencyOwed0: feeValue0,
-                expectedCurrencyOwed1: feeValue1,
-                recipient: account,
-            },
-        });
-    }, [positionId, positionSDK, txDeadline, feeValue0, feeValue1, liquidityPercentage, account, percent]);
+    const isBoostedToken0 = token0 && token0.isBoosted;
+    const isBoostedToken1 = token1 && token1.isBoosted;
+    const hasAnyBoostedToken = isBoostedToken0 || isBoostedToken1;
+    const shouldUseOmegaRouter = enabledModules.BoostedPoolsModule && hasAnyBoostedToken;
 
-    const removeLiquidityConfig = calldata
-        ? {
-              address: NONFUNGIBLE_POSITION_MANAGER[chainId],
-              args: [calldata as `0x${string}`[]] as const,
-              value: BigInt(value || 0),
-          }
-        : calldata;
-
-    const { data: removeLiquidityData, writeContract: removeLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
-
-    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData, {
-        title: "Remove liquidity",
-        tokenA: position?.token0 as Address,
-        tokenB: position?.token1 as Address,
-        type: TransactionType.POOL,
+    // Use Omega router for boosted tokens when module is enabled, native for regular tokens
+    const omegaBurn = useOmegaBurnCallback({
+        positionId,
+        positionSDK,
+        liquidityPercentage,
+        token0Unwrap,
+        token1Unwrap,
+        token0Address: position?.token0 as Address,
+        token1Address: position?.token1 as Address,
+        percent,
     });
 
-    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity || isPending;
+    const nativeBurn = useBurnCallback({
+        positionId,
+        positionSDK,
+        liquidityPercentage,
+        feeValue0,
+        feeValue1,
+        token0Address: position?.token0 as Address,
+        token1Address: position?.token1 as Address,
+        percent,
+    });
+
+    const {
+        burnCallback,
+        isLoading: isRemoveLoading,
+        isPending,
+        isPermitLoading,
+        isSuccess,
+        needsPermit,
+        config: removeLiquidityConfig,
+    } = useMemo(() => (shouldUseOmegaRouter ? omegaBurn : { ...nativeBurn, isPermitLoading: false, needsPermit: false }), [
+        shouldUseOmegaRouter,
+        omegaBurn,
+        nativeBurn,
+    ]);
+
+    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || isPending || isPermitLoading || (!needsPermit && !removeLiquidityConfig);
 
     useEffect(() => {
         onPercentSelect(sliderValue[0]);
-    }, [sliderValue]);
+    }, [sliderValue, onPercentSelect]);
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -121,7 +129,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
             });
 
         return () => clearInterval(interval);
-    }, [isSuccess]);
+    }, [isSuccess, refetchPosition, refetchAllPositions, sliderValue, farmingClient, positionId]);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -172,8 +180,20 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         token1={liquidityValue1?.currency}
                     />
 
-                    <Button variant={'primary'} disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
-                        {isRemoveLoading || isPending ? <Loader /> : "Remove Liquidity"}
+                    <ReceiveTokensSelector
+                        token0={liquidityValue0?.currency}
+                        token1={liquidityValue1?.currency}
+                        amount0={liquidityValue0}
+                        amount1={liquidityValue1}
+                        token0Unwrap={token0Unwrap}
+                        token1Unwrap={token1Unwrap}
+                        onToken0UnwrapChange={setToken0Unwrap}
+                        onToken1UnwrapChange={setToken1Unwrap}
+                        disabled={isRemoveLoading}
+                    />
+
+                    <Button variant={"primary"} disabled={isDisabled} onClick={burnCallback}>
+                        {isRemoveLoading || isPending || isPermitLoading ? <Loader /> : needsPermit ? "Sign Permit" : "Remove Liquidity"}
                     </Button>
                 </div>
             </DialogContent>

@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { OnChainProvider, SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 
 export interface V3PoolsHookParams {
     key?: string;

@@ -1,4 +1,4 @@
-import { DEFAULT_CHAIN_ID, enabledModules, STABLECOINS } from "config";
+import { DEFAULT_CHAIN_ID, enabledModules, TOKENS } from "config";
 import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { BestTradeExactIn, BestTradeExactOut, useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
@@ -13,7 +13,7 @@ import {
     TradeType,
     computePoolAddress,
     tryParseAmount,
-} from "@cryptoalgebra/custom-pools-sdk";
+} from "@cryptoalgebra/integral-sdk";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
@@ -25,9 +25,15 @@ import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pool
 import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
 const { useSmartRouterBestTrade } = SmartRouterModule.hooks;
 
+export enum RouterType {
+    OMEGA = "OMEGA",
+    NATIVE = "NATIVE",
+}
+
 interface SwapState {
     readonly independentField: SwapFieldType;
     readonly typedValue: string;
+    readonly routerType: RouterType;
     readonly [SwapField.INPUT]: {
         readonly currencyId: Address | undefined;
     };
@@ -46,6 +52,7 @@ interface SwapState {
         limitOrderPriceWasInverted: (wasInverted: boolean) => void;
         limitOrderPriceFocused: (isFocused: boolean) => void;
         limitOrderPriceLastFocused: () => void;
+        setRouterType: (routerType: RouterType) => void;
     };
 }
 
@@ -64,16 +71,21 @@ export interface IDerivedSwapInfo {
     poolAddress: Address | undefined;
     parsedAmounts: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     isExactIn: boolean;
+    refetchBalances: () => void;
+    /** Step amounts out - output amount for each step (for Boosted ExactOutput) */
+    stepAmountsOut?: string[] | null;
+    priceImpact?: Percent | null;
 }
 
 export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: "",
+    routerType: enabledModules.BoostedPoolsModule ? RouterType.OMEGA : RouterType.NATIVE,
     [SwapField.INPUT]: {
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDC.address as Address,
+        currencyId: TOKENS[DEFAULT_CHAIN_ID].USDC.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,
@@ -129,6 +141,10 @@ export const useSwapState = create<SwapState>((set, get) => ({
             set({
                 lastFocusedField: SwapField.LIMIT_ORDER_PRICE,
             }),
+        setRouterType: (routerType) =>
+            set({
+                routerType,
+            }),
     },
 }));
 
@@ -181,17 +197,19 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     const isExactIn: boolean = independentField === SwapField.INPUT;
 
-    const parsedAmount = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
-        [typedValue, isExactIn, inputCurrency, outputCurrency]
-    );
+    const parsedAmount = useMemo(() => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined), [
+        typedValue,
+        isExactIn,
+        inputCurrency,
+        outputCurrency,
+    ]);
     const bestTradeExactIn = useBestTradeExactIn(
-        isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
+        isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined,
         outputCurrency ?? undefined
     );
     const bestTradeExactOut = useBestTradeExactOut(
         inputCurrency ?? undefined,
-        !isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined
+        !isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined
     );
 
     /* Smart Router trade */
@@ -199,21 +217,21 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         parsedAmount,
         isExactIn ? outputCurrency : inputCurrency,
         isExactIn,
-        enabledModules.smartRouter
+        enabledModules.SmartRouterModule
     );
 
-    const trade = enabledModules.smartRouter ? smartTrade : ((isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined);
+    const trade = enabledModules.SmartRouterModule ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
 
     const [addressA, addressB] = [
         inputCurrency?.isNative ? undefined : inputCurrency?.address || "",
         outputCurrency?.isNative ? undefined : outputCurrency?.address || "",
     ] as Address[];
 
-    const { data: inputCurrencyBalance } = useBalance({
+    const { data: inputCurrencyBalance, refetch: refetchInputBalance } = useBalance({
         address: account,
         token: addressA,
     });
-    const { data: outputCurrencyBalance } = useBalance({
+    const { data: outputCurrencyBalance, refetch: refetchOutputBalance } = useBalance({
         address: account,
         token: addressB,
     });
@@ -224,6 +242,11 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         [SwapField.OUTPUT]:
             outputCurrency && outputCurrencyBalance && CurrencyAmount.fromRawAmount(outputCurrency, outputCurrencyBalance.value.toString()),
     };
+
+    const refetchBalances = useCallback(() => {
+        refetchInputBalance();
+        refetchOutputBalance();
+    }, [refetchInputBalance, refetchOutputBalance]);
 
     const currencies: { [field in SwapFieldType]?: Currency } = {
         [SwapField.INPUT]: inputCurrency ?? undefined,
@@ -324,8 +347,8 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                       independentField === SwapField.INPUT
                           ? parsedAmount
                           : limitOrderPrice
-                            ? parsedLimitOrderInput
-                            : toggledTrade?.inputAmount,
+                          ? parsedLimitOrderInput
+                          : toggledTrade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
                           ? limitOrderPrice
@@ -336,10 +359,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                                   : undefined
                               : parsedAmount
                           : limitOrderPrice
-                            ? outputCurrency && parsedAmount
-                                ? parsedLimitOrderOutput
-                                : undefined
-                            : toggledTrade?.outputAmount,
+                          ? outputCurrency && parsedAmount
+                              ? parsedLimitOrderOutput
+                              : undefined
+                          : toggledTrade?.outputAmount,
               };
     }, [
         showWrap,
@@ -353,6 +376,12 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         limitOrderPriceFocused,
         lastFocusedField,
     ]);
+
+    // Extract stepAmounts from trade state (only for non-SmartRouter trades)
+    const stepAmountsOut = "stepAmountsOut" in trade ? trade.stepAmountsOut : null;
+
+    // Extract priceImpact from trade state (only for non-SmartRouter trades)
+    const priceImpact = "priceImpact" in trade ? trade.priceImpact : null;
 
     return {
         currencies,
@@ -369,5 +398,8 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         poolAddress,
         isExactIn,
         parsedAmounts,
+        refetchBalances,
+        stepAmountsOut,
+        priceImpact,
     };
 }

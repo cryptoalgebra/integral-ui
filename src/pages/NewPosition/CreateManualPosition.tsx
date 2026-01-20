@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
-import { ManageLiquidity } from "@/types/manage-liquidity";
-import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/integral-sdk";
 import { useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 
@@ -142,7 +141,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
                                 disabled={!startPriceTypedValue && !mintInfo.price}
                             />
                             <div className="md:ml-auto md:text-right">
-                                <div className="font-bold text-xs mb-3 text-white/75">CURRENT PRICE</div>
+                                <div className="font-bold text-xs mb-3 text-text-100/75">CURRENT PRICE</div>
                                 <div className="font-bold text-xl">{`${currentPrice}`}</div>
                             </div>
                         </div>
@@ -162,7 +161,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
             <div className="flex flex-col">
                 {/* <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2> */}
                 <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
-                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} manageLiquidity={ManageLiquidity.ADD} />
+                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
                 </div>
             </div>
         </div>

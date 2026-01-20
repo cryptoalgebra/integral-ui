@@ -2,8 +2,7 @@ import AmountsSection from "@/components/create-position/AmountsSection";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { ManageLiquidity } from "@/types/manage-liquidity";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { useState } from "react";
 
 interface IncreaseLiquidityModalProps {
@@ -23,7 +22,7 @@ export function IncreaseLiquidityModal({ tokenId, currencyA, currencyB, mintInfo
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant={'primaryLink'} disabled={false} className="whitespace-nowrap w-full">
+                <Button variant={"primaryLink"} disabled={false} className="whitespace-nowrap w-full">
                     Add Liquidity
                 </Button>
             </DialogTrigger>
@@ -37,7 +36,6 @@ export function IncreaseLiquidityModal({ tokenId, currencyA, currencyB, mintInfo
                     currencyA={currencyA}
                     currencyB={currencyB}
                     mintInfo={mintInfo}
-                    manageLiquidity={ManageLiquidity.INCREASE}
                 />
             </DialogContent>
         </Dialog>

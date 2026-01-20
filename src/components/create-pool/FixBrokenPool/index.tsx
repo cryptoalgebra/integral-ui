@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 
-import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/integral-sdk";
 
 import { ApprovalState } from "@/types/approve-state";
 
@@ -38,7 +38,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         [currencyIn]
     );
 
-    const exactInSwap = useBestTradeExactIn(currencyAmount, currencyOut, deployer);
+    const exactInSwap = useBestTradeExactIn(currencyAmount, currencyOut);
 
     const givenPool = useMemo(() => {
         const routePools = exactInSwap?.trade?.route.pools;
@@ -46,7 +46,8 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         if (!routePools) return undefined;
 
         if (routePools.length > 1) {
-            throw new Error("[FIX POOL] Rotue path is longer than 1");
+            console.error("[FIX POOL] Route path is longer than 1");
+            return undefined;
         }
 
         return routePools[0];
@@ -68,7 +69,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
 
     const showApproveFlow = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
 
-    const swapCallback = useSwapCallback(trade, DEFAULT_SLIPPAGE, approvalState);
+    const swapCallback = useSwapCallback(trade, DEFAULT_SLIPPAGE);
 
     const { callback, isLoading: isSwapLoading } = swapCallback;
 

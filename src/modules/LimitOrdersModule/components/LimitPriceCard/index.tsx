@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSwapState } from "@/state/swapStore";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { LimitOrderDirection, LimitOrderDirectionType } from "../../types";
 
@@ -109,7 +109,7 @@ export const LimitPriceCard = ({
                 />
                 <div className="flex gap-2">
                     <Button
-                        variant={'outline'}
+                        variant={"outline"}
                         size={"icon"}
                         className="w-6 h-6 bg-card-dark rounded-full border border-card-border"
                         disabled={plusDisabled || disabled}
@@ -118,7 +118,7 @@ export const LimitPriceCard = ({
                         +
                     </Button>
                     <Button
-                        variant={'outline'}
+                        variant={"outline"}
                         size={"icon"}
                         className="w-6 h-6 bg-card-dark rounded-full border border-card-border"
                         disabled={minusDisabled || disabled}

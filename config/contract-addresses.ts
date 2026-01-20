@@ -1,4 +1,4 @@
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 
 /* Algebra Core */
@@ -26,6 +26,17 @@ export const FARMING_CENTER: Record<number, Address> = {
 /* Limit Orders */
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xdA9c1AF6498583Ae548CAd31c47eFde061569789",
+};
+
+/* Omega Router */
+export const OMEGA_ROUTER: Record<number, Address> = {
+    [ChainId.BaseSepolia]: null,
+};
+export const OMEGA_QUOTER: Record<number, Address> = {
+    [ChainId.BaseSepolia]: null,
+};
+export const PERMIT2: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x000000000022D473030F116dDEE9F6B43aC78BA3",
 };
 
 /* Ve 3.3 */

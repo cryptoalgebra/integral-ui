@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/integral-sdk";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import { useWriteLimitOrderManagerWithdraw } from "@/generated";

@@ -1,7 +1,7 @@
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useMintState } from "@/state/mintStore";
 import { Presets } from "@/types/presets";
-import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency, ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency, ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,8 +12,8 @@ interface LiquidityChartProps {
     currencyB: Currency | undefined;
     pool: Pool | null | undefined;
     currentPrice: number | undefined;
-    priceLower: Price<Token, Token> | undefined;
-    priceUpper: Price<Token, Token> | undefined;
+    priceLower: Price<Currency, Currency> | undefined;
+    priceUpper: Price<Currency, Currency> | undefined;
 }
 
 // const ZOOM_STEP = 5
@@ -172,8 +172,39 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
 
 const LiquidityChartLoader = () => {
     const heights = [
-        100, 110, 140, 110, 100, 140, 180, 120, 110, 100, 120, 100, 170, 170, 110, 100, 120, 100, 100, 110, 140, 110, 100, 140, 100, 120,
-        100, 100, 110, 140, 110, 100, 140,
+        100,
+        110,
+        140,
+        110,
+        100,
+        140,
+        180,
+        120,
+        110,
+        100,
+        120,
+        100,
+        170,
+        170,
+        110,
+        100,
+        120,
+        100,
+        100,
+        110,
+        140,
+        110,
+        100,
+        140,
+        100,
+        120,
+        100,
+        100,
+        110,
+        140,
+        110,
+        100,
+        140,
     ];
 
     return (

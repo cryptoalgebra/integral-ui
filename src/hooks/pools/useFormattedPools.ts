@@ -1,6 +1,6 @@
 import { useAccount } from "wagmi";
 import { useClients } from "../graphql/useClients";
-import { useActiveFarmingsQuery, usePoolsListQuery } from "@/graphql/generated/graphql";
+import { TokenFieldsFragment, useActiveFarmingsQuery, usePoolsListQuery } from "@/graphql/generated/graphql";
 import { POOL_MAX_APR_API, fetcher, POOL_AVG_APR_API, ETERNAL_FARMINGS_API } from "config/apr-urls";
 import { useMemo } from "react";
 import useSWR from "swr";
@@ -8,10 +8,36 @@ import { usePositions } from "../positions/usePositions";
 
 import ALMModule from "@/modules/ALMModule";
 import { Address } from "viem";
+import { BOOSTED_TOKENS } from "config/tokens";
+import { DEFAULT_CHAIN_ID } from "config";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
-export function useFormattedPools(tokenAddress?: Address) {
-    const { address: account } = useAccount();
+interface Pair {
+    token0: TokenFieldsFragment;
+    token1: TokenFieldsFragment;
+}
+
+export interface FormattedPool {
+    id: Address;
+    pair: Pair;
+    fee: number;
+    tvlUSD: number;
+    volume24USD: number;
+    poolMaxApr: number;
+    poolAvgApr: number;
+    avgApr: number;
+    farmApr: number;
+    isMyPool: boolean;
+    hasActiveFarming: boolean;
+    hasALM: boolean;
+    deployer: string;
+    isBoostedPool: boolean;
+    isBoostedToken0: boolean;
+    isBoostedToken1: boolean;
+}
+
+export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPool[]; isLoading: boolean } {
+    const { address: account, chainId } = useAccount();
 
     const { infoClient, farmingClient } = useClients();
 
@@ -75,6 +101,14 @@ export function useFormattedPools(tokenAddress?: Address) {
 
                 const avgApr = farmApr + poolAvgApr;
 
+                const isBoostedToken0 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
+                    (bt) => bt.address.toLowerCase() === token0.id.toLowerCase()
+                );
+                const isBoostedToken1 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
+                    (bt) => bt.address.toLowerCase() === token1.id.toLowerCase()
+                );
+                const isBoosted = isBoostedToken0 || isBoostedToken1;
+
                 return {
                     id: id as Address,
                     pair: {
@@ -92,6 +126,9 @@ export function useFormattedPools(tokenAddress?: Address) {
                     isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
                     hasALM: Boolean(openVaults?.length),
                     hasActiveFarming: Boolean(activeFarming),
+                    isBoostedPool: Boolean(isBoosted),
+                    isBoostedToken0: Boolean(isBoostedToken0),
+                    isBoostedToken1: Boolean(isBoostedToken1),
                     deployer: deployer.toLowerCase(),
                 };
             });

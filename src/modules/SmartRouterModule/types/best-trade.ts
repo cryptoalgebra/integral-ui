@@ -1,5 +1,5 @@
 import { TradeStateType } from "@/types/trade-state";
-import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Address } from "viem";
 
