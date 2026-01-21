@@ -50,7 +50,6 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         tradeState,
         smartTradeCallOptions,
         refetchBalances,
-        stepAmountsOut,
     } = derivedSwap;
 
     const isSmartTrade = trade && "routes" in trade;
@@ -82,14 +81,14 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             [SwapField.INPUT]: parsedAmountA,
             [SwapField.OUTPUT]: parsedAmountB,
         }),
-        [parsedAmountA, parsedAmountB]
+        [parsedAmountA, parsedAmountB],
     );
 
     const userHasSpecifiedInputOutput = Boolean(
         currencies[SwapField.INPUT] &&
             currencies[SwapField.OUTPUT] &&
             independentField !== SwapField.LIMIT_ORDER_PRICE &&
-            parsedAmounts[independentField]?.greaterThan("0")
+            parsedAmounts[independentField]?.greaterThan("0"),
     );
 
     const isLoadingRoute = tradeState.state === TradeState.LOADING;
@@ -148,7 +147,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         currencies[SwapField.INPUT],
         currencies[SwapField.OUTPUT],
         typedValue,
-        onTransactionSuccess
+        onTransactionSuccess,
     );
 
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
@@ -159,7 +158,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         trade?.inputAmount?.toFixed(),
         smartTradeCallOptions.calldata,
         smartTradeCallOptions.value,
-        onTransactionSuccess
+        onTransactionSuccess,
     );
 
     // Use OmegaRouter callback for boosted routes and Permit2-signed swaps
@@ -167,15 +166,14 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         shouldUseOmegaRouter && !isSmartTrade ? trade : null,
         allowedSlippage,
         permitSignature,
-        stepAmountsOut,
-        onTransactionSuccess
+        onTransactionSuccess,
     );
 
     // Use regular SwapRouter callback for normal routes without Permit2
     const { callback: swapCallback, isLoading: swapLoading, error: swapError } = useSwapCallback(
         !isSmartTrade && !shouldUseOmegaRouter ? trade : null,
         allowedSlippage,
-        onTransactionSuccess
+        onTransactionSuccess,
     );
 
     const isSwapLoading = swapLoading || smartSwapLoading || omegaSwapLoading;
