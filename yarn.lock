@@ -1475,24 +1475,7 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.2.0.tgz#be52b233fc8e4891bcdb79d6d9a1b278458e89dc"
-  integrity sha512-C4KuN0FPmLzsG07A8MSgmonjNHyS7Z1XWxvm1Qz5f1QkdmhuNwnILMTNGJOvAKVqTpBtMWI/IGud63cHm433Zg==
-  dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/address" "^5.7.0"
-    "@ethersproject/solidity" "^5.7.0"
-    "@ethersproject/units" "^5.7.0"
-    big.js "^6.2.1"
-    decimal.js-light "^2.5.1"
-    jsbi "^3.2.5"
-    numeral "^2.0.6"
-    tiny-invariant "^1.3.1"
-    tiny-warning "^1.0.3"
-    toformat "^2.0.0"
-
-"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.2.0":
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@0.2.0", "@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-boosted-pools-sdk@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-boosted-pools-sdk/-/clamm-boosted-pools-sdk-0.2.0.tgz#be52b233fc8e4891bcdb79d6d9a1b278458e89dc"
   integrity sha512-C4KuN0FPmLzsG07A8MSgmonjNHyS7Z1XWxvm1Qz5f1QkdmhuNwnILMTNGJOvAKVqTpBtMWI/IGud63cHm433Zg==

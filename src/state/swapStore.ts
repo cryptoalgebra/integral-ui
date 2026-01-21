@@ -18,10 +18,11 @@ import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { create } from "zustand";
+import { delay } from "@/utils/common/delay";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
+import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
-import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
 const { useSmartRouterBestTrade } = SmartRouterModule.hooks;
 
@@ -72,8 +73,6 @@ export interface IDerivedSwapInfo {
     parsedAmounts: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     isExactIn: boolean;
     refetchBalances: () => void;
-    /** Step amounts out - output amount for each step (for Boosted ExactOutput) */
-    stepAmountsOut?: string[] | null;
     priceImpact?: Percent | null;
 }
 
@@ -160,7 +159,7 @@ export function useSwapActionHandlers(): {
     const onCurrencySelection = useCallback(
         (field: SwapFieldType, currency: Currency) =>
             selectCurrency(field, currency.isToken ? currency.address : currency.isNative ? ADDRESS_ZERO : ""),
-        []
+        [],
     );
 
     const onSwitchTokens = useCallback(() => {
@@ -205,11 +204,11 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     ]);
     const bestTradeExactIn = useBestTradeExactIn(
         isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined,
-        outputCurrency ?? undefined
+        outputCurrency ?? undefined,
     );
     const bestTradeExactOut = useBestTradeExactOut(
         inputCurrency ?? undefined,
-        !isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined
+        !isExactIn && !enabledModules.SmartRouterModule ? parsedAmount : undefined,
     );
 
     /* Smart Router trade */
@@ -217,7 +216,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         parsedAmount,
         isExactIn ? outputCurrency : inputCurrency,
         isExactIn,
-        enabledModules.SmartRouterModule
+        enabledModules.SmartRouterModule,
     );
 
     const trade = enabledModules.SmartRouterModule ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
@@ -243,9 +242,9 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
             outputCurrency && outputCurrencyBalance && CurrencyAmount.fromRawAmount(outputCurrency, outputCurrencyBalance.value.toString()),
     };
 
-    const refetchBalances = useCallback(() => {
-        refetchInputBalance();
-        refetchOutputBalance();
+    const refetchBalances = useCallback(async () => {
+        await delay(1000);
+        await Promise.all([refetchInputBalance(), refetchOutputBalance()]);
     }, [refetchInputBalance, refetchOutputBalance]);
 
     const currencies: { [field in SwapFieldType]?: Currency } = {
@@ -377,9 +376,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         lastFocusedField,
     ]);
 
-    // Extract stepAmounts from trade state (only for non-SmartRouter trades)
-    const stepAmountsOut = "stepAmountsOut" in trade ? trade.stepAmountsOut : null;
-
     // Extract priceImpact from trade state (only for non-SmartRouter trades)
     const priceImpact = "priceImpact" in trade ? trade.priceImpact : null;
 
@@ -399,7 +395,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         isExactIn,
         parsedAmounts,
         refetchBalances,
-        stepAmountsOut,
         priceImpact,
     };
 }

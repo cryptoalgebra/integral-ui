@@ -3,7 +3,7 @@ import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedSwapInfo } from "@/state/swapStore";
-import { Token, tryParseTick } from "@cryptoalgebra/integral-sdk";
+import { AnyToken, tryParseTick } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId } from "wagmi";
 import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
 import { ApprovalState } from "@/types/approve-state";
@@ -18,8 +18,8 @@ import { formatAmount } from "@/utils";
 
 interface LimitOrderButtonProps {
     derivedSwap: IDerivedSwapInfo;
-    token0: Token | undefined;
-    token1: Token | undefined;
+    token0: AnyToken | undefined;
+    token1: AnyToken | undefined;
     poolAddress: Address | undefined;
     disabled: boolean;
     sellPrice: string;
@@ -67,7 +67,7 @@ export const LimitOrderButton = ({
     const needAllowance = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
         inputAmount,
-        LIMIT_ORDER_MANAGER[chainId]
+        LIMIT_ORDER_MANAGER[chainId],
     );
 
     const insufficientBalance = inputAmount && currencyBalances[SwapField.INPUT]?.lessThan(inputAmount.quotient.toString());
@@ -183,7 +183,7 @@ export const LimitOrderButton = ({
                         limitOrder.tickLower,
                         zeroToOne,
                         BigInt(limitOrder.liquidity.toString()),
-                    ]
+                    ],
                 );
                 placeLimitOrderConfig && placeLimitOrder(placeLimitOrderConfig);
             }}
