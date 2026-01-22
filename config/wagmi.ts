@@ -56,12 +56,6 @@ const henesysChain = defineChain({
             url: "https://avascan.info/blockchain/henesys",
         },
     },
-    contracts: {
-        multicall3: {
-            address: "0x49BE8AA6c684b15e0C5450e8Fa0b16Bec1435596",
-            blockCreated: 9047988,
-        },
-    },
 });
 
 /* configure supported networks here */

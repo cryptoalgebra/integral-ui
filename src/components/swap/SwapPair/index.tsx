@@ -47,27 +47,27 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         (inputCurrency: Currency) => {
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleTypeInput = useCallback(
         (value: string) => {
             onUserInput(SwapField.INPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
     const handleTypeOutput = useCallback(
         (value: string) => {
             onUserInput(SwapField.OUTPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
 
     const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[SwapField.INPUT]);
@@ -84,8 +84,8 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         [independentField]: typedValue,
         [dependentField]:
             showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
-                ? (parsedAmounts[independentField]?.toExact() ?? "")
-                : (parsedAmounts[dependentField]?.toExact() ?? ""),
+                ? parsedAmounts[independentField]?.toExact() ?? ""
+                : parsedAmounts[dependentField]?.toExact() ?? "",
     };
 
     const percentDifference = useMemo(() => {
@@ -100,7 +100,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleOutputSelect(STABLECOINS[chainId].USDC);
+        handleOutputSelect(STABLECOINS[chainId].USDT);
     }, [chainId, handleOutputSelect]);
 
     return (

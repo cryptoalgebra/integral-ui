@@ -1,7 +1,7 @@
 import { ChainId, Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
-import USDCLogo from "@/assets/tokens/usdc.svg";
+import USDTLogo from "@/assets/tokens/usdt.png";
 import NXPCLogo from "@/assets/tokens/nxpc.png";
 import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
@@ -21,9 +21,9 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "NXPC",
         logo: NXPCLogo,
     },
-    [STABLECOINS[ChainId.Henesys].USDC.address.toLowerCase()]: {
-        symbol: "USDC",
-        logo: USDCLogo,
+    [STABLECOINS[ChainId.Henesys].USDT.address.toLowerCase()]: {
+        symbol: "USDT",
+        logo: USDTLogo,
     },
     ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
         symbol: "BTC",

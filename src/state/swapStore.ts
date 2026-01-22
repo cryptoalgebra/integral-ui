@@ -73,7 +73,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDC.address as Address,
+        currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDT.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,
@@ -144,7 +144,7 @@ export function useSwapActionHandlers(): {
     const onCurrencySelection = useCallback(
         (field: SwapFieldType, currency: Currency) =>
             selectCurrency(field, currency.isToken ? currency.address : currency.isNative ? ADDRESS_ZERO : ""),
-        []
+        [],
     );
 
     const onSwitchTokens = useCallback(() => {
@@ -181,17 +181,19 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     const isExactIn: boolean = independentField === SwapField.INPUT;
 
-    const parsedAmount = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
-        [typedValue, isExactIn, inputCurrency, outputCurrency]
-    );
+    const parsedAmount = useMemo(() => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined), [
+        typedValue,
+        isExactIn,
+        inputCurrency,
+        outputCurrency,
+    ]);
     const bestTradeExactIn = useBestTradeExactIn(
         isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
-        outputCurrency ?? undefined
+        outputCurrency ?? undefined,
     );
     const bestTradeExactOut = useBestTradeExactOut(
         inputCurrency ?? undefined,
-        !isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined
+        !isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
     );
 
     /* Smart Router trade */
@@ -199,10 +201,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         parsedAmount,
         isExactIn ? outputCurrency : inputCurrency,
         isExactIn,
-        enabledModules.smartRouter
+        enabledModules.smartRouter,
     );
 
-    const trade = enabledModules.smartRouter ? smartTrade : ((isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined);
+    const trade = enabledModules.smartRouter ? smartTrade : (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
 
     const [addressA, addressB] = [
         inputCurrency?.isNative ? undefined : inputCurrency?.address || "",
@@ -324,8 +326,8 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                       independentField === SwapField.INPUT
                           ? parsedAmount
                           : limitOrderPrice
-                            ? parsedLimitOrderInput
-                            : toggledTrade?.inputAmount,
+                          ? parsedLimitOrderInput
+                          : toggledTrade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
                           ? limitOrderPrice
@@ -336,10 +338,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                                   : undefined
                               : parsedAmount
                           : limitOrderPrice
-                            ? outputCurrency && parsedAmount
-                                ? parsedLimitOrderOutput
-                                : undefined
-                            : toggledTrade?.outputAmount,
+                          ? outputCurrency && parsedAmount
+                              ? parsedLimitOrderOutput
+                              : undefined
+                          : toggledTrade?.outputAmount,
               };
     }, [
         showWrap,
