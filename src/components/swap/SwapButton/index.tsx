@@ -50,6 +50,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         tradeState,
         smartTradeCallOptions,
         refetchBalances,
+        priceImpact: derivedPriceImpact,
     } = derivedSwap;
 
     const isSmartTrade = trade && "routes" in trade;
@@ -124,9 +125,9 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         if (isSmartTrade) {
             return SmartRouter.getPriceImpact(trade);
         } else {
-            return trade.priceImpact;
+            return derivedPriceImpact ?? undefined;
         }
-    }, [trade, isSmartTrade]);
+    }, [trade, isSmartTrade, derivedPriceImpact]);
 
     const priceImpactSeverity = useMemo(() => {
         if (!priceImpact) return 0;
