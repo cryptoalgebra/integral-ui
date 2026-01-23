@@ -20,7 +20,7 @@ export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
     [ChainId.CitreaMainnet]: "0x50FCbF85d23aF7C91f94842FeCd83d16665d27bA",
 };
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.CitreaMainnet]: "0x658E287E9C820484f5808f687dC4863B552de37",
+    [ChainId.CitreaMainnet]: "0x658E287E9C820484f5808f687dC4863B552de37D",
 };
 
 /* Limit Orders */
