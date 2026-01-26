@@ -32,7 +32,7 @@ export const Algebra = () => (
                     <img src={AlgebraLogo} width={30} height={30} />
                 </div>
                 {/* <img src={AlgebraIntegral} width={40} height={25} /> */}
-                <span className="font-bold text-xl max-lg:hidden">Algebra | Henesys</span>
+                <span className="font-bold text-xl max-lg:hidden">Algebra ∫ Henesys</span>
             </div>
         </NavLink>
     </div>

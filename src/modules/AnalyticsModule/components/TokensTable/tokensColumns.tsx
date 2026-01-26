@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { HeaderItem } from "@/components/common/Table/common";
 
@@ -13,7 +13,7 @@ export interface TokenColumn {
     change: number;
     volume: number;
     tvl: number;
-    tokenSDK: Token;
+    tokenSDK: Currency;
 }
 
 function TokenName({ tokenSDK }: TokenColumn) {
@@ -30,7 +30,11 @@ export const tokensColumns: ColumnDef<TokenColumn>[] = [
         accessorKey: "id",
         header: () => <HeaderItem className="ml-2">Token</HeaderItem>,
         cell: ({ row }) => <TokenName {...row.original} />,
-        filterFn: (v, _, value) => [v.original.symbol, v.original.id].join(" ").toLowerCase().includes(value.toLowerCase()),
+        filterFn: (v, _, value) =>
+            [v.original.symbol, v.original.id]
+                .join(" ")
+                .toLowerCase()
+                .includes(value.toLowerCase()),
     },
     {
         accessorKey: "price",

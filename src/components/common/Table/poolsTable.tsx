@@ -80,6 +80,8 @@ const PoolsTable = <TData, TValue>({
     const startsFromRow = table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1;
     const endsAtRow = Math.min(startsFromRow + table.getState().pagination.pageSize - 1, totalRows);
 
+    const anyActiveFarming = data.some((pool: any) => pool.hasActiveFarming);
+
     const toggleFilter = (filterId: keyof ActiveFilters) => {
         setActiveFilters((prev) => ({
             ...prev,
@@ -107,7 +109,7 @@ const PoolsTable = <TData, TValue>({
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
                     <div className="grid grid-cols-2 gap-3 md:flex w-full sm:w-fit">
-                        {enabledModules.farming && (
+                        {enabledModules.farming && anyActiveFarming && (
                             <Button
                                 onClick={() => toggleFilter("hasActiveFarming")}
                                 variant={isFilterActive("hasActiveFarming") ? "iconActive" : "outline"}

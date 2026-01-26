@@ -5,6 +5,7 @@ import { Token, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import { useChainId } from "wagmi";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 export function TokensList() {
     const { infoClient } = useClients();
@@ -31,7 +32,7 @@ export function TokensList() {
                   const tvl = Number(token.totalValueLockedUSD);
                   const change = 0; // TODO;
 
-                  const tokenSDK = new Token(chainId, id, Number(decimals), symbol, name);
+                  const tokenSDK = unwrappedToken(new Token(chainId, id, Number(decimals), symbol, name));
 
                   return {
                       id,
