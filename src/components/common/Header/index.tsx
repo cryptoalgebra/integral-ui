@@ -1,5 +1,5 @@
 import { Navigation } from "@/components/common/Navigation";
-import AlgebraIntegral from "@/assets/maple-logo.svg";
+import AlgebraLogo from "@/assets/algebra-logo.svg";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Clock, WalletIcon } from "lucide-react";
@@ -28,11 +28,11 @@ export const Algebra = () => (
     <div className="flex items-center  gap-2 w-full p-2">
         <NavLink to={"/"}>
             <div className="flex items-center gap-4 md:mr-2 rounded-3xl duration-200">
-                {/* <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
-                    <img src={AlgebraLogo} width={25} height={25} />
-                </div> */}
-                <img src={AlgebraIntegral} width={40} height={25} />
-                <span className="font-bold text-xl max-lg:hidden">Maple</span>
+                <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
+                    <img src={AlgebraLogo} width={30} height={30} />
+                </div>
+                {/* <img src={AlgebraIntegral} width={40} height={25} /> */}
+                <span className="font-bold text-xl max-lg:hidden">Algebra | Henesys</span>
             </div>
         </NavLink>
     </div>
@@ -92,7 +92,7 @@ const Account = () => {
                 <Button
                     className={cn(
                         "flex gap-2 h-full rounded-lg border border-card-border",
-                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75"
+                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75",
                     )}
                     onClick={() => open()}
                     variant={"icon"}
