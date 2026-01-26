@@ -1,9 +1,7 @@
-import { ChainId, Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Currency, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
-import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDTLogo from "@/assets/tokens/usdt.png";
 import NXPCLogo from "@/assets/tokens/nxpc.png";
-import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -17,21 +15,13 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0x150869eac5C58d3655f860C4316107fB626244d0"]: {
+    [WNATIVE[ChainId.Henesys].address.toLowerCase()]: {
         symbol: "NXPC",
         logo: NXPCLogo,
     },
     [STABLECOINS[ChainId.Henesys].USDT.address.toLowerCase()]: {
         symbol: "USDT",
         logo: USDTLogo,
-    },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
-        symbol: "BTC",
-        logo: BTCLogo,
-    },
-    ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
-        symbol: "TOKEN",
-        logo: TOKENLogo,
     },
 };
 
