@@ -198,8 +198,8 @@ export function useDerivedMintInfo(
     );
 
     const [addressA, addressB] = [
-        currencyA?.isNative ? undefined : token0?.address || "",
-        currencyB?.isNative ? undefined : token1?.address || "",
+        currencyA?.isNative ? undefined : tokenA?.address || "",
+        currencyB?.isNative ? undefined : tokenB?.address || "",
     ] as Address[];
 
     const { data: token0Balance } = useBalance({
