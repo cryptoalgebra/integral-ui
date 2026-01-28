@@ -17,9 +17,18 @@ interface ITokenSelectorModal {
     otherCurrency: Currency | null | undefined;
     children: React.ReactNode;
     showNativeToken?: boolean;
+    showWrappedNativeToken?: boolean;
 }
 
-const TokenSelectorModal = ({ isOpen, setIsOpen, onSelect, otherCurrency, children, showNativeToken }: ITokenSelectorModal) => {
+const TokenSelectorModal = ({
+    isOpen,
+    setIsOpen,
+    onSelect,
+    otherCurrency,
+    children,
+    showNativeToken,
+    showWrappedNativeToken = false,
+}: ITokenSelectorModal) => {
     return (
         <Credenza open={isOpen}>
             <CredenzaTrigger asChild>{children}</CredenzaTrigger>
@@ -32,7 +41,12 @@ const TokenSelectorModal = ({ isOpen, setIsOpen, onSelect, otherCurrency, childr
                     <CredenzaTitle>Select a token</CredenzaTitle>
                 </CredenzaHeader>
                 <CredenzaBody>
-                    <TokenSelector showNativeToken={showNativeToken} onSelect={onSelect} otherCurrency={otherCurrency} />
+                    <TokenSelector
+                        showNativeToken={showNativeToken}
+                        showWrappedNativeToken={showWrappedNativeToken}
+                        onSelect={onSelect}
+                        otherCurrency={otherCurrency}
+                    />
                 </CredenzaBody>
                 <CredenzaClose asChild>
                     <button

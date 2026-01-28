@@ -1,13 +1,13 @@
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config";
 import { TokenFieldsFragment, useAllTokensQuery } from "@/graphql/generated/graphql";
 import { useTokensState } from "@/state/tokensStore";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address } from "viem";
+import { Address, isAddressEqual } from "viem";
 import { useChainId } from "wagmi";
 import { useClients } from "../graphql/useClients";
 
-export function useAllTokens(showNativeToken: boolean = true) {
+export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeToken: boolean = true) {
     const chainId = useChainId();
 
     const { infoClient } = useClients();
@@ -56,14 +56,24 @@ export function useAllTokens(showNativeToken: boolean = true) {
             });
         }
 
-        return [...tokens].map(([, token]) => ({ ...token }));
-    }, [allTokens, importedTokens, tokensBlackList, chainId, showNativeToken]);
+        let tokensList = [...tokens].map(([, token]) => ({ ...token }));
+
+        // Filter out wrapped native token (wNative) if showWrappedNativeToken is false
+        if (!showWrappedNativeToken) {
+            const wrappedNativeAddress = WNATIVE[chainId]?.address?.toLowerCase();
+            if (wrappedNativeAddress) {
+                tokensList = tokensList.filter((token) => !isAddressEqual(token.id as Address, wrappedNativeAddress as Address));
+            }
+        }
+
+        return tokensList;
+    }, [allTokens, importedTokens, tokensBlackList, chainId, showNativeToken, showWrappedNativeToken]);
 
     return useMemo(
         () => ({
             tokens: mergedTokens,
             isLoading: loading || Boolean(allTokens && !mergedTokens.length),
         }),
-        [mergedTokens, allTokens, loading]
+        [mergedTokens, allTokens, loading],
     );
 }

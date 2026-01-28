@@ -21,7 +21,7 @@ const TokenSelectorView = {
     NOT_FOUND: "NOT_FOUND",
 };
 
-type TokenSelectorViewType = (typeof TokenSelectorView)[keyof typeof TokenSelectorView];
+type TokenSelectorViewType = typeof TokenSelectorView[keyof typeof TokenSelectorView];
 
 const Search = ({
     data,
@@ -41,7 +41,7 @@ const Search = ({
             keys: ["id", "symbol", "name"],
             threshold: 0,
         }),
-        []
+        [],
     );
 
     const { result, pattern, search } = useFuse<TokenFieldsFragment>({
@@ -131,7 +131,7 @@ const TokenRow = ({
                         <button
                             className={cn(
                                 'relative duration-75 hover:text-white/70 after:absolute after:text-xs after:left-5 after:top-1 after:content-["Copied"] after:duration-100',
-                                isCopied ? "after:block" : "after:hidden"
+                                isCopied ? "after:block" : "after:hidden",
                             )}
                             onClick={handleCopy}
                         >
@@ -170,10 +170,12 @@ export const TokenSelector = ({
     onSelect,
     otherCurrency,
     showNativeToken,
+    showWrappedNativeToken = true,
 }: {
     onSelect: (currency: Currency) => void;
     otherCurrency: Currency | null | undefined;
     showNativeToken?: boolean;
+    showWrappedNativeToken?: boolean;
 }) => {
     const { address: account } = useAccount();
 
@@ -183,7 +185,7 @@ export const TokenSelector = ({
         actions: { importToken },
     } = useTokensState();
 
-    const { tokens, isLoading } = useAllTokens(showNativeToken);
+    const { tokens, isLoading } = useAllTokens(showNativeToken, showWrappedNativeToken);
 
     const [matchedTokens, setMatchedTokens] = useState<TokenFieldsFragment[]>([]);
     const [tokenForImport, setTokenForImport] = useState<Token>();
@@ -216,7 +218,7 @@ export const TokenSelector = ({
 
             return <TokenRow account={account} onSelect={onSelect} token={token} otherCurrency={otherCurrency} style={style} />;
         },
-        [account, onSelect, otherCurrency]
+        [account, onSelect, otherCurrency],
     );
 
     const itemKey = useCallback((index: number, data: TokenFieldsFragment[]) => {
