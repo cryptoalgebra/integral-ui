@@ -127,7 +127,7 @@ const TokenRow = ({
                 </div>
                 <div>
                     <div className="flex gap-2 text-base font-bold">
-                        <div>{token.symbol}</div>
+                        <div>{currency?.symbol}</div>
                         <button
                             className={cn(
                                 'relative duration-75 hover:text-white/70 after:absolute after:text-xs after:left-5 after:top-1 after:content-["Copied"] after:duration-100',
@@ -138,7 +138,7 @@ const TokenRow = ({
                             <Copy size={12} />
                         </button>
                     </div>
-                    <div className="text-sm">{token.name}</div>
+                    <div className="text-sm">{currency?.name}</div>
                 </div>
             </div>
             <div>{isLoading ? "Loading..." : balance ? balanceString : ""}</div>

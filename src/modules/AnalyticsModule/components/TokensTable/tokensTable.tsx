@@ -21,9 +21,6 @@ import { Button } from "@/components/ui/button";
 
 interface TokenData {
     id: string;
-    name: string;
-    symbol: string;
-    decimals: number;
     price: number;
     volume: number;
     tvl: number;

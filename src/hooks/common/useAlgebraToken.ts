@@ -3,21 +3,9 @@ import { Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ExtendedNative } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useReadContracts } from "wagmi";
-import { Address, erc20Abi, isAddressEqual } from "viem";
+import { Address, erc20Abi } from "viem";
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config/default-chain";
-import { STABLECOINS } from "config/tokens";
-
-function findStablecoin(address: Address, chainId: number): Token | undefined {
-    const stablecoins = STABLECOINS[chainId as keyof typeof STABLECOINS];
-    if (!stablecoins) return undefined;
-
-    for (const token of Object.values(stablecoins)) {
-        if (isAddressEqual(token.address as Address, address)) {
-            return token;
-        }
-    }
-    return undefined;
-}
+import { findStablecoin } from "@/utils/common/findStablecoin";
 
 export function useAlgebraToken(address: Address | undefined, chainId: number) {
     // Check if token exists in STABLECOINS config

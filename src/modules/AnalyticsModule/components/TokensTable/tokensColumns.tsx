@@ -6,9 +6,6 @@ import { HeaderItem } from "@/components/common/Table/common";
 
 export interface TokenColumn {
     id: string;
-    name: string;
-    symbol: string;
-    decimals: number;
     price: number;
     change: number;
     volume: number;
@@ -31,7 +28,7 @@ export const tokensColumns: ColumnDef<TokenColumn>[] = [
         header: () => <HeaderItem className="ml-2">Token</HeaderItem>,
         cell: ({ row }) => <TokenName {...row.original} />,
         filterFn: (v, _, value) =>
-            [v.original.symbol, v.original.id]
+            [v.original.tokenSDK.symbol, v.original.id]
                 .join(" ")
                 .toLowerCase()
                 .includes(value.toLowerCase()),

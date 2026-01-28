@@ -6,6 +6,8 @@ import { useClients } from "@/hooks/graphql/useClients";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import { useChainId } from "wagmi";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
+import { findStablecoin } from "@/utils/common/findStablecoin";
+import { Address } from "viem";
 
 export function TokensList() {
     const { infoClient } = useClients();
@@ -23,22 +25,18 @@ export function TokensList() {
                   //       return undefined;
                   //   }
 
+                  const stablecoin = findStablecoin(token.id as Address, chainId);
+
                   const id = token.id;
-                  const name = token.name;
-                  const symbol = token.symbol;
-                  const decimals = token.decimals;
                   const price = Number(token.derivedMatic) * nativeTokenPriceUSD;
                   const volume = Number(token.volumeUSD);
                   const tvl = Number(token.totalValueLockedUSD);
                   const change = 0; // TODO;
 
-                  const tokenSDK = unwrappedToken(new Token(chainId, id, Number(decimals), symbol, name));
+                  const tokenSDK = stablecoin ?? unwrappedToken(new Token(chainId, id, Number(token.decimals), token.symbol, token.name));
 
                   return {
                       id,
-                      name,
-                      symbol,
-                      decimals: Number(decimals),
                       price,
                       volume,
                       tvl,
