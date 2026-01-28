@@ -29,6 +29,8 @@ createAppKit({
         swaps: false,
         send: false,
         history: false,
+        socials: false,
+        email: false,
     },
 });
 

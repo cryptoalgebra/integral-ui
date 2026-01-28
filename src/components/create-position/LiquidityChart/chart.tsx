@@ -44,7 +44,7 @@ const CustomBar = ({ x, y, width, height, percent, isCurrent, fill }: CustomBarP
             </defs>
             {percent && (
                 <text x={x + 10} y={y - 10} fill="white" fontSize={"14px"} fontWeight={600} textAnchor="middle">{`${percent.toFixed(
-                    0
+                    0,
                 )}%`}</text>
             )}
             {isCurrent && (
@@ -62,7 +62,7 @@ const CustomBar = ({ x, y, width, height, percent, isCurrent, fill }: CustomBarP
                         ? "fill-accent"
                         : fill === "muted"
                         ? "fill-muted"
-                        : "fill-accent-foreground"
+                        : "fill-accent-foreground",
                 )}
                 width={width > 0 ? width : 0}
                 height={height}
@@ -153,7 +153,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
 
                         return (
                             <text
-                                className="fill-primary-foreground"
+                                className="fill-text-100"
                                 x={props.x}
                                 y={props.y + 20}
                                 textAnchor="middle"

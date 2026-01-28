@@ -179,7 +179,7 @@ const LiquidityChartLoader = () => {
     return (
         <div className="flex items-end gap-2 pb-4 w-full h-[250px]">
             {heights.map((h, i) => (
-                <Skeleton style={{ height: `${h}px` }} key={i} className="w-[20px] bg-card-dark" />
+                <Skeleton style={{ height: `${h}px` }} key={i} className="w-[20px] bg-card-light" />
             ))}
         </div>
     );
