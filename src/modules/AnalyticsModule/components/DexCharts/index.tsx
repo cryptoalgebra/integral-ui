@@ -21,7 +21,7 @@ function ChartComponent({
     height: number;
     showTypeSelector?: boolean;
 }) {
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
     const [type, setType] = useState<ChartTypeType>(chartType);
 
     const { chartData: chartData, loading: isChartDataLoading } = useDexChartData(span, selector);
@@ -46,7 +46,7 @@ export function DexCharts() {
     const { dexDayDatas, loading } = useDexChartData(CHART_SPAN.MONTH, "tvlUSD");
 
     const { currentTVL, currentVolume24H, currentFees24H } = useMemo(() => {
-        if (!dexDayDatas)
+        if (!dexDayDatas || dexDayDatas.length === 0)
             return {
                 currentTVL: { value: 0, change: 0 },
                 currentVolume24H: { value: 0, change: 0 },
@@ -54,9 +54,9 @@ export function DexCharts() {
             };
 
         const now = dexDayDatas[dexDayDatas.length - 1];
-        const dayAgo = dexDayDatas[dexDayDatas.length - 2];
+        const dayAgo = dexDayDatas.length > 1 ? dexDayDatas[dexDayDatas.length - 2] : null;
 
-        if (!now || !dayAgo)
+        if (!now)
             return {
                 currentTVL: { value: 0, change: 0 },
                 currentVolume24H: { value: 0, change: 0 },
@@ -64,27 +64,27 @@ export function DexCharts() {
             };
 
         const nowTvl = Number(now.tvlUSD);
-        const dayAgoTvl = Number(dayAgo.tvlUSD);
+        const dayAgoTvl = dayAgo ? Number(dayAgo.tvlUSD) : 0;
 
         const nowVolumeUsd = Number(now.volumeUSD);
-        const dayAgoVolumeUsd = Number(dayAgo.volumeUSD);
+        const dayAgoVolumeUsd = dayAgo ? Number(dayAgo.volumeUSD) : 0;
 
         const nowFeesUsd = Number(now.feesUSD);
-        const dayAgoFeesUsd = Number(dayAgo.feesUSD);
+        const dayAgoFeesUsd = dayAgo ? Number(dayAgo.feesUSD) : 0;
 
         const currentTVL = {
             value: nowTvl,
-            change: getPercentChange(nowTvl, dayAgoTvl),
+            change: dayAgo ? getPercentChange(nowTvl, dayAgoTvl) : 0,
         };
 
         const currentVolume24H = {
             value: nowVolumeUsd,
-            change: getPercentChange(nowVolumeUsd, dayAgoVolumeUsd),
+            change: dayAgo ? getPercentChange(nowVolumeUsd, dayAgoVolumeUsd) : 0,
         };
 
         const currentFees24H = {
             value: nowFeesUsd,
-            change: getPercentChange(nowFeesUsd, dayAgoFeesUsd),
+            change: dayAgo ? getPercentChange(nowFeesUsd, dayAgoFeesUsd) : 0,
         };
 
         const currentTxCount = now.txCount;

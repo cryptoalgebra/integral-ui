@@ -49,8 +49,8 @@ export default function TotalStats({ currentTVL, currentVolume, currentFees, isL
                                 ${formatAmount(card.value)}
                             </div>
                             {card.change !== undefined && (
-                                <div className={`ml-auto sm:text-xl ${card.change > 0 ? "text-[#16A249]" : "text-[#DC2828]"}`}>
-                                    <span>{card.change > 0 ? "+" : ""}</span>
+                                <div className={`ml-auto sm:text-xl ${card.change >= 0 ? "text-[#16A249]" : "text-[#DC2828]"}`}>
+                                    <span>{card.change >= 0 ? "+" : ""}</span>
                                     <span>{formatPercent.format(card.change / 100)}</span>
                                 </div>
                             )}
