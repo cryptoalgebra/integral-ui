@@ -24,6 +24,12 @@ createAppKit({
     chainImages: {
         ...CHAIN_IMAGE,
     },
+    features: {
+        onramp: false,
+        swaps: false,
+        send: false,
+        history: false,
+    },
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
