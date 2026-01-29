@@ -13,5 +13,5 @@ export const FARMING_GRAPH_URL = {
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.Henesys]: "https://api.studio.thegraph.com/query/50593/clamm-limits/v1.2.4",
+    [ChainId.Henesys]: null,
 };

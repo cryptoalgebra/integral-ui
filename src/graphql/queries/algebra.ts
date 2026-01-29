@@ -37,3 +37,11 @@ export const ALGEBRA_HOUR_DATA = gql`
         }
     }
 `;
+
+export const ALGEBRA_TVL_DATA = gql`
+    query AlgebraTvlData {
+        factories {
+            totalValueLockedUSD
+        }
+    }
+`;

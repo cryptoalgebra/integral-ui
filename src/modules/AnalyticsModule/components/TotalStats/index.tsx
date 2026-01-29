@@ -8,18 +8,18 @@ function Loader() {
     );
 }
 
-export default function TotalStats({ currentTVL, currentVolume, currentFees, isLoading }: ITotalStats) {
+export default function TotalStats({ totalValueLockedUSD, currentVolume, currentFees, isLoading }: ITotalStats) {
     const cards: {
         title: string;
         type: ChartTypeType;
         value: number;
-        change: number;
+        change: number | undefined; 
     }[] = [
         {
             title: "Total Value Locked",
             type: CHART_TYPE.TVL,
-            value: currentTVL.value,
-            change: currentTVL.change,
+            value: totalValueLockedUSD,
+            change: undefined,
         },
         {
             title: "Volume 24H",

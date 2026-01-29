@@ -13,6 +13,7 @@ function ChartComponent({
     chartView,
     height,
     showTypeSelector = false,
+    defaultDisplayValue,
 }: {
     title: string;
     selector: "tvlUSD" | "volumeUSD";
@@ -20,6 +21,7 @@ function ChartComponent({
     chartView: ChartViewType;
     height: number;
     showTypeSelector?: boolean;
+    defaultDisplayValue?: number;
 }) {
     const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
     const [type, setType] = useState<ChartTypeType>(chartType);
@@ -38,17 +40,17 @@ function ChartComponent({
             showTypeSelector={showTypeSelector}
             height={height}
             isChartDataLoading={isChartDataLoading}
+            defaultDisplayValue={defaultDisplayValue}
         />
     );
 }
 
 export function DexCharts() {
-    const { dexDayDatas, loading } = useDexChartData(CHART_SPAN.MONTH, "tvlUSD");
+    const { dexDayDatas, loading, totalValueLockedUSD } = useDexChartData(CHART_SPAN.MONTH, "tvlUSD");
 
-    const { currentTVL, currentVolume24H, currentFees24H } = useMemo(() => {
+    const { currentVolume24H, currentFees24H } = useMemo(() => {
         if (!dexDayDatas || dexDayDatas.length === 0)
             return {
-                currentTVL: { value: 0, change: 0 },
                 currentVolume24H: { value: 0, change: 0 },
                 currentFees24H: { value: 0, change: 0 },
             };
@@ -58,24 +60,15 @@ export function DexCharts() {
 
         if (!now)
             return {
-                currentTVL: { value: 0, change: 0 },
                 currentVolume24H: { value: 0, change: 0 },
                 currentFees24H: { value: 0, change: 0 },
             };
-
-        const nowTvl = Number(now.tvlUSD);
-        const dayAgoTvl = dayAgo ? Number(dayAgo.tvlUSD) : 0;
 
         const nowVolumeUsd = Number(now.volumeUSD);
         const dayAgoVolumeUsd = dayAgo ? Number(dayAgo.volumeUSD) : 0;
 
         const nowFeesUsd = Number(now.feesUSD);
         const dayAgoFeesUsd = dayAgo ? Number(dayAgo.feesUSD) : 0;
-
-        const currentTVL = {
-            value: nowTvl,
-            change: dayAgo ? getPercentChange(nowTvl, dayAgoTvl) : 0,
-        };
 
         const currentVolume24H = {
             value: nowVolumeUsd,
@@ -90,7 +83,6 @@ export function DexCharts() {
         const currentTxCount = now.txCount;
 
         return {
-            currentTVL,
             currentVolume24H,
             currentFees24H,
             currentTxCount,
@@ -102,10 +94,22 @@ export function DexCharts() {
             <div className="flex items-center justify-between mb-8">
                 <PageTitle title="Analytics" showSettings={false} />
             </div>
-            <TotalStats isLoading={loading} currentTVL={currentTVL} currentVolume={currentVolume24H} currentFees={currentFees24H} />
+            <TotalStats
+                isLoading={loading}
+                totalValueLockedUSD={totalValueLockedUSD}
+                currentVolume={currentVolume24H}
+                currentFees={currentFees24H}
+            />
             <div className="grid grid-rows-2 gap-3 lg:grid-cols-2 lg:grid-rows-1">
                 <div className="rounded-xl border border-card-border bg-card pt-4">
-                    <ChartComponent selector={"tvlUSD"} title={"TVL"} chartView={CHART_VIEW.AREA} chartType={CHART_TYPE.TVL} height={180} />
+                    <ChartComponent
+                        selector={"tvlUSD"}
+                        title={"TVL"}
+                        chartView={CHART_VIEW.AREA}
+                        chartType={CHART_TYPE.TVL}
+                        height={180}
+                        defaultDisplayValue={totalValueLockedUSD}
+                    />
                 </div>
                 <div className="rounded-xl border border-card-border bg-card pt-4">
                     <ChartComponent

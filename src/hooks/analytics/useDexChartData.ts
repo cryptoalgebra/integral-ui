@@ -1,4 +1,4 @@
-import { useAlgebraDayDatasQuery, useAlgebraHourDatasQuery } from "@/graphql/generated/graphql";
+import { useAlgebraDayDatasQuery, useAlgebraHourDatasQuery, useAlgebraTvlDataQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { CHART_SPAN, ChartSpanType } from "@/types/swap-chart";
 import { UNIX_TIMESTAMPS, isDefined } from "@/utils";
@@ -11,6 +11,14 @@ const now = Math.floor(Date.now() / 1000);
 
 export function useDexChartData(span: ChartSpanType, selector: "tvlUSD" | "volumeUSD" = "tvlUSD") {
     const { infoClient } = useClients();
+
+    const { data: algebraTvlData, loading: isAlgebraTvlDataLoading } = useAlgebraTvlDataQuery({
+        client: infoClient,
+    });
+
+    const totalValueLockedUSD = algebraTvlData?.factories[0].totalValueLockedUSD
+        ? Number(algebraTvlData.factories[0].totalValueLockedUSD)
+        : 0;
 
     const { data: algebraIndexerDayDatas, loading: isAlgebraIndexerDayDatasLoading } = useAlgebraDayDatasQuery({
         variables: {
@@ -68,6 +76,11 @@ export function useDexChartData(span: ChartSpanType, selector: "tvlUSD" | "volum
         dexHourDatas,
         dexDayDatas,
         chartData: chartData,
-        loading: isAlgebraIndexerDayDatasLoading || isAlgebraIndexerHourDatasLoading || isUniswapIndexerDayDatasLoading,
+        totalValueLockedUSD,
+        loading:
+            isAlgebraIndexerDayDatasLoading ||
+            isAlgebraIndexerHourDatasLoading ||
+            isUniswapIndexerDayDatasLoading ||
+            isAlgebraTvlDataLoading,
     };
 }

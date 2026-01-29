@@ -31,10 +31,10 @@ export const DEX_TYPE = {
     V3: "V3",
 } as const;
 
-export type ChartTypeType = (typeof CHART_TYPE)[keyof typeof CHART_TYPE];
-export type PoolChartTypeType = (typeof POOL_CHART_TYPE)[keyof typeof POOL_CHART_TYPE];
-export type ChartSpanType = (typeof CHART_SPAN)[keyof typeof CHART_SPAN];
-export type ChartViewType = (typeof CHART_VIEW)[keyof typeof CHART_VIEW];
+export type ChartTypeType = typeof CHART_TYPE[keyof typeof CHART_TYPE];
+export type PoolChartTypeType = typeof POOL_CHART_TYPE[keyof typeof POOL_CHART_TYPE];
+export type ChartSpanType = typeof CHART_SPAN[keyof typeof CHART_SPAN];
+export type ChartViewType = typeof CHART_VIEW[keyof typeof CHART_VIEW];
 
 export type ChartPiece = {
     time: number;
@@ -66,6 +66,7 @@ export interface IChart {
     tokenB?: string;
     isChartDataLoading: boolean;
     fadeOut?: boolean;
+    defaultDisplayValue?: number;
 }
 
 export type StatsCard = {
@@ -74,7 +75,7 @@ export type StatsCard = {
 };
 
 export interface ITotalStats {
-    currentTVL: StatsCard;
+    totalValueLockedUSD: number;
     currentVolume: StatsCard;
     currentFees: StatsCard;
     isLoading: boolean;

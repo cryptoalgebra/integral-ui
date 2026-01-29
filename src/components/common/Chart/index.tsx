@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect,  useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
@@ -21,7 +21,8 @@ export function Chart({
     tokenA,
     tokenB,
     isChartDataLoading,
-    fadeOut
+    fadeOut,
+    defaultDisplayValue
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
@@ -33,8 +34,10 @@ export function Chart({
         ? previousChartDataRef.current[previousChartDataRef.current.length - 1].value
         : 0;
 
-    const [displayValue, setDisplayValued] = useState(chartCurrentValue);
+    const [displayValue, setDisplayValued] = useState<number | undefined>(undefined);
     const [displayDate, setDisplayDate] = useState(new Date().toLocaleDateString());
+
+    const shownValue = displayValue ?? defaultDisplayValue ?? chartCurrentValue;
 
     const handleResize = useCallback(() => {
         if (chartCreated && chartRef?.current?.parentElement) {
@@ -61,7 +64,7 @@ export function Chart({
                 setDisplayValued(value);
                 setDisplayDate(new Date(Number(time) * 1000).toLocaleDateString());
             } else {
-                setDisplayValued(chartCurrentValue);
+                setDisplayValued(undefined);
                 setDisplayDate(new Date().toLocaleDateString());
             }
         },
@@ -206,10 +209,6 @@ export function Chart({
         return () => chartCreated.unsubscribeCrosshairMove(crosshairMoveHandler);
     }, [chartCreated, crosshairMoveHandler]);
 
-    useEffect(() => {
-        setDisplayValued(chartCurrentValue);
-    }, [chartCurrentValue]);
-
     return (
         <>
             <div className="text-title flex flex-col-reverse items-start text-left lg:flex-row lg:justify-between px-4">
@@ -217,18 +216,16 @@ export function Chart({
                     <div className="mb-2 font-semibold">{chartTitle}</div>
 
                     <div className="mb-2 text-2xl font-semibold">
-                        {displayValue !== undefined ? (
+                        {shownValue !== undefined ? (
                             chartType === POOL_CHART_TYPE.PRICE ? (
                                 tokenA && tokenB ? (
-                                    `1 ${tokenA} = ${formatAmount(displayValue, 10)} ${tokenB}`
+                                    `1 ${tokenA} = ${formatAmount(shownValue, 10)} ${tokenB}`
                                 ) : (
-                                    `$${formatAmount(displayValue)}`
+                                    `$${formatAmount(shownValue)}`
                                 )
                             ) : (
-                                `$${formatAmount(displayValue)}`
+                                `$${formatAmount(shownValue)}`
                             )
-                        ) : chartCurrentValue !== undefined ? (
-                            `$${formatAmount(chartCurrentValue)}`
                         ) : (
                             <div className="min-h-[56px]">
                                 <span className="inline-block h-[24px] w-[24px] animate-spin rounded-full border-2 border-solid border-white border-b-transparent" />
@@ -236,7 +233,7 @@ export function Chart({
                         )}
                     </div>
 
-                    <div className="mb-5 text-sm text-[#b7b7b7]">{displayValue !== undefined ? displayDate : null}</div>
+                    <div className="mb-5 text-sm text-[#b7b7b7]">{shownValue !== undefined ? displayDate : null}</div>
                 </div>
 
                 <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
