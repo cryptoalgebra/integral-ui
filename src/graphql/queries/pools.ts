@@ -108,6 +108,18 @@ export const POOL_FEE_DATA = gql`
     }
 `;
 
+export const POOL_APR = gql`
+    query PoolApr($poolId: ID!) {
+        pool(id: $poolId) {
+            totalValueLockedUSD
+            poolDayData(first: 1, orderBy: date, orderDirection: desc) {
+                feesUSD
+                date
+            }
+        }
+    }
+`;
+
 export const CUSTOM_POOL_DEPLOYER = gql`
     query CustomPoolDeployer($poolId: ID!) {
         pool(id: $poolId) {

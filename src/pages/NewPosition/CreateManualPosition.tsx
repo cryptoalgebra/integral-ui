@@ -7,7 +7,7 @@ import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated"
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { ManageLiquidity } from "@/types/manage-liquidity";
-import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath, Field } from "@cryptoalgebra/custom-pools-sdk";
 import { useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 
@@ -84,9 +84,11 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
 
     const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
-    const { startPriceTypedValue } = useMintState();
+    const { startPriceTypedValue, actions: { typeInput } } = useMintState();
 
     const handleCurrencyToggle = () => {
+        typeInput(Field.CURRENCY_A, "", false)
+        typeInput(Field.CURRENCY_B, "", false)
         setWasManuallyToggled(!wasManuallyToggled);
         if (!mintInfo.ticksAtLimit[Bound.LOWER] && !mintInfo.ticksAtLimit[Bound.UPPER]) {
             onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? "");

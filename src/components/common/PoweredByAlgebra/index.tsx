@@ -1,5 +1,5 @@
 import AlgebraLogo from "@/assets/algebra-logo.svg";
-import AlgebraIntegral from "@/assets/algebra-itegral.svg";
+import AlgebraIntegral from "@/assets/algebra-integral.svg";
 import { cn } from "@/utils/common/cn";
 
 const PoweredByAlgebra = ({ className }: { className?: string }) => {
@@ -10,7 +10,7 @@ const PoweredByAlgebra = ({ className }: { className?: string }) => {
                 <div className="flex items-center justify-center w-[18px] h-[18px] rounded-full">
                     <img src={AlgebraLogo} width={18} height={18} />
                 </div>
-                <img className="invert" src={AlgebraIntegral} width={120} height={18} />
+                <img src={AlgebraIntegral} width={120} height={18} />
             </div>
         </a>
     );

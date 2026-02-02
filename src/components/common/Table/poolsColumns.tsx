@@ -29,10 +29,7 @@ interface Pool {
     fee: number;
     tvlUSD: number;
     volume24USD: number;
-    poolMaxApr: number;
-    poolAvgApr: number;
     avgApr: number;
-    farmApr: number;
     isMyPool: boolean;
     hasActiveFarming: boolean;
     hasALM: boolean;
@@ -71,23 +68,12 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: Pool) => {
 
 const AvgAPR = ({
     children,
-    avgApr,
-    farmApr,
-    maxApr,
 }: {
     children: ReactNode;
-    avgApr: string;
-    farmApr: string | undefined;
-    maxApr: string;
 }) => {
     return (
         <HoverCard>
             <HoverCardTrigger>{children}</HoverCardTrigger>
-            <HoverCardContent>
-                <p>Avg. APR - {avgApr}</p>
-                {farmApr && <p>Farm APR - {farmApr}</p>}
-                <p>Max APR - {maxApr}</p>
-            </HoverCardContent>
         </HoverCard>
     );
 };
@@ -126,7 +112,7 @@ export const poolsColumns: ColumnDef<Pool>[] = (
             accessorKey: "volume24USD",
             header: ({ column }) => (
                 <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    Volume 24H
+                    Daily Volume
                 </HeaderItem>
             ),
             cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
@@ -135,7 +121,7 @@ export const poolsColumns: ColumnDef<Pool>[] = (
             accessorKey: "fees24USD",
             header: ({ column }) => (
                 <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                    Fees 24H
+                    Daily Fees
                 </HeaderItem>
             ),
             cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
@@ -147,13 +133,9 @@ export const poolsColumns: ColumnDef<Pool>[] = (
                     Avg. APR
                 </HeaderItem>
             ),
-            cell: ({ getValue, row }) => {
+            cell: ({ getValue }) => {
                 return (
-                    <AvgAPR
-                        avgApr={`${formatAmount(row.original.poolAvgApr, 2)}%`}
-                        maxApr={`${formatAmount(row.original.poolMaxApr, 2)}%`}
-                        farmApr={row.original.hasActiveFarming ? `${formatAmount(row.original.farmApr, 2)}%` : undefined}
-                    >
+                    <AvgAPR>
                         {`${formatAmount(getValue() as number, 2)}%`}
                     </AvgAPR>
                 );

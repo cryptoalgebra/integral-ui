@@ -22,13 +22,13 @@ export default function TotalStats({ totalValueLockedUSD, currentVolume, current
             change: undefined,
         },
         {
-            title: "Volume 24H",
+            title: "Daily Volume",
             type: CHART_TYPE.VOLUME,
             value: currentVolume.value,
             change: currentVolume.change,
         },
         {
-            title: "Fees 24H",
+            title: "Daily Fees",
             type: CHART_TYPE.FEES,
             value: currentFees.value,
             change: currentFees.change,

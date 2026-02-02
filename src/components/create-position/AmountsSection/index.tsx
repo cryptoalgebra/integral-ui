@@ -3,15 +3,14 @@ import TokenRatio from "../TokenRatio";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { usePositionAPR } from "@/hooks/positions/usePositionAPR";
-import { getPoolAPR } from "@/utils/pool/getPoolAPR";
 import AddLiquidityButton from "../AddLiquidityButton";
 import { Address } from "viem";
-import { useEffect, useState } from "react";
 import EnterAmounts from "../EnterAmounts";
 import IncreaseLiquidityButton from "@/components/position/IncreaseLiquidityButton";
 import { ManageLiquidity } from "@/types/manage-liquidity";
 import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
+import { usePoolAPR } from "@/hooks/pools/usePoolAPR";
 
 interface AmountsSectionProps {
     tokenId?: number;
@@ -27,13 +26,8 @@ type NewPositionPageParams = Record<"pool", Address>;
 const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidity, handleCloseModal }: AmountsSectionProps) => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
-    const [poolAPR, setPoolAPR] = useState<number>();
     const apr = usePositionAPR(poolAddress, mintInfo.position);
-
-    useEffect(() => {
-        if (!poolAddress) return;
-        getPoolAPR(poolAddress).then(setPoolAPR);
-    }, [poolAddress]);
+    const poolAPR = usePoolAPR(poolAddress);
 
     return (
         <>

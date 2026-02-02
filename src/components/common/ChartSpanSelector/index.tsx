@@ -11,8 +11,8 @@ const titles = {
     [CHART_SPAN.DAY]: "1D",
     [CHART_SPAN.WEEK]: "7D",
     [CHART_SPAN.MONTH]: "1M",
-    [CHART_SPAN.THREE_MONTH]: "3M",
-    [CHART_SPAN.YEAR]: "1Y",
+    // [CHART_SPAN.THREE_MONTH]: "3M",
+    // [CHART_SPAN.YEAR]: "1Y",
 };
 
 export function ChartSpanSelector({ chartSpan, handleChangeChartSpan }: IChartSpanSelector) {

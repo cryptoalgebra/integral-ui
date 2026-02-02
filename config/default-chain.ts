@@ -17,7 +17,7 @@ export const CHAIN_ID = {
 };
 
 export const CHAIN_IMAGE = {
-    [ChainId.Henesys]: "./chain-image.png",
+    [ChainId.Henesys]: "/chain-image.png",
 };
 
 export const DEFAULT_CHAIN_ID = ChainId.Henesys;

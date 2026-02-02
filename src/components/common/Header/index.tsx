@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/common/Navigation";
 import AlgebraLogo from "@/assets/algebra-logo.svg";
+import AlgebraIntegral from "@/assets/algebra-integral.svg";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Clock, WalletIcon } from "lucide-react";
@@ -31,8 +32,7 @@ export const Algebra = () => (
                 <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
                     <img src={AlgebraLogo} width={30} height={30} />
                 </div>
-                {/* <img src={AlgebraIntegral} width={40} height={25} /> */}
-                <span className="font-bold text-xl max-lg:hidden">Algebra ∫ Henesys</span>
+                <img src={AlgebraIntegral} width={150} height={18} />
             </div>
         </NavLink>
     </div>
