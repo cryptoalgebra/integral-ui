@@ -10,15 +10,15 @@ export const INFO_GRAPH_URL = {
 
 export const FARMING_GRAPH_URL = {
     [ChainId.BaseSepolia]:
-        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/4hv4Ykhpu6Lie1JrWYpnaYzGC8gpLSd29PBz8cgbKvCC",
+        "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-farming/v1.0.0/gn",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
     [ChainId.BaseSepolia]:
-        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/7WZVpgeBC9JK2ZQZ1RDsYxTKvBmhaKGP1BPFdctfKvi1",
+        "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-limits/v1.0.0/gn",
 };
 
 export const BLOCKS_GRAPH_URL = {
     [ChainId.BaseSepolia]:
-        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/9PGjvCHKxma2SKGpvpTr4WSrHTUVk7JzZLQVHXVJFjAE",
+        "https://api.goldsky.com/api/public/project_cl8ylkiw00krx0hvza0qw17vn/subgraphs/blocks/base-sepolia/gn",
 };
