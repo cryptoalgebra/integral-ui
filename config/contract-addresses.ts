@@ -14,7 +14,9 @@ export const SWAP_ROUTER: Record<number, Address> = {
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xCcD3A4AB7bD75bab509d25101eDDc37778cA49A4",
 };
-
+export const SECURITY_REGISTRY: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x6aa9481De990bC12F906C5e8DE70D8556ac5ba2e",
+};
 /* Farming */
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xB50E639E23C954546C75d9C15363FC0375E5E95E",

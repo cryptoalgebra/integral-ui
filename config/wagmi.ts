@@ -17,6 +17,7 @@ import {
     votingRewardABI,
     rebaseRewardAbi,
     votingEscrowABI,
+    securityRegistryAbi,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -26,6 +27,7 @@ import {
     NONFUNGIBLE_POSITION_MANAGER,
     QUOTER_V2,
     REBASE_REWARD,
+    SECURITY_REGISTRY,
     SWAP_ROUTER,
     VOTER,
     VOTING_ESCROW,
@@ -83,6 +85,7 @@ const rawContracts = [
     { name: "VotingReward", abi: votingRewardABI },
     { name: "RebaseReward", abi: rebaseRewardAbi },
     { name: "VotingEscrow", abi: votingEscrowABI },
+    { name: "SecurityRegistry", abi: securityRegistryAbi },
 ];
 
 const contractAddresses = {
@@ -96,6 +99,7 @@ const contractAddresses = {
     Voter: VOTER,
     RebaseReward: REBASE_REWARD,
     VotingEscrow: VOTING_ESCROW,
+    SecurityRegistry: SECURITY_REGISTRY,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts.map((contract) => ({

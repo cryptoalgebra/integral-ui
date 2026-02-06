@@ -7,14 +7,16 @@ import { UserALMVault } from "../../hooks";
 import { AddALMLiquidityModal, RemoveALMLiquidityModal } from "..";
 import { HarvestAndExitALMFarmingCard } from "../HarvestAndExitALMFarmingCard";
 import { Farming } from "@/types/farming-info";
+import { SecurityState } from "@/hooks/pools/usePool";
 
 interface ALMPositionCardProps {
     userVault: UserALMVault | undefined;
     poolAddress: Address | undefined;
     farming: Farming | undefined | null;
+    poolStatus: number | undefined | null;
 }
 
-export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPositionCardProps) => {
+export const ALMPositionCard = ({ userVault, poolAddress, farming, poolStatus }: ALMPositionCardProps) => {
     if (!userVault) return null;
 
     const activeFarming = farming?.farming;
@@ -25,6 +27,8 @@ export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPosition
     const positionAPR = userVault.vault.apr;
 
     const pnl = Number(userVault.pnl);
+
+    const enableActions = poolStatus === SecurityState.ENABLED;
 
     return (
         <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in">
@@ -75,12 +79,14 @@ export const ALMPositionCard = ({ userVault, poolAddress, farming }: ALMPosition
             </div>
 
             <CurrencyAmounts amount0Parsed={userVault.amount0} amount1Parsed={userVault.amount1} token0={token0} token1={token1} />
-            <div className="flex gap-4 w-full whitespace-nowrap">
+            
+            { enableActions && <div className="flex gap-4 w-full whitespace-nowrap">
                 <AddALMLiquidityModal vault={userVault.vault} />
-            </div>
-            {!userVault.onFarming && (
+            </div> }
+            
+            {!userVault.onFarming && enableActions && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
-                    <RemoveALMLiquidityModal poolAddress={poolAddress} userVault={userVault} />
+                    <RemoveALMLiquidityModal poolAddress={poolAddress} userVault={userVault} enableActions={enableActions} />
                 </div>
             )}
 

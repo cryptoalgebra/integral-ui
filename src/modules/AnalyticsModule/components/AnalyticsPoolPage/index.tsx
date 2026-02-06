@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { CHART_SPAN, POOL_CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
-import { usePool } from "@/hooks/pools/usePool";
+import { SecurityState, usePool } from "@/hooks/pools/usePool";
 import { Address, parseUnits } from "viem";
 import { Chart } from "@/components/common/Chart";
 import PageTitle from "@/components/common/PageTitle";
@@ -130,7 +130,9 @@ export function AnalyticsPoolPage() {
     const [type, setType] = useState<PoolChartTypeType>(POOL_CHART_TYPE.TVL);
     const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
 
-    const [, pool] = usePool(poolId as Address);
+    const [, pool, poolSecurityStatus] = usePool(poolId as Address);
+
+    const enableActions = poolSecurityStatus === SecurityState.ENABLED;
 
     const { token0, token1 } = pool
         ? {
@@ -208,7 +210,7 @@ export function AnalyticsPoolPage() {
                     />
                 </div>
                 <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-2 gap-3">
+                    { enableActions && <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full " to={"/swap"}>
                             <Button 
                                 variant={'primary'} 
@@ -230,7 +232,7 @@ export function AnalyticsPoolPage() {
                            
                             </Button>
                         </Link>
-                    </div>
+                    </div> }
                     <LiquidityStats token0={token0} token1={token1} statistics={statistics} />
                 </div>
             </div>
