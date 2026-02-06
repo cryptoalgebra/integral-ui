@@ -14,17 +14,19 @@ import { Farming } from "@/types/farming-info";
 import { useParams } from "react-router-dom";
 import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { SecurityState } from "@/hooks/pools/usePool";
 const { HarvestAndExitFarmingCard } = FarmingModule.components;
 const { usePositionInFarming } = FarmingModule.hooks;
 
 interface PositionCardProps {
     pool: Pool | null;
     selectedPosition: FormattedPosition | null | undefined;
+    poolStatus: number | null | undefined;
     farming?: Farming | null;
     closedFarmings?: EternalFarming[] | null;
 }
 
-const PositionCard = ({ pool, selectedPosition, farming, closedFarmings }: PositionCardProps) => {
+const PositionCard = ({ pool, selectedPosition, farming, closedFarmings, poolStatus }: PositionCardProps) => {
     const { pool: poolId } = useParams() as { pool: Address };
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
 
@@ -45,6 +47,9 @@ const PositionCard = ({ pool, selectedPosition, farming, closedFarmings }: Posit
               `${formatAmount(selectedPosition.apr, 2)}%`,
           ]
         : [];
+
+    const enableActions = poolStatus === SecurityState.ENABLED;
+    const isPoolDisabled = poolStatus === SecurityState.DISABLED;
 
     if (!selectedPosition) return;
 
@@ -71,7 +76,7 @@ const PositionCard = ({ pool, selectedPosition, farming, closedFarmings }: Posit
                 </div>
             </div>
 
-            <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={Number(selectedPosition.id)} />
+            { enableActions && <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={Number(selectedPosition.id)} /> }
 
             <TokenRatio mintInfo={mintInfo} />
 
@@ -83,7 +88,7 @@ const PositionCard = ({ pool, selectedPosition, farming, closedFarmings }: Posit
             )}
             {pool && position && <PositionRangeChart pool={pool} position={position} />}
 
-            {position && (
+            {position && enableActions && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
                     <IncreaseLiquidityModal
                         tokenId={Number(Number(selectedPosition.id))}
@@ -93,12 +98,12 @@ const PositionCard = ({ pool, selectedPosition, farming, closedFarmings }: Posit
                     />
                 </div>
             )}
-            {position && Number(position.liquidity) > 0 && (
+            {position && Number(position.liquidity) > 0 && !isPoolDisabled && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
-                    <RemoveLiquidityModal positionId={Number(selectedPosition.id)} />
+                    <RemoveLiquidityModal positionId={Number(selectedPosition.id)} enableActions={enableActions} />
                 </div>
             )}
-            {positionInFarming && activeFarming && !endedFarming && (
+            {positionInFarming && activeFarming && (
                 <HarvestAndExitFarmingCard eternalFarming={activeFarming} selectedPosition={positionInFarming as Deposit} isEnded={false} />
             )}
             {positionInFarming && endedFarming && (

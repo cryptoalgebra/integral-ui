@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const PoolHeader = () => {
+const PoolHeader = ({ showCreatePosition = true }: { showCreatePosition?: boolean }) => {
     return (
         <div className="flex items-center justify-between w-full mb-8">
             <div className="w-full">
                 <PageTitle title="My positions" showSettings={false}></PageTitle>
             </div>
 
-            <Link to={"new-position"}>
+            { showCreatePosition && <Link to={"new-position"}>
                 <Button
                     variant={'primaryLink'}
                     size={'md'}
@@ -19,7 +19,7 @@ const PoolHeader = () => {
                     <Plus size={20} className="text-text-100" />
                     Create Position
                 </Button>
-            </Link>
+            </Link> }
         </div>
     );
 };

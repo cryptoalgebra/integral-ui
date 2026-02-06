@@ -1,16 +1,25 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import PoolsList from "@/components/pools/PoolsList";
+import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
 import { Button } from "@/components/ui/button";
+import { useReadSecurityRegistryGlobalStatus } from "@/generated";
+import { SecurityState } from "@/hooks/pools/usePool";
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PoolsPage = () => {
+
+    const { data: globalStatus } = useReadSecurityRegistryGlobalStatus()
+
+    const enableActions = globalStatus === SecurityState.ENABLED;
+
     return (
         <PageContainer>
             <div className="w-full flex justify-between mb-8">
                 <PageTitle title={"Pools"} showSettings={false} />
-                <Link to={"create"}>
+                <SecurityStatusTag status={globalStatus} />
+                { enableActions && <Link to={"create"}>
                     <Button
                         variant={'primaryLink'}
                         size={'md'}
@@ -19,7 +28,7 @@ const PoolsPage = () => {
                         <Plus size={20} className="text-text-100" />
                         Create a Pool
                     </Button>
-                </Link>
+                </Link> }
             </div>
 
             <div className="w-full">
