@@ -64,4 +64,7 @@ export default defineConfig({
             ...disabledAliases,
         ],
     },
+    define: {
+        global: 'globalThis',
+    },
 });

@@ -27,7 +27,7 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address; transact
                 key={hash}
             >
                 {txType === TransactionType.FARM && transaction.data.tokenId ? (
-                    <FarmingPositionImg positionId={BigInt(transaction.data.tokenId)} size={10} />
+                    <FarmingPositionImg positionId={String(transaction.data.tokenId)} size={10} />
                 ) : currencyB && currencyA ? (
                     <div className="w-[36px] relative">
                         <CurrencyLogo className="absolute bottom-0 translate-y-1/4" currency={currencyA} size={28} />

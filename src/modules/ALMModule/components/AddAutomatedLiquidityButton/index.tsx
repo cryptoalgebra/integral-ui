@@ -12,8 +12,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
 import { Address } from "viem";
-import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
+import { useAppKitNetwork } from "@reown/appkit/react";
 import { ExtendedVault, useUserALMVaultsByPool } from "../../hooks";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface AddAutomatedLiquidityButtonProps {
     vault: ExtendedVault | undefined;
@@ -29,7 +30,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolId as Address, account);
 
-    const { open } = useAppKit();
+    const { connect: open } = useWeb3AuthConnect();
 
     const appChainId = useChainId();
 
@@ -109,7 +110,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return <Button variant={"destructive"} onClick={() => open()}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
     // if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 

@@ -12,15 +12,16 @@ import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
+import { useAppKitNetwork } from "@reown/appkit/react";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { TradeState } from "@/types/trade-state";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
 
 const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
-    const { open } = useAppKit();
+    const { connect: open } = useWeb3AuthConnect();
 
     const appChainId = useChainId();
 
@@ -143,7 +144,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return <Button variant={"destructive"} onClick={() => open()}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
     if (showWrap && wrapInputError) return <Button disabled>{wrapInputError}</Button>;
 

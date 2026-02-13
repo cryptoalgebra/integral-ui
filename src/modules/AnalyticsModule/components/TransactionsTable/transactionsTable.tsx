@@ -17,7 +17,6 @@ import { TX } from "./transactionsColumns";
 import { LoadingState } from "@/components/common/Table/loadingState";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
-import { useAppKitNetwork } from "@reown/appkit/react";
 
 interface TransactionsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];

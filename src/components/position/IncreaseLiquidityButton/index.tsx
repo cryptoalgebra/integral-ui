@@ -10,11 +10,12 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
 import { Currency, Field, NonfungiblePositionManager, Percent, ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
+import { useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useEffect, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -36,7 +37,7 @@ export const IncreaseLiquidityButton = ({
 }: IncreaseLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
-    const { open } = useAppKit();
+    const { connect: open } = useWeb3AuthConnect();
 
     const appChainId = useChainId();
 
@@ -112,7 +113,7 @@ export const IncreaseLiquidityButton = ({
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return <Button variant={"destructive"} onClick={() => open()}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
     if (mintInfo.errorMessage) return <Button variant={'primary'} disabled>{mintInfo.errorMessage}</Button>;
 

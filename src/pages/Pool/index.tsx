@@ -21,11 +21,11 @@ import ALMModule from "@/modules/ALMModule";
 import FarmingModule from "@/modules/FarmingModule";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
-import { useAppKit } from "@reown/appkit/react";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import useSWR from "swr";
 import { Deposit, useSinglePositionLazyQuery } from "@/graphql/generated/graphql";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
@@ -277,7 +277,7 @@ const NoPositions = ({ poolId }: { poolId: Address }) => (
 );
 
 const NoAccount = () => {
-    const { open } = useAppKit();
+    const { connect: open } = useWeb3AuthConnect()
 
     return (
         <div className="flex flex-col items-start p-6 bg-card border border-card-border rounded-xl animate-fade-in">

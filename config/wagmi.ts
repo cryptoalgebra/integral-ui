@@ -1,5 +1,4 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork } from "@reown/appkit/networks";
 import {
     algebraBasePluginV1ABI,
     algebraCustomPoolEntryPointABI,
@@ -65,7 +64,7 @@ const henesysChain = defineChain({
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [henesysChain];
+export const wagmiNetworks = [henesysChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },

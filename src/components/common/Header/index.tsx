@@ -9,11 +9,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
-import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 const Header = () => (
     <header className="md:sticky top-2 z-10 bg-white flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
@@ -39,9 +39,7 @@ export const Algebra = () => (
 );
 
 const Account = () => {
-    const { open } = useAppKit();
-
-    const { caipNetwork: currentNetwork } = useAppKitNetwork();
+    const { connect: open } = useWeb3AuthConnect()
 
     const { pendingTransactions } = usePendingTransactionsStore();
 
@@ -85,9 +83,10 @@ const Account = () => {
                     className="flex gap-2 h-full rounded-lg border border-card-border"
                     variant={"icon"}
                     size={"sm"}
-                    onClick={() => open({ view: "Networks" })}
+                    onClick={() => open()}
                 >
-                    <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
+                    {/* <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> */}
+                    <ChevronDown size={20} />
                 </Button>
                 <Button
                     className={cn(

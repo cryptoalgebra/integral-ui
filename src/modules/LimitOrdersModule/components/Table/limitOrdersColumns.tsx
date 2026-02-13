@@ -12,7 +12,6 @@ import { KillLimitOrderModal } from "..";
 import Loader from "@/components/common/Loader";
 import { HeaderItem } from "@/components/common/Table/common";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { useAppKitNetwork } from "@reown/appkit/react";
 
 interface Epoch {
     id: string;
@@ -148,7 +147,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 const Action = (props: LimitOrderInfo) => {
     const appChainId = useChainId();
 
-    const { chainId: userChainId } = useAppKitNetwork();
+    const userChainId = useChainId();
 
     if (!userChainId || appChainId !== userChainId) return;
 

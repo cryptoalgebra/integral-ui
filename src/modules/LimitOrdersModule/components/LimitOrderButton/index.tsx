@@ -5,16 +5,16 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedSwapInfo } from "@/state/swapStore";
 import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId } from "wagmi";
-import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
+import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { SwapField } from "@/types/swap-field";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useWriteLimitOrderManagerPlace } from "@/generated";
-import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useLimitOrderInfo } from "../../hooks";
 import { formatAmount } from "@/utils";
+import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface LimitOrderButtonProps {
     derivedSwap: IDerivedSwapInfo;
@@ -43,11 +43,9 @@ export const LimitOrderButton = ({
 }: LimitOrderButtonProps) => {
     const { address: account } = useAccount();
 
-    const { open } = useAppKit();
+    const { connect: open } = useWeb3AuthConnect();
 
     const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
 
     const {
         currencies: { [SwapField.INPUT]: inputCurrency },
@@ -110,7 +108,7 @@ export const LimitOrderButton = ({
         title: `Buy ${formatAmount(Number(inputAmount?.toSignificant()))} ${inputAmount?.currency.symbol}`,
     });
 
-    const isWrongChain = !userChainId || appChainId !== userChainId;
+    const isWrongChain = appChainId !== DEFAULT_CHAIN_ID;
 
     if (!account)
         return (
@@ -121,7 +119,7 @@ export const LimitOrderButton = ({
 
     if (isWrongChain)
         return (
-            <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>
+            <Button variant={"destructive"} onClick={() => open()}>
                 {`Connect to ${DEFAULT_CHAIN_NAME}`}
             </Button>
         );
