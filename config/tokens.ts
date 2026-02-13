@@ -1,8 +1,10 @@
 import { ChainId, Token } from "@cryptoalgebra/custom-pools-sdk";
 
 export const STABLECOINS = {
-    [ChainId.BaseSepolia]: {
-        USDC: new Token(ChainId.BaseSepolia, "0xAbAc6f23fdf1313FC2E9C9244f666157CcD32990", 6, "USDC", "USDC"),
-        TOKEN: new Token(ChainId.BaseSepolia, "0xDeB24A7dD1491966598B3BDd28F51F2Ca939CB1f", 18, "TOKEN", "TOKEN"),
+    [ChainId.MegaethMainnet]: {
+        USDC: new Token(ChainId.MegaethMainnet, "0xB8CE59FC3717ada4C02eaDF9682A9e934F625ebb", 6, "USDT0", "USDT0"),
+    },
+    [ChainId.MegaethTestnet]: {
+        USDC: new Token(ChainId.MegaethTestnet, "0xE416C0C29DBDb4Fa25870b835ad904c1E8478CDc", 18, "USDC", "USDC"),
     },
 };

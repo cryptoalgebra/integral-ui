@@ -5,11 +5,13 @@ export type PoolDeployerType = "BASE" | "ALL_INCLUSIVE";
 
 export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | null>> = {
     BASE: {
-        [ChainId.BaseSepolia]: ADDRESS_ZERO,
+        [ChainId.MegaethMainnet]: ADDRESS_ZERO,
+        [ChainId.MegaethTestnet]: ADDRESS_ZERO,
     },
     /* Replace with `null` to use as a stub */
     ALL_INCLUSIVE: {
-        [ChainId.BaseSepolia]: "0x80968dCD8e9bFA7E4c0332E4a3220C69C2F244D8",
+        [ChainId.MegaethMainnet]: null,
+        [ChainId.MegaethTestnet]: null,
     },
 } as const;
 

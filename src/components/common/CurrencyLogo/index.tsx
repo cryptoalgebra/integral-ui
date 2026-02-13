@@ -2,6 +2,7 @@ import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
+import USDTLogo from "@/assets/tokens/usdt.png";
 import EtherLogo from "@/assets/tokens/ether.svg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
@@ -20,9 +21,13 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    ["0xe416c0c29dbdb4fa25870b835ad904c1e8478cdc"]: {
         symbol: "USDC",
         logo: USDCLogo,
+    },
+    ["0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb"]: {
+        symbol: "USDT0",
+        logo: USDTLogo,
     },
     ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
         symbol: "BTC",
