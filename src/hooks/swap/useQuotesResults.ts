@@ -1,7 +1,8 @@
 import { quoterV2ABI, QUOTER_V2 } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
+import { useReadContracts } from "wagmi";
 import { useAllRoutes } from "./useAllRoutes";
 
 export function useQuotesResults({
@@ -9,8 +10,7 @@ export function useQuotesResults({
     amountIn,
     amountOut,
     currencyIn,
-    currencyOut,
-}: {
+    currencyOut }: {
     exactInput: boolean;
     amountIn?: CurrencyAmount<Currency>;
     amountOut?: CurrencyAmount<Currency>;
@@ -43,13 +43,10 @@ export function useQuotesResults({
             address: QUOTER_V2[chainId],
             abi: quoterV2ABI,
             functionName: functionName,
-            args: quote,
-        })),
-    });
+            args: quote })) });
 
     return {
         data: quotesResults,
         isLoading: isLoading || routesLoading,
-        refetch,
-    };
+        refetch };
 }

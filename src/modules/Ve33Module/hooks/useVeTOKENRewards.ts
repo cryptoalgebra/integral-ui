@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useReadContracts } from "wagmi";
 import { rebaseRewardAbi, useReadVoterGetCurrentPeriod } from "@/generated";
 import { votingRewardABI } from "config/abis";
 import { useVeTOKENs } from "./useVeTOKENs";
@@ -35,8 +36,7 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
                 address: REBASE_REWARD[chainId],
                 abi: rebaseRewardAbi,
                 functionName: "earnedForTokenId",
-                args: [id],
-            });
+                args: [id] });
         });
 
         // VotingReward per gauge + tokenId
@@ -46,8 +46,7 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
                     address: g.votingReward,
                     abi: votingRewardABI,
                     functionName: "earnedForTokenId",
-                    args: [id],
-                });
+                    args: [id] });
             });
         });
 
@@ -59,8 +58,7 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
 
     const { data: results, isLoading, refetch } = useReadContracts({
         contracts,
-        query: { enabled: contracts.length > 0 },
-    });
+        query: { enabled: contracts.length > 0 } });
 
     // Step 3. Format data
     const formatted: VeTOKENRewards[] | undefined = useMemo(() => {
@@ -82,8 +80,7 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
             tokenId: id,
             votingRewardList: [],
             rebaseAmount: 0n,
-            rebaseAmountUsd: 0,
-        }));
+            rebaseAmountUsd: 0 }));
 
         let callIndex = 0;
 
@@ -118,14 +115,12 @@ export function useVeTOKENRewards(): { data: VeTOKENRewards[] | undefined; isLoa
                             address,
                             amount,
                             decimals,
-                            amountUsd,
-                        };
+                            amountUsd };
                     });
 
                     res[idx].votingRewardList.push({
                         votingReward: g.votingReward,
-                        rewardTokenList,
-                    });
+                        rewardTokenList });
                 }
             });
         });

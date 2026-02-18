@@ -1,10 +1,10 @@
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { TokenFieldsFragment, useAllTokensQuery } from "@/graphql/generated/graphql";
 import { useTokensState } from "@/state/tokensStore";
 import { ADDRESS_ZERO, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { Address, isAddressEqual } from "viem";
-import { useChainId } from "wagmi";
 import { useClients } from "../graphql/useClients";
 
 export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeToken: boolean = true) {
@@ -13,8 +13,7 @@ export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeT
     const { infoClient } = useClients();
 
     const { data: allTokens, loading } = useAllTokensQuery({
-        client: infoClient,
-    });
+        client: infoClient });
 
     const { importedTokens } = useTokensState();
 
@@ -28,8 +27,7 @@ export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeT
             for (const token of _importedTokens) {
                 tokens.set(token.id.toLowerCase() as Address, {
                     ...token,
-                    derivedMatic: 0,
-                });
+                    derivedMatic: 0 });
             }
             return [...tokens].map(([, token]) => ({ ...token }));
         }
@@ -40,8 +38,7 @@ export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeT
                 symbol: NATIVE_SYMBOL[chainId],
                 name: NATIVE_NAME[chainId],
                 decimals: 18,
-                derivedMatic: 1,
-            });
+                derivedMatic: 1 });
 
         for (const token of allTokens.tokens.filter((token) => !tokensBlackList.includes(token.id as Address))) {
             tokens.set(token.id.toLowerCase() as Address, { ...token });
@@ -52,8 +49,7 @@ export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeT
         for (const token of _importedTokens) {
             tokens.set(token.id.toLowerCase() as Address, {
                 ...token,
-                derivedMatic: 0,
-            });
+                derivedMatic: 0 });
         }
 
         let tokensList = [...tokens].map(([, token]) => ({ ...token }));
@@ -72,8 +68,7 @@ export function useAllTokens(showNativeToken: boolean = true, showWrappedNativeT
     return useMemo(
         () => ({
             tokens: mergedTokens,
-            isLoading: loading || Boolean(allTokens && !mergedTokens.length),
-        }),
+            isLoading: loading || Boolean(allTokens && !mergedTokens.length) }),
         [mergedTokens, allTokens, loading],
     );
 }

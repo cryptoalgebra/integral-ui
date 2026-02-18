@@ -1,7 +1,8 @@
 import { Slider } from "@/components/ui/slider";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useState, useMemo, useCallback } from "react";
 import { parseEther } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { TOKEN_ADDRESS, VOTING_ESCROW } from "config";
 import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
 import { CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
@@ -50,8 +51,7 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
         title: `Lock ${amount || "0"} TOKEN for ${weeks} week${weeks > 1 ? "s" : ""}`,
         tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
-        callback: refetch,
-    });
+        callback: refetch });
 
     const veTOKENAmount = useMemo(() => {
         if (!amount || Number(amount) === 0 || isNaN(Number(amount))) return 0;

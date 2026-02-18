@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedSwapInfo } from "@/state/swapStore";
 import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
@@ -39,28 +40,24 @@ export const LimitOrderButton = ({
     sellPrice,
     tickSpacing,
     zeroToOne,
-    limitOrderPlugin,
-}: LimitOrderButtonProps) => {
+    limitOrderPlugin }: LimitOrderButtonProps) => {
     const { address: account } = useAccount();
 
     const { connect: open } = useWeb3AuthConnect();
 
-    const appChainId = useChainId();
+    const chainId = useChainId();
 
     const {
         currencies: { [SwapField.INPUT]: inputCurrency },
         currencyBalances,
         inputError,
-        parsedAmounts: { [SwapField.INPUT]: inputAmount },
-    } = derivedSwap;
+        parsedAmounts: { [SwapField.INPUT]: inputAmount } } = derivedSwap;
 
     const isInverted = wasInverted === zeroToOne;
     const [baseToken, quoteToken] = isInverted ? [token1, token0] : [token0, token1];
     const limitOrderTick = tryParseTick(baseToken, quoteToken, sellPrice, tickSpacing);
 
     const limitOrder = useLimitOrderInfo(poolAddress, inputAmount, limitOrderTick);
-
-    const chainId = useChainId();
 
     const needAllowance = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
@@ -91,24 +88,21 @@ export const LimitOrderButton = ({
                       {
                           token0: token0.address as Address,
                           token1: token1.address as Address,
-                          deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId],
-                      },
+                          deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId] },
                       limitOrder.tickLower,
                       zeroToOne,
                       BigInt(limitOrder.liquidity.toString()),
                   ] as const,
-                  value: inputAmount?.currency.isNative ? BigInt(inputAmount.quotient.toString()) : BigInt(0),
-              }
+                  value: inputAmount?.currency.isNative ? BigInt(inputAmount.quotient.toString()) : BigInt(0) }
             : undefined;
 
     const { data: placeData, writeContract: placeLimitOrder, isPending } = useWriteLimitOrderManagerPlace();
 
     const { isLoading: isPlaceLoading } = useTransactionAwait(placeData, {
         type: TransactionType.LIMIT_ORDER,
-        title: `Buy ${formatAmount(Number(inputAmount?.toSignificant()))} ${inputAmount?.currency.symbol}`,
-    });
+        title: `Buy ${formatAmount(Number(inputAmount?.toSignificant()))} ${inputAmount?.currency.symbol}` });
 
-    const isWrongChain = appChainId !== DEFAULT_CHAIN_ID;
+    const isWrongChain = chainId !== DEFAULT_CHAIN_ID;
 
     if (!account)
         return (
@@ -171,13 +165,11 @@ export const LimitOrderButton = ({
                         limitOrder,
                         disabled,
                         inputError,
-                        needAllowance,
-                    },
+                        needAllowance },
                     isReady && [
                         {
                             token0: token0.address as Address,
-                            token1: token1.address as Address,
-                        },
+                            token1: token1.address as Address },
                         limitOrder.tickLower,
                         zeroToOne,
                         BigInt(limitOrder.liquidity.toString()),

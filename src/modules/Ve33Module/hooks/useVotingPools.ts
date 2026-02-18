@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useReadContracts } from "wagmi";
 import { votingRewardABI } from "config/abis";
 import { Address, formatUnits } from "viem";
 import { useClients } from "@/hooks/graphql/useClients";
@@ -29,16 +30,14 @@ export function useVotingPools() {
     const {
         data: poolVotesResults,
         isLoading: poolVotesLoading,
-        refetch: refetchPoolVotes,
-    } = useReadContracts({
+        refetch: refetchPoolVotes } = useReadContracts({
         contracts: gaugeList.map((g) => ({
             address: g.votingReward,
             abi: votingRewardABI,
             functionName: "totalVotesInPeriod",
             args: [nextPeriod], // getting votes for next period
         })),
-        query: { enabled: gaugeList.length > 0 && !!nextPeriod },
-    });
+        query: { enabled: gaugeList.length > 0 && !!nextPeriod } });
 
     const poolVotesAmounts: bigint[] = useMemo(() => poolVotesResults?.map((d) => (d?.result as bigint) ?? 0n) ?? [], [poolVotesResults]);
 
@@ -46,10 +45,8 @@ export function useVotingPools() {
         contracts: gaugeList.map((g) => ({
             address: g.votingReward,
             abi: votingRewardABI,
-            functionName: "getRewardList",
-        })),
-        query: { enabled: gaugeList.length > 0 },
-    });
+            functionName: "getRewardList" })),
+        query: { enabled: gaugeList.length > 0 } });
 
     const rewardTokensByGauge: Address[][] = useMemo(() => {
         if (!rewardTokensResults) return [];
@@ -72,10 +69,8 @@ export function useVotingPools() {
             address: gaugeList[m.gaugeIndex].votingReward,
             abi: votingRewardABI,
             functionName: "rewardForPeriod",
-            args: [currentPeriod ?? 0n, m.token],
-        })),
-        query: { enabled: contractsMeta.length > 0 && !!currentPeriod },
-    });
+            args: [currentPeriod ?? 0n, m.token] })),
+        query: { enabled: contractsMeta.length > 0 && !!currentPeriod } });
 
     const { nativePriceUSD } = useNativePriceUSD();
 
@@ -106,8 +101,7 @@ export function useVotingPools() {
                 address: meta.token,
                 amount,
                 decimals,
-                amountUsd,
-            });
+                amountUsd });
         });
 
         return map;
@@ -126,8 +120,7 @@ export function useVotingPools() {
                 token0: new Token(chainId, pool.token0.id as Address, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name),
                 token1: new Token(chainId, pool.token1.id as Address, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name),
                 poolVotesDeposited: poolVotesAmounts[i] ?? 0n,
-                rewardTokenList,
-            };
+                rewardTokenList };
         });
     }, [poolsList, gaugeList, tokens, rewardMap, poolVotesAmounts, chainId]);
 

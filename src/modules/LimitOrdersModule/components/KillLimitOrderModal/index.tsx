@@ -1,4 +1,5 @@
 import { CurrencyAmounts } from "@/components/common/CurrencyAmounts";
+import { useChainId } from "@/hooks/common/useChainId";
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -9,7 +10,6 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useMemo, useState } from "react";
 import { Address } from "viem";
-import { useChainId } from "wagmi";
 import { LimitOrderInfo } from "../Table";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { formatAmount } from "@/utils";
@@ -27,8 +27,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
 
         return {
             amount0Parsed: amount0.toString(),
-            amount1Parsed: amount1.toString(),
-        };
+            amount1Parsed: amount1.toString() };
     }, [positionLO.amount0, positionLO.amount1, value]);
 
     const killConfig = CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId]
@@ -37,15 +36,13 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
                   {
                       token0: pool.token0.address as Address,
                       token1: pool.token1.address as Address,
-                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId],
-                  },
+                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId] },
                   ticks.tickLower,
                   ticks.tickUpper,
                   BigInt(liquidityToRemove),
                   zeroToOne,
                   owner,
-              ] as const,
-          }
+              ] as const }
         : undefined;
 
     const { data: killData, writeContract: kill, isPending } = useWriteLimitOrderManagerKill();
@@ -54,8 +51,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
         type: TransactionType.LIMIT_ORDER,
         title: `Withdraw ${formatAmount(amount0Parsed || amount1Parsed)} ${amount0Parsed ? pool.token0.symbol : pool.token1.symbol}`,
         tokenA: amount0Parsed ? (pool.token0.wrapped.address as Address) : undefined,
-        tokenB: amount1Parsed ? (pool.token1.wrapped.address as Address) : undefined,
-    });
+        tokenB: amount1Parsed ? (pool.token1.wrapped.address as Address) : undefined });
 
     return (
         <Dialog>

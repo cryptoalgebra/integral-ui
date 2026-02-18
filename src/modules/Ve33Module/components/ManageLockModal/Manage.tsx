@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useAccount } from "wagmi";
 import { parseEther } from "viem";
 import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
 import { TOKEN_ADDRESS, DEFAULT_CHAIN_ID, VOTING_ESCROW } from "config";
@@ -51,15 +52,13 @@ export const Manage = ({ veTOKEN, refetch }: ManageLockModalProps) => {
     const {
         writeContract: increaseAmountWrite,
         isPending: isIncreaseAmountPending,
-        data: increaseAmountHash,
-    } = useWriteVotingEscrowIncreaseAmount();
+        data: increaseAmountHash } = useWriteVotingEscrowIncreaseAmount();
     const { isLoading: isIncreaseAmountLoading } = useTransactionAwait(increaseAmountHash, {
         title: `Increase lock #${tokenId.toString()}`,
         description: `Adding ${amount || 0} TOKEN`,
         tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
-        callback: refetch,
-    });
+        callback: refetch });
 
     const handleIncreaseAmount = useCallback(async () => {
         if (!increaseAmountWrite || !amount || !account || Number(amount) === 0 || isNaN(Number(amount))) return;
@@ -96,8 +95,7 @@ export const Manage = ({ veTOKEN, refetch }: ManageLockModalProps) => {
         description: `Extending by ${weeks} week${weeks > 1 ? "s" : ""}`,
         tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
-        callback: refetch,
-    });
+        callback: refetch });
 
     const handleExtendTime = useCallback(async () => {
         if (!extendTimeWrite || !weeks || weeks === 0) return;
@@ -120,8 +118,7 @@ export const Manage = ({ veTOKEN, refetch }: ManageLockModalProps) => {
         description: `Withdrawing unlocked TOKEN`,
         tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
-        callback: refetch,
-    });
+        callback: refetch });
 
     const handleWithdraw = useCallback(async () => {
         if (!withdrawWrite) return;

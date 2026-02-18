@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";

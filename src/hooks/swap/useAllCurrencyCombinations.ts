@@ -1,7 +1,7 @@
 import { BASES_TO_CHECK_TRADES_AGAINST } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Currency, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { useChainId } from "wagmi";
 
 export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Currency): [Token, Token][] {
     const chainId = useChainId();

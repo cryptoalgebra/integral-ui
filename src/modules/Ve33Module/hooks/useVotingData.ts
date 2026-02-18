@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useReadContracts } from "wagmi";
 import { VOTING_ESCROW, VOTER } from "config/contract-addresses";
 import { voterABI } from "config/abis";
 import { VotingData } from "../types/voting";
@@ -13,8 +14,7 @@ export function useVotingData() {
             { address: VOTER[chainId], abi: voterABI, functionName: "getCurrentPeriod" },
             { address: VOTER[chainId], abi: voterABI, functionName: "DURATION" },
             { address: VOTER[chainId], abi: voterABI, functionName: "epoch0Period" },
-        ],
-    });
+        ] });
 
     const currentPeriod = (baseData?.[0]?.result as bigint) || 0n;
 
@@ -24,8 +24,7 @@ export function useVotingData() {
                 address: VOTER[chainId],
                 abi: voterABI,
                 functionName: "period",
-                args: [currentPeriod],
-            },
+                args: [currentPeriod] },
             {
                 address: VOTER[chainId],
                 abi: voterABI,
@@ -35,11 +34,9 @@ export function useVotingData() {
             {
                 address: VOTING_ESCROW[chainId],
                 abi: votingEscrowAbi,
-                functionName: "totalVotingPower",
-            },
+                functionName: "totalVotingPower" },
         ],
-        query: { enabled: !!currentPeriod },
-    });
+        query: { enabled: !!currentPeriod } });
 
     const votingData: VotingData | undefined = useMemo(() => {
         if (!baseData || !periodData) return undefined;
@@ -67,13 +64,11 @@ export function useVotingData() {
             totalVotes,
             totalAvailableVotes,
             epoch: currentPeriod,
-            totalEmissions,
-        };
+            totalEmissions };
     }, [baseData, currentPeriod, periodData]);
 
     return {
         data: votingData,
         isLoading: baseDataLoading || periodDataLoading,
-        refetch,
-    };
+        refetch };
 }

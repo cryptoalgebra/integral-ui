@@ -1,4 +1,5 @@
 import { CurrencyAmounts } from "@/components/common/CurrencyAmounts";
+import { useChainId } from "@/hooks/common/useChainId";
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,12 +17,11 @@ import {
     SupportedChainId,
     VAULT_DEPOSIT_GUARD,
     withdrawNativeToken,
-    withdrawWithSlippage,
-} from "@cryptoalgebra/alm-sdk";
+    withdrawWithSlippage } from "@cryptoalgebra/alm-sdk";
 import { CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { Address, parseUnits } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { UserALMVault, useUserALMVaultsByPool } from "../../hooks";
 
@@ -104,8 +104,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
         tokenA: vault?.token0.wrapped.address as Address,
         tokenB: vault?.token1.wrapped.address as Address,
         type: TransactionType.POOL,
-        callback: refetchUserVaults,
-    });
+        callback: refetchUserVaults });
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || isPending;
 

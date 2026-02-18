@@ -1,7 +1,7 @@
 import { Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useMemo } from "react";
 import { useSwapPools } from "./useSwapPools";
-import { useChainId } from "wagmi";
 import { Address } from "viem";
 
 /**
@@ -83,8 +83,7 @@ export function useAllRoutes(
         if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
             return {
                 loading: true,
-                routes: [],
-            };
+                routes: [] };
 
         // Hack
         // const singleIfWrapped = (currencyIn.isNative || currencyOut.isNative)

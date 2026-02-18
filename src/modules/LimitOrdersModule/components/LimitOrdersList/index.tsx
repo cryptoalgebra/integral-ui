@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useAccount } from "wagmi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLimitOrdersListQuery, useMultiplePoolsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
@@ -22,17 +23,13 @@ export const LimitOrdersList = () => {
     const { data: limitOrders, loading: isLimitOrdersLoading } = useLimitOrdersListQuery({
         client: limitOrderClient,
         variables: {
-            account,
-        },
-        pollInterval: 10_000,
-    });
+            account },
+        pollInterval: 10_000 });
 
     const { data: poolForLimitOrders } = useMultiplePoolsQuery({
         variables: {
-            poolIds: limitOrders && limitOrders.limitOrders.map(({ pool }: any) => pool),
-        },
-        client: infoClient,
-    });
+            poolIds: limitOrders && limitOrders.limitOrders.map(({ pool }: any) => pool) },
+        client: infoClient });
 
     const customPoolDeployer = CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId];
 
@@ -51,8 +48,7 @@ export const LimitOrdersList = () => {
                     liquidity,
                     Number(tick),
                     Number(tickSpacing)
-                ),
-            }),
+                ) }),
             {}
         );
 
@@ -70,8 +66,7 @@ export const LimitOrdersList = () => {
                     pool: poolId,
                     killed,
                     placeTimestamp,
-                    closeTimestamp,
-                }: any) => {
+                    closeTimestamp }: any) => {
                     const pool = pools[poolId];
 
                     if (!pool) return null;
@@ -82,8 +77,7 @@ export const LimitOrdersList = () => {
                         pool,
                         liquidity: Number(liquidityForPosition),
                         tickLower: Number(tickLower),
-                        tickUpper: Number(tickUpper),
-                    });
+                        tickUpper: Number(tickUpper) });
 
                     const { token0PriceLower, token0PriceUpper } = positionLO;
 
@@ -100,8 +94,7 @@ export const LimitOrdersList = () => {
                         ),
                         liquidity: Number(liquidityForPosition),
                         tickLower: Number(tickLower),
-                        tickUpper: Number(tickUpper),
-                    });
+                        tickUpper: Number(tickUpper) });
 
                     const buyAmount = zeroToOne ? amount1Max : amount0Max;
 
@@ -137,30 +130,22 @@ export const LimitOrdersList = () => {
                             isClosed,
                             killed,
                             isFilled: epoch.filled,
-                            zeroToOne,
-                        },
+                            zeroToOne },
                         rates: {
                             buy: {
                                 token: zeroToOne ? token0 : token1,
-                                rate: minBuyRate,
-                            },
+                                rate: minBuyRate },
                             sell: {
                                 token: zeroToOne ? token1 : token0,
-                                rate: minSellRate,
-                            },
-                        },
+                                rate: minSellRate } },
                         amounts: {
                             buy: {
                                 token: zeroToOne ? token1 : token0,
-                                amount: buyAmount,
-                            },
+                                amount: buyAmount },
                             sell: {
                                 token: zeroToOne ? token0 : token1,
-                                amount: sellAmount,
-                            },
-                        },
-                        pool,
-                    };
+                                amount: sellAmount } },
+                        pool };
                 }
             )
             .filter(Boolean);

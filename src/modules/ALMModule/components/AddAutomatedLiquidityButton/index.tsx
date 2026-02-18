@@ -1,6 +1,7 @@
 import Loader from "@/components/common/Loader";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -9,10 +10,9 @@ import { ApprovalState } from "@/types/approve-state";
 import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { deposit, depositNativeToken, SupportedChainId, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
 import { Address } from "viem";
-import { useAppKitNetwork } from "@reown/appkit/react";
 import { ExtendedVault, useUserALMVaultsByPool } from "../../hooks";
 import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
@@ -31,10 +31,6 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
     const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolId as Address, account);
 
     const { connect: open } = useWeb3AuthConnect();
-
-    const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
 
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
@@ -94,8 +90,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
         {
             title: "Add automated liquidity",
             tokenA: currency?.wrapped.address as Address,
-            type: TransactionType.POOL,
-        },
+            type: TransactionType.POOL },
         poolId ? `/pool/${poolId}` : undefined
     );
 
@@ -105,7 +100,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
         refetchUserVaults();
     }, [isSuccess]);
 
-    const isWrongChain = !userChainId || appChainId !== userChainId;
+    const isWrongChain = chainId !== DEFAULT_CHAIN_ID;
 
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 

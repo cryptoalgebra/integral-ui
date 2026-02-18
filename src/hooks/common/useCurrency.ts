@@ -1,5 +1,5 @@
-import { useChainId } from "wagmi";
 import { Currency, ExtendedNative, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
+import { useChainId } from "@/hooks/common/useChainId";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config";
 import { useAlgebraToken } from "./useAlgebraToken";

@@ -1,17 +1,17 @@
 import { wagmiConfig } from "@/providers/WagmiProvider";
+import { useChainId } from "@/hooks/common/useChainId";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { providers } from "ethers";
 import { useMemo } from "react";
 import type { Account, Chain, Client, Transport } from "viem";
-import { useChainId, useConnectorClient, usePublicClient } from "wagmi";
+import { useConnectorClient, usePublicClient } from "wagmi";
 
 export function clientToJsonRpcProvider(client: Client<Transport, Chain>) {
     const { chain, transport } = client;
     const network = {
         chainId: chain.id,
         name: chain.name,
-        ensAddress: chain.contracts?.ensRegistry?.address,
-    };
+        ensAddress: chain.contracts?.ensRegistry?.address };
     if (transport.type === "fallback")
         return new providers.FallbackProvider(
             (transport.transports as ReturnType<Transport>[]).map(({ value }) => new providers.JsonRpcProvider(value?.url, network))
@@ -35,8 +35,7 @@ function clientToWeb3Provider(client: Client<Transport, Chain, Account>) {
     const network = {
         chainId: chain.id,
         name: chain.name,
-        ensAddress: ADDRESS_ZERO,
-    };
+        ensAddress: ADDRESS_ZERO };
     const provider = new providers.Web3Provider(transport, network);
     return provider;
 }
@@ -47,8 +46,7 @@ export function useEthersProvider() {
 
     const { data: client } = useConnectorClient({
         config: wagmiConfig,
-        chainId,
-    });
+        chainId });
     
     const publicClient = usePublicClient({
         config: wagmiConfig,

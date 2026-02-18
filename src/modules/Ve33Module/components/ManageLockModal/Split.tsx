@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { useChainId } from "@/hooks/common/useChainId";
 import { cn } from "@/utils/common/cn";
 import { Slider } from "@/components/ui/slider";
 import { parseEther } from "viem";
@@ -9,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { VeTOKEN } from "../../types";
 import { useWriteVotingEscrowSplit } from "@/generated";
 import { TOKEN_ADDRESS } from "config";
-import { useChainId } from "wagmi";
 import Loader from "@/components/common/Loader";
 import { formatAmount } from "@/utils";
 
@@ -36,8 +36,7 @@ export const Split = ({ veTOKEN, refetch }: { veTOKEN: VeTOKEN | undefined; refe
         return {
             originalRemaining,
             splitAmount: amount,
-            unlockDate: veTOKEN.lockedEnd,
-        };
+            unlockDate: veTOKEN.lockedEnd };
     }, [veTOKEN, amount, maxAmount]);
 
     const { writeContract: splitWrite, data: splitHash, isPending: isSplitPending } = useWriteVotingEscrowSplit();
@@ -47,8 +46,7 @@ export const Split = ({ veTOKEN, refetch }: { veTOKEN: VeTOKEN | undefined; refe
         description: `Splitting ${amount} TOKEN`,
         tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
-        callback: refetch,
-    });
+        callback: refetch });
 
     const hasVoted = veTOKEN?.votedThisEpoch;
 

@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { useChainId } from "@/hooks/common/useChainId";
 import { cn } from "@/utils/common/cn";
 import { formatUnits } from "viem";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { VeTOKEN } from "../../types";
 import { useWriteVotingEscrowMerge } from "@/generated";
 import { TOKEN_ADDRESS } from "config";
-import { useChainId } from "wagmi";
 import { LockSelector } from "../LockSelector";
 import { formatAmount } from "@/utils";
 import { Plus } from "lucide-react";
@@ -17,8 +17,7 @@ import { getTimeUntilTimestamp } from "../../utils";
 export const Merge = ({
     veTOKEN,
     veTOKENsList,
-    refetch,
-}: {
+    refetch }: {
     veTOKEN: VeTOKEN | undefined;
     veTOKENsList: VeTOKEN[];
     refetch?: () => void;
@@ -48,8 +47,7 @@ export const Merge = ({
         return {
             totalLockedAmount: formatUnits(totalLockedAmount, 18),
             totalBalance: formatUnits(totalBalance, 18),
-            maxLockedEnd: maxLockedEnd ? getTimeUntilTimestamp(maxLockedEnd).display : "N/A",
-        };
+            maxLockedEnd: maxLockedEnd ? getTimeUntilTimestamp(maxLockedEnd).display : "N/A" };
     }, [targetId, veTOKENsList, veTOKEN]);
 
     const { writeContractAsync: mergeWrite, data: mergeHash, isPending: isMergePending } = useWriteVotingEscrowMerge();
@@ -58,8 +56,7 @@ export const Merge = ({
         title: `Merge veTOKEN #${veTOKEN?.tokenId?.toString()} → #${targetId?.toString()}`,
         tokenA: TOKEN_ADDRESS[chainId],
         type: TransactionType.POOL,
-        callback: refetch,
-    });
+        callback: refetch });
 
     const sourceHasVoted = veTOKEN?.votedThisEpoch;
     const targetHasVoted = veTOKENsList?.find((v) => v.tokenId === targetId)?.votedThisEpoch;

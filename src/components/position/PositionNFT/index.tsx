@@ -1,9 +1,9 @@
 import { NONFUNGIBLE_POSITION_MANAGER } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useReadNonfungiblePositionManagerTokenUri } from "@/generated";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { useChainId } from "wagmi";
 
 interface PositionNFTProps {
     positionId: number;
@@ -13,8 +13,7 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
     const chainId = useChainId();
 
     const { data: uri } = useReadNonfungiblePositionManagerTokenUri({
-        args: positionId ? [BigInt(positionId)] : undefined,
-    });
+        args: positionId ? [BigInt(positionId)] : undefined });
 
     const imgRef = useRef<any>();
 

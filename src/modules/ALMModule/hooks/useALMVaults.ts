@@ -1,8 +1,8 @@
 import { getVaultsByPool, AlgebraVault, getExtendedAlgebraVault, getAllVaults } from "@cryptoalgebra/alm-sdk";
+import { useChainId } from "@/hooks/common/useChainId";
 import useSWR from "swr";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { Address, formatUnits } from "viem";
-import { useChainId } from "wagmi";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useCurrency } from "@/hooks/common/useCurrency";
@@ -32,11 +32,9 @@ export function useALMVaultsByPool(
     isLoading: boolean;
 } {
     const { data: token0Address } = useReadAlgebraPoolToken0({
-        address: poolAddress,
-    });
+        address: poolAddress });
     const { data: token1Address } = useReadAlgebraPoolToken1({
-        address: poolAddress,
-    });
+        address: poolAddress });
 
     const chainId = useChainId();
 
@@ -83,8 +81,7 @@ export function useALMVaultsByPool(
                     amount1,
                     token0: currencyA,
                     token1: currencyB,
-                    depositToken,
-                };
+                    depositToken };
             })
         );
 

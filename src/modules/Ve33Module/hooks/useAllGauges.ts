@@ -1,9 +1,10 @@
 import { usePoolsListQuery } from "@/graphql/generated/graphql";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useClients } from "@/hooks/graphql/useClients";
 import { voterABI } from "config/abis";
 import { VOTER } from "config/contract-addresses";
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
+import { useReadContracts } from "wagmi";
 import { AlgebraGauge } from "../types/voting";
 import { isDefined } from "@/utils";
 
@@ -20,9 +21,7 @@ export function useAllGauges() {
             address: VOTER[chainId],
             abi: voterABI,
             functionName: "getGauge",
-            args: [pool.id],
-        })),
-    });
+            args: [pool.id] })) });
 
     const gaugeList: AlgebraGauge[] = useMemo(
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -33,6 +32,5 @@ export function useAllGauges() {
 
     return {
         data: gaugeList,
-        isLoading: poolsLoading || gaugesLoading,
-    };
+        isLoading: poolsLoading || gaugesLoading };
 }

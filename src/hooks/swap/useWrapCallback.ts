@@ -1,6 +1,7 @@
 import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useMemo } from "react";
-import { useAccount, useBalance, useChainId } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { DEFAULT_NATIVE_SYMBOL, WNATIVE_EXTENDED } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -10,8 +11,7 @@ import { useWriteWrappedNativeDeposit, useWriteWrappedNativeWithdraw } from "@/g
 export const WrapType = {
     NOT_APPLICABLE: "NOT_APPLICABLE",
     WRAP: "WRAP",
-    UNWRAP: "UNWRAP",
-};
+    UNWRAP: "UNWRAP" };
 
 const NOT_APPLICABLE = { wrapType: WrapType.NOT_APPLICABLE };
 
@@ -28,8 +28,7 @@ export default function useWrapCallback(
     const wrapConfig = inputAmount
         ? {
               address: WNATIVE[chainId]?.address as Address,
-              value: BigInt(inputAmount.quotient.toString()),
-          }
+              value: BigInt(inputAmount.quotient.toString()) }
         : undefined;
 
     const { data: wrapData, writeContract: wrap } = useWriteWrappedNativeDeposit();
@@ -37,14 +36,12 @@ export default function useWrapCallback(
     const { isLoading: isWrapLoading } = useTransactionAwait(wrapData, {
         title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL}`,
         tokenA: WNATIVE[chainId].address as Address,
-        type: TransactionType.SWAP,
-    });
+        type: TransactionType.SWAP });
 
     const unwrapConfig = inputAmount
         ? {
               address: WNATIVE[chainId].address as Address,
-              args: [BigInt(inputAmount.quotient.toString())] as const,
-          }
+              args: [BigInt(inputAmount.quotient.toString())] as const }
         : undefined;
 
     const { data: unwrapData, writeContract: unwrap } = useWriteWrappedNativeWithdraw();
@@ -52,13 +49,11 @@ export default function useWrapCallback(
     const { isLoading: isUnwrapLoading } = useTransactionAwait(unwrapData, {
         title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL}`,
         tokenA: WNATIVE[chainId].address as Address,
-        type: TransactionType.SWAP,
-    });
+        type: TransactionType.SWAP });
 
     const { data: balance } = useBalance({
         address: inputCurrency ? account : undefined,
-        token: inputCurrency?.isNative ? undefined : (inputCurrency?.address as Address),
-    });
+        token: inputCurrency?.isNative ? undefined : (inputCurrency?.address as Address) });
 
     return useMemo(() => {
         if (!chainId || !inputCurrency || !outputCurrency) return NOT_APPLICABLE;
@@ -77,8 +72,7 @@ export default function useWrapCallback(
                     ? undefined
                     : hasInputAmount
                       ? `Insufficient ${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
-                      : `Enter ${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
-            };
+                      : `Enter ${DEFAULT_NATIVE_SYMBOL[chainId]} amount` };
         } else if (weth.equals(inputCurrency) && outputCurrency.isNative) {
             return {
                 wrapType: WrapType.UNWRAP,
@@ -88,8 +82,7 @@ export default function useWrapCallback(
                     ? undefined
                     : hasInputAmount
                       ? `Insufficient W${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
-                      : `Enter W${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
-            };
+                      : `Enter W${DEFAULT_NATIVE_SYMBOL[chainId]} amount` };
         } else {
             return NOT_APPLICABLE;
         }

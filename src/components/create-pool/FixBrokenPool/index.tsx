@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from "react";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Address } from "viem";
-import { useAccount, useBalance, useChainId } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
+import { DEFAULT_CHAIN_ID } from "config";
 
 import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/custom-pools-sdk";
 
@@ -12,7 +14,6 @@ import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
-import { useAppKitNetwork } from "@reown/appkit/react";
 
 interface IFixBrokenPool {
     currencyIn?: Currency;
@@ -27,9 +28,7 @@ const Notification = ({ tick }: { tick?: number }) => (
 );
 
 const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) => {
-    const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
+    const chainId = useChainId();
 
     const { address: account } = useAccount();
 
@@ -61,8 +60,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
 
     const { data: inputBalance } = useBalance({
         address: account,
-        token: currencyIn?.isNative ? undefined : (currencyIn?.address as Address),
-    });
+        token: currencyIn?.isNative ? undefined : (currencyIn?.address as Address) });
 
     const { approvalState, approvalCallback } = useApproveCallbackFromTrade(trade, DEFAULT_SLIPPAGE);
 
@@ -81,7 +79,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         }
     }, [callback]);
 
-    const isWrongChain = !userChainId || appChainId !== userChainId;
+    const isWrongChain = chainId !== DEFAULT_CHAIN_ID;
 
     const insufficientBalance = inputBalance && trade ? trade.inputAmount.greaterThan(inputBalance.value.toString()) : undefined;
 

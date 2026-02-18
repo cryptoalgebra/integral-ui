@@ -1,7 +1,7 @@
 import { Currency, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useEffect, useMemo, useState } from "react";
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
-import { useChainId } from "wagmi";
 import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
 import { Address } from "viem";
@@ -41,8 +41,7 @@ export function useSwapPools(
     const { infoClient } = useClients();
 
     const [getMultiplePools] = useMultiplePoolsLazyQuery({
-        client: infoClient,
-    });
+        client: infoClient });
 
     useEffect(() => {
         async function getPools() {
@@ -55,16 +54,13 @@ export function useSwapPools(
                         : computeCustomPoolAddress({
                               tokenA,
                               tokenB,
-                              customPoolDeployer,
-                          })
+                              customPoolDeployer })
                 )
             );
 
             const poolsData = await getMultiplePools({
                 variables: {
-                    poolIds: poolsAddresses.map((address) => address.toLowerCase()),
-                },
-            });
+                    poolIds: poolsAddresses.map((address) => address.toLowerCase()) } });
 
             // const poolsLiquidities = await Promise.allSettled(poolsAddresses.map(address => getAlgebraPool({
             //     address
@@ -84,8 +80,7 @@ export function useSwapPools(
                     fee: pool.fee,
                     deployer: pool.deployer,
                     token0: pool.token0,
-                    token1: pool.token1,
-                }));
+                    token1: pool.token1 }));
 
             setExistingPools(pools);
         }
@@ -97,8 +92,7 @@ export function useSwapPools(
         if (!existingPools)
             return {
                 pools: [],
-                loading: true,
-            };
+                loading: true };
 
         return {
             pools: existingPools
@@ -107,12 +101,10 @@ export function useSwapPools(
                         new Token(chainId, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name),
                         new Token(chainId, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name),
                     ] as [Token, Token],
-                    pool: pool,
-                }))
+                    pool: pool }))
                 .filter(({ pool }) => {
                     return pool;
                 }),
-            loading: false,
-        };
+            loading: false };
     }, [existingPools, deployer, chainId]);
 }

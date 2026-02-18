@@ -1,5 +1,5 @@
 import { NONFUNGIBLE_POSITION_MANAGER, FARMING_CENTER } from "config";
-import { useChainId } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useEffect } from "react";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -13,8 +13,7 @@ export function useFarmApprove(tokenId: bigint) {
     const config = tokenId
         ? {
               address: NONFUNGIBLE_POSITION_MANAGER[chainId],
-              args: [tokenId, APPROVE, FARMING_CENTER[chainId]] as const,
-          }
+              args: [tokenId, APPROVE, FARMING_CENTER[chainId]] as const }
         : undefined;
 
     const { data: data, writeContractAsync: onApprove, isPending } = useWriteNonfungiblePositionManagerApproveForFarming();
@@ -22,8 +21,7 @@ export function useFarmApprove(tokenId: bigint) {
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Approve Position #${tokenId}`,
         tokenId: tokenId.toString(),
-        type: TransactionType.FARM,
-    });
+        type: TransactionType.FARM });
 
     const { handleCheckApprove } = useFarmCheckApprove(tokenId);
 
@@ -36,6 +34,5 @@ export function useFarmApprove(tokenId: bigint) {
     return {
         isLoading: isLoading || isPending,
         isSuccess,
-        onApprove: () => config && onApprove(config),
-    };
+        onApprove: () => config && onApprove(config) };
 }

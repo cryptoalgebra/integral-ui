@@ -1,10 +1,10 @@
 import { isDefined } from "@/utils/common/isDefined";
+import { useChainId } from "@/hooks/common/useChainId";
 import { tokensColumns, TokensTable } from "../TokensTable";
 import { useAllTokensQuery } from "@/graphql/generated/graphql";
 import { Token, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
-import { useChainId } from "wagmi";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { findStablecoin } from "@/utils/common/findStablecoin";
 import { Address } from "viem";
@@ -41,8 +41,7 @@ export function TokensList() {
                       volume,
                       tvl,
                       change,
-                      tokenSDK,
-                  };
+                      tokenSDK };
               })
               .filter(isDefined)
         : [];

@@ -1,10 +1,10 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
+import { useChainId } from "@/hooks/common/useChainId";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
-import { useChainId } from "wagmi";
 import { LimitPriceCard } from "../LimitPriceCard";
 import { LimitOrderButton } from "../LimitOrderButton";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
@@ -17,8 +17,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
     const [initialSingleHop, setInitialSingleHop] = useState(singleHopOnly);
 
     const {
-        actions: { typeLimitOrderPrice, limitOrderPriceLastFocused, limitOrderPriceWasInverted },
-    } = useSwapState();
+        actions: { typeLimitOrderPrice, limitOrderPriceLastFocused, limitOrderPriceWasInverted } } = useSwapState();
 
     const chainId = useChainId();
 
@@ -45,8 +44,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId],
-              }) as Address)
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainId] }) as Address)
             : undefined;
 
     const [limitOrderPoolExists, limitOrderPool] = usePool(limitOrderPoolAddress);
@@ -115,8 +113,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
         ) {
             return {
                 blockCreation: true,
-                message: `Missing required data to create order: ${missingFields.join(", ")}`,
-            };
+                message: `Missing required data to create order: ${missingFields.join(", ")}` };
         }
 
         const priceTick = invertPrice
@@ -134,15 +131,13 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
         if (currencies.INPUT.wrapped.equals(token0.wrapped) && priceTick <= tick) {
             return {
                 blockCreation: true,
-                message: "Sell price must be above current price when selling token0",
-            };
+                message: "Sell price must be above current price when selling token0" };
         }
 
         if (currencies.INPUT.wrapped.equals(token1.wrapped) && priceTick >= tick) {
             return {
                 blockCreation: true,
-                message: "Sell price must be below current price when selling token1",
-            };
+                message: "Sell price must be below current price when selling token1" };
         }
 
         return { blockCreation: false, message: "" };

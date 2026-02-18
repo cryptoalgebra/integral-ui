@@ -1,10 +1,10 @@
 import { SWAP_ROUTER } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { readAlgebraPoolPlugin, simulateAlgebraBasePluginV1BeforeSwap } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
 import { ADDRESS_ZERO, computePoolAddress, Currency, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useEffect, useState } from "react";
-import { useChainId } from "wagmi";
 import { Address, maxUint128 } from "viem";
 
 export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | null | undefined) {
@@ -42,8 +42,7 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                         const isZeroToOne = split[0].wrapped.sortsBefore(split[1].wrapped);
 
                         const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
-                            address: pool.address,
-                        });
+                            address: pool.address });
 
                         let beforeSwap: [string, number, number];
 
@@ -59,8 +58,7 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                                     false,
                                     "0x",
                                 ] as const,
-                                account: pool.address,
-                            });
+                                account: pool.address });
 
                             beforeSwap = result as [string, number, number];
                         } catch (error) {
@@ -90,14 +88,12 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
 
                         const poolAddress = computePoolAddress({
                             tokenA: route.inputAmount.currency.wrapped,
-                            tokenB: route.outputAmount.currency.wrapped,
-                        }) as Address;
+                            tokenB: route.outputAmount.currency.wrapped }) as Address;
 
                         const isZeroToOne = route.inputAmount.currency.wrapped.sortsBefore(route.outputAmount.currency.wrapped);
 
                         const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
-                            address: poolAddress,
-                        });
+                            address: poolAddress });
 
                         let beforeSwap: [string, number, number];
 
@@ -113,8 +109,7 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                                     false,
                                     "0x",
                                 ] as const,
-                                account: poolAddress,
-                            });
+                                account: poolAddress });
 
                             beforeSwap = result as [string, number, number];
                         } catch (error) {
@@ -142,8 +137,7 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
 
             setOverrideFees({
                 fee: 100 - p,
-                fees,
-            });
+                fees });
         };
 
         getFees();

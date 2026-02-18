@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { SwapField } from "@/types/swap-field";
@@ -7,10 +8,9 @@ import {
     computeCustomPoolAddress,
     NonfungiblePositionManager,
     ADDRESS_ZERO,
-    INITIAL_POOL_FEE,
-} from "@cryptoalgebra/custom-pools-sdk";
+    INITIAL_POOL_FEE } from "@cryptoalgebra/custom-pools-sdk";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { useDerivedMintInfo, useMintState } from "@/state/mintStore";
 import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
@@ -21,8 +21,7 @@ import {
     CUSTOM_POOL_DEPLOYER_TITLES,
     CUSTOM_POOL_DEPLOYER_ADDRESSES,
     NONFUNGIBLE_POSITION_MANAGER,
-    enabledModules,
-} from "config";
+    enabledModules } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
@@ -37,13 +36,11 @@ const CreatePoolForm = () => {
     const { currencies } = useDerivedSwapInfo();
 
     const {
-        actions: { selectCurrency },
-    } = useSwapState();
+        actions: { selectCurrency } } = useSwapState();
 
     const {
         startPriceTypedValue,
-        actions: { typeStartPriceInput },
-    } = useMintState();
+        actions: { typeStartPriceInput } } = useMintState();
 
     const chainid = useChainId();
 
@@ -61,8 +58,7 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.LIMIT_ORDERS]: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDERS[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.ALM]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.AI]: CUSTOM_POOL_DEPLOYER_ADDRESSES.AI[chainid],
-        }),
+            [CUSTOM_POOL_DEPLOYER_TITLES.AI]: CUSTOM_POOL_DEPLOYER_ADDRESSES.AI[chainid] }),
         [chainid],
     );
 
@@ -70,8 +66,7 @@ const CreatePoolForm = () => {
         areCurrenciesSelected && !isSameToken
             ? (computePoolAddress({
                   tokenA: currencyA.wrapped,
-                  tokenB: currencyB.wrapped,
-              }) as Address)
+                  tokenB: currencyB.wrapped }) as Address)
             : undefined;
 
     const customPoolsAddresses =
@@ -87,8 +82,7 @@ const CreatePoolForm = () => {
                           computeCustomPoolAddress({
                               tokenA: currencyA.wrapped,
                               tokenB: currencyB.wrapped,
-                              customPoolDeployer,
-                          }) as Address,
+                              customPoolDeployer }) as Address,
                   )
             : [];
 
@@ -119,8 +113,7 @@ const CreatePoolForm = () => {
         if (!mintInfo?.pool || !customPoolDeployerAddresses[poolDeployer])
             return {
                 calldata: undefined,
-                value: undefined,
-            };
+                value: undefined };
 
         return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
     }, [customPoolDeployerAddresses, mintInfo.pool, poolDeployer]);
@@ -132,8 +125,7 @@ const CreatePoolForm = () => {
               address: NONFUNGIBLE_POSITION_MANAGER[chainid],
               args: Array.isArray(calldata) ? ([calldata as Address[]] as const) : ([[calldata] as Address[]] as const),
               value: BigInt(value || 0),
-              enabled: Boolean(calldata),
-          }
+              enabled: Boolean(calldata) }
         : null;
 
     const { isLoading: isBasePoolLoading } = useTransactionAwait(
@@ -142,8 +134,7 @@ const CreatePoolForm = () => {
             title: "Create Base Pool",
             tokenA: currencyA?.wrapped.address as Address,
             tokenB: currencyB?.wrapped.address as Address,
-            type: TransactionType.POOL,
-        },
+            type: TransactionType.POOL },
         "/pools",
     );
 
@@ -159,8 +150,7 @@ const CreatePoolForm = () => {
                       mintInfo.pool?.token0.address as Address,
                       mintInfo.pool?.token1.address as Address,
                       "0x0",
-                  ] as const,
-              }
+                  ] as const }
             : undefined;
 
     const { data: createCustomPoolData, writeContract: createCustomPool } = useWriteAlgebraCustomPoolEntryPointCreateCustomPool();
@@ -169,8 +159,7 @@ const CreatePoolForm = () => {
         title: "Create Custom Pool",
         tokenA: currencyA?.wrapped.address as Address,
         tokenB: currencyB?.wrapped.address as Address,
-        type: TransactionType.POOL,
-    });
+        type: TransactionType.POOL });
 
     const isLoading = isCustomPoolLoading || isBasePoolLoading || isPending || mintInfo.poolState === PoolState.LOADING;
 

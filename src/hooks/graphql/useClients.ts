@@ -1,5 +1,5 @@
 import { infoClient, farmingClient, limitOrderClient, uniswapInfoClient } from "@/graphql/clients";
-import { useChainId } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
 
 export function useClients() {
     const chainId = useChainId();
@@ -8,6 +8,5 @@ export function useClients() {
         infoClient: infoClient[chainId],
         uniswapInfoClient,
         farmingClient: farmingClient[chainId],
-        limitOrderClient: limitOrderClient[chainId],
-    };
+        limitOrderClient: limitOrderClient[chainId] };
 }

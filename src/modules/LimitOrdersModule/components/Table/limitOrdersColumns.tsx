@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useChainId } from "@/hooks/common/useChainId";
 import { CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
@@ -6,8 +7,7 @@ import { useWriteLimitOrderManagerWithdraw } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
-import { useChainId } from "wagmi";
-import { LIMIT_ORDER_MANAGER } from "config";
+import { LIMIT_ORDER_MANAGER, DEFAULT_CHAIN_ID } from "config";
 import { KillLimitOrderModal } from "..";
 import Loader from "@/components/common/Loader";
 import { HeaderItem } from "@/components/common/Table/common";
@@ -145,11 +145,9 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 };
 
 const Action = (props: LimitOrderInfo) => {
-    const appChainId = useChainId();
+    const chainId = useChainId();
 
-    const userChainId = useChainId();
-
-    if (!userChainId || appChainId !== userChainId) return;
+    if (chainId !== DEFAULT_CHAIN_ID) return;
 
     if (props.killed) return;
 
@@ -165,15 +163,13 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrderInfo) => {
 
     const withdrawConfig = {
         address: LIMIT_ORDER_MANAGER[chainId],
-        args: [BigInt(epoch.id), owner] as const,
-    };
+        args: [BigInt(epoch.id), owner] as const };
 
     const { writeContract: withdraw, data: withdrawData } = useWriteLimitOrderManagerWithdraw({});
 
     const { isLoading: isWithdrawLoading } = useTransactionAwait(withdrawData, {
         type: TransactionType.LIMIT_ORDER,
-        title: "Collect Limit Order",
-    });
+        title: "Collect Limit Order" });
 
     return (
         <Button size={"sm"} onClick={() => withdraw && withdraw(withdrawConfig)}>
@@ -187,34 +183,28 @@ export const limitOrderColumns: ColumnDef<LimitOrderInfo>[] = [
         accessorKey: "time",
         header: () => <HeaderItem className="ml-4">Time</HeaderItem>,
         cell: ({ getValue }) => <div className="ml-4">{(getValue() as Date).toLocaleString()}</div>,
-        sortingFn: (rowA, rowB) => rowA.original.time.getTime() - rowB.original.time.getTime(),
-    },
+        sortingFn: (rowA, rowB) => rowA.original.time.getTime() - rowB.original.time.getTime() },
     {
         accessorKey: "amounts.sell",
         header: () => <HeaderItem>You sell</HeaderItem>,
-        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
-    },
+        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} /> },
     {
         accessorKey: "amounts.buy",
         header: () => <HeaderItem>You buy</HeaderItem>,
-        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
-    },
+        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} /> },
     {
         accessorKey: "rates",
         header: () => <HeaderItem>Rates</HeaderItem>,
-        cell: ({ getValue }) => <TokenRates rates={getValue() as Rates} />,
-    },
+        cell: ({ getValue }) => <TokenRates rates={getValue() as Rates} /> },
     {
         accessorKey: "ticks",
         header: () => <HeaderItem>Status</HeaderItem>,
-        cell: ({ getValue, row }) => <LimitOrderStatus ticks={getValue() as Ticks} amounts={row.original.amounts} />,
-    },
+        cell: ({ getValue, row }) => <LimitOrderStatus ticks={getValue() as Ticks} amounts={row.original.amounts} /> },
     {
         id: "action",
         cell: (props) => (
             <div className="text-right">
                 <Action {...props.row.original} />
             </div>
-        ),
-    },
+        ) },
 ];

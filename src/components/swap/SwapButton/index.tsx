@@ -1,6 +1,7 @@
 import Loader from "@/components/common/Loader";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
@@ -9,10 +10,9 @@ import { ApprovalState } from "@/types/approve-state";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { useAppKitNetwork } from "@reown/appkit/react";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
@@ -23,9 +23,7 @@ const { useSmartRouterCallback } = SmartRouterModule.hooks;
 const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { connect: open } = useWeb3AuthConnect();
 
-    const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
+    const chainId = useChainId();
 
     const { address: account } = useAccount();
 
@@ -40,15 +38,13 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         currencyBalances,
         toggledTrade: trade,
         tradeState,
-        smartTradeCallOptions,
-    } = derivedSwap;
+        smartTradeCallOptions } = derivedSwap;
 
     const {
         wrapType,
         execute: onWrap,
         loading: isWrapLoading,
-        inputError: wrapInputError,
-    } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+        inputError: wrapInputError } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
@@ -65,8 +61,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const parsedAmounts = useMemo(
         () => ({
             [SwapField.INPUT]: parsedAmountA,
-            [SwapField.OUTPUT]: parsedAmountB,
-        }),
+            [SwapField.OUTPUT]: parsedAmountB }),
         [parsedAmountA, parsedAmountB]
     );
 
@@ -114,8 +109,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const {
         callback: swapCallback,
         isLoading: swapLoading,
-        error: swapError,
-    } = useSwapCallback(!isSmartTrade ? trade : null, allowedSlippage, approvalState);
+        error: swapError } = useSwapCallback(!isSmartTrade ? trade : null, allowedSlippage, approvalState);
 
     const isSwapLoading = swapLoading || smartSwapLoading;
 
@@ -139,7 +133,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const showApproveFlow =
         !swapInputError && (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && !priceImpactTooHigh;
 
-    const isWrongChain = !userChainId || appChainId !== userChainId;
+    const isWrongChain = chainId !== DEFAULT_CHAIN_ID;
 
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 

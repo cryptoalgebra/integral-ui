@@ -1,4 +1,5 @@
 import { CurrencyAmounts } from "@/components/common/CurrencyAmounts";
+import { useChainId } from "@/hooks/common/useChainId";
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -15,7 +16,7 @@ import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/custom-pools
 import { NONFUNGIBLE_POSITION_MANAGER } from "config/contract-addresses";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 
 interface RemoveLiquidityModalProps {
     positionId: number;
@@ -54,17 +55,14 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
             collectOptions: {
                 expectedCurrencyOwed0: feeValue0,
                 expectedCurrencyOwed1: feeValue1,
-                recipient: account,
-            },
-        });
+                recipient: account } });
     }, [positionId, positionSDK, txDeadline, feeValue0, feeValue1, liquidityPercentage, account, percent]);
 
     const removeLiquidityConfig = calldata
         ? {
               address: NONFUNGIBLE_POSITION_MANAGER[chainId],
               args: [calldata as `0x${string}`[]] as const,
-              value: BigInt(value || 0),
-          }
+              value: BigInt(value || 0) }
         : calldata;
 
     const { data: removeLiquidityData, writeContract: removeLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
@@ -73,8 +71,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         title: "Remove liquidity",
         tokenA: position?.token0 as Address,
         tokenB: position?.token1 as Address,
-        type: TransactionType.POOL,
-    });
+        type: TransactionType.POOL });
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity || isPending;
 
@@ -114,8 +111,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                                 } else {
                                     query.refetch().then();
                                 }
-                            },
-                        }),
+                            } }),
                     2000
                 );
             });

@@ -1,8 +1,8 @@
 import { DEFAULT_CHAIN_ID } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useCallback, useMemo } from "react";
 import { OnChainProvider, SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useQuery } from "@tanstack/react-query";
-import { useChainId } from "wagmi";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 export interface V3PoolsHookParams {
@@ -74,8 +74,7 @@ export function useV3CandidatePools(currencyA?: Currency, currencyB?: Currency, 
         blockNumber: data?.blockNumber,
         key: data?.key,
         error,
-        dataUpdatedAt,
-    };
+        dataUpdatedAt };
 }
 
 export function useCommonPools(

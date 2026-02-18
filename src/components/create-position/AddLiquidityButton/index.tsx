@@ -1,6 +1,7 @@
 import Loader from "@/components/common/Loader";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Button } from "@/components/ui/button";
-import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
+import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -9,11 +10,10 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
 import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useMemo } from "react";
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface AddLiquidityButtonProps {
@@ -31,9 +31,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const { connect: open } = useWeb3AuthConnect();
 
-    const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
+    const chainId = useChainId();
 
     const { txDeadline } = useUserState();
 
@@ -48,11 +46,8 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
             deadline: Date.now() + txDeadline,
             useNative,
             createPool: mintInfo.noLiquidity,
-            deployer: mintInfo.pool?.deployer,
-        });
+            deployer: mintInfo.pool?.deployer });
     }, [mintInfo, account, txDeadline, useNative]);
-
-    const chainId = useChainId();
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
@@ -79,10 +74,9 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     const addLiquidityConfig =
         calldata && isReady
             ? {
-                  address: NONFUNGIBLE_POSITION_MANAGER[appChainId],
+                  address: NONFUNGIBLE_POSITION_MANAGER[chainId],
                   args: calldata && ([calldata as `0x${string}`[]] as const),
-                  value: BigInt(value),
-              }
+                  value: BigInt(value) }
             : undefined;
 
     const { data: addLiquidityData, writeContract: addLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
@@ -93,12 +87,11 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
             title: "Add liquidity",
             tokenA: baseCurrency?.wrapped.address as Address,
             tokenB: quoteCurrency?.wrapped.address as Address,
-            type: TransactionType.POOL,
-        },
+            type: TransactionType.POOL },
         `/pool/${poolAddress}`
     );
 
-    const isWrongChain = !userChainId || appChainId !== userChainId;
+    const isWrongChain = chainId !== DEFAULT_CHAIN_ID;
 
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 

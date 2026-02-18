@@ -1,10 +1,10 @@
 import { useMemo } from "react";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useVotingPools } from "./useVotingPools";
 import { formatUnits } from "viem";
 import { FormattedVotingPool, RewardToken } from "../types/voting";
 import { useClients } from "@/hooks/graphql/useClients";
 import { usePoolsListQuery } from "@/graphql/generated/graphql";
-import { useChainId } from "wagmi";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import { STABLECOINS } from "config/tokens";
 
@@ -15,8 +15,7 @@ export function useFormattedVotingPools() {
     const { infoClient } = useClients();
 
     const { data: commonPoolsResult, loading: isCommonPoolsLoading } = usePoolsListQuery({
-        client: infoClient,
-    });
+        client: infoClient });
 
     const commonPools = useMemo(() => commonPoolsResult?.pools ?? [], [commonPoolsResult]);
 
@@ -75,14 +74,12 @@ export function useFormattedVotingPools() {
                     isAlive: votingPool.isAlive,
                     tvlUSD: Number(totalValueLockedUSD || 0),
                     feesUSD: feesForCurrentEpoch,
-                    poolVotesDeposited: votingPool.poolVotesDeposited,
-                };
+                    poolVotesDeposited: votingPool.poolVotesDeposited };
             });
     }, [tokenPriceUSD, commonPools, votingPools, votingPoolsLoading]);
 
     return {
         data: formattedVotingPools,
         isLoading: votingPoolsLoading || isCommonPoolsLoading,
-        refetch: refetchVotingPools,
-    };
+        refetch: refetchVotingPools };
 }

@@ -1,5 +1,6 @@
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useAccount } from "wagmi";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
 import { Deposit, EternalFarming } from "@/graphql/generated/graphql";
@@ -29,8 +30,7 @@ export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, is
         formattedBonusRewardEarned,
         rewardEarnedUSD,
         bonusRewardEarnedUSD,
-        totalRewardsEarnedUSD,
-    } = useFarmingRewardsEarned(eternalFarming, [selectedPosition]);
+        totalRewardsEarnedUSD } = useFarmingRewardsEarned(eternalFarming, [selectedPosition]);
 
     const isSameReward = isSameRewards(eternalFarming.rewardToken as Address, eternalFarming.bonusRewardToken as Address);
 
@@ -41,8 +41,7 @@ export const HarvestAndExitFarmingCard = ({ eternalFarming, selectedPosition, is
         pool: eternalFarming.pool as Address,
         nonce: BigInt(eternalFarming.nonce),
         account: account ?? ADDRESS_ZERO,
-        chainId,
-    };
+        chainId };
 
     const { onHarvest, isLoading: isHarvesting } = useFarmHarvest(farmingArgs);
 

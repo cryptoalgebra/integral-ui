@@ -1,4 +1,5 @@
 import { TokenFieldsFragment } from "@/graphql/generated/graphql";
+import { useChainId } from "@/hooks/common/useChainId";
 import { useAlgebraToken } from "@/hooks/common/useAlgebraToken";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import useDebounce from "@/hooks/common/useDebounce";
@@ -7,7 +8,7 @@ import { useAllTokens } from "@/hooks/tokens/useAllTokens";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FixedSizeList } from "react-window";
 import { Address, isAddress } from "viem";
-import { useAccount, useBalance, useChainId } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import CurrencyLogo from "../CurrencyLogo";
 import { ADDRESS_ZERO, Currency, ExtendedNative, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useTokensState } from "@/state/tokensStore";
@@ -18,15 +19,13 @@ import { formatAmount } from "@/utils";
 const TokenSelectorView = {
     DEFAULT_LIST: "DEFAULT_LIST",
     IMPORT_TOKEN: "IMPORT_TOKEN",
-    NOT_FOUND: "NOT_FOUND",
-};
+    NOT_FOUND: "NOT_FOUND" };
 
 type TokenSelectorViewType = typeof TokenSelectorView[keyof typeof TokenSelectorView];
 
 const Search = ({
     data,
-    onSearch,
-}: {
+    onSearch }: {
     data: TokenFieldsFragment[];
     onSearch: (matchedTokens: TokenFieldsFragment[], importToken: Token | undefined) => void;
 }) => {
@@ -39,15 +38,13 @@ const Search = ({
     const fuseOptions = useMemo(
         () => ({
             keys: ["id", "symbol", "name"],
-            threshold: 0,
-        }),
+            threshold: 0 }),
         [],
     );
 
     const { result, pattern, search } = useFuse<TokenFieldsFragment>({
         data,
-        options: fuseOptions,
-    });
+        options: fuseOptions });
 
     const handleInput = (input: string | undefined) => {
         setQuery(input);
@@ -79,8 +76,7 @@ const TokenRow = ({
     token,
     onSelect,
     otherCurrency,
-    style,
-}: {
+    style }: {
     token: TokenFieldsFragment;
     account: Address | undefined;
     onSelect: (currency: Currency) => void;
@@ -91,8 +87,7 @@ const TokenRow = ({
 
     const { data: balance, isLoading } = useBalance({
         address: account,
-        token: token.id === ADDRESS_ZERO ? undefined : (token.id as Address),
-    });
+        token: token.id === ADDRESS_ZERO ? undefined : (token.id as Address) });
 
     const balanceString = useMemo(() => {
         if (isLoading || !balance) return "Loading...";
@@ -170,8 +165,7 @@ export const TokenSelector = ({
     onSelect,
     otherCurrency,
     showNativeToken,
-    showWrappedNativeToken = true,
-}: {
+    showWrappedNativeToken = true }: {
     onSelect: (currency: Currency) => void;
     otherCurrency: Currency | null | undefined;
     showNativeToken?: boolean;
@@ -182,8 +176,7 @@ export const TokenSelector = ({
     const [selectorView, setSelectorView] = useState<TokenSelectorViewType>(TokenSelectorView.DEFAULT_LIST);
 
     const {
-        actions: { importToken },
-    } = useTokensState();
+        actions: { importToken } } = useTokensState();
 
     const { tokens, isLoading } = useAllTokens(showNativeToken, showWrappedNativeToken);
 

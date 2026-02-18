@@ -1,11 +1,11 @@
 import { FARMING_CENTER } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Address, encodeFunctionData } from "viem";
 import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { useEffect, useState } from "react";
 import { Deposit } from "@/graphql/generated/graphql";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { useChainId } from "wagmi";
 import { useWriteFarmingCenterEnterFarming, useWriteFarmingCenterMulticall } from "@/generated";
 import { farmingCenterABI } from "config/abis";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -16,8 +16,7 @@ export function useFarmStake({
     rewardToken,
     bonusRewardToken,
     pool,
-    nonce,
-}: {
+    nonce }: {
     tokenId: bigint;
     rewardToken: Address;
     bonusRewardToken: Address;
@@ -43,11 +42,9 @@ export function useFarmStake({
                       rewardToken,
                       bonusRewardToken,
                       pool,
-                      nonce,
-                  },
+                      nonce },
                   tokenId,
-              ] as const,
-          }
+              ] as const }
         : undefined;
 
     const { data: data, writeContractAsync: onStake, isPending } = useWriteFarmingCenterEnterFarming();
@@ -55,8 +52,7 @@ export function useFarmStake({
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Stake Position #${tokenId}`,
         tokenId: tokenId.toString(),
-        type: TransactionType.FARM,
-    });
+        type: TransactionType.FARM });
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -76,8 +72,7 @@ export function useFarmStake({
                         } else {
                             query.refetch().then();
                         }
-                    },
-                }),
+                    } }),
             2000
         );
 
@@ -87,8 +82,7 @@ export function useFarmStake({
     return {
         isLoading: isQueryLoading || isLoading || isPending,
         isSuccess,
-        onStake: () => config && onStake(config),
-    };
+        onStake: () => config && onStake(config) };
 }
 
 export function useFarmUnstake({
@@ -97,8 +91,7 @@ export function useFarmUnstake({
     bonusRewardToken,
     pool,
     nonce,
-    account,
-}: {
+    account }: {
     tokenId: bigint;
     rewardToken: Address;
     bonusRewardToken: Address;
@@ -120,23 +113,19 @@ export function useFarmUnstake({
                 rewardToken,
                 bonusRewardToken,
                 pool,
-                nonce,
-            },
+                nonce },
             tokenId,
-        ],
-    });
+        ] });
 
     const rewardClaimCalldata = encodeFunctionData({
         abi: farmingCenterABI,
         functionName: "claimReward",
-        args: [rewardToken, account, BigInt(MaxUint128)],
-    });
+        args: [rewardToken, account, BigInt(MaxUint128)] });
 
     const bonusRewardClaimCalldata = encodeFunctionData({
         abi: farmingCenterABI,
         functionName: "claimReward",
-        args: [bonusRewardToken, account, BigInt(MaxUint128)],
-    });
+        args: [bonusRewardToken, account, BigInt(MaxUint128)] });
 
     const calldatas = [exitFarmingCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
 
@@ -144,8 +133,7 @@ export function useFarmUnstake({
         account && tokenId
             ? {
                   address: FARMING_CENTER[chainId],
-                  args: [calldatas] as const,
-              }
+                  args: [calldatas] as const }
             : undefined;
 
     const { data, writeContractAsync: onUnstake, isPending } = useWriteFarmingCenterMulticall();
@@ -153,8 +141,7 @@ export function useFarmUnstake({
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Unstake Position #${tokenId}`,
         tokenId: tokenId.toString(),
-        type: TransactionType.FARM,
-    });
+        type: TransactionType.FARM });
 
     useEffect(() => {
         if (!isSuccess) return;
@@ -174,8 +161,7 @@ export function useFarmUnstake({
                         } else {
                             query.refetch().then();
                         }
-                    },
-                }),
+                    } }),
             2000
         );
 
@@ -185,6 +171,5 @@ export function useFarmUnstake({
     return {
         isLoading: isLoading || isQueryLoading || isPending,
         isSuccess,
-        onUnstake: () => config && onUnstake(config),
-    };
+        onUnstake: () => config && onUnstake(config) };
 }

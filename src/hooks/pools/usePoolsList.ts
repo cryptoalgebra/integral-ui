@@ -1,8 +1,9 @@
 import { algebraFactoryABI } from "config/abis/algebraFactory";
+import { useChainId } from "@/hooks/common/useChainId";
 import { ALGEBRA_FACTORY } from "config";
 import { useEffect, useState } from "react";
 import { Address, decodeEventLog, parseAbiItem } from "viem";
-import { useChainId, usePublicClient } from "wagmi";
+import { usePublicClient } from "wagmi";
 
 interface IPools {
     readonly token0: Address;
@@ -30,8 +31,7 @@ export function usePoolsList() {
                 address: ALGEBRA_FACTORY[chainId],
                 event: parseAbiItem("event Pool(address, address, address)"),
                 fromBlock: ALGEBRA_FACTORY_CREATION_BLOCK,
-                toBlock: "latest",
-            })
+                toBlock: "latest" })
             .then((logs) =>
                 logs.map(
                     ({ data, topics }) =>
@@ -39,8 +39,7 @@ export function usePoolsList() {
                             abi: algebraFactoryABI,
                             eventName: "Pool",
                             data,
-                            topics,
-                        }).args
+                            topics }).args
                 )
             )
             .then((v) => {

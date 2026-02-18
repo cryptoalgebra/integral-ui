@@ -1,5 +1,6 @@
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import { useAccount, useChainId, usePublicClient } from "wagmi";
+import { useChainId } from "@/hooks/common/useChainId";
+import { useAccount, usePublicClient } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
@@ -64,8 +65,7 @@ export function useSwapCallback(
                             functionName: "multicall",
                             args: [calldata],
                             account,
-                            value,
-                        });
+                            value });
 
                         return { calldata, value, gasEstimate };
                     } catch (error) {
@@ -97,8 +97,7 @@ export function useSwapCallback(
                 ? {
                       args: [bestCall.calldata] as const,
                       value: BigInt(bestCall.value),
-                      gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
-                  }
+                      gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n }
                 : undefined,
         [bestCall]
     );
@@ -109,8 +108,7 @@ export function useSwapCallback(
         title: `Swap ${formatAmount(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
-        type: TransactionType.SWAP,
-    });
+        type: TransactionType.SWAP });
 
     return useMemo(() => {
         if (!trade && trade !== null)
@@ -119,15 +117,13 @@ export function useSwapCallback(
                 callback: null,
                 error: "No trade was found",
                 isLoading: false,
-                isSuccess: false,
-            };
+                isSuccess: false };
 
         return {
             state: SwapCallbackState.VALID,
             callback: () => swapConfig && swapCallback(swapConfig),
             error: callError?.message.split(":")[1].split("Contract Call")[0],
             isLoading: isLoading || isPending,
-            isSuccess,
-        };
+            isSuccess };
     }, [trade, callError?.message, isLoading, isPending, isSuccess, swapConfig, swapCallback]);
 }

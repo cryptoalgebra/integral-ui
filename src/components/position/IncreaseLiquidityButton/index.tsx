@@ -1,6 +1,7 @@
 import Loader from "@/components/common/Loader";
+import { useChainId } from "@/hooks/common/useChainId";
 import { Button } from "@/components/ui/button";
-import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
+import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -10,11 +11,10 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
 import { Currency, Field, NonfungiblePositionManager, Percent, ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useEffect, useMemo } from "react";
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { useWeb3AuthConnect } from "@web3auth/modal/react";
 
 interface IncreaseLiquidityButtonProps {
@@ -33,15 +33,12 @@ export const IncreaseLiquidityButton = ({
     tokenId,
     baseCurrency,
     quoteCurrency,
-    handleCloseModal,
-}: IncreaseLiquidityButtonProps) => {
+    handleCloseModal }: IncreaseLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { connect: open } = useWeb3AuthConnect();
 
-    const appChainId = useChainId();
-
-    const { chainId: userChainId } = useAppKitNetwork();
+    const chainId = useChainId();
 
     const { txDeadline } = useUserState();
 
@@ -58,11 +55,8 @@ export const IncreaseLiquidityButton = ({
             tokenId: tokenId || 0,
             slippageTolerance: mintInfo.outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE,
             deadline: Date.now() + txDeadline,
-            useNative,
-        });
+            useNative });
     }, [mintInfo, account, tokenId, txDeadline, useNative]);
-
-    const chainId = useChainId();
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
@@ -90,8 +84,7 @@ export const IncreaseLiquidityButton = ({
         ? {
               address: NONFUNGIBLE_POSITION_MANAGER[chainId],
               args: [calldata as `0x${string}`[]] as const,
-              value: BigInt(value || 0),
-          }
+              value: BigInt(value || 0) }
         : undefined;
 
     const { data: increaseLiquidityData, writeContract: increaseLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
@@ -100,15 +93,14 @@ export const IncreaseLiquidityButton = ({
         title: `Add Liquidity to #${tokenId}`,
         tokenA: baseCurrency?.wrapped.address as Address,
         tokenB: quoteCurrency?.wrapped.address as Address,
-        type: TransactionType.POOL,
-    });
+        type: TransactionType.POOL });
 
     useEffect(() => {
         if (!isSuccess) return;
         Promise.all([refetchPosition(), refetchAllPositions()]).then(() => handleCloseModal?.());
     }, [isSuccess]);
 
-    const isWrongChain = !userChainId || appChainId !== userChainId;
+    const isWrongChain = chainId !== DEFAULT_CHAIN_ID;
 
     if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
 

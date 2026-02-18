@@ -1,7 +1,8 @@
 import { nonfungiblePositionManagerABI, NONFUNGIBLE_POSITION_MANAGER } from "config";
+import { useChainId } from "@/hooks/common/useChainId";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { useAccount, useChainId, useReadContracts } from "wagmi";
+import { useAccount, useReadContracts } from "wagmi";
 import { Address } from "viem";
 import { useReadNonfungiblePositionManagerBalanceOf } from "@/generated";
 
@@ -36,15 +37,12 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         isLoading,
         isError,
         error,
-        refetch,
-    } = useReadContracts<readonly { result: any; error: any }[]>({
+        refetch } = useReadContracts<readonly { result: any; error: any }[]>({
         contracts: inputs.map((x) => ({
             address: NONFUNGIBLE_POSITION_MANAGER[chainId],
             abi: nonfungiblePositionManagerABI,
             functionName: "positions",
-            args: [[Number(x)]],
-        })),
-    });
+            args: [[Number(x)]] })) });
 
     const positions = useMemo(() => {
         if (!isLoading && !isError && tokenIds && !error) {
@@ -59,13 +57,11 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                         isBasePool
                             ? computePoolAddress({
                                   tokenA: new Token(chainId, result[2], 18),
-                                  tokenB: new Token(chainId, result[3], 18),
-                              })
+                                  tokenB: new Token(chainId, result[3], 18) })
                             : computeCustomPoolAddress({
                                   tokenA: new Token(chainId, result[2], 18),
                                   tokenB: new Token(chainId, result[3], 18),
-                                  customPoolDeployer: result[4],
-                              })
+                                  customPoolDeployer: result[4] })
                     ) as Address;
 
                     return {
@@ -82,8 +78,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                         deployer: result[4],
                         tokensOwed0: result[10],
                         tokensOwed1: result[11],
-                        pool,
-                    };
+                        pool };
                 });
         }
         return undefined;
@@ -93,8 +88,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         return {
             isLoading,
             positions,
-            refetch,
-        };
+            refetch };
     }, [isLoading, positions, refetch]);
 }
 
@@ -105,9 +99,7 @@ export function usePositions() {
     const { data: balanceResult, isLoading: balanceLoading } = useReadNonfungiblePositionManagerBalanceOf({
         args: account ? [account] : undefined,
         query: {
-            enabled: !!account,
-        },
-    });
+            enabled: !!account } });
 
     const tokenIdsArgs: [Address, number][] = useMemo(() => {
         if (!balanceResult || !account) return [];
@@ -126,9 +118,7 @@ export function usePositions() {
             address: NONFUNGIBLE_POSITION_MANAGER[chainId],
             abi: nonfungiblePositionManagerABI,
             functionName: "tokenOfOwnerByIndex",
-            args,
-        })),
-    });
+            args })) });
 
     const tokenIds = useMemo(() => {
         if (account) {
@@ -145,8 +135,7 @@ export function usePositions() {
     return {
         loading: someTokenIdsLoading || balanceLoading || positionsLoading,
         positions,
-        refetch,
-    };
+        refetch };
 }
 
 export function usePosition(tokenId: string | number | undefined): {
@@ -165,7 +154,6 @@ export function usePosition(tokenId: string | number | undefined): {
         return {
             loading: isLoading,
             position: positions?.[0],
-            refetch,
-        };
+            refetch };
     }, [isLoading, positions, refetch]);
 }
