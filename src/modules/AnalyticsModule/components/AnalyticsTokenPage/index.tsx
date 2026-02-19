@@ -108,7 +108,7 @@ export function AnalyticsTokenPage() {
 
     const currency = useCurrency(tokenId as Address);
 
-    const { tokenDayDatas, chartData, loading: isChartDataLoading } = useTokenChartData(tokenId, span, type);
+    const { tokenDayDatas, chartData, candleChartData, loading: isChartDataLoading } = useTokenChartData(tokenId, span, type);
 
     const statistics = useMemo(() => {
         if (!tokenDayDatas[0]) return undefined;
@@ -138,7 +138,7 @@ export function AnalyticsTokenPage() {
             case CHART_TYPE.FEES:
                 return CHART_VIEW.BAR;
             case CHART_TYPE.PRICE:
-                return CHART_VIEW.AREA;
+                return CHART_VIEW.CANDLE;
             // case CHART_TYPE.APR:
             //     return CHART_VIEW.LINE;
             default:
@@ -168,6 +168,7 @@ export function AnalyticsTokenPage() {
 
                     <Chart
                         chartData={chartData}
+                        candleChartData={candleChartData}
                         chartSpan={span}
                         chartTitle={type}
                         chartView={chartView}

@@ -1,6 +1,6 @@
 import { useTokenDayDatasQuery, useTokenHourDatasQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
-import { CHART_SPAN, CHART_TYPE, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
+import { CandleChartDataPoint, CHART_SPAN, CHART_TYPE, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
 import { UNIX_TIMESTAMPS, isDefined } from "@/utils";
 import { USE_UNISWAP_PLACEHOLDER_DATA } from "config/graphql-urls";
 import { UTCTimestamp } from "lightweight-charts";
@@ -72,11 +72,11 @@ export function useTokenChartData(tokenId: string | undefined, span: ChartSpanTy
     });
 
     const tokenHourDatas = useMemo(() => {
-        if (!tokenIndexerHourDatas) return null;
         const _tokenHourDatas = USE_UNISWAP_PLACEHOLDER_DATA ? uniswapIndexerHourDatas?.data : tokenIndexerHourDatas;
+        if (!_tokenHourDatas) return null;
         return _tokenHourDatas.tokenHourDatas.map((d) => ({
             ...d,
-            date: d.periodStartUnix,
+            date: (d as { periodStartUnix?: number; date?: number }).periodStartUnix ?? d.date,
         }));
     }, [tokenIndexerHourDatas, uniswapIndexerHourDatas?.data]);
 
@@ -103,10 +103,39 @@ export function useTokenChartData(tokenId: string | undefined, span: ChartSpanTy
         return formattedData.slice(1);
     }, [tokenDayDatas, tokenHourDatas, span, chartType]);
 
+    const candleChartData = useMemo((): CandleChartDataPoint[] => {
+        const tokenDatas = span === CHART_SPAN.DAY ? tokenHourDatas : span === CHART_SPAN.WEEK ? tokenHourDatas : tokenDayDatas;
+
+        if (!tokenDatas?.[0]) return [];
+
+        return tokenDatas
+            .filter(isDefined)
+            .map((v) => {
+                const chartPoint = v as typeof v & {
+                    open?: string;
+                    high?: string;
+                    low?: string;
+                    close?: string;
+                };
+                const fallbackPrice = Number(v.priceUSD);
+
+                return {
+                    time: v.date as UTCTimestamp,
+                    open: Number(chartPoint.open ?? fallbackPrice),
+                    high: Number(chartPoint.high ?? fallbackPrice),
+                    low: Number(chartPoint.low ?? fallbackPrice),
+                    close: Number(chartPoint.close ?? fallbackPrice),
+                    volume: Number(v.volumeUSD),
+                };
+            })
+            .slice(1);
+    }, [tokenDayDatas, tokenHourDatas, span]);
+
     return {
         tokenDayDatas,
         tokenHourDatas,
         chartData: chartData,
+        candleChartData,
         loading:
             isTokenIndexerDayDatasLoading ||
             isTokenIndexerHourDatasLoading ||

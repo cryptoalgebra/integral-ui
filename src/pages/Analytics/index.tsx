@@ -7,7 +7,7 @@ const { DexCharts } = AnalyticsModule.components;
 
 const PATHS = {
     BASE: "/analytics",
-    JETTONS: "/analytics/tokens",
+    TOKENS: "/analytics/tokens",
     TRANSACTIONS: "/analytics/transactions",
 };
 
@@ -20,7 +20,7 @@ const tabs = [
     {
         title: "Tokens",
         link: "/analytics/tokens",
-        active: [PATHS.JETTONS],
+        active: [PATHS.TOKENS],
     },
     {
         title: "Transactions",

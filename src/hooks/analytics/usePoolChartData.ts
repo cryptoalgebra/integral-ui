@@ -1,6 +1,6 @@
 import { usePoolDayDatasQuery, usePoolHourDatasQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
-import { CHART_SPAN, ChartSpanType, POOL_CHART_TYPE, PoolChartTypeType } from "@/types/swap-chart";
+import { CandleChartDataPoint, CHART_SPAN, ChartSpanType, POOL_CHART_TYPE, PoolChartTypeType } from "@/types/swap-chart";
 import { UNIX_TIMESTAMPS, isDefined } from "@/utils";
 import { USE_UNISWAP_PLACEHOLDER_DATA } from "config/graphql-urls";
 import { UTCTimestamp } from "lightweight-charts";
@@ -76,8 +76,53 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
         return formattedData.slice(1);
     }, [span, poolHourDatas, poolDayDatas, chartType, isSorted]);
 
+    const candleChartData = useMemo((): CandleChartDataPoint[] => {
+        const poolDatas = span === CHART_SPAN.DAY ? poolHourDatas : span === CHART_SPAN.WEEK ? poolHourDatas : poolDayDatas;
+        if (!poolDatas?.[0]) return [];
+
+        return poolDatas
+            .filter(isDefined)
+            .map((v) => {
+                const chartPoint = v as typeof v & {
+                    open?: string;
+                    high?: string;
+                    low?: string;
+                    close?: string;
+                };
+
+                const fallbackPrice = Number(isSorted ? v.token1Price : v.token0Price);
+                const rawOpen = Number(chartPoint.open ?? fallbackPrice);
+                const rawHigh = Number(chartPoint.high ?? fallbackPrice);
+                const rawLow = Number(chartPoint.low ?? fallbackPrice);
+                const rawClose = Number(chartPoint.close ?? fallbackPrice);
+
+                if (isSorted) {
+                    return {
+                        time: v.date as UTCTimestamp,
+                        open: rawOpen,
+                        high: rawHigh,
+                        low: rawLow,
+                        close: rawClose,
+                        volume: Number(v.volumeUSD),
+                    };
+                }
+
+                const inverse = (value: number) => (value ? 1 / value : 0);
+                return {
+                    time: v.date as UTCTimestamp,
+                    open: inverse(rawOpen),
+                    high: inverse(rawLow),
+                    low: inverse(rawHigh),
+                    close: inverse(rawClose),
+                    volume: Number(v.volumeUSD),
+                };
+            })
+            .slice(1);
+    }, [span, poolHourDatas, poolDayDatas, isSorted]);
+
     return {
         chartData: chartData,
+        candleChartData,
         poolDayDatas,
         poolHourDatas,
         loading: poolIndexerDayDatasLoading || poolIndexerHourDatasLoading,

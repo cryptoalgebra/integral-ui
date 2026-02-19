@@ -21,6 +21,7 @@ import ALMModule from "@/modules/ALMModule";
 import FarmingModule from "@/modules/FarmingModule";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
+import PositionsVisualizer, { PositionVisualizerItem } from "@/components/pool/PositionsVisualizer";
 import { useAppKit } from "@reown/appkit/react";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
@@ -135,6 +136,27 @@ const PoolPage = () => {
         }
     );
 
+    const { data: positionStartTimes } = useSWR(
+        ["positionStartTimes", filteredPositions],
+        async () => {
+            if (!filteredPositions.length) return {} as Record<string, number>;
+
+            const entries = await Promise.all(
+                filteredPositions.map(async ({ positionId }) => {
+                    const result = await getSinglePosition({ variables: { tokenId: positionId.toString() } });
+                    const timestamp = Number(result?.data?.position?.transaction?.timestamp || 0);
+                    return [positionId.toString(), timestamp] as const;
+                })
+            );
+
+            return Object.fromEntries(entries);
+        },
+        {
+            refreshInterval: 60000,
+            keepPreviousData: true,
+        }
+    );
+
     const positionsData = useMemo(() => {
         if (!filteredPositions || !poolEntity || !positionsFees || !positionsAPRs) return [];
 
@@ -198,6 +220,22 @@ const PoolPage = () => {
 
     const [selectedPosition, setSelectedPosition] = useState<FormattedPosition | null>(null);
 
+    const visualizerPositions = useMemo<PositionVisualizerItem[]>(() => {
+        const nowSec = Math.floor(Date.now() / 1000);
+        const oneWeekAgoSec = nowSec - 7 * 24 * 60 * 60;
+
+        return positionsData
+            .filter((item) => !item.isALM && item.position)
+            .map((item) => ({
+                id: item.id,
+                startTime: Number(positionStartTimes?.[item.id] || oneWeekAgoSec),
+                endTime: undefined,
+                priceLower: Number(item.position!.token0PriceLower.toFixed(12)),
+                priceUpper: Number(item.position!.token0PriceUpper.toFixed(12)),
+                isClosed: item.isClosed,
+            }));
+    }, [positionsData, positionStartTimes]);
+
     const noPositions = positionsData.length === 0 && (userVaults?.length === 0 || !userVaults) && poolEntity;
 
     const isLoading =
@@ -221,6 +259,7 @@ const PoolPage = () => {
                         positionsData={positionsData}
                         poolStatus={effectiveStatus}
                     />
+                    {account ? <PositionsVisualizer className="mb-3" poolId={poolId} positions={visualizerPositions} /> : null}
                     {!account ? (
                         <NoAccount />
                     ) : isLoading ? (

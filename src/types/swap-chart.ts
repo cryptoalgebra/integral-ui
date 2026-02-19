@@ -23,6 +23,7 @@ export const CHART_VIEW = {
     AREA: "area",
     BAR: "bar",
     LINE: "line",
+    CANDLE: "candle",
 } as const;
 
 export const DEX_TYPE = {
@@ -43,6 +44,9 @@ export type ChartPiece = {
     fees: string;
 };
 
+export type LineChartDataPoint = { value: number; time: UTCTimestamp };
+export type CandleChartDataPoint = { time: UTCTimestamp; open: number; high: number; low: number; close: number; volume: number };
+
 export type StatsData = { [key: string]: ChartPiece[] | null };
 
 export type SummaryData = {
@@ -52,7 +56,8 @@ export type SummaryData = {
 };
 
 export interface IChart {
-    chartData: { value: number; time: UTCTimestamp }[];
+    chartData: LineChartDataPoint[];
+    candleChartData?: CandleChartDataPoint[];
     chartView: ChartViewType;
     chartTitle: string;
     chartSpan: ChartSpanType;

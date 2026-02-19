@@ -37,6 +37,10 @@ export const TOKEN_DAY_DATA_FRAGMENT = gql`
         volumeUSD
         id
         date
+        open
+        high
+        low
+        close
         priceUSD
         totalValueLocked
     }
@@ -49,6 +53,10 @@ export const TOKEN_HOUR_DATA_FRAGMENT = gql`
         volumeUSD
         id
         periodStartUnix
+        open
+        high
+        low
+        close
         priceUSD
         totalValueLocked
     }

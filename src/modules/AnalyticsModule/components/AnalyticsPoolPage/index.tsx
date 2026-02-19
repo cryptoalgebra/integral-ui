@@ -141,7 +141,7 @@ export function AnalyticsPoolPage() {
           }
         : {};
 
-    const { poolDayDatas, chartData, loading: isChartDataLoading } = usePoolChartData(poolId, span, type);
+    const { poolDayDatas, chartData, candleChartData, loading: isChartDataLoading } = usePoolChartData(poolId, span, type);
 
     const statistics = useMemo(() => {
         if (!poolDayDatas[0]) return undefined;
@@ -171,7 +171,7 @@ export function AnalyticsPoolPage() {
             case POOL_CHART_TYPE.FEES:
                 return CHART_VIEW.BAR;
             case POOL_CHART_TYPE.PRICE:
-                return CHART_VIEW.LINE;
+                return CHART_VIEW.CANDLE;
             // case POOL_CHART_TYPE.APR:
             //     return CHART_VIEW.LINE;
             default:
@@ -196,6 +196,7 @@ export function AnalyticsPoolPage() {
 
                     <Chart
                         chartData={chartData}
+                        candleChartData={candleChartData}
                         chartSpan={span}
                         chartTitle={type}
                         chartView={chartView}

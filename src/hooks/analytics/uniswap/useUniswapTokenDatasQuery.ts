@@ -36,6 +36,10 @@ export function useUniswapTokenDatasQuery({
                         volumeUSD
                         id
                         date
+                        open
+                        high
+                        low
+                        close
                         priceUSD
                         totalValueLocked
                     }
