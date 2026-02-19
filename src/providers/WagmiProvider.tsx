@@ -14,7 +14,7 @@ const queryClient = new QueryClient();
 const web3AuthContextConfig: Web3AuthContextConfig = {
     web3AuthOptions: {
         clientId: PROJECT_ID,
-        web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+        web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
         walletServicesConfig: {
             confirmationStrategy: 'modal',
             loginMode: 'embed',
