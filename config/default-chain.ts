@@ -17,7 +17,7 @@ export const CHAIN_ID = {
 };
 
 export const CHAIN_IMAGE = {
-    [ChainId.PharosTestnet]: "https://atlantic.pharosscan.xyz/images/pharos-rounded.png",
+    [ChainId.PharosTestnet]: "/pharos.png",
 };
 
 export const DEFAULT_CHAIN_ID = ChainId.PharosTestnet;
