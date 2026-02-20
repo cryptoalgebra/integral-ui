@@ -20,7 +20,7 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
 
     const json = uri && JSON.parse(atob(uri.slice("data:application/json;base64,".length)));
 
-    const openSeaLink = `https://${chainId === ChainId.BaseSepolia ? "testnets." : ""}opensea.io/assets/base/${
+    const openSeaLink = `https://${chainId === ChainId.PharosTestnet ? "testnets." : ""}opensea.io/assets/base/${
         NONFUNGIBLE_POSITION_MANAGER[chainId]
     }/${positionId}`;
 

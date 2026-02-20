@@ -1,9 +1,7 @@
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
-import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
-import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -16,22 +14,18 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0x4200000000000000000000000000000000000006"]: {
+    ["0x838800b758277cc111b2d48ab01e5e164f8e9471"]: {
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    ["0xe0be08c77f415f577a1b3a9ad7a1df1479564ec8"]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
-        symbol: "BTC",
-        logo: BTCLogo,
-    },
-    ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
-        symbol: "TOKEN",
-        logo: TOKENLogo,
-    },
+    ["0x95e325a85b9e6cb4dea2ccd96218e5f8365e0b0f"]: {
+        symbol: "USDC",
+        logo: USDCLogo,
+    }
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
