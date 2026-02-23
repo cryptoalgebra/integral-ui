@@ -1,187 +1,220 @@
-import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
-import { useMintState } from "@/state/mintStore";
-import { Presets } from "@/types/presets";
-import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currency, ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useEffect, useMemo, useState } from "react";
-import { Chart } from "./chart";
+import { useCallback, useMemo } from "react";
+import { Bound, Currency, Pool, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { Skeleton } from "@/components/ui/skeleton";
-import { maxUint128 } from "viem";
+import { useDensityChartData } from "./hooks";
+import { ChartVariant, ZoomLevels } from "./types";
+import { Chart } from "./Chart";
 
 interface LiquidityChartProps {
-    currencyA: Currency | undefined;
-    currencyB: Currency | undefined;
+    currencyA: Currency | undefined | null;
+    currencyB: Currency | undefined | null;
     pool: Pool | null | undefined;
     currentPrice: number | undefined;
     priceLower: Price<Token, Token> | undefined;
     priceUpper: Price<Token, Token> | undefined;
+    ticksAtLimit?: { [bound in Bound]?: boolean | undefined };
+    onLeftRangeInput?: (typedValue: string) => void;
+    onRightRangeInput?: (typedValue: string) => void;
+    interactive?: boolean;
+    variant?: ChartVariant;
+    isOnlyView?: boolean;
+    width?: number;
+    height?: number;
+    isSorted?: boolean;
+    isStable?: boolean;
 }
 
-// const ZOOM_STEP = 5
+const DEFAULT_ZOOM_LEVELS: ZoomLevels = {
+    initialMin: 0.9,
+    initialMax: 1.1,
+    min: 0.00001,
+    max: 20,
+};
 
-const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, priceUpper }: LiquidityChartProps) => {
-    const { preset } = useMintState();
+const STABLE_ZOOM_LEVELS: ZoomLevels = {
+    initialMin: 0.985,
+    initialMax: 1.015,
+    min: 0.00001,
+    max: 20,
+};
 
-    const [processedData, setProcessedData] = useState<any>(null);
+function formatDelta(value: number): string {
+    const abs = Math.abs(value);
+    if (abs >= 1000) return abs.toFixed(0);
+    if (abs >= 100) return abs.toFixed(1);
+    if (abs >= 1) return abs.toFixed(2);
+    return abs.toFixed(3);
+}
 
-    const [zoom, setZoom] = useState(50);
+const LiquidityChart = ({
+    currencyA,
+    currencyB,
+    pool,
+    currentPrice,
+    priceLower,
+    priceUpper,
+    ticksAtLimit = {},
+    onLeftRangeInput,
+    onRightRangeInput,
+    interactive = true,
+    variant = "dark",
+    isOnlyView = false,
+    width = 620,
+    height = 230,
+    isSorted: isSortedProp,
+    isStable = false,
+}: LiquidityChartProps) => {
+    const isSorted = useMemo(() => {
+        if (typeof isSortedProp === "boolean") return isSortedProp;
+        const tokenA = currencyA?.wrapped;
+        const tokenB = currencyB?.wrapped;
+        return Boolean(tokenA && tokenB && tokenA.sortsBefore(tokenB));
+    }, [currencyA, currencyB, isSortedProp]);
 
-    const {
-        fetchTicksSurroundingPrice: { ticksResult, fetchTicksSurroundingPrice },
-    } = useInfoTickData();
+    const { isLoading: isChartLoading, formattedData } = useDensityChartData({ pool, isSorted });
 
-    useEffect(() => {
-        if (!pool) return;
-        fetchTicksSurroundingPrice(pool);
-    }, [pool]);
+    const onBrushDomainChangeEnded = useCallback(
+        (domain: [number, number], mode: string | undefined) => {
+            if (!onLeftRangeInput || !onRightRangeInput) return;
 
-    useEffect(() => {
-        if (!ticksResult || !ticksResult.ticksProcessed) return;
+            let leftRangeValue = Number(domain[0]);
+            let rightRangeValue = Number(domain[1]);
 
-        async function processTicks() {
-            if (!ticksResult) return;
+            if (leftRangeValue <= 0) {
+                leftRangeValue = 1 / 10 ** 6;
+            }
 
-            const _data = await Promise.all(
-                ticksResult.ticksProcessed.map(async (t, i) => {
-                    const active = t.tickIdx === ticksResult.activeTickIdx;
-                    const sqrtPriceX96 = TickMath.getSqrtRatioAtTick(t.tickIdx);
-                    const mockTicks = [
-                        {
-                            index: Number(t.tickIdx) - Number(ticksResult.tickSpacing),
-                            liquidityGross: t.liquidityGross.toString(),
-                            liquidityNet: (t.liquidityNet * -1n).toString(),
-                        },
-                        {
-                            index: t.tickIdx,
-                            liquidityGross: t.liquidityGross.toString(),
-                            liquidityNet: t.liquidityNet.toString(),
-                        },
-                    ];
-                    const pool =
-                        currencyA && currencyB
-                            ? new Pool(
-                                  currencyA.wrapped,
-                                  currencyB.wrapped,
-                                  INITIAL_POOL_FEE,
-                                  sqrtPriceX96,
-                                  ADDRESS_ZERO,
-                                  t.liquidityActive.toString(),
-                                  t.tickIdx,
-                                  ticksResult.tickSpacing,
-                                  mockTicks
-                              )
-                            : undefined;
+            if (!isSorted) {
+                leftRangeValue = 1 / leftRangeValue;
+                rightRangeValue = 1 / rightRangeValue;
+            }
 
-                    const nextSqrtX96 = ticksResult.ticksProcessed[i - 1]
-                        ? TickMath.getSqrtRatioAtTick(ticksResult.ticksProcessed[i - 1].tickIdx)
-                        : undefined;
+            if ((!ticksAtLimit[isSorted ? Bound.LOWER : Bound.UPPER] || mode === "handle" || mode === "reset") && leftRangeValue > 0) {
+                onLeftRangeInput(leftRangeValue.toFixed(12));
+            }
 
-                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, maxUint128.toString()) : undefined;
+            if ((!ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER] || mode === "reset") && rightRangeValue > 0) {
+                onRightRangeInput(rightRangeValue.toFixed(12));
+            }
+        },
+        [isSorted, onLeftRangeInput, onRightRangeInput, ticksAtLimit]
+    );
 
-                    const outputRes0 = pool && maxAmountToken0 ? await pool.getOutputAmount(maxAmountToken0, nextSqrtX96) : undefined;
+    const lowPrice = useMemo(
+        () => (isSorted ? priceLower?.toSignificant(6) : priceUpper?.invert().toSignificant(6)),
+        [isSorted, priceLower, priceUpper]
+    );
 
-                    const token1Amount = outputRes0?.[0] as CurrencyAmount<Token> | undefined;
+    const highPrice = useMemo(
+        () => (isSorted ? priceUpper?.toSignificant(6) : priceLower?.invert().toSignificant(6)),
+        [isSorted, priceLower, priceUpper]
+    );
 
-                    const amount0 = token1Amount ? parseFloat(token1Amount.toExact()) * parseFloat(t.price1) : 0;
-                    const amount1 = token1Amount ? parseFloat(token1Amount.toExact()) : 0;
+    const brushDomain: [number, number] | undefined = useMemo(() => {
+        return lowPrice && highPrice ? [parseFloat(lowPrice), parseFloat(highPrice)] : undefined;
+    }, [highPrice, lowPrice]);
 
-                    return {
-                        index: i,
-                        isCurrent: active,
-                        activeLiquidity: parseFloat(t.liquidityActive.toString()),
-                        price0: t.price0,
-                        price1: t.price1,
-                        tvlToken0: amount0,
-                        tvlToken1: amount1,
-                    };
-                })
-            );
-            setProcessedData(_data);
+    const brushLabelValue = useCallback(
+        (direction: "w" | "e", x: number) => {
+            if (!currentPrice) return "";
+
+            if (direction === "w" && ticksAtLimit[isSorted ? Bound.LOWER : Bound.UPPER]) return "0";
+            if (direction === "e" && ticksAtLimit[isSorted ? Bound.UPPER : Bound.LOWER]) return "∞";
+
+            const percent = (x < currentPrice ? -1 : 1) * ((Math.max(x, currentPrice) - Math.min(x, currentPrice)) / currentPrice) * 100;
+            return `${Math.sign(percent) < 0 ? "-" : "+"}${formatDelta(percent)}%`;
+        },
+        [currentPrice, isSorted, ticksAtLimit]
+    );
+
+    const zoomLevels = useMemo(() => (isStable ? STABLE_ZOOM_LEVELS : DEFAULT_ZOOM_LEVELS), [isStable]);
+
+    const mockData = useMemo(() => {
+        if (!formattedData?.length && currentPrice) {
+            return [
+                {
+                    activeLiquidity: 0,
+                    price0: currentPrice * zoomLevels.initialMin,
+                    price1: 1 / (currentPrice * zoomLevels.initialMin),
+                    isCurrent: false,
+                },
+                {
+                    activeLiquidity: 0,
+                    price0: currentPrice * zoomLevels.initialMax,
+                    price1: 1 / (currentPrice * zoomLevels.initialMax),
+                    isCurrent: false,
+                },
+            ];
         }
 
-        processTicks();
-    }, [ticksResult]);
+        return [];
+    }, [formattedData, currentPrice, zoomLevels.initialMin, zoomLevels.initialMax]);
 
-    useEffect(() => {
-        if (preset === null) return;
-        switch (preset) {
-            case Presets.FULL:
-                setZoom(10);
-                break;
-            case Presets.NORMAL:
-                setZoom(25);
-                break;
-            case Presets.RISK:
-                setZoom(30);
-                break;
-            case Presets.SAFE:
-                setZoom(15);
-                break;
-            case Presets.STABLE:
-                setZoom(40);
-                break;
-        }
-    }, [preset]);
+    const mockPrice = useMemo(() => {
+        if (!formattedData?.length && currentPrice) return currentPrice;
+        return 0;
+    }, [formattedData, currentPrice]);
 
-    const formattedData = useMemo(() => {
-        if (!processedData) return undefined;
-        if (processedData && processedData.length === 0) return undefined;
-
-        const middle = Math.round(processedData.length / 2);
-        const chunkLength = Math.round(processedData.length / zoom);
-
-        const slicedData = processedData.slice(middle - chunkLength, middle + chunkLength);
-
-        return slicedData.reverse();
-    }, [processedData, zoom]);
-
-    const isSorted = Boolean(currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped));
-
-    const leftPrice = useMemo(() => {
-        return isSorted ? priceLower?.toSignificant(18) : priceUpper?.invert().toSignificant(18);
-    }, [isSorted, priceLower, priceUpper]);
-
-    const rightPrice = useMemo(() => {
-        return isSorted ? priceUpper?.toSignificant(18) : priceLower?.invert().toSignificant(18);
-    }, [isSorted, priceLower, priceUpper]);
-
-    // const isZoomMin = zoom - ZOOM_STEP <= 10
-    // const isZoomMax = zoom + ZOOM_STEP > 40
-
-    // const handleZoomIn = () => setZoom((zoom) => zoom + ZOOM_STEP)
-    // const handleZoomOut = () => setZoom((zoom) => zoom - ZOOM_STEP)
+    if (isChartLoading || !formattedData) {
+        return <LiquidityChartLoader />;
+    }
 
     return (
-        <div className="flex w-full h-full">
-            {formattedData ? (
-                <Chart
-                    formattedData={formattedData}
-                    leftPrice={leftPrice}
-                    rightPrice={rightPrice}
-                    currentPrice={currentPrice}
-                    isSorted={isSorted}
-                    zoom={zoom}
-                    currencyA={currencyA}
-                    currencyB={currencyB}
-                />
-            ) : (
-                <LiquidityChartLoader />
-            )}
+        <div className="group relative mb-4 flex w-full" style={{ minHeight: "200px" }}>
+            <Chart
+                data={{
+                    series: formattedData?.length && currentPrice ? formattedData : mockData,
+                    current: formattedData?.length && currentPrice ? currentPrice : mockPrice,
+                }}
+                dimensions={{ width, height }}
+                margins={{ top: 50, right: 2, bottom: 20, left: 0 }}
+                styles={{
+                    main: {
+                        primary: variant === "dark" ? "white" : "#121212",
+                        secondary: variant === "dark" ? "#2B2B2B" : "#EAECE8",
+                    },
+                    area: {
+                        selection: "var(--color-primary-200)",
+                        current: "var(--color-accent-100)",
+                    },
+                    brush: {
+                        handleStroke: variant === "dark" ? "var(--color-primary-200)" : "#121212",
+                        handleAccent: variant === "dark" ? "var(--color-primary-200)" : "#121212",
+                        handleBg: variant === "dark" ? "white" : "#EDEDED",
+                    },
+                    tooltip: {
+                        primary: variant === "dark" ? "#2B2B2B" : "#FFFFFF",
+                        bg: variant === "dark" ? "white" : "#2B2B2B",
+                    },
+                }}
+                interactive={interactive}
+                brushLabels={brushLabelValue}
+                brushDomain={brushDomain}
+                onBrushDomainChange={onBrushDomainChangeEnded}
+                zoomLevels={zoomLevels}
+                ticksAtLimit={ticksAtLimit}
+                isMock={!formattedData?.length || !currentPrice}
+                isOnlyView={isOnlyView}
+                labelA={currencyA?.symbol ?? "Token A"}
+                labelB={currencyB?.symbol ?? "Token B"}
+            />
         </div>
     );
 };
 
 const LiquidityChartLoader = () => {
     const heights = [
-        100, 110, 140, 110, 100, 140, 180, 120, 110, 100, 120, 100, 170, 170, 110, 100, 120, 100, 100, 110, 140, 110, 100, 140, 100, 120,
-        100, 100, 110, 140, 110, 100, 140,
+        100, 110, 140, 110, 100, 140, 180, 120, 110, 100, 120, 100, 170, 170, 110, 100, 120, 100, 100, 110, 140, 110, 100, 140, 100,
+        120, 100, 100, 110, 140, 110, 100, 140,
     ];
 
     return (
-        <div className="flex items-end gap-2 pb-4 w-full h-[250px]">
-            {heights.map((h, i) => (
-                <Skeleton style={{ height: `${h}px` }} key={i} className="w-[20px] bg-card-dark" />
+        <div className="flex h-[250px] w-full items-end gap-2 pb-4">
+            {heights.map((barHeight, index) => (
+                <Skeleton style={{ height: `${barHeight}px` }} key={index} className="w-[20px] bg-card-dark" />
             ))}
         </div>
     );
 };
+
 export default LiquidityChart;

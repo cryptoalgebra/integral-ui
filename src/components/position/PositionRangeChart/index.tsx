@@ -17,6 +17,8 @@ const PositionRangeChart = ({ pool, position }: PositionRangeChartProps) => {
             currentPrice={price ? parseFloat(price) : undefined}
             priceLower={position.token0PriceLower}
             priceUpper={position.token0PriceUpper}
+            interactive={false}
+            isOnlyView
         />
     );
 };

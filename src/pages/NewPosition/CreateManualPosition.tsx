@@ -67,7 +67,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         } else {
             return `${price} ${currencyB?.symbol}`;
         }
-    }, [mintInfo.price, price]);
+    }, [currencyB?.symbol, mintInfo.price, price]);
 
     const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
         return mintInfo.ticks;
@@ -99,7 +99,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
             onLeftRangeInput("");
             onRightRangeInput("");
         };
-    }, []);
+    }, [onLeftRangeInput, onRightRangeInput]);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full text-left">
@@ -154,6 +154,9 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
                             currentPrice={price ? parseFloat(price) : undefined}
                             priceLower={priceLower}
                             priceUpper={priceUpper}
+                            ticksAtLimit={mintInfo.ticksAtLimit}
+                            onLeftRangeInput={onLeftRangeInput}
+                            onRightRangeInput={onRightRangeInput}
                         />
                     </div>
                 </div>
