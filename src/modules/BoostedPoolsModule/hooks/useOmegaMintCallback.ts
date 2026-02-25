@@ -4,7 +4,7 @@ import {  useEffect, useMemo } from "react";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { OMEGA_ROUTER } from "config/contract-addresses";
-import { OmegaMintOptions, OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
+import { OmegaMintOptions, OmegaRouter } from "@cryptoalgebra/integral-omega-router-sdk";
 import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 

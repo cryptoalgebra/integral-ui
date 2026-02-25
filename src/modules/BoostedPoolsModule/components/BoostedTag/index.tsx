@@ -21,7 +21,7 @@ export function BoostedTag({ currencyA: token0, currencyB: token1 }: BoostedTagP
     return (
         <HoverCard openDelay={100} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-purple-500/20 border border-purple-500 text-purple-900 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs gap-1">
+                <div className="flex h-[26px] w-fit cursor-pointer items-center justify-center rounded-full bg-purple-500/20 border border-purple-500 text-purple-300 px-3 py-1 text-xs font-bold duration-200 hover:opacity-80 max-md:text-xs gap-1">
                     BOOSTED
                 </div>
             </HoverCardTrigger>

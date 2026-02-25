@@ -8,7 +8,7 @@ import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
-import { OmegaMintOptions } from "@cryptoalgebra/omega-router-sdk";
+import { OmegaMintOptions } from "@cryptoalgebra/integral-omega-router-sdk";
 import { useOmegaMintCallback } from "../../hooks/useOmegaMintCallback";
 import { usePermit2 } from "../../hooks";
 import { AllowanceState } from "../../types";

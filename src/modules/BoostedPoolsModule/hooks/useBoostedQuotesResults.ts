@@ -4,7 +4,7 @@ import { OMEGA_QUOTER } from "config";
 import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useAllRoutes } from "@/hooks/swap/useAllRoutes";
 import { Address } from "viem";
-import { OmegaQuoter } from "@cryptoalgebra/omega-router-sdk";
+import { OmegaQuoter } from "@cryptoalgebra/integral-omega-router-sdk";
 
 export function useBoostedQuotesResults({
     exactInput,

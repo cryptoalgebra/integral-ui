@@ -2,7 +2,7 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { Percent, Position } from "@cryptoalgebra/integral-sdk";
-import { OmegaRouter } from "@cryptoalgebra/omega-router-sdk";
+import { OmegaRouter } from "@cryptoalgebra/integral-omega-router-sdk";
 import { OMEGA_ROUTER } from "config/contract-addresses";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";

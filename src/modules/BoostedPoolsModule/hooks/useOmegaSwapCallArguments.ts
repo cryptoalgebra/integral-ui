@@ -1,7 +1,7 @@
 import { useUserState } from "@/state/userStore";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useChainId } from "wagmi";
-import { OmegaRouter, OmegaTrade } from "@cryptoalgebra/omega-router-sdk";
+import { OmegaRouter, OmegaTrade } from "@cryptoalgebra/integral-omega-router-sdk";
 import useSWR from "swr";
 import { PermitSignature } from "../types";
 import { OMEGA_ROUTER } from "config";
