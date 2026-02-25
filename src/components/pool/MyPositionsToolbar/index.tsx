@@ -5,14 +5,16 @@ import { Currency } from "@cryptoalgebra/integral-sdk";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import FilterPopover from "../FilterPopover";
 import { Settings2 } from "lucide-react";
+import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
 
 interface MyPositionsToolbar {
     positionsData: FormattedPosition[];
     currencyA: Currency | undefined | null;
     currencyB: Currency | undefined | null;
+    poolStatus: number | undefined | null;
 }
 
-const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositionsToolbar) => {
+const MyPositionsToolbar = ({ positionsData, currencyA, currencyB, poolStatus }: MyPositionsToolbar) => {
     const [myLiquidityUSD, myFeesUSD] = positionsData
         ? positionsData.reduce((acc, { liquidityUSD, feesUSD }) => [acc[0] + liquidityUSD, acc[1] + Number(feesUSD)], [0, 0])
         : [];
@@ -26,6 +28,8 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
                     <h1 className="scroll-m-20 font-bold tracking-tight lg:text-2xl">
                         {currencyA?.symbol} / {currencyB?.symbol}
                     </h1>
+
+                    <SecurityStatusTag status={poolStatus} />
 
                     <div className="ml-auto">
                         <FilterPopover>

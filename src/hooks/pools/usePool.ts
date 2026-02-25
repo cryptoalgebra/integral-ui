@@ -10,6 +10,7 @@ import {
     useReadAlgebraPoolTickSpacing,
     useReadAlgebraPoolToken0,
     useReadAlgebraPoolToken1,
+    useReadSecurityRegistryGetPoolStatus,
 } from "@/generated";
 
 export const PoolState = {
@@ -19,9 +20,16 @@ export const PoolState = {
     INVALID: "INVALID",
 } as const;
 
-export type PoolStateType = typeof PoolState[keyof typeof PoolState];
+export const SecurityState = {
+    ENABLED: 0,
+    BURN_ONLY: 1,
+    DISABLED: 2
+} as const;
 
-export function usePool(address: Address | undefined): [PoolStateType, Pool | null] {
+export type PoolStateType = typeof PoolState[keyof typeof PoolState];
+export type SecurityStateType = typeof SecurityState[keyof typeof SecurityState];
+
+export function usePool(address: Address | undefined): [PoolStateType, Pool | null, number | null | undefined ] {
     const { data: tickSpacing, isLoading: isTickSpacingLoading, isError: isTickSpacingError } = useReadAlgebraPoolTickSpacing({
         address,
     });
@@ -37,6 +45,10 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
     });
     const { data: token1Address, isLoading: isLoadingToken1, isError: isToken1Error } = useReadAlgebraPoolToken1({
         address,
+    });
+
+    const { data: poolSecurityStatus, isLoading: isPoolSecutiryStatusLoading } = useReadSecurityRegistryGetPoolStatus({
+        args: address ? [address] : undefined,
     });
 
     const { infoClient } = useClients();
@@ -59,11 +71,11 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
     const isTokensLoading = !token0 || !token1;
 
     return useMemo(() => {
-        if ((isPoolLoading || isTokensLoading) && !isPoolError) return [PoolState.LOADING, null];
+        if ((isPoolLoading || isTokensLoading || isPoolSecutiryStatusLoading) && !isPoolError) return [PoolState.LOADING, null, null];
 
-        if (!tickSpacing || !globalState || liquidity === undefined) return [PoolState.NOT_EXISTS, null];
+        if (!tickSpacing || !globalState || liquidity === undefined) return [PoolState.NOT_EXISTS, null, null];
 
-        if (globalState[0] === 0n || !token0 || !token1 || !poolDeployer?.pool) return [PoolState.NOT_EXISTS, null];
+        if (globalState[0] === 0n || !token0 || !token1 || !poolDeployer?.pool) return [PoolState.NOT_EXISTS, null, null];
 
         try {
             return [
@@ -78,9 +90,10 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
                     globalState[1],
                     tickSpacing
                 ),
+                poolSecurityStatus
             ];
         } catch (error) {
-            return [PoolState.NOT_EXISTS, null];
+            return [PoolState.NOT_EXISTS, null, null];
         }
-    }, [token0, token1, globalState, liquidity, tickSpacing, poolDeployer, isPoolError, isPoolLoading, isTokensLoading]);
+    }, [token0, token1, globalState, liquidity, tickSpacing, poolDeployer, poolSecurityStatus, isPoolSecutiryStatusLoading, isPoolError, isPoolLoading, isTokensLoading]);
 }

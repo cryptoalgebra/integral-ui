@@ -28,10 +28,11 @@ import { UserALMVault, useUserALMVaultsByPool } from "../../hooks";
 interface RemoveALMLiquidityModalProps {
     userVault: UserALMVault | undefined;
     poolAddress: Address | undefined;
+    enableActions: boolean;
 }
 
-export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityModalProps) => {
-    const [sliderValue, setSliderValue] = useState([50]);
+export const RemoveALMLiquidityModal = ({ userVault, poolAddress, enableActions }: RemoveALMLiquidityModalProps) => {
+    const [sliderValue, setSliderValue] = useState(enableActions ? [50] : [100]);
     const slippage = useUserSlippageToleranceWithDefault(new Percent(50, 1_000));
 
     const { address: account } = useAccount();
@@ -128,7 +129,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                 <div className="flex flex-col gap-6">
                     <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
 
-                    <div className="flex gap-2">
+                    { enableActions && <div className="flex gap-2">
                         {[25, 50, 75, 100].map((v) => (
                             <Button
                                 key={`liquidity-percent-${v}`}
@@ -141,9 +142,9 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                                 {v}%
                             </Button>
                         ))}
-                    </div>
+                    </div> }
 
-                    <Slider
+                    { enableActions && <Slider
                         value={sliderValue}
                         id="liquidity-percent"
                         max={100}
@@ -153,7 +154,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                         className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                         aria-label="Liquidity Percent"
                         disabled={isRemoveLoading || isPending}
-                    />
+                    /> }
 
                     <CurrencyAmounts
                         amount0Parsed={userVault?.amount0 && (Number(userVault.amount0) * percentMultiplier).toString()}

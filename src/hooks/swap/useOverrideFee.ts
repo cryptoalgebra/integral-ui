@@ -94,8 +94,8 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                         const pool = route.route.pools[idx];
 
                         const poolAddress = computePoolAddress({
-                            tokenA: pool.token0.wrapped,
-                            tokenB: pool.token1.wrapped,
+                            tokenA: route.route.pools[idx].token0.wrapped,
+                            tokenB: route.route.pools[idx].token1.wrapped,
                         }) as Address;
 
                         const isZeroToOne = route.inputAmount.currency.wrapped.sortsBefore(route.outputAmount.currency.wrapped);

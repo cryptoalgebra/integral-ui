@@ -18,9 +18,10 @@ const { ReceiveTokensSelector } = BoostedPoolsModule.components;
 
 interface RemoveLiquidityModalProps {
     positionId: number;
+    enableActions: boolean;
 }
 
-const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
+const RemoveLiquidityModal = ({ positionId, enableActions }: RemoveLiquidityModalProps) => {
     const [sliderValue, setSliderValue] = useState([50]);
     const [token0Unwrap, setToken0Unwrap] = useState(false);
     const [token1Unwrap, setToken1Unwrap] = useState(false);
@@ -146,7 +147,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                 <div className="flex flex-col gap-6">
                     <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
 
-                    <div className="flex gap-2">
+                    { enableActions && <div className="flex gap-2">
                         {[25, 50, 75, 100].map((v) => (
                             <Button
                                 key={`liquidity-percent-${v}`}
@@ -159,9 +160,9 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                                 {v}%
                             </Button>
                         ))}
-                    </div>
+                    </div> }
 
-                    <Slider
+                    { enableActions && <Slider
                         value={sliderValue}
                         id="liquidity-percent"
                         max={100}
@@ -171,7 +172,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                         aria-label="Liquidity Percent"
                         disabled={isRemoveLoading}
-                    />
+                    /> }
 
                     <CurrencyAmounts
                         amount0Parsed={liquidityValue0?.toSignificant(24)}
