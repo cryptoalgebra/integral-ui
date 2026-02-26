@@ -156,7 +156,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
 
     useEffect(() => {
         removePermitSign()
-    }, [amount?.quotient, spender])
+    }, [amount?.quotient.toString(), spender])
 
     return {
         permitState,
