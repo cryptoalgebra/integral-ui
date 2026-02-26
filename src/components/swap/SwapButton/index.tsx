@@ -136,6 +136,12 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const permitSignature = permit2Allowance.state === AllowanceState.ALLOWED ? permit2Allowance.permitSignature : undefined;
     const refetchPermit2Data = permit2Allowance.state !== AllowanceState.LOADING ? permit2Allowance.refetchPermit2Data : undefined;
 
+    // Check if we need approval or permit signature (ONLY for OmegaRouter/boosted routes)
+    const needsApprovalOrPermit =
+        shouldUseOmegaRouter &&
+        permit2Allowance.state === AllowanceState.REQUIRED &&
+        (permit2Allowance.needsSetupApproval || permit2Allowance.needsPermitSignature);
+
     const onTransactionSuccess = useCallback(() => {
         refetchBalances();
         if (shouldUseOmegaRouter) {
@@ -163,7 +169,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     // Use OmegaRouter callback for boosted routes and Permit2-signed swaps
     const { callback: omegaSwapCallback, isLoading: omegaSwapLoading, error: omegaSwapError } = useOmegaSwapCallback(
-        shouldUseOmegaRouter && !isSmartTrade ? trade : null,
+        shouldUseOmegaRouter && !isSmartTrade ? (!needsApprovalOrPermit ? trade : null) : null,
         allowedSlippage,
         permitSignature,
         onTransactionSuccess,
@@ -171,7 +177,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     // Use regular SwapRouter callback for normal routes without Permit2
     const { callback: swapCallback, isLoading: swapLoading, error: swapError } = useSwapCallback(
-        !isSmartTrade && !shouldUseOmegaRouter ? trade : null,
+        !isSmartTrade && !shouldUseOmegaRouter ? (approvalState === ApprovalState.APPROVED ? trade : null) : null,
         allowedSlippage,
         onTransactionSuccess,
     );
@@ -186,6 +192,9 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                 await smartSwapCallback?.();
             } else if (shouldUseOmegaRouter) {
                 await omegaSwapCallback?.();
+                if (permit2Allowance.state === AllowanceState.ALLOWED) {
+                    permit2Allowance.removePermitSign()
+                }
             } else {
                 await swapCallback?.();
             }
@@ -198,14 +207,9 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
 
-    // Check if we need approval or permit signature (ONLY for OmegaRouter/boosted routes)
-    const needsApprovalOrPermit =
-        shouldUseOmegaRouter &&
-        permit2Allowance.state === AllowanceState.REQUIRED &&
-        (permit2Allowance.needsSetupApproval || permit2Allowance.needsPermitSignature);
-
     // Check if we need standard ERC20 approval (for native/smart router)
     const needsClassicApproval = !shouldUseOmegaRouter && approvalState === ApprovalState.NOT_APPROVED;
+    const isApproving = approvalState === ApprovalState.PENDING;
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
@@ -244,8 +248,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }
 
     // Show standard ERC20 approval button for native/smart router
-    if (needsClassicApproval) {
-        const isApproving = approvalState === ApprovalState.PENDING;
+    if (needsClassicApproval || isApproving) {
         return (
             <Button variant={"primary"} onClick={approvalCallback} disabled={isApproving}>
                 {isApproving ? <Loader /> : `Approve ${trade?.inputAmount.currency.symbol}`}

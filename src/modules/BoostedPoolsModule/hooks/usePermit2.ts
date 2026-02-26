@@ -1,4 +1,4 @@
-import { AnyToken, Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
+import { AnyToken, Currency, CurrencyAmount, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useChainId } from "wagmi";
 import { useCallback, useMemo } from "react";
 import { PERMIT2 } from "config/contract-addresses";
@@ -8,6 +8,7 @@ import { usePermit } from "./usePermit";
 import { ApprovalState } from "@/types/approve-state";
 import { Address } from "viem";
 import { AllowanceState, PermitSignature, PermitState } from "../types";
+import { MaxAllowanceTransferAmount } from "@uniswap/permit2-sdk";
 
 interface AllowanceRequired {
     state: AllowanceState.REQUIRED;
@@ -16,6 +17,7 @@ interface AllowanceRequired {
     approve: () => void;
     permit: () => void;
     revoke: () => void;
+    removePermitSign: () => void;
     refetchPermit2Data: () => void;
     needsSetupApproval: boolean;
     needsPermitSignature: boolean;
@@ -28,6 +30,7 @@ export type Allowance =
           state: AllowanceState.ALLOWED;
           permitSignature?: PermitSignature;
           refetchPermit2Data: () => void;
+          removePermitSign: () => void;
       }
     | AllowanceRequired;
 
@@ -37,16 +40,19 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
     const permit2Address = PERMIT2[chainId] as Address;
 
     // Get permit state and callback using usePermit hook
-    const { permitState, permitCallback, permitSignature, refetchPermit } = usePermit(amount, spender);
+    const { permitState, permitCallback, permitSignature, refetchPermit, removePermitSign } = usePermit(amount, spender);
 
     // Approval functions - using useApprove hook
-    const { approvalCallback: approve, approvalState } = useApprove(amount, permit2Address);
+    const { approvalCallback: approve, approvalState } = useApprove(
+        amount ? tryParseAmount(MaxAllowanceTransferAmount.toString(), amount?.currency) : undefined,
+        permit2Address
+    );
 
     // Revoke allowance
     const { approvalCallback: revoke, approvalState: revokeState } = useRevokeApprove(token, permit2Address);
 
     // Check if ERC20 approval to Permit2 is needed
-    const { needAllowance: needsTokenApproval, refetchAllowance } = useNeedAllowance(token, amount, permit2Address);
+    const { needAllowance: needsTokenApproval, refetchAllowance } = useNeedAllowance(token, amount, permit2Address, true);
 
     // Check if Permit2 signature is needed
     // permitState includes expiration check inside usePermit
@@ -99,6 +105,7 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
                 permit,
                 revoke,
                 refetchPermit2Data,
+                removePermitSign,
                 needsSetupApproval: needsTokenApproval,
                 needsPermitSignature,
                 isLoading,
@@ -109,6 +116,7 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
             state: AllowanceState.ALLOWED,
             permitSignature,
             refetchPermit2Data,
+            removePermitSign
         };
     }, [
         token,

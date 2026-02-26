@@ -2,14 +2,14 @@ import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { useAccount, useReadContract, useSignTypedData } from "wagmi";
 import { PERMIT2_ABI } from "config/abis/permit2";
 import { Address, UserRejectedRequestError } from "viem";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PERMIT2 } from "config/contract-addresses";
-import { AllowanceTransfer, MaxAllowanceTransferAmount } from "@uniswap/permit2-sdk";
+import { AllowanceTransfer } from "@uniswap/permit2-sdk";
 import { useToast } from "@/components/ui/use-toast";
 import { Permit, PermitSignature, PermitState } from "../types";
 
-const PERMIT_EXPIRATION = 30 * 24 * 60 * 60 * 1000; // 30 days
-const PERMIT_SIG_EXPIRATION = 30 * 60 * 1000; // 30 minutes
+const PERMIT_EXPIRATION = 60 * 60 * 1000; // 60 minutes
+const PERMIT_SIG_EXPIRATION = 2 * 60 * 1000; // 2 minutes
 
 function toDeadline(expiration: number): number {
     return Math.floor((Date.now() + expiration) / 1000);
@@ -35,8 +35,6 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
         args: queryEnabled ? [address as Address, token.address as Address, spender as Address] : undefined,
         query: {
             enabled: queryEnabled,
-            // Refetch periodically to check expiration
-            refetchInterval: 30000, // 30 seconds
         },
     });
 
@@ -101,7 +99,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
             const permit: Permit = {
                 details: {
                     token: token.address,
-                    amount: MaxAllowanceTransferAmount.toString(),
+                    amount: amount.quotient.toString(),
                     expiration: toDeadline(PERMIT_EXPIRATION),
                     nonce,
                 },
@@ -152,10 +150,19 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
         }
     }, [address, chainId, nonce, signTypedDataAsync, spender, token, toast, permit2Address]);
 
+    const removePermitSign = () => {
+        setSignature(undefined)
+    }
+
+    useEffect(() => {
+        removePermitSign()
+    }, [amount?.quotient, spender])
+
     return {
         permitState,
         permitCallback,
         permitSignature: isSigned ? signature : undefined,
         refetchPermit,
+        removePermitSign
     };
 }
