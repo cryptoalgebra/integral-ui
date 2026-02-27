@@ -1,5 +1,5 @@
 import { useNativePriceQuery, usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql";
-import { Position } from "@cryptoalgebra/custom-pools-sdk";
+import { Position } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 import { useClients } from "../graphql/useClients";
 import { useReadAlgebraPoolLiquidity } from "@/generated";

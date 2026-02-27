@@ -10,7 +10,7 @@ import { RewardToken, VotingPool } from "../types/voting";
 import { useAllGauges } from "./useAllGauges";
 import { useAllTokens } from "@/hooks/tokens/useAllTokens";
 import { useNativePriceUSD } from "@/hooks/common/useNativePriceUSD";
-import { Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Token } from "@cryptoalgebra/integral-sdk";
 
 export function useVotingPools() {
     const chainId = useChainId();
@@ -26,11 +26,7 @@ export function useVotingPools() {
 
     const nextPeriod = currentPeriod ? currentPeriod + 1n : 0n;
 
-    const {
-        data: poolVotesResults,
-        isLoading: poolVotesLoading,
-        refetch: refetchPoolVotes,
-    } = useReadContracts({
+    const { data: poolVotesResults, isLoading: poolVotesLoading, refetch: refetchPoolVotes } = useReadContracts({
         contracts: gaugeList.map((g) => ({
             address: g.votingReward,
             abi: votingRewardABI,

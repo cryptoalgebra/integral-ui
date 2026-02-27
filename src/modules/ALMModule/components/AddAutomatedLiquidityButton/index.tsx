@@ -6,7 +6,7 @@ import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
-import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/integral-sdk";
 import { deposit, depositNativeToken, SupportedChainId, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
@@ -106,7 +106,12 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
@@ -117,7 +122,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
-                    <Button variant={'primary'} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
+                    <Button variant={"primary"} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
                         {isApprovePending ? <Loader /> : `Approve ${currency?.symbol}`}
                     </Button>
                 )}
@@ -125,7 +130,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
         );
 
     return (
-        <Button variant={'primary'} disabled={!isReady || isPending || isAddingLiquidityLoading} onClick={callback}>
+        <Button variant={"primary"} disabled={!isReady || isPending || isAddingLiquidityLoading} onClick={callback}>
             {isAddingLiquidityLoading || isPending ? <Loader /> : "Create Position"}
         </Button>
     );

@@ -2,7 +2,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useState, useEffect } from "react";
 import { ExtendedVault } from "../../hooks";
 import AddAutomatedLiquidityButton from "../AddAutomatedLiquidityButton";
@@ -39,10 +39,8 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
         <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-y-3 md:gap-3 text-left">
             <div className="col-span-2">
                 <div className="flex flex-col w-full p-4 gap-3 bg-card border border-card-border rounded-xl">
-                    <p className="font-semibold">
-                        Simplify liquidity provisioning with ALM strategies.
-                    </p>
-                    <p className="text-white/75">
+                    <p className="font-semibold">Simplify liquidity provisioning with ALM strategies.</p>
+                    <p className="text-text-100/75">
                         Deposit a single token, and automated settings will optimize your position to maximize profits without manual
                         adjustments. Perfect for those seeking simplicity and consistent returns.
                     </p>

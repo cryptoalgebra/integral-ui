@@ -1,4 +1,4 @@
-import { INITIAL_POOL_FEE, Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Pool } from "@cryptoalgebra/integral-sdk";
 import { FormattedPosition } from "@/types/formatted-position";
 import { Skeleton } from "@/components/ui/skeleton";
 import PositionRangeChart from "../PositionRangeChart";
@@ -55,31 +55,21 @@ const PositionCard = ({ pool, selectedPosition, farming, closedFarmings, poolSta
 
     return (
         <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in w-full">
-            
             <div className="relative flex w-full justify-start text-left">
                 <div className="flex flex-col gap-4 w-full">
-                    
                     <h2 className="scroll-m-20 text-2xl font-bold tracking-tight bg-card-hover -mx-4 px-4 -mt-4 py-4 rounded-t-xl border-b border-card-border lg:text-2xl">{`Position #${selectedPosition?.id}`}</h2>
-                    
+
                     <div className="flex gap-8 -mx-4 px-4 pb-4 border-b border-card-border">
                         <div>
-                            <div className="font-bold text-xs text-white/75 mb-2">LIQUIDITY</div>
+                            <div className="font-bold text-xs text-text-100/75 mb-2">LIQUIDITY</div>
                             <div className="font-semibold text-xl">
-                                {positionLiquidityUSD ? (
-                                    <span>{positionLiquidityUSD}</span>
-                                ) : (
-                                    <Skeleton className="w-[100px] h-[30px]" />
-                                )}
+                                {positionLiquidityUSD ? <span>{positionLiquidityUSD}</span> : <Skeleton className="w-[100px] h-[30px]" />}
                             </div>
                         </div>
                         <div>
-                            <div className="font-bold text-xs text-white/75 mb-2">APR</div>
+                            <div className="font-bold text-xs text-text-100/75 mb-2">APR</div>
                             <div className="font-semibold text-xl">
-                                {positionAPR ? (
-                                    <span>{positionAPR}</span>
-                                ) : (
-                                    <Skeleton className="w-[100px] h-[30px]" />
-                                )}
+                                {positionAPR ? <span>{positionAPR}</span> : <Skeleton className="w-[100px] h-[30px]" />}
                             </div>
                         </div>
                     </div>
@@ -87,7 +77,7 @@ const PositionCard = ({ pool, selectedPosition, farming, closedFarmings, poolSta
             </div>
 
             <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={Number(selectedPosition.id)} />
-            
+
             <TokenRatio mintInfo={mintInfo} />
 
             {position && (

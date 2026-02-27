@@ -1,5 +1,5 @@
 import LiquidityChart from "@/components/create-position/LiquidityChart";
-import { Pool, Position, tickToPrice } from "@cryptoalgebra/custom-pools-sdk";
+import { Pool, Position, tickToPrice } from "@cryptoalgebra/integral-sdk";
 
 interface PositionRangeChartProps {
     pool: Pool;

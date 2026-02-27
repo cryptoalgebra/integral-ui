@@ -2,7 +2,7 @@ import { IDerivedSwapInfo } from "@/state/swapStore";
 // import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { useMemo, useState } from "react";
 import { CHART_SPAN, CHART_VIEW, ChartSpanType, POOL_CHART_TYPE } from "@/types/swap-chart";
-import { computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { computePoolAddress } from "@cryptoalgebra/integral-sdk";
 import { Chart } from "@/components/common/Chart";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
@@ -13,7 +13,7 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { currencies } = derivedSwap;
     const [tokenA, tokenB] = [currencies.INPUT, currencies.OUTPUT];
 
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
 
     const poolId = useMemo(() => {
         if (!tokenA || !tokenB) return undefined;
@@ -27,7 +27,8 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const [poolStateType] = usePool(poolId as Address);
     const isPoolExists = poolStateType === PoolState.EXISTS;
 
-    const isSorted = tokenA && tokenB ? tokenA.wrapped.equals(tokenB.wrapped) ? undefined : tokenA.wrapped.sortsBefore(tokenB.wrapped) : undefined;
+    const isSorted =
+        tokenA && tokenB ? (tokenA.wrapped.equals(tokenB.wrapped) ? undefined : tokenA.wrapped.sortsBefore(tokenB.wrapped)) : undefined;
 
     const { chartData, loading: isLoading } = usePoolChartData(poolId, span, POOL_CHART_TYPE.PRICE, isSorted);
 

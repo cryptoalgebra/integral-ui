@@ -1,4 +1,4 @@
-import { Pool, Position } from "@cryptoalgebra/custom-pools-sdk";
+import { Pool, Position } from "@cryptoalgebra/integral-sdk";
 
 /**
  * Creates a Position instance without enforcing tickSpacing alignment.

@@ -1,5 +1,5 @@
 import { nonfungiblePositionManagerABI, NONFUNGIBLE_POSITION_MANAGER } from "config";
-import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useAccount, useChainId, useReadContracts } from "wagmi";
 import { Address } from "viem";
@@ -22,7 +22,9 @@ export interface PositionFromTokenId {
     pool: Address;
 }
 
-function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
+function usePositionsFromTokenIds(
+    tokenIds: any[] | undefined
+): {
     isLoading: boolean;
     positions: PositionFromTokenId[] | undefined;
     refetch: () => void;
@@ -31,13 +33,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
 
     const inputs = useMemo(() => (tokenIds ? tokenIds.map((tokenId) => tokenId) : []), [tokenIds]);
 
-    const {
-        data: results,
-        isLoading,
-        isError,
-        error,
-        refetch,
-    } = useReadContracts<readonly { result: any; error: any }[]>({
+    const { data: results, isLoading, isError, error, refetch } = useReadContracts<readonly { result: any; error: any }[]>({
         contracts: inputs.map((x) => ({
             address: NONFUNGIBLE_POSITION_MANAGER[chainId],
             abi: nonfungiblePositionManagerABI,
@@ -55,18 +51,16 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                     const result = call.result as any;
                     const isBasePool = result[4] === ADDRESS_ZERO;
 
-                    const pool = (
-                        isBasePool
-                            ? computePoolAddress({
-                                  tokenA: new Token(chainId, result[2], 18),
-                                  tokenB: new Token(chainId, result[3], 18),
-                              })
-                            : computeCustomPoolAddress({
-                                  tokenA: new Token(chainId, result[2], 18),
-                                  tokenB: new Token(chainId, result[3], 18),
-                                  customPoolDeployer: result[4],
-                              })
-                    ) as Address;
+                    const pool = (isBasePool
+                        ? computePoolAddress({
+                              tokenA: new Token(chainId, result[2], 18),
+                              tokenB: new Token(chainId, result[3], 18),
+                          })
+                        : computeCustomPoolAddress({
+                              tokenA: new Token(chainId, result[2], 18),
+                              tokenB: new Token(chainId, result[3], 18),
+                              customPoolDeployer: result[4],
+                          })) as Address;
 
                     return {
                         tokenId,
@@ -149,7 +143,9 @@ export function usePositions() {
     };
 }
 
-export function usePosition(tokenId: string | number | undefined): {
+export function usePosition(
+    tokenId: string | number | undefined
+): {
     loading: boolean;
     position: PositionFromTokenId | undefined;
     refetch: () => void;

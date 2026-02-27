@@ -18,6 +18,7 @@ const NewPositionPage = () => {
 
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
+    // const chainId = useChainId();
     // const { infoClient } = useClients();
 
     // const { data, loading: isCustomPoolDeployerLoading } = useCustomPoolDeployerQuery({
@@ -26,13 +27,7 @@ const NewPositionPage = () => {
     //     client: infoClient,
     // });
 
-    // const isALMPool =
-    //     data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
-    //         ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId].toLowerCase()
-    //         : false;
-
     const isALMPool = true;
-    const isCustomPoolDeployerLoading = false;
 
     const { vaults } = useALMVaultsByPool(isALMPool ? poolAddress : undefined);
 
@@ -48,7 +43,7 @@ const NewPositionPage = () => {
                 <div className="col-span-2 mb-8">
                     <PageTitle title={"Create Position"} showSettings={false} />
                 </div>
-                {!isCustomPoolDeployerLoading && isALMPool && enabledModules.alm && (
+                {isALMPool && enabledModules.ALMModule && (
                     <div className="flex items-center h-full max-h-16 col-span-1 p-2 bg-card rounded-xl justify-between gap-2 border border-card-border">
                         <Button
                             onClick={() => setIsALM(false)}

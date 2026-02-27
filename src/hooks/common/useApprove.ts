@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
 import { DEFAULT_CHAIN_ID, SWAP_ROUTER } from "config";
@@ -16,7 +16,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;
     const [shouldPolling, setShouldPolling] = useState(false);
 
-    const needAllowance = useNeedAllowance(token, amountToApprove, spender, shouldPolling);
+    const { needAllowance, refetchAllowance } = useNeedAllowance(token, amountToApprove, spender, true);
 
     const approvalState: ApprovalStateType = useMemo(() => {
         if (!amountToApprove || !spender) return ApprovalState.UNKNOWN;
@@ -40,7 +40,12 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
         title: `Approve ${formatAmount(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
         tokenA: token?.address as Address,
         type: TransactionType.SWAP,
+        callback: refetchAllowance,
     });
+
+    useEffect(() => {
+        setShouldPolling(true);
+    }, [amountToApprove])
 
     useEffect(() => {
         if (!needAllowance && shouldPolling) {
@@ -60,8 +65,8 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
             isLoading || isPending
                 ? ApprovalState.PENDING
                 : isSuccess && approvalState === ApprovalState.APPROVED
-                  ? ApprovalState.APPROVED
-                  : approvalState,
+                ? ApprovalState.APPROVED
+                : approvalState,
         approvalCallback,
     };
 }
@@ -82,4 +87,8 @@ export function useApproveCallbackFromTrade(
         [trade, allowedSlippage, isSmartTrade]
     );
     return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
+}
+
+export function useRevokeApprove(token: Currency | undefined, spender: Address) {
+    return useApprove(token && CurrencyAmount.fromRawAmount(token, "0"), spender);
 }

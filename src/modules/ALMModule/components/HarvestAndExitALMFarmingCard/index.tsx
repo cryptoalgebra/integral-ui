@@ -8,7 +8,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useALMFarmHarvest, useALMFarmUnstake, UserALMVault } from "../../hooks";
 import { useALMFarmingRewardsEarned } from "../../hooks/useALMFarmingRewardsEarned";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 
 interface ActiveFarmingCardProps {
     eternalFarming: EternalFarming;
@@ -20,8 +20,13 @@ export const HarvestAndExitALMFarmingCard = ({ eternalFarming, almPosition, isEn
     const rewardTokenCurrency = useCurrency(eternalFarming.rewardToken as Address);
     const bonusRewardTokenCurrency = useCurrency(eternalFarming.bonusRewardToken as Address);
 
-    const { formattedRewardEarned, formattedBonusRewardEarned, rewardEarnedUSD, bonusRewardEarnedUSD, totalRewardsEarnedUSD } =
-        useALMFarmingRewardsEarned(eternalFarming, almPosition);
+    const {
+        formattedRewardEarned,
+        formattedBonusRewardEarned,
+        rewardEarnedUSD,
+        bonusRewardEarnedUSD,
+        totalRewardsEarnedUSD,
+    } = useALMFarmingRewardsEarned(eternalFarming, almPosition);
 
     const isSameReward =
         eternalFarming.rewardToken.toLowerCase() === eternalFarming.bonusRewardToken.toLowerCase() ||
@@ -34,7 +39,7 @@ export const HarvestAndExitALMFarmingCard = ({ eternalFarming, almPosition, isEn
         <div className="flex flex-col gap-6">
             <div className="flex w-full justify-between bg-card-dark border-t border-card-border pt-4">
                 <div className="text-left">
-                    <div className="font-bold text-xs text-white/75 mb-2">EARNED REWARDS</div>
+                    <div className="font-bold text-xs text-text-100/75 mb-2">EARNED REWARDS</div>
                     <HoverCard closeDelay={0} openDelay={0}>
                         <HoverCardTrigger>
                             <span className="text-cyan-300  font-semibold text-2xl drop-shadow-cyan border-b border-dotted border-cyan-300 cursor-pointer">
@@ -86,11 +91,17 @@ export const HarvestAndExitALMFarmingCard = ({ eternalFarming, almPosition, isEn
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                <Button variant={'primary'} className="min-w-20 w-full max-w-fit" size={"md"} disabled={isHarvesting || isUnstaking} onClick={onHarvest}>
+                <Button
+                    variant={"primary"}
+                    className="min-w-20 w-full max-w-fit"
+                    size={"md"}
+                    disabled={isHarvesting || isUnstaking}
+                    onClick={onHarvest}
+                >
                     {isHarvesting ? <Loader /> : "Collect"}
                 </Button>
             </div>
-            <Button variant={'primary'} onClick={onUnstake} disabled={isUnstaking || isHarvesting}>
+            <Button variant={"primary"} onClick={onUnstake} disabled={isUnstaking || isHarvesting}>
                 {isUnstaking ? <Loader /> : `Exit from ${isEnded ? "ended" : ""} farming`}
             </Button>
         </div>

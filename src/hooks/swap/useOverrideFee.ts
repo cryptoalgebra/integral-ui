@@ -1,7 +1,7 @@
 import { SWAP_ROUTER } from "config";
 import { readAlgebraPoolPlugin, simulateAlgebraBasePluginV1BeforeSwap } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
-import { ADDRESS_ZERO, computePoolAddress, Currency, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, computePoolAddress, Currency, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useEffect, useState } from "react";
 import { useChainId } from "wagmi";
@@ -84,9 +84,13 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                 for (const route of trade.swaps) {
                     const splitFees = [];
 
+                    const isBoostedRoute = route.route.isBoosted;
+
+                    if (isBoostedRoute && route.route.pools.length === 0) {
+                        continue;
+                    }
+
                     for (let idx = 0; idx < route.route.pools.length; idx++) {
-                        const amountIn = BigInt(route.inputAmount.quotient.toString());
-                        const amountOut = BigInt(route.outputAmount.quotient.toString());
 
                         const poolAddress = computePoolAddress({
                             tokenA: route.route.pools[idx].token0.wrapped,
@@ -94,6 +98,9 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                         }) as Address;
 
                         const isZeroToOne = route.inputAmount.currency.wrapped.sortsBefore(route.outputAmount.currency.wrapped);
+
+                        const amountIn = BigInt(route.inputAmount.quotient.toString());
+                        const amountOut = BigInt(route.outputAmount.quotient.toString());
 
                         const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
                             address: poolAddress,
@@ -128,7 +135,9 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                         } else {
                             splitFees.push(pluginFee);
                         }
+                    }
 
+                    if (splitFees.length > 0) {
                         fees.push(splitFees);
                     }
                 }

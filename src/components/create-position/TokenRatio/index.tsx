@@ -1,6 +1,6 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { IDerivedMintInfo } from "@/state/mintStore";
-import { nearestUsableTick, priceToClosestTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { nearestUsableTick, priceToClosestTick, TickMath } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 
 interface TokenRatioProps {

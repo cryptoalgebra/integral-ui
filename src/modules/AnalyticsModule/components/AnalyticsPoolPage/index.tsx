@@ -7,7 +7,7 @@ import { Chart } from "@/components/common/Chart";
 import PageTitle from "@/components/common/PageTitle";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { formatAmount, formatPercent } from "@/utils";
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,11 @@ const LiquidityStats = ({
                         <span className="text-text-100/50">Fees (24h)</span>
                         <span className="font-semibold">
                             ${formatAmount(statistics?.fees24H || 0, 2)}{" "}
-                            <span className={`text-xs font-medium ${(statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
+                            <span
+                                className={`text-xs font-medium ${
+                                    (statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"
+                                }`}
+                            >
                                 <span>{(statistics?.feesPercentChange || 0) > 0 ? "+" : ""}</span>
                                 <span>{formatPercent.format((statistics?.feesPercentChange || 0) / 100)}</span>
                             </span>
@@ -212,24 +216,15 @@ export function AnalyticsPoolPage() {
                 <div className="flex flex-col gap-3">
                     { enableActions && <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full " to={"/swap"}>
-                            <Button 
-                                variant={'primary'} 
-                                size={"lg"}
-                                className="gap-2 rounded-xl w-full h-full max-md:text-sm"
-                            >
+                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
                                 <ArrowDownUp size={20} />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
-                            <Button
-                                variant={"primaryLink"}
-                                size={"lg"}
-                                className="gap-2 rounded-xl"
-                            >
-                                         <Plus size={20} />
+                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
+                                <Plus size={20} />
                                 Create Position
-                           
                             </Button>
                         </Link>
                     </div> }

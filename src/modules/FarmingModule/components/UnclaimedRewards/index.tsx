@@ -10,7 +10,7 @@ import { Reward } from "@/graphql/generated/graphql";
 import { useCurrency } from "@/hooks/common/useCurrency";
 
 import { formatAmount } from "@/utils/common/formatAmount";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { useFarmHarvestUnclaimed } from "../../hooks";
 
 interface UnclaimedRewardsProps {
@@ -39,7 +39,7 @@ export const UnclaimedRewards = ({ unclaimedRewards }: UnclaimedRewardsProps) =>
                     <UnclaimedReward key={reward.id} amount={reward.amount} reward={reward.rewardAddress as Address} />
                 ))}
             </div>
-            <Button variant={'primary'} disabled={isLoading} onClick={handleHarvestUnclaimed} className="w-full">
+            <Button variant={"primary"} disabled={isLoading} onClick={handleHarvestUnclaimed} className="w-full">
                 {isLoading ? <Loader /> : "Collect Rewards"}
             </Button>
         </div>

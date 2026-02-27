@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { FormattedPosition } from "@/types/formatted-position";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useApprove } from "@/hooks/common/useApprove";
 import useSWR from "swr";
 import { getFarmingRewardsDistributorAddress } from "@cryptoalgebra/alm-sdk";

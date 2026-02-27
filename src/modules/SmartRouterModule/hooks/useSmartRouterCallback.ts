@@ -4,14 +4,15 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useWriteSwapRouterMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 
 export function useSmartRouterCallback(
     currencyA: Currency | undefined,
     currencyB: Currency | undefined,
     amount: string | undefined,
     calldata: Address | undefined,
-    value: string | undefined
+    value: string | undefined,
+    onTransactionSuccess?: () => void
 ) {
     const [txHash, setTxHash] = useState<Address>();
 
@@ -71,6 +72,7 @@ export function useSmartRouterCallback(
         type: TransactionType.SWAP,
         tokenA: currencyA?.wrapped.address as Address,
         tokenB: currencyB?.wrapped.address as Address,
+        callback: onTransactionSuccess,
     });
 
     return useMemo(

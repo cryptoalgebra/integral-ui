@@ -1,4 +1,4 @@
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/integral-sdk";
 
 export const CHAIN_NAME = {
     [ChainId.BaseSepolia]: "Base Sepolia",

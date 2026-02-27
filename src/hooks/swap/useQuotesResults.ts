@@ -1,8 +1,17 @@
 import { quoterV2ABI, QUOTER_V2 } from "config";
-import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useChainId, useReadContracts } from "wagmi";
 import { useAllRoutes } from "./useAllRoutes";
+
+type QuoteResult = [
+    bigint[], // amountOutList
+    bigint[], // amountInList
+    bigint[], // sqrtPriceX96AfterList
+    number[], // initializedTicksCrossedList
+    bigint, // gasEstimate
+    number[] // feeList
+];
 
 export function useQuotesResults({
     exactInput,
@@ -16,9 +25,13 @@ export function useQuotesResults({
     amountOut?: CurrencyAmount<Currency>;
     currencyIn?: Currency;
     currencyOut?: Currency;
-}) {
+}): {
+    data: QuoteResult[];
+    isLoading: boolean;
+    refetch: () => void;
+} {
     const chainId = useChainId();
-    const { routes, loading: routesLoading } = useAllRoutes(
+    const { normalRoutes: routes, loading: routesLoading } = useAllRoutes(
         exactInput ? amountIn?.currency : currencyIn,
         !exactInput ? amountOut?.currency : currencyOut
     );
@@ -48,7 +61,7 @@ export function useQuotesResults({
     });
 
     return {
-        data: quotesResults,
+        data: (quotesResults?.map((d) => d?.result) as unknown) as QuoteResult[],
         isLoading: isLoading || routesLoading,
         refetch,
     };

@@ -2,7 +2,7 @@ import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
-import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useState } from "react";
 import { ExtendedVault } from "../../hooks";
 import AddAutomatedLiquidityButton from "../AddAutomatedLiquidityButton";
@@ -21,7 +21,7 @@ export const AddALMLiquidityModal = ({ vault }: AddALMLiquidityModalProps) => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant={'primary'} disabled={false} className="whitespace-nowrap w-full">
+                <Button variant={"primary"} disabled={false} className="whitespace-nowrap w-full">
                     Add liquidity
                 </Button>
             </DialogTrigger>

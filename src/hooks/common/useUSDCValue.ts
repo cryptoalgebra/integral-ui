@@ -1,6 +1,6 @@
-import { STABLECOINS } from "config";
+import { TOKENS } from "config";
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
-import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
 import { useClients } from "../graphql/useClients";
@@ -30,9 +30,9 @@ export function useUSDCPrice(currency: Currency | undefined) {
         }
 
         // USDC itself — 1:1 price
-        if (STABLECOINS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
+        if (TOKENS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
             return {
-                price: new Price(STABLECOINS[chainId].USDC, STABLECOINS[chainId].USDC, "1", "1"),
+                price: new Price(TOKENS[chainId].USDC, TOKENS[chainId].USDC, "1", "1"),
                 formatted: 1,
             };
         }
@@ -63,7 +63,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
         if (usdAmount) {
             return {
-                price: new Price(currency, STABLECOINS[chainId].USDC, usdAmount.denominator, usdAmount.numerator),
+                price: new Price(currency, TOKENS[chainId].USDC, usdAmount.denominator, usdAmount.numerator),
                 formatted: Number(usdAmount.toSignificant()),
             };
         }

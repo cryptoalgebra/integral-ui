@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO, Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, Currency } from "@cryptoalgebra/integral-sdk";
 import CurrencyLogo from "../CurrencyLogo";
 import { truncateHash } from "@/utils";
 import { Button } from "@/components/ui/button";

@@ -1,31 +1,41 @@
-import Loader from "@/components/common/Loader";
-import { Button } from "@/components/ui/button";
 import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
+import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
-import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/common/Loader";
 
 interface AddLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
     quoteCurrency: Currency | undefined | null;
     mintInfo: IDerivedMintInfo;
-    poolAddress: Address | undefined;
+    poolAddress?: Address;
+    tokenId?: number;
+    handleCloseModal?: () => void;
 }
 
 const ZERO_PERCENT = new Percent("0");
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress }: AddLiquidityButtonProps) => {
+export const AddLiquidityButton = ({
+    baseCurrency,
+    quoteCurrency,
+    mintInfo,
+    poolAddress,
+    tokenId,
+    handleCloseModal,
+}: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -36,20 +46,44 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const { txDeadline } = useUserState();
 
+    const { refetch: refetchAllPositions } = usePositions();
+
+    const { refetch: refetchPosition } = usePosition(tokenId);
+
+    const isIncreaseMode = tokenId !== undefined;
+
     const useNative = baseCurrency?.isNative ? baseCurrency : quoteCurrency?.isNative ? quoteCurrency : undefined;
 
     const { calldata, value } = useMemo(() => {
         if (!account || !mintInfo.position || JSBI.EQ(mintInfo.position.liquidity, ZERO)) return { calldata: undefined, value: undefined };
 
-        return NonfungiblePositionManager.addCallParameters(mintInfo.position, {
+        const increaseOptions = {
+            tokenId: tokenId || 0,
             slippageTolerance: mintInfo.outOfRange ? ZERO_PERCENT : DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE,
-            recipient: account,
             deadline: Date.now() + txDeadline,
             useNative,
             createPool: mintInfo.noLiquidity,
             deployer: mintInfo.pool?.deployer,
-        });
-    }, [mintInfo, account, txDeadline, useNative]);
+        };
+
+        const mintOptions = {
+            recipient: account,
+        };
+
+        const options = isIncreaseMode ? increaseOptions : { ...mintOptions, ...increaseOptions };
+
+        return NonfungiblePositionManager.addCallParameters(mintInfo.position, options);
+    }, [
+        account,
+        mintInfo.position,
+        mintInfo.outOfRange,
+        mintInfo.noLiquidity,
+        mintInfo.pool?.deployer,
+        tokenId,
+        txDeadline,
+        useNative,
+        isIncreaseMode,
+    ]);
 
     const chainId = useChainId();
 
@@ -79,41 +113,53 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         calldata && isReady
             ? {
                   address: NONFUNGIBLE_POSITION_MANAGER[appChainId],
-                  args: calldata && ([calldata as `0x${string}`[]] as const),
+                  args: calldata && ([calldata as Address[]] as const),
                   value: BigInt(value),
               }
             : undefined;
 
     const { data: addLiquidityData, writeContract: addLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
-    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
+    const { isLoading: isAddingLiquidityLoading, isSuccess } = useTransactionAwait(
         addLiquidityData,
         {
-            title: "Add liquidity",
+            title: isIncreaseMode ? `Add Liquidity to #${tokenId}` : "Add liquidity",
             tokenA: baseCurrency?.wrapped.address as Address,
             tokenB: quoteCurrency?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        `/pool/${poolAddress}`
+        isIncreaseMode ? undefined : `/pool/${poolAddress}`
     );
+
+    useEffect(() => {
+        if (!isSuccess) return;
+        if (isIncreaseMode) {
+            Promise.all([refetchPosition(), refetchAllPositions()]).then(() => handleCloseModal?.());
+        }
+    }, [isSuccess, isIncreaseMode, refetchPosition, refetchAllPositions, handleCloseModal]);
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={"primary"} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
-    if (mintInfo.errorMessage) return <Button variant={'primary'} disabled>{mintInfo.errorMessage}</Button>;
+    if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 
     if (showApproveA || showApproveB)
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button
-                        variant={'primary'}
                         disabled={approvalStateA === ApprovalState.PENDING}
                         className="w-full"
+                        variant="primary"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
                     >
                         {approvalStateA === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`}
@@ -121,9 +167,9 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
                 )}
                 {showApproveB && (
                     <Button
-                        variant={'primary'}
                         disabled={approvalStateB === ApprovalState.PENDING}
                         className="w-full"
+                        variant="primary"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
                     >
                         {approvalStateB === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_B?.symbol}`}
@@ -134,11 +180,11 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     return (
         <Button
-            variant={'primary'}
             disabled={!isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
+            variant={"primary"}
         >
-            {isAddingLiquidityLoading || isPending ? <Loader /> : "Create Position"}
+            {isAddingLiquidityLoading || isPending ? <Loader /> : isIncreaseMode ? "Add Liquidity" : "Create Position"}
         </Button>
     );
 };

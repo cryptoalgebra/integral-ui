@@ -33,6 +33,7 @@ import {
     VOTING_ESCROW,
 } from "./contract-addresses";
 import { defineChain } from "viem";
+import { DEFAULT_CHAIN_ID } from "./default-chain";
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
     id: 84532,
@@ -102,8 +103,10 @@ const contractAddresses = {
     SecurityRegistry: SECURITY_REGISTRY,
 };
 
-export const wagmiContracts: ContractConfig[] = rawContracts.map((contract) => ({
-    name: contract.name,
-    abi: contract.abi,
-    address: contractAddresses[contract.name as keyof typeof contractAddresses],
-}));
+export const wagmiContracts: ContractConfig[] = rawContracts
+    .map((contract) => ({
+        name: contract.name,
+        abi: contract.abi,
+        address: contractAddresses[contract.name as keyof typeof contractAddresses],
+    }))
+    .filter((contract) => contract.address?.[DEFAULT_CHAIN_ID] !== null);

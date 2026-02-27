@@ -1,6 +1,6 @@
 import { FARMING_CENTER } from "config";
 import { Address, encodeFunctionData } from "viem";
-import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
+import { MaxUint128 } from "@cryptoalgebra/integral-sdk";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { useEffect, useState } from "react";
 import { Deposit } from "@/graphql/generated/graphql";

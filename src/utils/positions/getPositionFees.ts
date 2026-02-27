@@ -1,6 +1,6 @@
 import { simulateNonfungiblePositionManagerCollect } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
-import { CurrencyAmount, Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Pool } from "@cryptoalgebra/integral-sdk";
 import { Address, maxUint128 } from "viem";
 
 export async function getPositionFees(pool: Pool, positionId: number, owner: Address) {

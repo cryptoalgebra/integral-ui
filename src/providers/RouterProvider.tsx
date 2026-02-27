@@ -29,7 +29,7 @@ const router = createBrowserRouter([
                 path: "swap",
                 element: <SwapPage type={SwapPageView.SWAP} />,
             },
-            enabledModules.limitOrders && {
+            enabledModules.LimitOrdersModule && {
                 path: "limit-order",
                 element: <SwapPage type={SwapPageView.LIMIT_ORDER} />,
             },
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
                 element: <NewPositionPage />,
             },
 
-            ...(enabledModules.analytics
+            ...(enabledModules.AnalyticsModule
                 ? [
                       {
                           path: "/analytics",
@@ -87,7 +87,7 @@ const router = createBrowserRouter([
                   ]
                 : []),
 
-            ...(enabledModules.ve33
+            ...(enabledModules.Ve33Module
                 ? [
                       {
                           path: "vetoken",

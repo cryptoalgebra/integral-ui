@@ -1,4 +1,4 @@
-import { Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { Pool } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";
@@ -33,33 +33,17 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
     const { data: tickSpacing, isLoading: isTickSpacingLoading, isError: isTickSpacingError } = useReadAlgebraPoolTickSpacing({
         address,
     });
-    const {
-        data: globalState,
-        isLoading: isGlobalStateLoading,
-        isError: isGlobalStateError,
-    } = useReadAlgebraPoolGlobalState({
+    const { data: globalState, isLoading: isGlobalStateLoading, isError: isGlobalStateError } = useReadAlgebraPoolGlobalState({
         address,
     });
-    const {
-        data: liquidity,
-        isLoading: isLiquidityLoading,
-        isError: isLiquidityError,
-    } = useReadAlgebraPoolLiquidity({
+    const { data: liquidity, isLoading: isLiquidityLoading, isError: isLiquidityError } = useReadAlgebraPoolLiquidity({
         address,
     });
 
-    const {
-        data: token0Address,
-        isLoading: isLoadingToken0,
-        isError: isToken0Error,
-    } = useReadAlgebraPoolToken0({
+    const { data: token0Address, isLoading: isLoadingToken0, isError: isToken0Error } = useReadAlgebraPoolToken0({
         address,
     });
-    const {
-        data: token1Address,
-        isLoading: isLoadingToken1,
-        isError: isToken1Error,
-    } = useReadAlgebraPoolToken1({
+    const { data: token1Address, isLoading: isLoadingToken1, isError: isToken1Error } = useReadAlgebraPoolToken1({
         address,
     });
 
@@ -69,11 +53,7 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
 
     const { infoClient } = useClients();
 
-    const {
-        data: poolDeployer,
-        loading: isPoolDeployerLoading,
-        error: isPoolDeployerError,
-    } = useCustomPoolDeployerQuery({
+    const { data: poolDeployer, loading: isPoolDeployerLoading, error: isPoolDeployerError } = useCustomPoolDeployerQuery({
         variables: {
             poolId: address?.toLowerCase() || "",
         },

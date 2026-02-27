@@ -1,5 +1,5 @@
 import { TickFieldsFragment, useAllTicksLazyQuery } from "@/graphql/generated/graphql";
-import { Pool, TickMath, Token, computeCustomPoolAddress, tickToPrice } from "@cryptoalgebra/custom-pools-sdk";
+import { Pool, TickMath, Token, computeCustomPoolAddress, tickToPrice } from "@cryptoalgebra/integral-sdk";
 import { useState } from "react";
 import { Address } from "viem";
 import keyBy from "lodash.keyby";
@@ -193,7 +193,7 @@ export function useInfoTickData() {
                 token0,
                 token1,
             });
-        } catch (err: any) {
+        } catch (err) {
             throw new Error(err);
         } finally {
             setTicksLoading(false);

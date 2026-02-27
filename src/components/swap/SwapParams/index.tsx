@@ -4,22 +4,20 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent, TradeType } from "@cryptoalgebra/integral-sdk";
 import { ChevronDownIcon, ZapIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Button } from "@/components/ui/button.tsx";
 import { useOverrideFee } from "@/hooks/swap/useOverrideFee";
-
-import SmartRouterModule from "@/modules/SmartRouterModule";
 import { TradeState } from "@/types/trade-state";
 import { cn } from "@/utils";
-const { SwapRouteModal } = SmartRouterModule.components;
+import { SwapRouteModal } from "../SwapRouteModal";
 
 const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    const { allowedSlippage, currencies, poolAddress, toggledTrade: trade, tradeState } = derivedSwap;
+    const { allowedSlippage, currencies, poolAddress, toggledTrade: trade, tradeState, priceImpact: derivedPriceImpact } = derivedSwap;
     const { typedValue } = useSwapState();
 
     const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
@@ -38,9 +36,9 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         if (isSmartTrade) {
             return SmartRouter.getPriceImpact(trade);
         } else {
-            return trade.priceImpact;
+            return derivedPriceImpact ?? undefined;
         }
-    }, [trade, isSmartTrade]);
+    }, [trade, isSmartTrade, derivedPriceImpact]);
 
     const minimumAmountOut = useMemo(() => {
         if (!trade) return undefined;
@@ -84,45 +82,29 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             </div>
             <div
                 className={cn(
-                    'h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg',
-                    isExpanded && isSmartTrade ? "h-[160px]" : isExpanded && "h-[142px]",
-                    isExpanded && 'border border-card-border'
+                    "h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg",
+                    isExpanded && "h-[160px]",
+                    isExpanded && "border border-card-border"
                 )}
             >
                 <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
-                    {isSmartTrade ? (
-                        <div className="flex items-center justify-between">
-                            <span className="font-semibold">Route</span>
-                            <span>
-                                <SwapRouteModal
-                                    isOpen={isOpen}
-                                    setIsOpen={setIsOpen}
-                                    routes={trade?.routes}
-                                    fees={fees}
-                                    tradeType={trade?.tradeType}
-                                >
-                                    <Button 
-                                        size={"sm"}
-                                        variant={'outline'}
-                                        onClick={() => setIsOpen(true)}
-                                    >
-                                        Show
-                                    </Button>
-                                </SwapRouteModal>
-                            </span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center justify-between">
-                            <span className="font-semibold">Route</span>
-                            <span>
-                                {trade?.swaps &&
-                                    [
-                                        trade.swaps[0].inputAmount.currency.symbol,
-                                        ...trade.swaps.map((swap) => swap.outputAmount.currency.symbol),
-                                    ].join(" - ")}
-                            </span>
-                        </div>
-                    )}
+                    <div className="flex items-center justify-between">
+                        <span className="font-semibold">Route</span>
+                        <span>
+                            <SwapRouteModal
+                                isOpen={isOpen}
+                                setIsOpen={setIsOpen}
+                                routes={isSmartTrade ? trade?.routes : trade.swaps.map((swap) => swap.route)}
+                                fees={fees}
+                                tradeType={trade?.tradeType}
+                            >
+                                <Button size={"sm"} variant={"outline"} onClick={() => setIsOpen(true)}>
+                                    Show
+                                </Button>
+                            </SwapRouteModal>
+                        </span>
+                    </div>
+
                     <div className="flex items-center justify-between">
                         <span className="font-semibold">
                             {trade.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent"}
@@ -151,7 +133,9 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             <Loader size={17} className="text-text" />
         </div>
     ) : (
-        <div className="text-md mb-1 text-center opacity-70 bg-card-dark border border-card-border py-2 px-3 rounded-lg">Select an amount for swap</div>
+        <div className="text-md mb-1 text-center opacity-70 bg-card-dark border border-card-border py-2 px-3 rounded-lg">
+            Select an amount for swap
+        </div>
     );
 };
 

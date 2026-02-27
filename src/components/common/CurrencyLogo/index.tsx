@@ -1,4 +1,4 @@
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/integral-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";

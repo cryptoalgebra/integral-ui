@@ -1,4 +1,4 @@
-import { infoClient, farmingClient, limitOrderClient, uniswapInfoClient } from "@/graphql/clients";
+import { infoClient, farmingClient, limitOrderClient, uniswapInfoClient, blocksClient } from "@/graphql/clients";
 import { useChainId } from "wagmi";
 
 export function useClients() {
@@ -9,5 +9,6 @@ export function useClients() {
         uniswapInfoClient,
         farmingClient: farmingClient[chainId],
         limitOrderClient: limitOrderClient[chainId],
+        blocksClient: blocksClient[chainId],
     };
 }

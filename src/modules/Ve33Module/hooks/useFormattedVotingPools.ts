@@ -6,7 +6,7 @@ import { useClients } from "@/hooks/graphql/useClients";
 import { usePoolsListQuery } from "@/graphql/generated/graphql";
 import { useChainId } from "wagmi";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
-import { STABLECOINS } from "config/tokens";
+import { TOKENS } from "config/tokens";
 
 export function useFormattedVotingPools() {
     const chainId = useChainId();
@@ -20,7 +20,7 @@ export function useFormattedVotingPools() {
 
     const commonPools = useMemo(() => commonPoolsResult?.pools ?? [], [commonPoolsResult]);
 
-    const { formatted: tokenPriceUSD } = useUSDCPrice(STABLECOINS[chainId].TOKEN);
+    const { formatted: tokenPriceUSD } = useUSDCPrice(TOKENS[chainId].TOKEN);
 
     const formattedVotingPools: FormattedVotingPool[] = useMemo(() => {
         if (votingPoolsLoading || !commonPools) {

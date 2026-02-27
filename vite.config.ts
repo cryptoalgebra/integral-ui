@@ -1,4 +1,4 @@
-import { enabledModules, moduleNameToPath } from "./config";
+import { enabledModules } from "./config";
 import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
@@ -10,7 +10,7 @@ const disabledModules = Object.entries(enabledModules)
     .filter(([, isEnabled]) => !isEnabled)
     .map(([key]) => ({
         key,
-        moduleDir: moduleNameToPath[key],
+        moduleDir: key,
     }));
 
 const disabledAliases = disabledModules.map(({ moduleDir }) => ({

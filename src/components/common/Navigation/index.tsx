@@ -26,7 +26,7 @@ const menuItems = [
         active: [PATHS.POOLS, PATHS.POOL],
         icon: <Droplets size={20} />,
     },
-    ...(enabledModules.ve33
+    ...(enabledModules.Ve33Module
         ? [
               {
                   title: "veTOKEN",
@@ -42,7 +42,7 @@ const menuItems = [
               },
           ]
         : []),
-    enabledModules.analytics && {
+    enabledModules.AnalyticsModule && {
         title: "Analytics",
         link: "/analytics",
         active: [PATHS.ANALYTICS],
@@ -56,7 +56,7 @@ export function NavButtons() {
     const setNavlinkClasses = (paths: string[]) =>
         paths.some((path) => matchPath(path, pathname))
             ? "font-bold border-b border-primary"
-            : "text-muted-foreground/70 hover:text-white/50";
+            : "text-muted-foreground/70 hover:text-text-100/50";
 
     return (
         <>

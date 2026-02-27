@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { LoadingState } from "./loadingState";
 import { Input } from "@/components/ui/input";
-import { Search, User, X } from "lucide-react";
+import { Search, User, X, Zap } from "lucide-react";
 import { enabledModules } from "config/app-modules";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +21,7 @@ type ActiveFilters = {
     hasActiveFarming?: boolean;
     hasALM?: boolean;
     isMyPool?: boolean;
+    isBoosted?: boolean;
 };
 interface PoolsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -68,6 +69,7 @@ const PoolsTable = <TData, TValue>({
             if (f.hasActiveFarming && !row.original.hasActiveFarming) return false;
             if (f.hasALM && !row.original.hasALM) return false;
             if (f.isMyPool && !row.original.isMyPool) return false;
+            if (f.isBoosted && !row.original.isBoosted) return false;
             return true;
         },
     });
@@ -107,7 +109,7 @@ const PoolsTable = <TData, TValue>({
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
                     <div className="grid grid-cols-2 gap-3 md:flex w-full sm:w-fit">
-                        {enabledModules.farming && (
+                        {enabledModules.FarmingModule && (
                             <Button
                                 onClick={() => toggleFilter("hasActiveFarming")}
                                 variant={isFilterActive("hasActiveFarming") ? "iconActive" : "outline"}
@@ -118,7 +120,7 @@ const PoolsTable = <TData, TValue>({
                                 <span>Farm Pools</span>
                             </Button>
                         )}
-                        {enabledModules.alm && (
+                        {enabledModules.ALMModule && (
                             <Button
                                 onClick={() => toggleFilter("hasALM")}
                                 variant={isFilterActive("hasALM") ? "iconActive" : "outline"}
@@ -127,6 +129,17 @@ const PoolsTable = <TData, TValue>({
                             >
                                 <span className="w-2 h-2 bg-cyan-950 border border-cyan-500 rotate-45" />
                                 <span>ALM Pools</span>
+                            </Button>
+                        )}
+                        {enabledModules.BoostedPoolsModule && (
+                            <Button
+                                onClick={() => toggleFilter("isBoosted")}
+                                variant={isFilterActive("isBoosted") ? "iconActive" : "outline"}
+                                size="md"
+                                className="flex h-10 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                            >
+                                <Zap className="text-purple-400" size={16} />
+                                <span>Boosted</span>
                             </Button>
                         )}
                         <Button
@@ -140,7 +153,14 @@ const PoolsTable = <TData, TValue>({
                         </Button>
                     </div>
                     <Button
-                        hidden={!(isFilterActive("isMyPool") || isFilterActive("hasActiveFarming") || isFilterActive("hasALM"))}
+                        hidden={
+                            !(
+                                isFilterActive("isMyPool") ||
+                                isFilterActive("hasActiveFarming") ||
+                                isFilterActive("hasALM") ||
+                                isFilterActive("isBoosted")
+                            )
+                        }
                         size="md"
                         onClick={() => {
                             setColumnFilters([]);

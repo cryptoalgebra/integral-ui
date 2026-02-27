@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Price } from "@cryptoalgebra/integral-sdk";
 import { useMintState } from "@/state/mintStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ export interface RangeSelectorPartProps {
     label?: string;
     width?: string;
     locked?: boolean;
-    initialPrice: Price<Token, Token> | undefined;
+    initialPrice: Price<Currency, Currency> | undefined;
     disabled: boolean;
     title: string;
 }
@@ -69,7 +69,7 @@ const RangeSelectorPart = ({
 
     return (
         <div>
-            <div className="font-bold text-xs mb-3 text-white/75">{title.toUpperCase()}</div>
+            <div className="font-bold text-xs mb-3 text-text-100/75">{title.toUpperCase()}</div>
             <div className="flex relative">
                 <Button
                     variant={"ghost"}

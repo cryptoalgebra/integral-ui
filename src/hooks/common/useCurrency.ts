@@ -1,6 +1,6 @@
 import { useChainId } from "wagmi";
-import { Currency, ExtendedNative, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
-import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, ExtendedNative, WNATIVE } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO } from "@cryptoalgebra/integral-sdk";
 import { NATIVE_NAME, NATIVE_SYMBOL } from "config";
 import { useAlgebraToken } from "./useAlgebraToken";
 import { Address } from "viem";

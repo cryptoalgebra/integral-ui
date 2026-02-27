@@ -3,7 +3,7 @@ import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedMintInfo, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { useSwapActionHandlers } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { Currency, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { useCallback } from "react";
 

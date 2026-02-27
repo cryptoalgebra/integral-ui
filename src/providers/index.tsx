@@ -1,5 +1,6 @@
 import ApolloProvider from "./ApolloProvider";
 import RouterProvider from "./RouterProvider";
+import StoreCleaner from "./StoreCleaner";
 import WagmiProvider from "./WagmiProvider";
 
 export default function Providers() {
@@ -7,6 +8,7 @@ export default function Providers() {
         <ApolloProvider>
             <WagmiProvider>
                 <RouterProvider />
+                <StoreCleaner />
             </WagmiProvider>
         </ApolloProvider>
     );

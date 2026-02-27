@@ -2,7 +2,7 @@ import { usePool } from "@/hooks/pools/usePool";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useDerivedSwapInfo } from "@/state/swapStore";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { ADDRESS_ZERO, CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { ADDRESS_ZERO, CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/integral-sdk";
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Address, maxUint128 } from "viem";
@@ -233,8 +233,8 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close, poolAddress }: 
                                               hoveredIndex !== NOT_SELECTED
                                                   ? "bg-blue-500/80"
                                                   : v.tick <= (tickAfterSwap || -NOT_SELECTED)
-                                                    ? "bg-yellow-600"
-                                                    : "bg-red-800/40"
+                                                  ? "bg-yellow-600"
+                                                  : "bg-red-800/40"
                                           }`}
                                           style={{ width: `${(v.activeLiquidity * 100) / maxLiquidity}%` }}
                                       ></div>
@@ -273,8 +273,8 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close, poolAddress }: 
                                               -idx >= hoveredIndex && hoveredIndex !== NOT_SELECTED
                                                   ? "bg-blue-500/80"
                                                   : v.tick >= (tickAfterSwap || NOT_SELECTED)
-                                                    ? "bg-yellow-600"
-                                                    : "bg-green-800/40"
+                                                  ? "bg-yellow-600"
+                                                  : "bg-green-800/40"
                                           } rounded-l-lg ml-auto`}
                                           style={{ width: `${(v.activeLiquidity * 100) / maxLiquidity}%` }}
                                       ></div>

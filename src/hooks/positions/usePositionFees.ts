@@ -1,5 +1,5 @@
 import { useReadNonfungiblePositionManagerOwnerOf, useSimulateNonfungiblePositionManagerCollect } from "@/generated";
-import { Currency, CurrencyAmount, Pool } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Pool } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
 import { Address, maxUint128 } from "viem";
 import { useUSDCValue } from "../common/useUSDCValue";

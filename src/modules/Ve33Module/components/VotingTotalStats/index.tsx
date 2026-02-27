@@ -5,7 +5,7 @@ import { useVotingData } from "../../hooks";
 import { getTimeUntilTimestamp } from "../../utils";
 import { useFormattedVotingPools } from "../../hooks/useFormattedVotingPools";
 import { formatUnits } from "viem";
-import { STABLECOINS } from "config/tokens";
+import { TOKENS } from "config/tokens";
 import { DEFAULT_CHAIN_ID } from "config/default-chain";
 
 export const VotingTotalStats = () => {
@@ -20,7 +20,7 @@ export const VotingTotalStats = () => {
 
     const amountVotedThisEpoch = totalAvailableVotes > 0 ? (totalVotes / totalAvailableVotes) * 100 : 0;
 
-    const totalEmissionsThisEpoch = votingData ? formatUnits(votingData.totalEmissions, STABLECOINS[DEFAULT_CHAIN_ID].TOKEN.decimals) : 0;
+    const totalEmissionsThisEpoch = votingData ? formatUnits(votingData.totalEmissions, TOKENS[DEFAULT_CHAIN_ID].TOKEN.decimals) : 0;
 
     const isLoading = votingDataLoading || formattedVotingPoolsLoading;
 
