@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LiquidityRangeChartV2, PricePointV2 } from "@/components/Charts/D3LiquidityRangeInputV2";
 import { useDensityChartData } from "./hooks";
 import { ChartVariant, ZoomLevels } from "./types";
-import { Chart } from "./Chart";
+import { Chart } from "./chart";
 
 interface LiquidityChartProps {
     currencyA: Currency | undefined | null;
