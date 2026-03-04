@@ -20,12 +20,14 @@ interface AddLiquidityButtonProps {
     quoteCurrency: Currency | undefined | null;
     mintInfo: IDerivedMintInfo;
     poolAddress: Address | undefined;
+    textMode?: boolean;
+    textModeClassName?: string;
 }
 
 const ZERO_PERCENT = new Percent("0");
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress }: AddLiquidityButtonProps) => {
+export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress, textMode = false, textModeClassName }: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -98,22 +100,39 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     );
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
+    const defaultTextModeClassName =
+        "h-auto min-w-0 rounded-md bg-primary/15 px-3 py-1.5 text-base font-semibold text-primary underline underline-offset-4 hover:bg-primary/25";
+    const mergedTextModeClassName = textModeClassName || defaultTextModeClassName;
 
-    if (!account) return <Button variant={'primary'} onClick={() => open()}>Connect Wallet</Button>;
+    if (!account)
+        return (
+            <Button variant={textMode ? "ghost" : "primary"} className={textMode ? mergedTextModeClassName : undefined} onClick={() => open()}>
+                Connect Wallet
+            </Button>
+        );
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button variant={textMode ? "ghost" : "destructive"} className={textMode ? mergedTextModeClassName : undefined} onClick={() => open({ view: "Networks" })}>
+                {`Connect to ${DEFAULT_CHAIN_NAME}`}
+            </Button>
+        );
 
-    if (mintInfo.errorMessage) return <Button variant={'primary'} disabled>{mintInfo.errorMessage}</Button>;
+    if (mintInfo.errorMessage)
+        return (
+            <Button variant={textMode ? "ghost" : "primary"} className={textMode ? mergedTextModeClassName : undefined} disabled>
+                {mintInfo.errorMessage}
+            </Button>
+        );
 
     if (showApproveA || showApproveB)
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button
-                        variant={'primary'}
+                        variant={textMode ? "ghost" : "primary"}
                         disabled={approvalStateA === ApprovalState.PENDING}
-                        className="w-full"
+                        className={textMode ? mergedTextModeClassName : "w-full"}
                         onClick={() => approvalCallbackA && approvalCallbackA()}
                     >
                         {approvalStateA === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`}
@@ -121,9 +140,9 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
                 )}
                 {showApproveB && (
                     <Button
-                        variant={'primary'}
+                        variant={textMode ? "ghost" : "primary"}
                         disabled={approvalStateB === ApprovalState.PENDING}
-                        className="w-full"
+                        className={textMode ? mergedTextModeClassName : "w-full"}
                         onClick={() => approvalCallbackB && approvalCallbackB()}
                     >
                         {approvalStateB === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_B?.symbol}`}
@@ -134,7 +153,8 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     return (
         <Button
-            variant={'primary'}
+            variant={textMode ? "ghost" : "primary"}
+            className={textMode ? mergedTextModeClassName : undefined}
             disabled={!isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
         >

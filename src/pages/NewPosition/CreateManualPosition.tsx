@@ -1,7 +1,6 @@
 import AmountsSection from "@/components/create-position/AmountsSection";
-import LiquidityChart from "@/components/create-position/LiquidityChart";
+import NewPositionRange from "@/components/create-position/NewPositionRange";
 import PresetTabs from "@/components/create-position/PresetTabs";
-import RangeSelector from "@/components/create-position/RangeSelector";
 import { Button } from "@/components/ui/button";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
@@ -16,6 +15,7 @@ interface ManualProps {
 }
 
 export function CreateManualPosition({ poolAddress }: ManualProps) {
+    const useLiquidityRangeChartV2 = import.meta.env.VITE_USE_LIQUIDITY_RANGE_V2 === "true";
     const { data: token0 } = useReadAlgebraPoolToken0({
         address: poolAddress,
     });
@@ -126,37 +126,22 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
                             </div>
                         </div>
                         {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
-                        <div className="flex w-full flex-col md:flex-row gap-4">
-                            <RangeSelector
-                                priceLower={priceLower}
-                                priceUpper={priceUpper}
-                                getDecrementLower={getDecrementLower}
-                                getIncrementLower={getIncrementLower}
-                                getDecrementUpper={getDecrementUpper}
-                                getIncrementUpper={getIncrementUpper}
-                                onLeftRangeInput={onLeftRangeInput}
-                                onRightRangeInput={onRightRangeInput}
-                                currencyA={currencyA}
-                                currencyB={currencyB}
-                                mintInfo={mintInfo}
-                                disabled={!startPriceTypedValue && !mintInfo.price}
-                            />
-                            <div className="md:ml-auto md:text-right">
-                                <div className="font-bold text-xs mb-3 text-white/75">CURRENT PRICE</div>
-                                <div className="font-bold text-xl">{`${currentPrice}`}</div>
-                            </div>
-                        </div>
-
-                        <LiquidityChart
-                            currencyA={currencyA}
-                            currencyB={currencyB}
-                            pool={mintInfo.pool}
-                            currentPrice={price ? parseFloat(price) : undefined}
+                        <NewPositionRange
                             priceLower={priceLower}
                             priceUpper={priceUpper}
-                            ticksAtLimit={mintInfo.ticksAtLimit}
+                            getDecrementLower={getDecrementLower}
+                            getIncrementLower={getIncrementLower}
+                            getDecrementUpper={getDecrementUpper}
+                            getIncrementUpper={getIncrementUpper}
                             onLeftRangeInput={onLeftRangeInput}
                             onRightRangeInput={onRightRangeInput}
+                            currencyA={currencyA}
+                            currencyB={currencyB}
+                            mintInfo={mintInfo}
+                            currentPriceValue={price ? parseFloat(price) : undefined}
+                            currentPriceLabel={currentPrice}
+                            startPriceTypedValue={startPriceTypedValue}
+                            useV2={useLiquidityRangeChartV2}
                         />
                     </div>
                 </div>

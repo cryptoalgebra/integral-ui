@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Bound, Currency, Pool, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LiquidityRangeChartV2, PricePointV2 } from "@/components/Charts/D3LiquidityRangeInputV2";
 import { useDensityChartData } from "./hooks";
 import { ChartVariant, ZoomLevels } from "./types";
 import { Chart } from "./Chart";
@@ -22,6 +23,7 @@ interface LiquidityChartProps {
     height?: number;
     isSorted?: boolean;
     isStable?: boolean;
+    useV2?: boolean;
 }
 
 const DEFAULT_ZOOM_LEVELS: ZoomLevels = {
@@ -63,6 +65,7 @@ const LiquidityChart = ({
     height = 230,
     isSorted: isSortedProp,
     isStable = false,
+    useV2 = false,
 }: LiquidityChartProps) => {
     const isSorted = useMemo(() => {
         if (typeof isSortedProp === "boolean") return isSortedProp;
@@ -129,6 +132,25 @@ const LiquidityChart = ({
 
     const zoomLevels = useMemo(() => (isStable ? STABLE_ZOOM_LEVELS : DEFAULT_ZOOM_LEVELS), [isStable]);
 
+    const fallbackPriceData = useMemo<PricePointV2[]>(() => {
+        const base = currentPrice ?? 1;
+        const end = Math.floor(Date.now() / 1000);
+        return Array.from({ length: 24 }).map((_, index) => {
+            const ratio = index / 24;
+            const drift = 1 + Math.sin(index / 4) * 0.015;
+            const value = base * (1 + (ratio - 0.5) * 0.02) * drift;
+            const time = end - (24 - index) * 60 * 60;
+            return {
+                time,
+                value,
+                open: value,
+                high: value,
+                low: value,
+                close: value,
+            };
+        });
+    }, [currentPrice]);
+
     const mockData = useMemo(() => {
         if (!formattedData?.length && currentPrice) {
             return [
@@ -155,8 +177,51 @@ const LiquidityChart = ({
         return 0;
     }, [formattedData, currentPrice]);
 
+    const v2LiquidityData = useMemo(() => {
+        return (formattedData ?? mockData).map((item, index) => ({
+            tick: index,
+            price0: item.price0,
+            activeLiquidity: item.activeLiquidity,
+        }));
+    }, [formattedData, mockData]);
+
     if (isChartLoading || !formattedData) {
         return <LiquidityChartLoader />;
+    }
+
+    if (useV2 && currentPrice) {
+        const initialMinPrice = lowPrice ? parseFloat(lowPrice) : currentPrice * zoomLevels.initialMin;
+        const initialMaxPrice = highPrice ? parseFloat(highPrice) : currentPrice * zoomLevels.initialMax;
+
+        return (
+            <div className="group relative mb-4 flex w-full" style={{ minHeight: "200px" }}>
+                <LiquidityRangeChartV2
+                    width={width}
+                    height={height}
+                    priceData={fallbackPriceData}
+                    liquidityData={v2LiquidityData}
+                    quoteSymbol={currencyB?.symbol}
+                    baseSymbol={currencyA?.symbol}
+                    currentPrice={currentPrice}
+                    initialMinPrice={initialMinPrice}
+                    initialMaxPrice={initialMaxPrice}
+                    initialFullRange={Boolean(ticksAtLimit[Bound.LOWER] && ticksAtLimit[Bound.UPPER])}
+                    onMinPriceChange={(nextPrice) => {
+                        if (!onLeftRangeInput || typeof nextPrice !== "number" || nextPrice <= 0) return;
+                        const adjusted = isSorted ? nextPrice : 1 / nextPrice;
+                        onLeftRangeInput(adjusted.toFixed(12));
+                    }}
+                    onMaxPriceChange={(nextPrice) => {
+                        if (!onRightRangeInput || typeof nextPrice !== "number" || nextPrice <= 0) return;
+                        const adjusted = isSorted ? nextPrice : 1 / nextPrice;
+                        onRightRangeInput(adjusted.toFixed(12));
+                    }}
+                    onInputModeChange={() => undefined}
+                    onTimePeriodChange={() => undefined}
+                    onFullRangeChange={() => undefined}
+                />
+            </div>
+        );
     }
 
     return (

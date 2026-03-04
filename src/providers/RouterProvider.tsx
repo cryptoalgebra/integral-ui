@@ -14,6 +14,7 @@ import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider, Route
 import AnalyticsModule from "@/modules/AnalyticsModule";
 import VeTOKENPage from "@/pages/VeTOKEN";
 import VotePage from "@/pages/Vote";
+import PoolNewPage from "@/pages/PoolNew";
 const { AnalyticsPoolPage, TransactionsList, TokensList, AnalyticsTokenPage } = AnalyticsModule.components;
 
 const router = createBrowserRouter([
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
             {
                 path: "pool/:pool",
                 element: <PoolPage />,
+            },
+            {
+                path: "pool-new/:pool",
+                element: <PoolNewPage />
             },
             {
                 path: "pool/:pool/new-position",

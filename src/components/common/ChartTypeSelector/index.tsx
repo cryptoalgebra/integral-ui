@@ -1,11 +1,9 @@
-import { ChevronDown } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CHART_TYPE, ChartTypeType, PoolChartTypeType } from "@/types/swap-chart";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/utils";
 
 interface IChartTypeSelector {
     chartType: ChartTypeType | PoolChartTypeType;
-    handleChangeChartType: (span: ChartTypeType) => void;
+    handleChangeChartType: (span: ChartTypeType | PoolChartTypeType) => void;
 }
 
 const titles = {
@@ -17,27 +15,24 @@ const titles = {
 
 export function ChartTypeSelector({ chartType, handleChangeChartType }: IChartTypeSelector) {
     return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button className="border" variant={"ghost"} size={"sm"}>
-                    <span>{titles[chartType]}</span>
-                    <ChevronDown size={16} />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent align={"end"} className="mx-auto flex w-fit flex-col gap-2 rounded-xl p-2">
-                {Object.entries(titles)
-                    // .filter(([type]) => (showAPR ? true : type !== POOL_CHART_TYPE.APR))
-                    .map(([type, title]) => (
-                        <Button
-                            key={type}
-                            size={"sm"}
-                            variant={chartType === type ? "iconHover" : "icon"}
-                            onClick={() => handleChangeChartType(type as ChartTypeType)}
-                        >
-                            {title}
-                        </Button>
-                    ))}
-            </PopoverContent>
-        </Popover>
+        <div className="flex items-center gap-1 rounded-2xl border border-card-border bg-card-dark p-1">
+            {Object.entries(titles).map(([type, title]) => {
+                const isActive = chartType === type;
+
+                return (
+                    <button
+                        key={type}
+                        type="button"
+                        onClick={() => handleChangeChartType(type as ChartTypeType)}
+                        className={cn(
+                            "h-10 rounded-xl px-4 text-sm font-semibold transition-colors",
+                            isActive ? "border border-white/10 bg-card text-text-100" : "text-text-100/60 hover:bg-white/5 hover:text-text-100"
+                        )}
+                    >
+                        {title}
+                    </button>
+                );
+            })}
+        </div>
     );
 }

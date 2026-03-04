@@ -3,6 +3,7 @@ import { Bound } from "@cryptoalgebra/custom-pools-sdk";
 export type ChartVariant = "default" | "dark";
 
 export interface ChartEntry {
+    tick?: number;
     activeLiquidity: number;
     price0: number;
     price1: number;

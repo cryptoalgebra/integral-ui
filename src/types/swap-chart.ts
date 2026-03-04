@@ -71,6 +71,7 @@ export interface IChart {
     tokenB?: string;
     isChartDataLoading: boolean;
     fadeOut?: boolean;
+    defaultPriceChartView?: typeof CHART_VIEW.LINE | typeof CHART_VIEW.CANDLE;
 }
 
 export type StatsCard = {

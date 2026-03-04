@@ -12,3 +12,21 @@ export const SINGLE_POSITION = gql`
         }
     }
 `;
+
+export const POSITION_SNAPSHOTS = gql`
+    query PositionSnapshots($tokenId: String!) {
+        positionSnapshots(where: { position: $tokenId }) {
+            id
+            depositedToken0
+            depositedToken1
+            withdrawnToken0
+            withdrawnToken1
+            collectedFeesToken0
+            collectedFeesToken1
+            timestamp
+            transaction {
+                id
+            }
+        }
+    }
+`

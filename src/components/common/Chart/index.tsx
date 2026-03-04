@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
+import { CandlestickChart, LucideLineChart } from "lucide-react";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
@@ -24,16 +25,20 @@ export function Chart({
     tokenB,
     isChartDataLoading,
     fadeOut,
+    defaultPriceChartView = CHART_VIEW.LINE,
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
     const [priceScaleMode, setPriceScaleMode] = useState<"normal" | "log" | "percent">("normal");
+    const [priceChartView, setPriceChartView] = useState<typeof CHART_VIEW.LINE | typeof CHART_VIEW.CANDLE>(defaultPriceChartView);
 
     const [chartCreated, setChart] = useState<LightWeightCharts.IChartApi | undefined>();
-    const mainSeriesRef = useRef<LightWeightCharts.ISeriesApi<"Area" | "Histogram" | "Candlestick"> | undefined>();
+    const mainSeriesRef = useRef<LightWeightCharts.ISeriesApi<"Area" | "Line" | "Histogram" | "Candlestick"> | undefined>();
     const previousChartDataRef = useRef(chartData);
     const previousCandleChartDataRef = useRef(candleChartData);
     const candleByTimeRef = useRef<Map<number, NonNullable<IChart["candleChartData"]>[number]>>(new Map());
-    const isCandleView = chartView === CHART_VIEW.CANDLE;
+    const isPriceChartType = chartType === POOL_CHART_TYPE.PRICE;
+    const effectiveChartView = isPriceChartType ? priceChartView : chartView;
+    const isCandleView = effectiveChartView === CHART_VIEW.CANDLE;
 
     const chartCurrentValue = isCandleView
         ? previousCandleChartDataRef?.current?.length
@@ -122,7 +127,8 @@ export function Chart({
 
         if (chartRef.current.hasChildNodes()) chartRef.current.innerHTML = "";
 
-        const textColor = getComputedStyle(document.documentElement).getPropertyValue("--text-400").trim();
+        const defaultTextColor = getComputedStyle(document.documentElement).getPropertyValue("--text-400").trim();
+        const textColor = isCandleView ? "#ffffff" : defaultTextColor;
 
         const chart = LightWeightCharts.createChart(chartRef.current, {
             width: chartRef.current.parentElement?.clientWidth,
@@ -178,12 +184,12 @@ export function Chart({
             },
         });
 
-        let series: LightWeightCharts.ISeriesApi<"Area" | "Histogram" | "Candlestick">;
+        let series: LightWeightCharts.ISeriesApi<"Area" | "Line" | "Histogram" | "Candlestick">;
         const primary200 = getComputedStyle(document.documentElement).getPropertyValue("--primary-200").trim();
         const successColor = "#11c5ae";
         const dangerColor = "#ff4d67";
 
-        if (chartView === CHART_VIEW.CANDLE) {
+        if (effectiveChartView === CHART_VIEW.CANDLE) {
             const priceMode =
                 priceScaleMode === "log"
                     ? LightWeightCharts.PriceScaleMode.Logarithmic
@@ -250,26 +256,46 @@ export function Chart({
                 }))
             );
             candleByTimeRef.current = new Map(effectiveCandleData.map((v) => [Number(v.time), v]));
-        } else if (chartView === CHART_VIEW.AREA || chartView === CHART_VIEW.LINE) {
-            series = chart.addAreaSeries({
-                topColor: `${primary200}9A`,
-                bottomColor: `${primary200}00`,
-                lineColor: primary200,
-                lineWidth: 2,
-                lastValueVisible: false,
-                priceLineVisible: false,
-                priceScaleId: "left",
-                priceFormat: {
-                    type: "custom",
-                    formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
-                },
-                autoscaleInfoProvider: () => ({
-                    priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.map((v) => v.value)),
-                        maxValue: Math.max(...effectiveData.map((v) => v.value)),
+        } else if (effectiveChartView === CHART_VIEW.AREA || effectiveChartView === CHART_VIEW.LINE) {
+            if (effectiveChartView === CHART_VIEW.LINE) {
+                series = chart.addLineSeries({
+                    color: primary200,
+                    lineWidth: 2,
+                    lastValueVisible: false,
+                    priceLineVisible: false,
+                    priceScaleId: "left",
+                    priceFormat: {
+                        type: "custom",
+                        formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
                     },
-                }),
-            });
+                    autoscaleInfoProvider: () => ({
+                        priceRange: {
+                            minValue: Math.min(...effectiveData.map((v) => v.value)),
+                            maxValue: Math.max(...effectiveData.map((v) => v.value)),
+                        },
+                    }),
+                });
+            } else {
+                series = chart.addAreaSeries({
+                    topColor: `${primary200}9A`,
+                    bottomColor: `${primary200}00`,
+                    lineColor: primary200,
+                    lineWidth: 2,
+                    lastValueVisible: false,
+                    priceLineVisible: false,
+                    priceScaleId: "left",
+                    priceFormat: {
+                        type: "custom",
+                        formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
+                    },
+                    autoscaleInfoProvider: () => ({
+                        priceRange: {
+                            minValue: 0,
+                            maxValue: Math.max(...effectiveData.map((v) => v.value)),
+                        },
+                    }),
+                });
+            }
         } else {
             series = chart.addHistogramSeries({
                 color: `${primary200}CC`,
@@ -289,7 +315,7 @@ export function Chart({
             });
         }
 
-        if (chartView !== CHART_VIEW.CANDLE) {
+        if (effectiveChartView !== CHART_VIEW.CANDLE) {
             series.setData(effectiveData);
         }
 
@@ -301,7 +327,12 @@ export function Chart({
         return () => {
             chart.remove();
         };
-    }, [chartRef, chartData, candleChartData, chartView, isChartDataLoading, height, chartSpan, isCandleView, priceScaleMode]);
+    }, [chartRef, chartData, candleChartData, effectiveChartView, isChartDataLoading, height, chartSpan, isCandleView, priceScaleMode]);
+
+    useEffect(() => {
+        if (!isPriceChartType) return;
+        setPriceChartView(defaultPriceChartView);
+    }, [isPriceChartType, chartType, defaultPriceChartView]);
 
     useEffect(() => {
         if (!chartCreated) return undefined;
@@ -364,9 +395,39 @@ export function Chart({
                     <div className="mb-5 text-sm text-[#b7b7b7]">{displayValue !== undefined ? displayDate : null}</div>
                 </div>
 
-                <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
+                <div className="mb-4 flex w-full flex-wrap items-center justify-center gap-2 md:mb-0 md:w-fit">
                     <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
+                    {isPriceChartType ? (
+                        <div className="flex items-center gap-1 rounded-2xl border border-card-border bg-card-dark p-1">
+                            <button
+                                type="button"
+                                onClick={() => setPriceChartView(CHART_VIEW.LINE)}
+                                className={cn(
+                                    "flex h-10 items-center gap-2 rounded-xl px-3 font-semibold transition-colors",
+                                    priceChartView === CHART_VIEW.LINE
+                                        ? "border border-white/10 bg-card text-text-100"
+                                        : "text-text-100/60 hover:bg-white/5 hover:text-text-100"
+                                )}
+                            >
+                                <LucideLineChart size={16} />
+                                <span className="text-sm">Line</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setPriceChartView(CHART_VIEW.CANDLE)}
+                                className={cn(
+                                    "flex h-10 items-center gap-2 rounded-xl px-3 font-semibold transition-colors",
+                                    priceChartView === CHART_VIEW.CANDLE
+                                        ? "border border-white/10 bg-card text-text-100"
+                                        : "text-text-100/60 hover:bg-white/5 hover:text-text-100"
+                                )}
+                            >
+                                <CandlestickChart size={16} />
+                                <span className="text-sm">Candles</span>
+                            </button>
+                        </div>
+                    ) : null}
                 </div>
             </div>
             {isCandleView ? (

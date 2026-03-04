@@ -20,9 +20,11 @@ import { useAccount, useChainId } from "wagmi";
 interface RemoveLiquidityModalProps {
     positionId: number;
     enableActions: boolean;
+    triggerClassName?: string;
+    triggerVariant?: "primaryLink" | "outline" | "ghost" | "icon";
 }
 
-const RemoveLiquidityModal = ({ positionId, enableActions }: RemoveLiquidityModalProps) => {
+const RemoveLiquidityModal = ({ positionId, enableActions, triggerClassName, triggerVariant }: RemoveLiquidityModalProps) => {
     const [sliderValue, setSliderValue] = useState([50]);
 
     const { txDeadline } = useUserState();
@@ -127,7 +129,7 @@ const RemoveLiquidityModal = ({ positionId, enableActions }: RemoveLiquidityModa
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant={"outline"} className="w-full">
+                <Button variant={triggerVariant || "outline"} className={triggerClassName || "w-full"}>
                     Remove Liquidity
                 </Button>
             </DialogTrigger>

@@ -46,6 +46,7 @@ export function useDensityChartData({
             const isCurrent = tick.tickIdx === ticksResult.activeTickIdx;
 
             newData.push({
+                tick: Number(tick.tickIdx),
                 activeLiquidity,
                 price0: isSorted ? Number(tick.price0) : Number(tick.price1),
                 price1: isSorted ? Number(tick.price1) : Number(tick.price0),

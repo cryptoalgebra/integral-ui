@@ -11,9 +11,11 @@ interface IncreaseLiquidityModalProps {
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
+    triggerClassName?: string;
+    triggerVariant?: "primaryLink" | "outline" | "ghost" | "icon" | "action" | "primary";
 }
 
-export function IncreaseLiquidityModal({ tokenId, currencyA, currencyB, mintInfo }: IncreaseLiquidityModalProps) {
+export function IncreaseLiquidityModal({ tokenId, currencyA, currencyB, mintInfo, triggerClassName, triggerVariant }: IncreaseLiquidityModalProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     const handleCloseModal = () => {
@@ -23,7 +25,11 @@ export function IncreaseLiquidityModal({ tokenId, currencyA, currencyB, mintInfo
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button variant={'primaryLink'} disabled={false} className="whitespace-nowrap w-full">
+                <Button
+                    variant={triggerVariant || "primaryLink"}
+                    disabled={false}
+                    className={triggerClassName || "whitespace-nowrap w-full"}
+                >
                     Add Liquidity
                 </Button>
             </DialogTrigger>

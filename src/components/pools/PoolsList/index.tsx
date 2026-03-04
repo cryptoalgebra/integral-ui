@@ -12,7 +12,7 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
                 columns={poolsColumns}
                 data={pools}
                 defaultSortingID={"tvlUSD"}
-                link={isExplore ? "analytics/pools" : "pool"}
+                link={isExplore ? "analytics/pools" : "pool-new"}
                 showPagination={true}
                 loading={isLoading}
             />

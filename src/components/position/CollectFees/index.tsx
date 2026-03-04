@@ -18,14 +18,24 @@ interface CollectFeesProps {
     mintInfo: IDerivedMintInfo;
     positionFeesUSD: string | undefined;
     positionId: number;
+    textMode?: boolean;
+    textModeClassName?: string;
 }
 
-const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps) => {
+const defaultTextModeClassName =
+    "h-auto min-w-0 rounded-md bg-cyan-500/15 px-2 py-1.5 text-base font-semibold text-cyan-300 underline underline-offset-4 hover:bg-cyan-500/25";
+
+const CollectFees = ({ mintInfo, positionFeesUSD, positionId, textMode = false, textModeClassName }: CollectFeesProps) => {
     const { address: account } = useAccount();
 
     const pool = mintInfo.pool;
 
     const { amount0, amount1, amount0Usd, amount1Usd } = usePositionFees(pool ?? undefined, positionId, true);
+    const resolvedPositionFeesUSD =
+        positionFeesUSD ??
+        (typeof amount0Usd === "number" && typeof amount1Usd === "number"
+            ? `$${formatAmount((amount0Usd || 0) + (amount1Usd || 0), 2)}`
+            : undefined);
 
     const zeroRewards = amount0?.equalTo("0") && amount1?.equalTo("0");
 
@@ -55,16 +65,33 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
         tokenB: mintInfo.currencies.CURRENCY_B?.wrapped.address as Address,
         type: TransactionType.POOL,
     });
+    const claimLabel = `Claim ${resolvedPositionFeesUSD || "$0.00"}`;
+
+    if (textMode) {
+        return (
+            <div className="relative inline-flex w-auto items-start justify-start text-left">
+                <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={!collect || zeroRewards || isLoading || isPending}
+                    onClick={() => collectConfig && collect(collectConfig)}
+                    className={textModeClassName || defaultTextModeClassName}
+                >
+                    {isLoading || isPending ? <Loader /> : claimLabel}
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="relative flex w-full items-center justify-between">
             <div className="text-left">
-                <div className="font-bold text-xs text-white/75 mb-2">EARNED FEES</div>
-                {positionFeesUSD ? (
+                <div className="mb-2 text-xs font-bold text-white/75">EARNED FEES</div>
+                {resolvedPositionFeesUSD ? (
                     <HoverCard closeDelay={0} openDelay={0}>
                         <HoverCardTrigger>
                             <span className="text-cyan-300  font-semibold text-2xl drop-shadow-cyan border-b border-dotted border-cyan-300 cursor-pointer">
-                                {positionFeesUSD}
+                                {resolvedPositionFeesUSD}
                             </span>
                         </HoverCardTrigger>
                         <HoverCardContent side="bottom" className="flex flex-col gap-2 p-4">
@@ -101,7 +128,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
             </div>
             <Button
                 size={"md"}
-                variant={'primary'}
+                variant={"primary"}
                 disabled={!collect || zeroRewards || isLoading || isPending}
                 onClick={() => collectConfig && collect(collectConfig)}
                 className="min-w-[108px] rounded-2xl"
