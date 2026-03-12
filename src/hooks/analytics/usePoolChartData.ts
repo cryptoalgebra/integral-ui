@@ -16,7 +16,7 @@ const values = {
     [POOL_CHART_TYPE.PRICE]: "token1Price",
 } as const;
 
-export function usePoolChartData(poolId: string | undefined, span: ChartSpanType, chartType: PoolChartTypeType, isSorted = true) {
+export function usePoolChartData(poolId: string | undefined, span: ChartSpanType, chartType: PoolChartTypeType, isSorted = false) {
     const { infoClient, uniswapInfoClient } = useClients();
 
     const { data: poolIndexerDayDatas, loading: poolIndexerDayDatasLoading } = usePoolDayDatasQuery({
@@ -82,7 +82,7 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
 
         return poolDatas
             .filter(isDefined)
-            .map((v) => {
+            .map((v, i, arr) => {
                 const chartPoint = v as typeof v & {
                     open?: string;
                     high?: string;
@@ -90,11 +90,13 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
                     close?: string;
                 };
 
+                const isLast = i === arr.length - 1
+
                 const fallbackPrice = Number(isSorted ? v.token1Price : v.token0Price);
                 const rawOpen = Number(chartPoint.open ?? fallbackPrice);
                 const rawHigh = Number(chartPoint.high ?? fallbackPrice);
                 const rawLow = Number(chartPoint.low ?? fallbackPrice);
-                const rawClose = Number(chartPoint.close ?? fallbackPrice);
+                const rawClose = isLast ? Number(chartPoint.close ?? fallbackPrice) : Number(arr[i + 1]?.open);
 
                 if (isSorted) {
                     return {
