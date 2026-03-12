@@ -4,6 +4,7 @@ export const POOL_FRAGMENT = gql`
     fragment PoolFields on Pool {
         id
         fee
+        overrideFee
         token0 {
             ...TokenFields
         }

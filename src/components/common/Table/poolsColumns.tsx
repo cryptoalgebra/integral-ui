@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { customPoolDeployerTitleByAddress } from "config/custom-pool-deployer";
 import { FormattedPool } from "@/hooks/pools/useFormattedPools";
 import { enabledModules } from "config/app-modules";
 
@@ -104,10 +103,10 @@ export const poolsColumns: ColumnDef<FormattedPool>[] = ([
         accessorKey: "deployer",
         header: ({ column }) => (
             <HeaderItem sort={() => column.toggleSorting(column.getIsSorted() === "asc")} isAsc={column.getIsSorted() === "asc"}>
-                Deployer
+                Fee
             </HeaderItem>
         ),
-        cell: ({ row }) => customPoolDeployerTitleByAddress[row.original.deployer.toLowerCase() as Address],
+        cell: ({ row }) => `${row.original.fee}%`,
     },
     {
         accessorKey: "tvlUSD",

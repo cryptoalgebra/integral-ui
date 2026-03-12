@@ -1,204 +1,359 @@
 export const algebraCustomPoolEntryPointABI = [
     {
-        inputs: [
+        "inputs": [
             {
-                internalType: "address",
-                name: "_factory",
-                type: "address",
+                "internalType": "address",
+                "name": "_algebraFactory",
+                "type": "address"
             },
+            {
+                "internalType": "address",
+                "name": "_entryPoint",
+                "type": "address"
+            }
         ],
-        stateMutability: "nonpayable",
-        type: "constructor",
+        "stateMutability": "nonpayable",
+        "type": "constructor"
     },
     {
-        inputs: [
+        "anonymous": false,
+        "inputs": [
             {
-                internalType: "address",
-                name: "plugin",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "pool",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "deployer",
-                type: "address",
-            },
+                "components": [
+                    {
+                        "internalType": "uint16",
+                        "name": "alpha1",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "alpha2",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "beta1",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "beta2",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "gamma1",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "gamma2",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "baseFee",
+                        "type": "uint16"
+                    }
+                ],
+                "indexed": false,
+                "internalType": "struct AlgebraFeeConfiguration",
+                "name": "newConfig",
+                "type": "tuple"
+            }
         ],
-        name: "afterCreatePoolHook",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        "name": "DefaultFeeConfiguration",
+        "type": "event"
     },
     {
-        inputs: [
+        "anonymous": false,
+        "inputs": [
             {
-                internalType: "address",
-                name: "pool",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "creator",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "deployer",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "token0",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "token1",
-                type: "address",
-            },
-            {
-                internalType: "bytes",
-                name: "data",
-                type: "bytes",
-            },
+                "indexed": false,
+                "internalType": "address",
+                "name": "newFarmingAddress",
+                "type": "address"
+            }
         ],
-        name: "beforeCreatePoolHook",
-        outputs: [
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
+        "name": "FarmingAddress",
+        "type": "event"
     },
     {
-        inputs: [
+        "inputs": [],
+        "name": "ALGEBRA_CUSTOM_PLUGIN_ADMINISTRATOR",
+        "outputs": [
             {
-                internalType: "address",
-                name: "deployer",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "creator",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "tokenA",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "tokenB",
-                type: "address",
-            },
-            {
-                internalType: "bytes",
-                name: "data",
-                type: "bytes",
-            },
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
         ],
-        name: "createCustomPool",
-        outputs: [
-            {
-                internalType: "address",
-                name: "customPool",
-                type: "address",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
+        "stateMutability": "view",
+        "type": "function"
     },
     {
-        inputs: [],
-        name: "factory",
-        outputs: [
+        "inputs": [
             {
-                internalType: "address",
-                name: "",
-                type: "address",
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
         ],
-        stateMutability: "view",
-        type: "function",
+        "name": "afterCreatePoolHook",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function"
     },
     {
-        inputs: [
+        "inputs": [],
+        "name": "algebraFactory",
+        "outputs": [
             {
-                internalType: "address",
-                name: "pool",
-                type: "address",
-            },
-            {
-                internalType: "uint16",
-                name: "newFee",
-                type: "uint16",
-            },
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
         ],
-        name: "setFee",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        "stateMutability": "view",
+        "type": "function"
     },
     {
-        inputs: [
+        "inputs": [
             {
-                internalType: "address",
-                name: "pool",
-                type: "address",
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
             },
             {
-                internalType: "address",
-                name: "newPluginAddress",
-                type: "address",
+                "internalType": "address",
+                "name": "",
+                "type": "address"
             },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "",
+                "type": "bytes"
+            }
         ],
-        name: "setPlugin",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        "name": "beforeCreatePoolHook",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
     },
     {
-        inputs: [
+        "inputs": [
             {
-                internalType: "address",
-                name: "pool",
-                type: "address",
+                "internalType": "address",
+                "name": "creator",
+                "type": "address"
             },
             {
-                internalType: "uint8",
-                name: "newConfig",
-                type: "uint8",
+                "internalType": "address",
+                "name": "tokenA",
+                "type": "address"
             },
+            {
+                "internalType": "address",
+                "name": "tokenB",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+            }
         ],
-        name: "setPluginConfig",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        "name": "createCustomPool",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "customPool",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
     },
     {
-        inputs: [
+        "inputs": [],
+        "name": "defaultFeeConfiguration",
+        "outputs": [
             {
-                internalType: "address",
-                name: "pool",
-                type: "address",
+                "internalType": "uint16",
+                "name": "alpha1",
+                "type": "uint16"
             },
             {
-                internalType: "int24",
-                name: "newTickSpacing",
-                type: "int24",
+                "internalType": "uint16",
+                "name": "alpha2",
+                "type": "uint16"
             },
+            {
+                "internalType": "uint32",
+                "name": "beta1",
+                "type": "uint32"
+            },
+            {
+                "internalType": "uint32",
+                "name": "beta2",
+                "type": "uint32"
+            },
+            {
+                "internalType": "uint16",
+                "name": "gamma1",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint16",
+                "name": "gamma2",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint16",
+                "name": "baseFee",
+                "type": "uint16"
+            }
         ],
-        name: "setTickSpacing",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
+        "stateMutability": "view",
+        "type": "function"
     },
+    {
+        "inputs": [],
+        "name": "entryPoint",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "farmingAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "poolAddress",
+                "type": "address"
+            }
+        ],
+        "name": "pluginByPool",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "pluginAddress",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint16",
+                        "name": "alpha1",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "alpha2",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "beta1",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "uint32",
+                        "name": "beta2",
+                        "type": "uint32"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "gamma1",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "gamma2",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "baseFee",
+                        "type": "uint16"
+                    }
+                ],
+                "internalType": "struct AlgebraFeeConfiguration",
+                "name": "newConfig",
+                "type": "tuple"
+            }
+        ],
+        "name": "setDefaultFeeConfiguration",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newFarmingAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setFarmingAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
 ] as const;

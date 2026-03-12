@@ -34,6 +34,7 @@ export interface FormattedPool {
     isBoostedPool: boolean;
     isBoostedToken0: boolean;
     isBoostedToken1: boolean;
+    isShowcase: boolean;
 }
 
 export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPool[]; isLoading: boolean } {
@@ -78,7 +79,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 }
                 return true;
             })
-            .map(({ id, token0, token1, fee, totalValueLockedUSD, deployer, poolDayData }) => {
+            .map(({ id, token0, token1, overrideFee, totalValueLockedUSD, deployer, poolDayData }) => {
                 const currentPool = poolDayData[0];
                 const lastDate = currentPool ? currentPool.date * 1000 : 0;
                 const currentDate = new Date().getTime();
@@ -115,7 +116,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                         token0,
                         token1,
                     },
-                    fee: Number(fee) / 10_000,
+                    fee: Number(overrideFee) / 10_000,
                     tvlUSD: Number(totalValueLockedUSD),
                     volume24USD: timeDifference <= msIn24Hours ? Number(currentPool.volumeUSD) : 0,
                     fees24USD: timeDifference <= msIn24Hours ? Number(currentPool.feesUSD) : 0,
@@ -130,6 +131,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     isBoostedToken0: Boolean(isBoostedToken0),
                     isBoostedToken1: Boolean(isBoostedToken1),
                     deployer: deployer.toLowerCase(),
+                    isShowcase: token0.id === '0x4200000000000000000000000000000000000006' && token1.id === '0xabac6f23fdf1313fc2e9c9244f666157ccd32990'
                 };
             });
     }, [

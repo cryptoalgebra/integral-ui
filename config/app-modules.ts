@@ -16,7 +16,7 @@ export enum AppFeatureModule {
 export const enabledModules: Record<AppFeatureModule, boolean> = {
     [AppFeatureModule.SmartRouter]: false,
 
-    [AppFeatureModule.CustomPools]: false,
+    [AppFeatureModule.CustomPools]: true,
     [AppFeatureModule.Analytics]: true,
     [AppFeatureModule.Farming]: true,
     [AppFeatureModule.LimitOrders]: true,

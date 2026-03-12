@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
     ColumnDef,
+    OnChangeFn,
     SortingState,
     flexRender,
     getCoreRowModel,
@@ -10,7 +11,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { LoadingState } from "./loadingState";
 import { Input } from "@/components/ui/input";
 import { Search, User, X, Zap } from "lucide-react";
@@ -34,6 +35,8 @@ interface PoolsTableProps<TData, TValue> {
     loading?: boolean;
 }
 
+const SHOWCASE_SORT_ID = "__showcasePriority";
+
 const PoolsTable = <TData, TValue>({
     columns,
     data,
@@ -43,21 +46,49 @@ const PoolsTable = <TData, TValue>({
     showPagination = true,
     loading,
 }: PoolsTableProps<TData, TValue>) => {
-    const [sorting, setSorting] = useState<SortingState>(defaultSortingID ? [{ id: defaultSortingID, desc: true }] : []);
+    const [sorting, setSorting] = useState<SortingState>(() => {
+        const defaultSort = defaultSortingID ? [{ id: defaultSortingID, desc: true }] : [];
+        return [{ id: SHOWCASE_SORT_ID, desc: true }, ...defaultSort];
+    });
 
     const [columnFilters, setColumnFilters] = useState<any[]>([]);
     const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
+    const columnsWithShowcaseSort = useMemo(
+        () => [
+            ...columns,
+            {
+                id: SHOWCASE_SORT_ID,
+                accessorFn: (row: any) => (row?.isShowcase ? 1 : 0),
+                header: () => null,
+                cell: () => null,
+            } as ColumnDef<TData, TValue>,
+        ],
+        [columns]
+    );
+
+    const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+        setSorting((prev) => {
+            const next = typeof updater === "function" ? updater(prev) : updater;
+            const withoutShowcase = next.filter((s) => s.id !== SHOWCASE_SORT_ID);
+            return [{ id: SHOWCASE_SORT_ID, desc: true }, ...withoutShowcase];
+        });
+    };
 
     const table = useReactTable({
         data,
-        columns,
+        columns: columnsWithShowcaseSort,
+        initialState: {
+            columnVisibility: {
+                [SHOWCASE_SORT_ID]: false,
+            },
+        },
         state: {
             columnFilters,
             sorting,
             globalFilter: activeFilters,
         },
         onColumnFiltersChange: setColumnFilters,
-        onSortingChange: setSorting,
+        onSortingChange: handleSortingChange,
         onGlobalFilterChange: setActiveFilters,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),

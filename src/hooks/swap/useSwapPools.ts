@@ -35,7 +35,7 @@ export function useSwapPools(
         const basePoolAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => computePoolAddress({ tokenA, tokenB }));
 
         const customPoolAddresses = allCurrencyCombinations.flatMap(([tokenA, tokenB]) =>
-            customPoolDeployerAddresses.map((customPoolDeployer) =>
+            customPoolDeployerAddresses.filter(isDefined).map((customPoolDeployer) =>
                 computeCustomPoolAddress({
                     tokenA,
                     tokenB,
