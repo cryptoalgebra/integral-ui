@@ -8,7 +8,7 @@ interface PoolWorkspaceLayoutProps {
 
 export default function PoolWorkspaceLayout({ left, middle, right }: PoolWorkspaceLayoutProps) {
     return (
-        <div className="mt-0 flex w-full min-h-[640px] flex-col bg-black/40 gap-2 lg:flex-row">
+        <div className="mt-0 flex w-full min-h-[640px] flex-col bg-black/40 lg:flex-row">
             {left}
             {middle}
             {right ? right : null}

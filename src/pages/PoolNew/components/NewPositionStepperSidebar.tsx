@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
+import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useMintState } from "@/state/mintStore";
 import { cn } from "@/utils";
-import { INITIAL_POOL_FEE, Field } from "@cryptoalgebra/custom-pools-sdk";
-import { ChevronLeft } from "lucide-react";
+import { Currency, INITIAL_POOL_FEE, Field } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 import { MiddleView } from "../types";
 
@@ -14,6 +14,9 @@ interface NewPositionStepperSidebarProps {
     chartMinPrice?: number;
     chartMaxPrice?: number;
     setMiddleView: (view: MiddleView) => void;
+    token0?: Currency;
+    token1?: Currency;
+    poolLabel: string;
 }
 
 export default function NewPositionStepperSidebar({
@@ -23,6 +26,9 @@ export default function NewPositionStepperSidebar({
     chartMinPrice,
     chartMaxPrice,
     setMiddleView,
+    token0,
+    token1,
+    poolLabel,
 }: NewPositionStepperSidebarProps) {
     const currencyA = useCurrency(token0Address as Address, true);
     const currencyB = useCurrency(token1Address as Address, true);
@@ -61,22 +67,20 @@ export default function NewPositionStepperSidebar({
     ];
 
     return (
-        <aside className="w-full overflow-hidden opacity-100 transition-all duration-200 lg:sticky lg:top-[88px] lg:w-[280px] lg:self-start">
+        <aside className="w-full overflow-hidden opacity-100 transition-all duration-200 lg:sticky lg:top-[88px] lg:w-[280px] lg:self-start pt-8">
             <div className="h-full">
+            <div className="flex pl-2 pb-2 mb-4">
+                    <Button onClick={() => setMiddleView("POOL_INFO")} size="sm" variant="outline" className="w-fit gap-2 hover:bg-white/5">
+                        <div className="flex items-center">
+                            <CurrencyLogo currency={token0} size={26} />
+                            <CurrencyLogo className="-ml-3" currency={token1} size={26} />
+                        </div>
+                        <div className="text-sm font-semibold md:text-base">{poolLabel}</div>
+                    </Button>
+                </div>
+
                 <div className="h-[220px] flex flex-col items-center p-3 lg:h-[calc(100%-44px)]">
                     <div className="w-full max-w-[220px]">
-                        <div className="mb-3 text-left">
-                            <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                className="h-8 rounded-md px-2 text-xs text-foreground/80 hover:bg-white/5 hover:text-foreground"
-                                onClick={() => setMiddleView("POOL_INFO")}
-                            >
-                                <ChevronLeft size={14} />
-                                Back
-                            </Button>
-                        </div>
                         {steps.map((step, index) => (
                             <div key={step.title} className="flex flex-col">
                                 <div className="flex items-start gap-3">

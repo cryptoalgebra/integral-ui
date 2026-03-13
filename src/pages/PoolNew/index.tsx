@@ -14,7 +14,6 @@ import useSWR from "swr";
 import { fetcher, POOL_AVG_APR_API } from "config/apr-urls";
 import { usePool } from "@/hooks/pools/usePool";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
-import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import JSBI from "jsbi";
@@ -28,9 +27,6 @@ import MyPositionsSidebar from "./components/MyPositionsSidebar";
 import NewPositionStepperSidebar from "./components/NewPositionStepperSidebar";
 import PoolMiddleContent from "./components/PoolMiddleContent";
 import FarmingModule from "@/modules/FarmingModule";
-import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { SparklesIcon } from "lucide-react";
 
 const { useActiveFarming } = FarmingModule.hooks;
 const ensurePositionWord = (name: string) => (/position/i.test(name) ? name : `${name} Position`);
@@ -297,6 +293,12 @@ const PoolNewPage = () => {
             : undefined;
 
     useEffect(() => {
+        if (middleView !== "POSITION" && selectedPositionId !== null) {
+            setSelectedPositionId(null);
+        }
+    }, [middleView, selectedPositionId]);
+
+    useEffect(() => {
         if (!poolPositions.length) {
             setSelectedPositionId(null);
             if (middleView === "POSITION") {
@@ -322,59 +324,6 @@ const PoolNewPage = () => {
             <div className="w-full">
                 <Card>
                     <div className="w-full p-0">
-                        
-                        <div className="w-full bg-black/40 p-3 md:p-4 rounded-t-2xl">
-                            <div className="flex flex-wrap items-center justify-between gap-3">
-                                <div className="flex flex-wrap items-center gap-2 md:gap-3">
-                                    <Button
-                                        onClick={() => setMiddleView("POOL_INFO")}
-                                        size="sm"
-                                        variant="outline"
-                                        className="gap-2 hover:bg-white/5"
-                                    >
-                                        <div className="flex items-center">
-                                            <CurrencyLogo currency={token0} size={26} />
-                                            <CurrencyLogo className="-ml-3" currency={token1} size={26} />
-                                        </div>
-                                        <div className="text-sm md:text-base font-semibold">{poolLabel}</div>
-                                    </Button>
-                                    {/* <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className={`h-8 rounded-md px-2 ${middleView === "POOL_INFO" ? "bg-card-hover text-text-100" : "text-text-100/70"}`}
-                                        onClick={() => setMiddleView("POOL_INFO")}
-                                    >
-                                        Pool
-                                    </Button> */}
-                                    {/* <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className={`h-8 rounded-md px-2 ${middleView === "FARMING" ? "bg-card-hover text-text-100" : "text-text-100/70"}`}
-                                        onClick={() => setMiddleView("FARMING")}
-                                    >
-                                        Farming
-                                    </Button> */}
-                                </div>
-                                <HoverCard openDelay={80} closeDelay={80}>
-                                    <HoverCardTrigger asChild>
-                                        <Button
-                                            onClick={() => setMiddleView("POOL_INFO")}
-                                            size="sm"
-                                            variant="outline"
-                                            className="gap-2 hover:bg-white/5"
-                                            disabled
-                                        >
-                                            <SparklesIcon size={14} />
-                                            AI Mode
-                                        </Button>
-                                    </HoverCardTrigger>
-                                    <HoverCardContent className="w-auto px-2 py-1 text-xs" side="bottom" align="end">
-                                        Coming Soon
-                                    </HoverCardContent>
-                                </HoverCard>
-                            </div>
-                        </div>
-
                         <div className="mt-0 flex w-full flex-col lg:flex-row gap-2 min-h-[640px]">
                             <PoolWorkspaceLayout
                                 left={
@@ -386,6 +335,9 @@ const PoolNewPage = () => {
                                             chartMinPrice={chartMinPrice}
                                             chartMaxPrice={chartMaxPrice}
                                             setMiddleView={setMiddleView}
+                                            token0={token0}
+                                            token1={token1}
+                                            poolLabel={poolLabel}
                                         />
                                     ) : (
                                         <MyPositionsSidebar
@@ -398,6 +350,7 @@ const PoolNewPage = () => {
                                             currentPoolPrice={currentPoolPrice}
                                             token0={token0}
                                             token1={token1}
+                                            poolLabel={poolLabel}
                                             positionTVLById={positionTVLById}
                                             positionOnFarmingById={positionOnFarmingById}
                                             positionAPRById={positionAPRById}

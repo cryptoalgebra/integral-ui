@@ -132,7 +132,7 @@ export default function SelectedPositionLayout({
     return (
         <section className="min-h-[640px] bg-card-background text-left">
 
-            <div className="overflow-hidden rounded-tl-2xl border border-card-border border-r-0 border-b-0 bg-card-background/70">
+            <div className="overflow-hidden bg-card-background/70">
 
                 <div className="bg-gradient-to-t from-[#3f2a94]/30 via-[#1d123f]/10 to-transparent p-6 pb-12">
                     <div className="mt-2 flex flex-wrap items-center gap-8">

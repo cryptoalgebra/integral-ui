@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { PositionFromTokenId } from "@/hooks/positions/usePositions";
 import { usePoolNewUiStore } from "@/state/poolNewUiStore";
@@ -18,6 +19,7 @@ interface MyPositionsSidebarProps {
     currentPoolPrice?: number;
     token0?: Currency;
     token1?: Currency;
+    poolLabel: string;
     positionTVLById: Record<string, number>;
     positionOnFarmingById: Record<string, boolean>;
     positionAPRById?: Record<string, number>;
@@ -34,6 +36,7 @@ export default function MyPositionsSidebar({
     currentPoolPrice,
     token0,
     token1,
+    poolLabel,
     positionTVLById,
     positionOnFarmingById,
     positionAPRById,
@@ -63,12 +66,20 @@ export default function MyPositionsSidebar({
     }, [poolPositions, showClosedPositions]);
 
     return (
-        <aside className="w-full overflow-hidden opacity-100 transition-all duration-200 lg:w-[280px]">
-
+        <aside className="w-full pt-8 overflow-hidden opacity-100 transition-all duration-200 lg:w-[280px] border-r pr-2">
             <div className="h-full">
-            
-                <div className="flex items-center justify-between p-3 pr-0">
 
+                <div className="flex pl-2 pb-2 mb-4">
+                    <Button onClick={() => setMiddleView("POOL_INFO")} size="sm" variant="outline" className="w-fit gap-2 hover:bg-white/5">
+                        <div className="flex items-center">
+                            <CurrencyLogo currency={token0} size={26} />
+                            <CurrencyLogo className="-ml-3" currency={token1} size={26} />
+                        </div>
+                        <div className="text-sm font-semibold md:text-base">{poolLabel}</div>
+                    </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 pt-1 pr-0">
                     <div className="flex items-center">
                         <h3 className="text-sm font-medium">My Positions</h3>
                         <HoverCard openDelay={80} closeDelay={80}>

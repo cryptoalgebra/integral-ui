@@ -16,7 +16,7 @@ const values = {
     [POOL_CHART_TYPE.PRICE]: "token1Price",
 } as const;
 
-export function usePoolChartData(poolId: string | undefined, span: ChartSpanType, chartType: PoolChartTypeType, isSorted = false) {
+export function usePoolChartData(poolId: string | undefined, span: ChartSpanType, chartType: PoolChartTypeType, isSorted = true) {
     const { infoClient, uniswapInfoClient } = useClients();
 
     const { data: poolIndexerDayDatas, loading: poolIndexerDayDatasLoading } = usePoolDayDatasQuery({

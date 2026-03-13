@@ -17,6 +17,15 @@ import { MiddleView } from "../types";
 import SelectedPositionLayout from "../layouts/SelectedPositionLayout";
 import { Copy, ExternalLink } from "lucide-react";
 
+type PoolInfoItem = {
+    label: string;
+    value: string;
+    change?: string;
+    negative?: boolean;
+    meta?: string;
+    currency?: ReturnType<typeof useCurrency>;
+};
+
 interface PoolMiddleContentProps {
     poolId?: string;
     middleView: MiddleView;
@@ -128,7 +137,8 @@ export default function PoolMiddleContent({
     const { chartData: priceChartData, candleChartData: priceCandleChartData, loading: priceChartLoading } = usePoolChartData(
         poolId,
         priceSpan,
-        POOL_CHART_TYPE.PRICE
+        POOL_CHART_TYPE.PRICE,
+        false
     );
 
     const overviewChartView = useMemo(() => {
@@ -166,11 +176,86 @@ export default function PoolMiddleContent({
 
         return `${sign}${formatAmount(value, 2)}%`;
     };
+    const poolInfoColumns = useMemo<PoolInfoItem[][]>(
+        () => [
+            [
+                {
+                    label: "24h Volume",
+                    value: poolStatsLoading ? "..." : `$${formatAmount(poolInformation.volume24HUSD, 2)}`,
+                    change: formatChange(poolInformationChange.volume24HUSD),
+                    negative: poolInformationChange.volume24HUSD !== null && poolInformationChange.volume24HUSD < 0,
+                },
+                {
+                    label: "24h Fees",
+                    value: poolStatsLoading ? "..." : `$${formatAmount(poolInformation.fees24HUSD, 2)}`,
+                    change: formatChange(poolInformationChange.fees24HUSD),
+                    negative: poolInformationChange.fees24HUSD !== null && poolInformationChange.fees24HUSD < 0,
+                },
+                {
+                    label: "Transactions",
+                    value: poolStatsLoading ? "..." : formatAmount(poolState.txCount, 0),
+                },
+            ],
+            [
+                {
+                    label: "Pool Liquidity",
+                    value: poolStatsLoading ? "..." : `$${formatAmount(poolState.liquidityUSD, 2)}`,
+                    change: formatChange(poolInformationChange.tvlUSD),
+                    negative: poolInformationChange.tvlUSD !== null && poolInformationChange.tvlUSD < 0,
+                },
+                {
+                    label: token0Symbol || "Token 0 Reserve",
+                    value: poolStatsLoading ? "..." : formatAmount(poolState.token0Amount, 4),
+                    meta: poolStatsLoading ? undefined : `$${formatAmount(poolState.token0PriceUSD, 4)}`,
+                    currency: token0Currency,
+                },
+                {
+                    label: token1Symbol || "Token 1 Reserve",
+                    value: poolStatsLoading ? "..." : formatAmount(poolState.token1Amount, 4),
+                    meta: poolStatsLoading ? undefined : `$${formatAmount(poolState.token1PriceUSD, 4)}`,
+                    currency: token1Currency,
+                },
+            ],
+            [
+                {
+                    label: "Current Price",
+                    value:
+                        currentPoolPrice && Number.isFinite(currentPoolPrice)
+                            ? `1 ${token0Symbol || "Token 0"} = ${formatAmount(currentPoolPrice, 6)} ${token1Symbol || "Token 1"}`
+                            : "N/A",
+                },
+                {
+                    label: "Average APR",
+                    value: poolStatsLoading ? "..." : `${formatAmount(poolInformation.averageApr, 2)}%`,
+                },
+            ],
+        ],
+        [
+            currentPoolPrice,
+            poolInformation.fees24HUSD,
+            poolInformation.volume24HUSD,
+            poolInformation.averageApr,
+            poolInformationChange.fees24HUSD,
+            poolInformationChange.tvlUSD,
+            poolInformationChange.volume24HUSD,
+            poolState.liquidityUSD,
+            poolState.token0Amount,
+            poolState.token0PriceUSD,
+            poolState.token1Amount,
+            poolState.token1PriceUSD,
+            poolState.txCount,
+            poolStatsLoading,
+            token0Currency,
+            token0Symbol,
+            token1Currency,
+            token1Symbol,
+        ]
+    );
     
     return (
         <main className="min-w-0 flex-1">
             {middleView === "POOL_INFO" && (
-                <section className="min-h-[640px] space-y-7 bg-card-background rounded-tl-2xl border border-card-border border-r-0 border-b-0 p-8 text-left animate-fade-in">
+                <section className="min-h-[640px] space-y-7 bg-card-background p-8 pl-4 text-left animate-fade-in">
                     <div className="space-y-4">
                         <div className="flex flex-wrap items-center gap-3">
                             <div className="flex items-center">
@@ -225,67 +310,37 @@ export default function PoolMiddleContent({
                             tokenB={token1Symbol}
                             isChartDataLoading={priceChartLoading}
                         />
-                        <div>
-                            <h3 className="text-lg font-semibold">Pool Liquidity</h3>
-                            <p className="mt-1 text-2xl font-bold">${poolStatsLoading ? "..." : formatAmount(poolState.liquidityUSD, 2)}</p>
-
-                            <h4 className="mt-5 text-base font-semibold">Tokens</h4>
-                            <div className="mt-2 space-y-2">
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-2">
-                                        <CurrencyLogo currency={token0Currency} size={24} />
-                                        <span className="text-base">{token0Symbol || "Token 0"}</span>
+                        <div className="overflow-hidden rounded-2xl border border-card-border bg-background/20">
+                            <div className="grid grid-cols-1 divide-y divide-card-border/70 md:grid-cols-2 md:divide-y-0 xl:grid-cols-3 xl:divide-x">
+                                {poolInfoColumns.map((column, columnIndex) => (
+                                    <div key={`pool-info-column-${columnIndex}`} className="space-y-4 px-4 py-4 sm:px-5">
+                                        {column.map((item) => (
+                                            <div key={item.label} className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-2 text-xs font-medium text-foreground/60 sm:text-sm">
+                                                        {item.currency ? <CurrencyLogo currency={item.currency} size={16} /> : null}
+                                                        <span>{item.label}</span>
+                                                    </div>
+                                                    {item.meta ? <p className="mt-0.5 text-[11px] text-foreground/45">{item.meta}</p> : null}
+                                                </div>
+                                                <div className="min-w-0 text-right">
+                                                    <p className="text-[16px] font-semibold leading-snug text-foreground break-words">
+                                                        {item.value}
+                                                    </p>
+                                                    {item.change ? (
+                                                        <p
+                                                            className={`mt-0.5 text-[11px] font-medium sm:text-xs ${
+                                                                item.negative ? "text-rose-400" : "text-emerald-400"
+                                                            }`}
+                                                        >
+                                                            {item.change}
+                                                        </p>
+                                                    ) : null}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-base">{formatAmount(poolState.token0Amount, 4)}</p>
-                                        <p className="text-xs text-foreground/60">${formatAmount(poolState.token0PriceUSD, 4)}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-2">
-                                        <CurrencyLogo currency={token1Currency} size={24} />
-                                        <span className="text-base">{token1Symbol || "Token 1"}</span>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-base">{formatAmount(poolState.token1Amount, 4)}</p>
-                                        <p className="text-xs text-foreground/60">${formatAmount(poolState.token1PriceUSD, 4)}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <h4 className="mt-5 text-base font-semibold">Statistics</h4>
-                            <div className="mt-2 space-y-2">
-                                <div className="flex items-center justify-between gap-2 text-sm">
-                                    <span className="text-foreground/70">Liquidity</span>
-                                    <span>
-                                        ${formatAmount(poolInformation.tvlUSD, 2)}{" "}
-                                        <span className={poolInformationChange.tvlUSD !== null && poolInformationChange.tvlUSD < 0 ? "text-rose-400" : "text-emerald-400"}>
-                                            {formatChange(poolInformationChange.tvlUSD)}
-                                        </span>
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between gap-2 text-sm">
-                                    <span className="text-foreground/70">Volume (24h)</span>
-                                    <span>
-                                        ${formatAmount(poolInformation.volume24HUSD, 2)}{" "}
-                                        <span className={poolInformationChange.volume24HUSD !== null && poolInformationChange.volume24HUSD < 0 ? "text-rose-400" : "text-emerald-400"}>
-                                            {formatChange(poolInformationChange.volume24HUSD)}
-                                        </span>
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between gap-2 text-sm">
-                                    <span className="text-foreground/70">Fees (24h)</span>
-                                    <span>
-                                        ${formatAmount(poolInformation.fees24HUSD, 2)}{" "}
-                                        <span className={poolInformationChange.fees24HUSD !== null && poolInformationChange.fees24HUSD < 0 ? "text-rose-400" : "text-emerald-400"}>
-                                            {formatChange(poolInformationChange.fees24HUSD)}
-                                        </span>
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between gap-2 text-sm">
-                                    <span className="text-foreground/70">Transactions</span>
-                                    <span>{formatAmount(poolState.txCount, 0)}</span>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>

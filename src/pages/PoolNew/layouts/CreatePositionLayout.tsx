@@ -68,7 +68,7 @@ export default function CreatePositionLayout({
     }, [chartMaxPrice, onRightRangeInput]);
 
     return (
-        <section className="min-h-[640px] bg-card-background p-8 text-left animate-fade-in rounded-tl-2xl border border-card-border border-r-none">
+        <section className="min-h-[640px] bg-card-background p-8 text-left animate-fade-in border-l">
             <h1 className="text-3xl font-bold">Create Position</h1>
             <div className="mt-6 min-w-0 space-y-7">
                 <div className="space-y-3">
