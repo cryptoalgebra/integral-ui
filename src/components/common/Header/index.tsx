@@ -56,6 +56,7 @@ const AccountModalButton = () => {
         variant={"icon"}
         size={"md"}
     >
+        <WalletIcon size={16} className="md:hidden" />
         <span className="max-md:hidden">{"Connect Wallet"}</span>
     </Button>
 
