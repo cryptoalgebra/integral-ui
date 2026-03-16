@@ -47,7 +47,7 @@ const AccountModal = ({
         <Credenza open={isOpen}>
             <CredenzaTrigger asChild>{children}</CredenzaTrigger>
             <CredenzaContent
-                className="bg-card-dark !rounded-xl max-w-[360px]"
+                className="bg-card-dark !rounded-xl md:max-w-[360px]"
                 onInteractOutside={() => setIsOpen(false)}
                 onEscapeKeyDown={() => setIsOpen(false)}
             >
