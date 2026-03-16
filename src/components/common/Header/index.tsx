@@ -3,7 +3,7 @@ import AlgebraLogo from "@/assets/algebra-logo.svg";
 import AlgebraIntegral from "@/assets/algebra-integral.svg";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Clock, WalletIcon } from "lucide-react";
+import { Clock, WalletIcon } from "lucide-react";
 import Loader from "../Loader";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
@@ -14,6 +14,7 @@ import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pen
 import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 import { useWeb3AuthConnect } from "@web3auth/modal/react";
+import AccountModal from "@/components/modals/AccountModal";
 
 const Header = () => (
     <header className="md:sticky top-2 z-10 bg-white flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
@@ -38,8 +39,44 @@ export const Algebra = () => (
     </div>
 );
 
-const Account = () => {
+const AccountModalButton = () => {
+
     const { connect: open } = useWeb3AuthConnect()
+
+    const { address: account } = useAccount();
+
+    const [isOpen, setIsOpen] = useState(false);
+    
+    if (!account) return <Button
+        className={cn(
+            "flex gap-2 h-full rounded-lg border border-card-border",
+            "bg-white text-black hover:bg-black/5",
+        )}
+        onClick={() => open()}
+        variant={"icon"}
+        size={"md"}
+    >
+        <span className="max-md:hidden">{"Connect Wallet"}</span>
+    </Button>
+
+    return <AccountModal isOpen={isOpen} setIsOpen={setIsOpen}>
+        <Button
+            className={cn(
+                "flex gap-2 h-full rounded-lg border border-card-border",
+                "hover:bg-primary-100/30 border-primary",
+            )}
+            onClick={() => setIsOpen(true)}
+            variant={"icon"}
+            size={"sm"}
+        >
+            <WalletIcon size={16} className="md:hidden" />
+            <span className="max-md:hidden">{truncateHash(account as Address)}</span>
+        </Button>
+    </AccountModal>
+
+}
+
+const Account = () => {
 
     const { pendingTransactions } = usePendingTransactionsStore();
 
@@ -79,27 +116,7 @@ const Account = () => {
                     </TransactionHistoryPopover>
                 )}
                 <Settings />
-                <Button
-                    className="flex gap-2 h-full rounded-lg border border-card-border"
-                    variant={"icon"}
-                    size={"sm"}
-                    onClick={() => open()}
-                >
-                    {/* <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> */}
-                    <ChevronDown size={20} />
-                </Button>
-                <Button
-                    className={cn(
-                        "flex gap-2 h-full rounded-lg border border-card-border",
-                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75",
-                    )}
-                    onClick={() => open()}
-                    variant={"icon"}
-                    size={"sm"}
-                >
-                    <WalletIcon size={16} className="md:hidden" />
-                    <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
-                </Button>
+                <AccountModalButton />
             </div>
         </div>
     );

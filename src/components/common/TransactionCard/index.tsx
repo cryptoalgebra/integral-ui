@@ -7,7 +7,6 @@ import { Check, ExternalLinkIcon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Transaction, TransactionType } from "@/state/pendingTransactionsStore";
 import Loader from "../Loader";
-import { useAppKitNetwork } from "@reown/appkit/react";
 
 import FarmingModule from "@/modules/FarmingModule";
 const { FarmingPositionImg } = FarmingModule.components;
@@ -18,10 +17,8 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address; transact
 
     const txType = transaction.data.type;
 
-    const { caipNetwork: chain } = useAppKitNetwork();
-
     return (
-        <Link to={`${chain?.blockExplorers?.default.url}/tx/${hash}`} target={"_blank"}>
+        <Link to={`https://avascan.info/blockchain/henesys/tx/${hash}`} target={"_blank"}>
             <li
                 className="flex group h-16 justify-between items-center gap-4 w-full bg-card-dark rounded-xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200"
                 key={hash}

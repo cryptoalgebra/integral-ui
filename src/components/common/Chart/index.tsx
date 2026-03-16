@@ -107,6 +107,7 @@ export function Chart({
                     color: "transparent",
                 },
                 textColor,
+                attributionLogo: false
             },
             grid: {
                 vertLines: {

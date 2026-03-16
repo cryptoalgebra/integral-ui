@@ -31,7 +31,7 @@ const web3AuthContextConfig: Web3AuthContextConfig = {
                         google: {
                             name: 'google login',
                             authConnection: 'google',
-                            authConnectionId: 'msu-google-auth',
+                            authConnectionId: 'algebra-test1',
                         },
                     },
                 },
@@ -43,7 +43,7 @@ const web3AuthContextConfig: Web3AuthContextConfig = {
 export const wagmiConfig = createConfig({
     chains: wagmiNetworks as any,
     transports: {
-      [DEFAULT_CHAIN_ID]: http()
+      [DEFAULT_CHAIN_ID]: http('https://henesys-rpc.msu.io')
     },
   })
 

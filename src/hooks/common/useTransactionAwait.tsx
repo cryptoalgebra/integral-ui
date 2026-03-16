@@ -1,7 +1,6 @@
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { TransactionInfo, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
-import { useAppKitNetwork } from "@reown/appkit/react";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,12 +8,10 @@ import { Address } from "viem";
 import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 
 export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) => {
-    const { caipNetwork: chain } = useAppKitNetwork();
-
     return hash ? (
         <ToastAction altText="View on explorer" asChild>
             <Link
-                to={`${chain?.blockExplorers?.default.url}/tx/${hash}`}
+                to={`https://avascan.info/blockchain/henesys/tx/${hash}`}
                 target={"_blank"}
                 className="border-none gap-2 hover:bg-transparent hover:text-blue-400"
             >

@@ -81,8 +81,6 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
 
     const setFilterTxTypes = table.getColumn("__typename")?.setFilterValue as (value: string[] | []) => void;
 
-    const { caipNetwork: chain } = useAppKitNetwork();
-
     if (loading) return <LoadingState />;
 
     return (
@@ -201,7 +199,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                                 className="border-card-border/40 bg-card-dark hover:bg-card-hover cursor-pointer"
-                                onClick={() => window.open(`${chain?.blockExplorers?.default.url}/tx/${row.original.hash}`)}
+                                onClick={() => window.open(`https://avascan.info/blockchain/henesys/tx/${row.original.hash}`)}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id} className="text-left min-w-[160px] first:min-w-[140px]">
