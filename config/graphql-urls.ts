@@ -6,13 +6,17 @@ export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/
 
 export const INFO_GRAPH_URL = {
     [ChainId.Rayls]: "https://devnet-thegraph.rayls.com/query/subgraphs/name/analytics",
+    [ChainId.RaylsDevnet]: "https://rayls-graph.algebra.finance/subgraphs/name/analytics",
 };
 
 export const FARMING_GRAPH_URL = {
     [ChainId.Rayls]: "https://devnet-thegraph.rayls.com/query/subgraphs/name/farms",
+    [ChainId.RaylsDevnet]: "https://rayls-graph.algebra.finance/subgraphs/name/farmings",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
     [ChainId.Rayls]:
-        "https://api.studio.thegraph.com/query/82608/ve-limits/version/latest",
+        "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-limits/v1.0.0/gn",
+    [ChainId.RaylsDevnet]:
+        "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-limits/v1.0.0/gn",
 };

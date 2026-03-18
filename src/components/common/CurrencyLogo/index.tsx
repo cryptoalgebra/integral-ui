@@ -16,11 +16,11 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0xefa5f6cde87c6cad21cd556f73165335306ff38a"]: {
+    ["0x0000000000000000000000000000000000000400"]: {
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0x91c2c136c5a5b884efec10eaa8919525f5de25ec"]: {
+    ["0x9f068c81ab7743ea7b2d48c0feceadafcad2c95c"]: {
         symbol: "USDT",
         logo: USDTLogo,
     },

@@ -32,29 +32,29 @@ import {
 } from "./contract-addresses";
 import { defineChain } from "viem";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 123123,
+const raylsTestnet = /*#__PURE__*/ defineChain({
+    id: 7295799,
     network: "rayls",
     name: "Rayls",
-    nativeCurrency: { name: "WETH", symbol: "WETH", decimals: 18 },
+    nativeCurrency: { name: "USDR", symbol: "USDR", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://devnet-rpc.rayls.com"],
+            http: ["https://testnet-rpc.rayls.com"],
         },
         public: {
-            http: ["https://devnet-rpc.rayls.com"],
+            http: ["https://testnet-rpc.rayls.com"],
         },
     },
     blockExplorers: {
         default: {
             name: "RaylsScan",
-            url: "https://devnet-explorer.rayls.com/",
+            url: "https://testnet-explorer.rayls.com/",
         },
     }
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [raylsTestnet];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
