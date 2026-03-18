@@ -31,7 +31,7 @@ const web3AuthContextConfig: Web3AuthContextConfig = {
                         google: {
                             name: 'google login',
                             authConnection: 'google',
-                            authConnectionId: 'algebra-test1',
+                            authConnectionId: 'msu-google-auth',
                         },
                     },
                 },
