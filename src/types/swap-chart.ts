@@ -66,6 +66,7 @@ export interface IChart {
     tokenB?: string;
     isChartDataLoading: boolean;
     fadeOut?: boolean;
+    prediction?: { lower: number; lowerTimestamp: number; greater: number; greaterTimestamp: number };
 }
 
 export type StatsCard = {

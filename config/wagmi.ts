@@ -18,6 +18,7 @@ import {
     rebaseRewardAbi,
     votingEscrowABI,
     securityRegistryAbi,
+    predictionMarketABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -87,6 +88,7 @@ const rawContracts = [
     { name: "RebaseReward", abi: rebaseRewardAbi },
     { name: "VotingEscrow", abi: votingEscrowABI },
     { name: "SecurityRegistry", abi: securityRegistryAbi },
+    { name: "PredictionMarket", abi: predictionMarketABI }
 ];
 
 const contractAddresses = {

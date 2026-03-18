@@ -21,7 +21,8 @@ export function Chart({
     tokenA,
     tokenB,
     isChartDataLoading,
-    fadeOut
+    fadeOut,
+    prediction
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
@@ -155,18 +156,45 @@ export function Chart({
                 lineWidth: 2,
                 lastValueVisible: false,
                 priceLineVisible: false,
-                priceScaleId: "left",
+                priceScaleId: "right",
                 priceFormat: {
                     type: "custom",
                     formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.map((v) => v.value)),
-                        maxValue: Math.max(...effectiveData.map((v) => v.value)),
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction ? [ { value: prediction.lower, time: prediction.lowerTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.concat(prediction ? [ { value: prediction.greater, time: prediction.greaterTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
                     },
                 }),
             });
+            // series.createPriceLine({
+            //     price: 2392,
+            //     color: '#ff4d4f',
+            //     lineWidth: 1,
+            //     lineStyle: 2, // solid
+            //     axisLabelVisible: true,
+            //     title: 'No',
+            // })
+
+            if (prediction) {
+                series.createPriceLine({
+                    price: prediction.greater,
+                    color: '#7bf1a7',
+                    lineWidth: 1,
+                    lineStyle: 2, // solid
+                    axisLabelVisible: true,
+                    title: String(prediction.greater),
+                })
+                series.createPriceLine({
+                    price: prediction.lower,
+                    color: '#ff9fad',
+                    lineWidth: 1,
+                    lineStyle: 2, // solid
+                    axisLabelVisible: true,
+                    title: String(prediction.lower),
+                })
+            }
         } else {
             series = chart?.addHistogramSeries({
                 color: `${primary200}CC`,
@@ -190,13 +218,27 @@ export function Chart({
 
         // const bucketedData = bucketChartData(effectiveData, bucketSize);
 
+        if (prediction) {
+            const futureSeries = chart.addHistogramSeries({
+                color: 'transparent', // invisible line
+            });
+
+            futureSeries.setData([
+                { time: 1773878400 as LightWeightCharts.UTCTimestamp },
+                { time: 1773964800 as LightWeightCharts.UTCTimestamp },
+                { time: 1774051200 as LightWeightCharts.UTCTimestamp },
+                { value: prediction.lower, time: 1774137600 as LightWeightCharts.UTCTimestamp },
+                { value: prediction.greater, time: 1774224000 as LightWeightCharts.UTCTimestamp }
+            ]);
+        }
+
         series.setData(effectiveData);
 
         chart.timeScale().fitContent();
 
         setChart(chart);
         setSeries(series);
-    }, [chartRef, chartData, chartView, isChartDataLoading, height, chartSpan]);
+    }, [chartRef, chartData, chartView, isChartDataLoading, height, chartSpan, prediction]);
 
     useEffect(() => {
         if (!chartCreated) return undefined;
@@ -244,7 +286,7 @@ export function Chart({
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>
             </div>
-            <div className={cn('relative', fadeOut && 'soft-div' )}>
+            <div className={cn('relative', fadeOut && !prediction && 'soft-div' )}>
                 {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
                     <div className="w-full h-full min-h-[180px] flex items-center justify-center">
                         <Loader className="w-10 h-10" />

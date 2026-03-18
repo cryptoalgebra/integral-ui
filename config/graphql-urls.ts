@@ -18,6 +18,11 @@ export const LIMIT_ORDERS_GRAPH_URL = {
         "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-limits/v1.0.0/gn",
 };
 
+export const PREDICTION_GRAPH_URL = {
+    [ChainId.BaseSepolia]:
+        "https://api.studio.thegraph.com/query/50593/prediction-market/version/latest"
+}
+
 export const BLOCKS_GRAPH_URL = {
     [ChainId.BaseSepolia]:
         "https://api.goldsky.com/api/public/project_cl8ylkiw00krx0hvza0qw17vn/subgraphs/blocks/base-sepolia/gn",

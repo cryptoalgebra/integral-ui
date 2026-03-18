@@ -34,6 +34,10 @@ const router = createBrowserRouter([
                 element: <SwapPage type={SwapPageView.LIMIT_ORDER} />,
             },
             {
+                path: "prediction",
+                element: <SwapPage type={SwapPageView.PREDICTION} />
+            },
+            {
                 path: "pools",
                 element: <PoolsPage />,
             },

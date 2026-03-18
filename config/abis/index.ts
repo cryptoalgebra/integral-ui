@@ -10,3 +10,4 @@ export * from "./tokens";
 export * from "./custom-pools";
 export * from "./ve33";
 export * from "./omegaQuoter";
+export * from "./prediction";
