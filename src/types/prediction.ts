@@ -7,9 +7,11 @@ type Markets = OpenMarketsForPoolListQuery['markets'][number];
 
 export interface PredictionMarket extends Omit<Markets, "marketToken"> {
     id: Address;
+    pool: Address;
     collateralToken: Address;
     marketToken: Number;
     condition: MarketCondition;
+    userWon?: boolean;
 } 
 
 export type PredictionTrade = TradeFieldsFragment;

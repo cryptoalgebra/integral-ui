@@ -68,7 +68,7 @@ export const USER_FRAGMENT = gql`
             ...UserPositionFields
         }
         trades {
-        ...TradeFields
+            ...TradeFields
         }
     }
 `;
@@ -101,6 +101,22 @@ export const ALL_OPEN_MARKETS_LIST = gql`
     query AllOpenMarketsList {
         markets(where: { seeded: true, outcome: 0 }) {
             ...MarketFields
+        }
+    }
+`;
+
+export const SINGLE_MARKET = gql`
+    query SingleMarket($market: ID!) {
+        market(id: $market) {
+            ...MarketFields
+        }
+    }
+`;
+
+export const SINGLE_MARKET_USER_TRADES = gql`
+    query SingleMarketUserTrades($market: String, $user: String) {
+        trades(where: { market: $market, user: $user }) {
+            ...TradeFields
         }
     }
 `;

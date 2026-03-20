@@ -5,10 +5,11 @@ import { useReadPredictionMarketNoBalance, useReadPredictionMarketPreviewBuyNo, 
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { PredictionMarket } from "@/types/prediction";
 import { cn, formatAmount } from "@/utils";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import PredictionButton from "../PredictionButton";
+import { useSearchParams } from "react-router-dom";
 
 interface IPredictionSideSelector {
     market: PredictionMarket | undefined;
@@ -17,10 +18,13 @@ interface IPredictionSideSelector {
 
 const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => {
 
+    const [searchParams] = useSearchParams();
+    const buyFromParam = searchParams.get("buy") as "yes" | "no";
+
     const { address: account } = useAccount()
 
     const [side, setSide] = useState<"yes" | "no">("yes")
-    const [value, setValue] = useState("")
+    const [value, setValue] = useState("1")
 
     const { data: priceYes } = useReadPredictionMarketPriceYes({
         address: market?.id,
@@ -116,6 +120,12 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         }
 
     }, [balance, isBalanceLoading, sellYesBalance, sellNoBalance, side, action]);
+
+    useEffect(() => {
+        if (buyFromParam) {
+            setSide(buyFromParam)
+        }
+    }, [buyFromParam])
 
     if (!market) return null;
 

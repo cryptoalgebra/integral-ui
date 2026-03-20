@@ -3,21 +3,20 @@ import PredictionMarketCard from "../PredictionMarketCard";
 import { usePoolMarkets } from "@/hooks/prediction/usePoolMarkets";
 import { usePool } from "@/hooks/pools/usePool";
 import { PredictionMarket } from "@/types/prediction";
-import PredictionSideSelector from "../PredictionSideSelector";
-import { cn } from "@/utils";
+import CurrencyLogo from "@/components/common/CurrencyLogo";
+import { useUserMarkets } from "@/hooks/prediction/useUserMarkets";
+import { useAccount } from "wagmi";
 
 
 const PredictionMarkets = () => {
 
-    const handleSelectMarket = (market: PredictionMarket) => {
-        selectMarket(market)
-    }
+    const { address: account } = useAccount()
 
     const { data: poolMarkets } = usePoolMarkets("0x671ddf7e29272c5bf6996f765fabf58351cff137")
+    const { data: { closedMarkets, openedMarkets } } = useUserMarkets(account)
 
     const [selectedMarket, selectMarket] = useState<PredictionMarket>()
-    const [action, setAction] = useState<"buy" | "sell">("buy")
-    
+
     const [, pool] = usePool("0x671ddf7e29272c5bf6996f765fabf58351cff137")
 
     useEffect(() => {
@@ -26,30 +25,53 @@ const PredictionMarkets = () => {
         }
     }, [poolMarkets])
 
-    return <div className="grid grid-col-1 gap-2 p-2 bg-card-dark border border-card-border rounded-b-lg">
-        {
-            poolMarkets.map((market) => (
-                <PredictionMarketCard
-                    key={market.mark}
-                    market={market}
-                    pool={pool}
-                    isSelected={market.id === selectedMarket?.id}
-                    onSelect={handleSelectMarket}
-                />
-            ))
-        }
-        <div>
-            <div className="flex font-semibold">
-                <button className={cn("border-b-2 pb-2 px-2 transition", action === "buy" ? "border-primary" : "border-transparent hover:border-white/20")} onClick={() => setAction("buy")}>Buy</button>
-                <button className={cn("border-b-2 pb-2 px-2 transition", action === "sell" ? "border-primary" : "border-transparent hover:border-white/20")} onClick={() => setAction("sell")}>Sell</button>
+    return <div className="flex flex-col gap-6">
+        {pool && <div className="flex items-center gap-4">
+            <div className="flex gap-1">
+                <CurrencyLogo currency={pool.token0} size={36} />
+                <CurrencyLogo currency={pool.token1} size={36} />
             </div>
-            <div className="p-2 pb-0 -mx-2 border-t border-card-border">
-                <PredictionSideSelector
-                    market={selectedMarket}
-                    action={action}
-                />
-            </div>
+            <div className="text-xl font-semibold">{`${pool.token0.symbol === 'WETH' ? 'ETH' : pool.token0.symbol} / ${pool.token1.symbol}`}</div>
+        </div>}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-b-lg">
+            {
+                poolMarkets.map((market) => (
+                    <PredictionMarketCard
+                        key={market.id}
+                        market={market}
+                        pool={pool}
+                    />
+                ))
+            }
         </div>
+        {Boolean(openedMarkets.length) && <div className="text-left">
+            <div className="text-xl font-semibold mb-4">My Opened Markets</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-b-lg">
+                {
+                    openedMarkets.map((market) => (
+                        <PredictionMarketCard
+                            key={market.id}
+                            market={market}
+                            pool={pool}
+                        />
+                    ))
+                }
+            </div>
+        </div>}
+        {Boolean(closedMarkets.length) && <div className="text-left">
+            <div className="text-xl font-semibold mb-4">My Closed Markets</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 rounded-b-lg">
+                {
+                    closedMarkets.map((market) => (
+                        <PredictionMarketCard
+                            key={market.id}
+                            market={market}
+                            pool={pool}
+                        />
+                    ))
+                }
+            </div>
+        </div>}
     </div>
 }
 

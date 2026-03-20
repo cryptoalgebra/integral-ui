@@ -1,6 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { useSimulatePredictionMarketSellNo, useSimulatePredictionMarketSellYes, useWritePredictionMarketBuyNo, useWritePredictionMarketBuyYes, useWritePredictionMarketSellNo, useWritePredictionMarketSellYes } from "@/generated";
+import { useSimulatePredictionMarketSellNo, useSimulatePredictionMarketSellYes, useWritePredictionMarketBuyNo, useWritePredictionMarketBuyYes, useWritePredictionMarketRedeem, useWritePredictionMarketSellNo, useWritePredictionMarketSellYes } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -67,6 +67,12 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         type: TransactionType.SWAP,
     })
 
+    const { data: redeemHash, writeContractAsync: redeem } = useWritePredictionMarketRedeem();
+    const { isLoading: isRedeemLoading } = useTransactionAwait(redeemHash, {
+        title: 'Redeem',
+        type: TransactionType.SWAP
+    })
+
     const handleTrade = async () => {
 
         if (!shares || !maxTotalCost) return
@@ -109,10 +115,19 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
 
     }
 
+    const handleRedeem = async () => {
+        if (!account) return
+
+        await redeem({
+            address: account
+        })
+    }
+
     const isValid = Boolean(shares && maxTotalCost && amountToPay && market && collateralToken);
     const isTradeLoading = isBuyLoading || isSellLoading;
 
     const isTradingEnded = new Date(+market.tradingDeadline * 1000) <= new Date()
+    const isResolved = new Date(+market.plannedResolutionTimestamp * 1000) <= new Date()
 
     if (!account)
         return (
@@ -131,6 +146,13 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
             <Button variant={"primary"} disabled className="w-full">
                 Trading Ended
             </Button>)
+
+    if (isResolved)
+        return (
+            <Button  variant={"primary"} className="w-full" onClick={handleRedeem} disabled={isRedeemLoading}>
+                {isRedeemLoading ? <Loader /> : 'Redeem'}
+            </Button>
+        )
 
     if ((needsApproval || isApproving) && action === "buy") {
         return (

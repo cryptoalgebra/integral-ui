@@ -163,29 +163,13 @@ export function Chart({
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction ? [ { value: prediction.lower, time: prediction.lowerTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
-                        maxValue: Math.max(...effectiveData.concat(prediction ? [ { value: prediction.greater, time: prediction.greaterTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction?.lower ? [ { value: prediction.lower, time: prediction.lowerTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.concat(prediction?.greater ? [ { value: prediction.greater, time: prediction.greaterTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
                     },
                 }),
             });
-            // series.createPriceLine({
-            //     price: 2392,
-            //     color: '#ff4d4f',
-            //     lineWidth: 1,
-            //     lineStyle: 2, // solid
-            //     axisLabelVisible: true,
-            //     title: 'No',
-            // })
 
-            if (prediction) {
-                series.createPriceLine({
-                    price: prediction.greater,
-                    color: '#7bf1a7',
-                    lineWidth: 1,
-                    lineStyle: 2, // solid
-                    axisLabelVisible: true,
-                    title: String(prediction.greater),
-                })
+            if (prediction?.lower) {
                 series.createPriceLine({
                     price: prediction.lower,
                     color: '#ff9fad',
@@ -195,6 +179,18 @@ export function Chart({
                     title: String(prediction.lower),
                 })
             }
+
+            if (prediction?.greater) {
+                series.createPriceLine({
+                    price: prediction.greater,
+                    color: '#7bf1a7',
+                    lineWidth: 1,
+                    lineStyle: 2, // solid
+                    axisLabelVisible: true,
+                    title: String(prediction.greater),
+                })
+            }
+            
         } else {
             series = chart?.addHistogramSeries({
                 color: `${primary200}CC`,

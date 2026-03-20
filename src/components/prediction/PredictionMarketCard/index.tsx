@@ -1,54 +1,149 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
+import { useReadPredictionMarketPriceNo, useReadPredictionMarketPriceYes } from "@/generated";
 import { PredictionMarket } from "@/types/prediction";
 import { cn } from "@/utils";
 import { formatDateDDMM } from "@/utils/common/formatDate";
 import { Pool } from "@cryptoalgebra/integral-sdk";
-import { Clock } from "lucide-react";
-import { formatUnits } from "viem";
+import { ArrowUp, ArrowDown, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { erc20Abi, formatUnits } from "viem";
+import { useReadContract } from "wagmi";
 
 interface IPredictionMarketCard {
     market: PredictionMarket;
     pool: Pool | undefined | null;
-    isSelected: boolean;
-    onSelect: (idx: PredictionMarket) => void;
 }
 
-const styles = {
-    greater: "text-green-300",
-    lower: "text-rose-300"
-}
-
-const PredictionMarketCard = ({ market, pool, isSelected, onSelect }: IPredictionMarketCard ) => {
+const PredictionMarketCard = ({ market, pool }: IPredictionMarketCard) => {
+    const isGreater = market.condition === "greater";
 
     const marketCurrency = market.marketToken === 0 ? pool?.token0 : pool?.token1;
     const quoteCurrency = market.marketToken === 0 ? pool?.token1 : pool?.token0;
 
-    const formattedCondition = quoteCurrency ? formatUnits(BigInt(market.mark), quoteCurrency.decimals).split(".")[0] : 0;
+    const formattedCondition = quoteCurrency
+        ? formatUnits(BigInt(market.mark), quoteCurrency.decimals).split(".")[0]
+        : 0;
 
-    return <button onClick={() => onSelect(market)} className={cn(
-            "flex text-left w-full px-4 py-4 bg-card-dark border rounded-lg duration-200",
-            isSelected ? "border-primary" : "border-card-border hover:bg-card-hover"
-        )}>
-        <div className="flex items-center gap-4">
-            <CurrencyLogo currency={marketCurrency} size={36} />
-            <div>
-                <div className="flex items-center uppercase text-xs text-text-200">
-                    <span className="uppercase text-xs">Market</span>
-                    <span className="mx-1">•</span>
-                    <span className="inline-flex items-center gap-1">
-                        <Clock size={10}/>
-                        <span>{formatDateDDMM(market.plannedResolutionTimestamp)}</span>
+
+    const { data: priceYes } = useReadPredictionMarketPriceYes({
+        address: market?.id,
+    })
+
+    const { data: priceNo } = useReadPredictionMarketPriceNo({
+        address: market?.id
+    })
+
+    const formattedYesPrice = priceYes ? (Number(formatUnits(priceYes, 18)) * 100).toFixed(2) : 0
+    const formattedNoPrice = priceNo ? (Number(formatUnits(priceNo, 18)) * 100).toFixed(2) : 0
+
+    const { data: marketTVL } = useReadContract({
+        address: market.collateralToken,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [market.id]
+    })
+
+    const isOpen = Number(market.plannedResolutionTimestamp) * 1000 > Date.now();
+
+    return (
+        <Link to={`/prediction/${market.id}`}
+            className={cn(
+                "block w-full rounded-2xl border p-5 transition-all duration-200 text-left",
+                "bg-card-dark shadow-sm",
+                "border-card-border hover:bg-card-hover"
+            )}
+        >
+            <div className="flex items-center gap-3 mb-4">
+
+                <div className="w-9 h-9 relative">
+                    <CurrencyLogo currency={marketCurrency} size={36} />
+                    <div className={cn("flex items-center justify-center absolute w-5 h-5 border rounded-full -right-2 -bottom-1", isGreater ? "bg-green-800 border-green-400" : "bg-red-800 border-red-400")}>
+                        {isGreater ? (
+                            <ArrowUp className="text-green-400" size={12} />
+                        ) : (
+                            <ArrowDown className="text-red-300" size={12} />
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm text-text-200">
+                    <span className="uppercase">{marketCurrency?.symbol}</span>
+                </div>
+
+                { isOpen ? <div className="inline-flex items-center gap-2 ml-auto rounded-full text-white text-xs font-medium">
+
+                    <span className="relative flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
                     </span>
-                </div>
-                <div>
-                    <span>{`Will ${marketCurrency?.symbol} be`}</span>
-                    <span className={cn("mx-1", styles[market.condition])}>{`${market.condition} than`}</span>
-                    <span>{`${formattedCondition} ${quoteCurrency?.symbol}?`}</span>
-                </div>
-            </div>
-        </div>
-    </button>
 
+                    <span className="uppercase tracking-wide text-red-400">
+                        Live
+                    </span>
+                </div> : market.userWon ? <div className="ml-auto text-xs text-green-400">Win</div> : <div className="ml-auto text-xs text-red-400">Lose</div> }
+
+            </div>
+
+            <div>
+                Will {marketCurrency?.symbol} be{" "}
+                <span
+                    className={cn(
+                        isGreater ? "text-green-400" : "text-red-400"
+                    )}
+                >
+                    {market.condition}
+                </span>{" "}
+                than {formattedCondition} {quoteCurrency?.symbol}?
+            </div>
+
+            { isOpen ? <div className="flex gap-3 my-4 font-semibold">
+
+                <Link
+                    to={{
+                        pathname: `/prediction/${market.id}`,
+                        search: '?buy=yes'
+                    }}
+                    className={cn(
+                        "w-full py-3 bg-white/5 border border-card-border rounded-lg text-center transition",
+                        "bg-white/5 hover:bg-lime-600"
+                    )}
+                >
+                    <span className="text-white/70 mr-2">Yes</span>
+                    {priceYes !== undefined && <span>{formattedYesPrice}¢</span>}
+                </Link>
+                <Link
+                    to={{
+                        pathname: `/prediction/${market.id}`,
+                        search: '?buy=no'
+                    }}
+                    className={cn(
+                        "w-full py-3 bg-white/5 border border-card-border rounded-lg text-center transition",
+                        "bg-white/5 hover:bg-orange-600"
+                    )}
+                >
+                    <span className="text-white/70 mr-2">No</span>
+                    {priceNo !== undefined && <span>{formattedNoPrice}¢</span>}
+                </Link>
+
+            </div> : <div className="my-4" /> }
+
+            <div className="flex items-center text-xs text-text-200">
+                    <div className="flex gap-1">
+                        <Clock size={16} />
+                        <div>{formatDateDDMM(market.tradingDeadline)}</div>
+                    </div>
+                    <div className="ml-auto flex gap-1">
+                        <div>{marketTVL ? `$${Number(formatUnits(marketTVL, 6)).toFixed(0)}` : ''}</div>
+                        <div>TVL</div>
+                    </div>
+                    <div className="mx-1">•</div>
+                    <div className="flex gap-1">
+                        <div>{`$${Number(formatUnits(BigInt(market.totalVolume), 6)).toFixed(0)}`}</div>
+                        <div>volume</div>
+                    </div>
+            </div>
+        </Link>
+    );
 };
 
 export default PredictionMarketCard;

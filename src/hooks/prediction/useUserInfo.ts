@@ -1,16 +1,17 @@
-import { useUserInfoQuery } from "@/graphql/generated/graphql";
+import { useSingleMarketUserTradesQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
 import { useClients } from "../graphql/useClients";
 import { useMemo } from "react";
 import { PredictionTrade } from "@/types/prediction";
 
-export function usePredictionUserInfo(address: Address | undefined) {
+export function usePredictionUserInfo(address: Address | undefined, market: Address | undefined) {
 
     const { predictionClient } = useClients()
 
-    const { data, loading, error } = useUserInfoQuery({
+    const { data, loading, error } = useSingleMarketUserTradesQuery({
         variables: {
-            user: address
+            user: address,
+            market
         },
         client: predictionClient,
         skip: address === undefined
@@ -18,11 +19,11 @@ export function usePredictionUserInfo(address: Address | undefined) {
 
     const formattedUser = useMemo(() => {
 
-        if (!data?.users[0]) return undefined
+        if (!data?.trades[0]) return undefined
 
         return {
-            ...data.users[0],
-            trades: [...data.users[0].trades].sort((a, b) => +b.timestamp - +a.timestamp).filter((trade) => ["BuyYes", "BuyNo"].includes(trade.type)) as PredictionTrade[]
+            ...data.trades[0],
+            trades: [...data.trades].sort((a, b) => +b.timestamp - +a.timestamp).filter((trade) => ["BuyYes", "BuyNo"].includes(trade.type)) as PredictionTrade[]
         }
 
     }, [data])

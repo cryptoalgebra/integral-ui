@@ -14,6 +14,7 @@ import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider, Route
 import AnalyticsModule from "@/modules/AnalyticsModule";
 import VeTOKENPage from "@/pages/VeTOKEN";
 import VotePage from "@/pages/Vote";
+import PredictionMarketPage from "@/pages/PredictionMarket";
 const { AnalyticsPoolPage, TransactionsList, TokensList, AnalyticsTokenPage } = AnalyticsModule.components;
 
 const router = createBrowserRouter([
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
             {
                 path: "prediction",
                 element: <SwapPage type={SwapPageView.PREDICTION} />
+            },
+            {
+                path: "prediction/:market",
+                element: <PredictionMarketPage />
             },
             {
                 path: "pools",

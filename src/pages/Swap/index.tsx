@@ -8,9 +8,9 @@ import { SwapPageProps, SwapPageView } from "./types";
 import SwapChart from "@/components/swap/SwapChart";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
-import PredictionPoolSelector from "@/components/prediction/PredictionPoolSelector";
 import PredictionMarkets from "@/components/prediction/PredictionMarkets";
-import PredictionInfo from "@/components/prediction/PredictionInfo";
+import PredictionBanner from "@/components/prediction/PredictionBanner";
+
 const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
 
 const SwapPage = ({ type }: SwapPageProps) => {
@@ -23,6 +23,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
+
             <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
                 <SwapTypeSelector 
                     isSwap={isSwap}
@@ -30,28 +31,31 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     isPrediction={isPrediction}
                 />
             </div>
-            <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
+
+            {(isSwap || isLimitOrder) && <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
                 <div className="flex flex-col gap-2 col-span-1 w-full">
-                    {isPrediction && (<div>
-                        <PredictionPoolSelector />
-                        <PredictionMarkets/>
-                    </div>)}
-                    {(isSwap || isLimitOrder) && <div className="flex flex-col gap-1.5 col-span-1 w-full bg-dark-gradient border border-card-border p-2 rounded-xl">
-                        {(isSwap || isLimitOrder) && <SwapPair derivedSwap={derivedSwap} />}
+                    {<div className="flex flex-col gap-1.5 col-span-1 w-full bg-dark-gradient border border-card-border p-2 rounded-xl">
+                        {<SwapPair derivedSwap={derivedSwap} />}
                         
                         {isSwap && <SwapParams derivedSwap={derivedSwap} />}
+                        {isSwap && <PredictionBanner />}
                         {isSwap && <SwapButton derivedSwap={derivedSwap} />}
 
                         {isLimitOrder && <LimitOrder derivedSwap={derivedSwap} />}
                     </div>}
                     <PoweredByAlgebra />
                 </div>
-                <div className="flex flex-col col-span-2 md:max-h-[514px]">
-                    <SwapChart derivedSwap={derivedSwap} prediction={isPrediction ? {lower: 1595, lowerTimestamp: 1773841272, greater: 2392, greaterTimestamp: 1773841272} : undefined} />
-                    {isPrediction && <PredictionInfo />}
-                </div>
-            </div>
+                {<div className="flex flex-col col-span-2 md:max-h-[514px]">
+                    <SwapChart derivedSwap={derivedSwap} />
+                </div>}
+            </div> }
+
+            {isPrediction && (<div className="w-full">
+                <PredictionMarkets />
+            </div>)}
+
             {isLimitOrder && <LimitOrdersList />}
+
         </PageContainer>
     );
 };
