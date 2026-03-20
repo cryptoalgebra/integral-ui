@@ -7,12 +7,12 @@ export const CHAIN_NAME = {
 
 export const NATIVE_SYMBOL = {
     [ChainId.Rayls]: "ETH",
-    [ChainId.Rayls]: "USDR",
+    [ChainId.RaylsDevnet]: "USDR",
 };
 
 export const NATIVE_NAME = {
     [ChainId.Rayls]: "ETH",
-    [ChainId.Rayls]: "USDR",
+    [ChainId.RaylsDevnet]: "USDR",
 };
 
 export const CHAIN_ID = {
