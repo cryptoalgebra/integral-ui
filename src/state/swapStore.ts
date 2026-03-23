@@ -70,7 +70,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: "",
     [SwapField.INPUT]: {
-        currencyId: ADDRESS_ZERO,
+        currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDR!.address as Address,
     },
     [SwapField.OUTPUT]: {
         currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDC.address as Address,

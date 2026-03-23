@@ -4,29 +4,29 @@ import { Address } from "viem";
 /* Algebra Core */
 export const ALGEBRA_FACTORY: Record<number, Address> = {
     [ChainId.Rayls]: "0x10253594A832f967994b44f33411940533302ACb",
-    [ChainId.RaylsDevnet]: "0x10253594A832f967994b44f33411940533302ACb",
+    [ChainId.RaylsDevnet]: "0x161C886a5ef51c4B20f2F4ca2caDB20c93245705",
 };
 export const QUOTER_V2: Record<number, Address> = {
     [ChainId.Rayls]: "0xa77aD9f635a3FB3bCCC5E6d1A87cB269746Aba17",
-    [ChainId.RaylsDevnet]: "0x13fcE0acbe6Fb11641ab753212550574CaD31415"
+    [ChainId.RaylsDevnet]: "0x8FFf6402215870Cbb8CB216C7A587Cb17D524B81"
 };
 export const SWAP_ROUTER: Record<number, Address> = {
     [ChainId.Rayls]: "0x3012E9049d05B4B5369D690114D5A5861EbB85cb",
-    [ChainId.RaylsDevnet]: "0x03f8B4b140249Dc7B2503C928E7258CCe1d91F1A"
+    [ChainId.RaylsDevnet]: "0xf2c72D4EA4b3d54652Df182edA49b082678d02e3"
 };
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
     [ChainId.Rayls]: "0x69D57B9D705eaD73a5d2f2476C30c55bD755cc2F",
-    [ChainId.RaylsDevnet]: "0xD637cbc214Bc3dD354aBb309f4fE717ffdD0B28C"
+    [ChainId.RaylsDevnet]: "0xE416C0C29DBDb4Fa25870b835ad904c1E8478CDc"
 };
 
 /* Farming */
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
     [ChainId.Rayls]: "0x50FCbF85d23aF7C91f94842FeCd83d16665d27bA",
-    [ChainId.RaylsDevnet]: "0x69D57B9D705eaD73a5d2f2476C30c55bD755cc2F"
+    [ChainId.RaylsDevnet]: "0x9fad6Fd657ffD9045a1377C692F8Bb2d3d57C7B6"
 };
 export const FARMING_CENTER: Record<number, Address> = {
     [ChainId.Rayls]: "0x658E287E9C820484f5808f687dC4863B552de37D",
-    [ChainId.RaylsDevnet]: "0xB4F9b6b019E75CBe51af4425b2Fc12797e2Ee2a1"
+    [ChainId.RaylsDevnet]: "0xAd276d26BF120839efdB7168c065f8A59186A5AC"
 };
 
 /* Limit Orders */
