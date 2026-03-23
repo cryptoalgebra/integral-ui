@@ -87,7 +87,7 @@ export function PredictionChart({
         for (let t = startTime; t < prev.time; t += 3600) {
             result.push({
                 time: t,
-                value: prev.value,
+                value: 50,
             });
         }
 
