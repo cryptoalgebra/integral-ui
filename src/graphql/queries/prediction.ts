@@ -18,6 +18,7 @@ export const MARKET_FRAGMENT = gql`
         accruedFees
         totalVolume
         totalTrades
+        activeUsers
     }
 `;
 
@@ -73,6 +74,22 @@ export const USER_FRAGMENT = gql`
     }
 `;
 
+export const MARKET_HOUR_FRAGMENT = gql`
+    fragment MarketHourFields on MarketHourData {
+        id
+        market {
+            ...MarketFields
+        }
+        periodStartUnix
+        qYes
+        qNo
+        priceYes
+        volume
+        fees
+        txCount
+    }
+`;
+
 export const OPEN_MARKETS_FOR_POOL_LIST = gql`
     query OpenMarketsForPoolList($pool: Bytes) {
         markets(where: { pool: $pool, seeded: true, outcome: 0 }) {
@@ -117,6 +134,14 @@ export const SINGLE_MARKET_USER_TRADES = gql`
     query SingleMarketUserTrades($market: String, $user: String) {
         trades(where: { market: $market, user: $user }) {
             ...TradeFields
+        }
+    }
+`;
+
+export const MARKET_HOUR_DATA = gql`
+    query MarketHourData($market: String) {
+        marketHourDatas(where: { market: $market }) {
+            ...MarketHourFields
         }
     }
 `;

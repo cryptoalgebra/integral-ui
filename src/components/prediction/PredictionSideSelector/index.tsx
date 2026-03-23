@@ -64,16 +64,6 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         args: account ? [account] : undefined
     })
 
-    const { data: sellYesBalance } = useSimulatePredictionMarketSellYes({
-        address: market?.id,
-        args: yesBalance ? [yesBalance, 0n] : undefined
-    })
-
-    const { data: sellNoBalance } = useSimulatePredictionMarketSellNo({
-        address: market?.id,
-        args: noBalance ? [noBalance, 0n] : undefined
-    })
-
     const [winNo, youPayNo, feeNo] = previewBuyNo || []
     const [winYes, youPayYes, feeYes] = previewBuyYes || []
 
@@ -106,20 +96,20 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         }
 
         if (side === "no") {
-            if (sellNoBalance?.result === undefined) {
+            if (noBalance === undefined) {
                 return "0"
             }
-            return formatUnits(sellNoBalance.result, 6);
+            return formatUnits(noBalance, 6);
         }
 
         if (side === "yes") {
-            if (sellYesBalance?.result === undefined) {
+            if (yesBalance === undefined) {
                 return "0"
             }
-            return formatUnits(sellYesBalance.result, 6);
+            return formatUnits(yesBalance, 6);
         }
 
-    }, [balance, isBalanceLoading, sellYesBalance, sellNoBalance, side, action]);
+    }, [balance, isBalanceLoading, yesBalance, noBalance, side, action]);
 
     useEffect(() => {
         if (buyFromParam) {

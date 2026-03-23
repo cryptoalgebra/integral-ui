@@ -9,7 +9,7 @@ import SwapChart from "@/components/swap/SwapChart";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 import PredictionMarkets from "@/components/prediction/PredictionMarkets";
-import PredictionBanner from "@/components/prediction/PredictionBanner";
+import PredictionChart from "@/components/prediction/PredictionChart";
 
 const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
 
@@ -20,6 +20,8 @@ const SwapPage = ({ type }: SwapPageProps) => {
     const isPrediction = type === SwapPageView.PREDICTION;
 
     const derivedSwap = useDerivedSwapInfo();
+
+    const isPredictionPool = derivedSwap.poolAddress?.toLowerCase() === "0x671ddf7e29272c5bf6996f765fabf58351cff137".toLowerCase()
 
     return (
         <PageContainer>
@@ -38,16 +40,19 @@ const SwapPage = ({ type }: SwapPageProps) => {
                         {<SwapPair derivedSwap={derivedSwap} />}
                         
                         {isSwap && <SwapParams derivedSwap={derivedSwap} />}
-                        {isSwap && <PredictionBanner />}
                         {isSwap && <SwapButton derivedSwap={derivedSwap} />}
 
                         {isLimitOrder && <LimitOrder derivedSwap={derivedSwap} />}
                     </div>}
                     <PoweredByAlgebra />
                 </div>
-                {<div className="flex flex-col col-span-2 md:max-h-[514px]">
-                    <SwapChart derivedSwap={derivedSwap} />
-                </div>}
+                <div className="flex flex-col col-span-2 md:max-h-[514px]">
+                    {
+                        isPredictionPool ?
+                            <PredictionChart derivedSwap={derivedSwap} /> :
+                            <SwapChart derivedSwap={derivedSwap} />
+                    }
+                </div>
             </div> }
 
             {isPrediction && (<div className="w-full">

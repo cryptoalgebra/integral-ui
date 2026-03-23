@@ -3,17 +3,16 @@ import PageContainer from "@/components/common/PageContainer";
 import LiveChip from "@/components/prediction/LiveChip";
 import PredictionInfo from "@/components/prediction/PredictionInfo";
 import PredictionSideSelector from "@/components/prediction/PredictionSideSelector";
-import SwapChart from "@/components/swap/SwapChart";
+import { PredictionChart } from "@/components/prediction/PredictionChart/prediction-chart";
 import { usePool } from "@/hooks/pools/usePool";
+import { useMarketStats } from "@/hooks/prediction/useMarketStats";
 import { useSingleMarket } from "@/hooks/prediction/useSingleMarket";
-import { useDerivedSwapInfo } from "@/state/swapStore";
 import { cn } from "@/utils";
-import { formatDateDDMM } from "@/utils/common/formatDate";
 import { ChevronLeft, Clock, DollarSign, Users2, BarChart, PauseCircle } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Address, erc20Abi, formatUnits } from "viem";
-import { useReadContract } from "wagmi";
+import { Address, formatUnits } from "viem";
+import { useMarketHourData } from "@/hooks/prediction/useMarketHourData";
 
 const styles = {
     greater: "text-green-300",
@@ -35,18 +34,12 @@ const PredictionMarketPage = () => {
 
     const formattedCondition = quoteCurrency && market ? formatUnits(BigInt(market.mark), quoteCurrency.decimals).split(".")[0] : 0;
 
-    const chartLine = market ? market.condition === "greater" ? { greater: 2392, greaterTimestamp: 1773841272 } :  { lower: 1595, lowerTimestamp: 1773841272 }  : undefined
+    const { tvl, volume, users, tradingDeadline, resolutionDate } = useMarketStats(market)
 
-    const { data: marketTVL } = useReadContract({
-        address: market?.collateralToken,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [marketAddress]
-    })
-
+    const isLower = market?.condition === "lower";
     const isOpen = market && Number(market.tradingDeadline) * 1000 > Date.now();
 
-    const derivedSwap = useDerivedSwapInfo();
+    const { data: marketHourData, loading: isMarketDataLoading } = useMarketHourData(market?.id);
 
     return <PageContainer>
         <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
@@ -91,42 +84,57 @@ const PredictionMarketPage = () => {
                             <PauseCircle size={16} />
                             Trading ends:
                         </div>
-                        <div>{formatDateDDMM(market.tradingDeadline)}</div>
+                        <div>{tradingDeadline}</div>
                     </div>
                     <div className="flex justify-between">
                         <div className="inline-flex items-center gap-2 font-semibold">
                             <Clock size={16} />
                             Market resolves:
                         </div>
-                        <div>{formatDateDDMM(market.plannedResolutionTimestamp)}</div>
+                        <div>{resolutionDate}</div>
                     </div>
                     <div className="flex justify-between">
                         <div className="inline-flex items-center gap-2 font-semibold">
                             <DollarSign size={16} />
                             TVL:
                         </div>
-                        <div>{marketTVL ? `$${formatUnits(marketTVL, 6)}` : ''}</div>
+                        <div>{tvl}</div>
                     </div>
                     <div className="flex justify-between">
                         <div className="inline-flex items-center gap-2 font-semibold">
                             <BarChart size={16} />
                             Volume:
                         </div>
-                        <div>{`$${formatUnits(BigInt(market.totalVolume), 6)}`}</div>
+                        <div>${volume}</div>
                     </div>
                     <div className="flex justify-between">
                         <div className="inline-flex items-center gap-2 font-semibold">
                             <Users2 size={16} />
                             Users:
                         </div>
-                        <div>{0}</div>
+                        <div>{users}</div>
+                    </div>
+                    <div className="text-left pt-2 border-t border-card-border">
+                        {`Final price will be taken at the resolve time (${resolutionDate}). Prices during the whole market lifespan don't matter.`}
+                    </div>
+                    <div className="text-left">
+                        {`Source of the price is the ${pool?.token0.symbol === 'WETH' ? 'ETH' : pool?.token0.symbol} / ${pool?.token1.symbol} pool.`}
                     </div>
                 </div>}
             </div>
             <div className="flex flex-col col-span-2 md:max-h-[514px]">
-                <SwapChart 
-                    derivedSwap={derivedSwap} 
-                    prediction={chartLine} />
+
+                <PredictionChart
+                    pool={pool}
+                    lowerMarket={isLower ? market : undefined}
+                    greaterMarket={isLower ? undefined : market}
+                    lowerData={isLower ? marketHourData : []}
+                    greaterData={isLower ? [] : marketHourData}
+                    currentMarket={market?.condition === "lower" ? "lower" : "greater"}
+                    changeMarket={() => {}}
+                    loading={isMarketDataLoading}
+                />
+
                 { market && <PredictionInfo market={market} /> }
             </div>
         </div>

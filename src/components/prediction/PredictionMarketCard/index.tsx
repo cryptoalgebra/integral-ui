@@ -1,13 +1,12 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadPredictionMarketPriceNo, useReadPredictionMarketPriceYes } from "@/generated";
+import { useMarketStats } from "@/hooks/prediction/useMarketStats";
 import { PredictionMarket } from "@/types/prediction";
 import { cn } from "@/utils";
-import { formatDateDDMM } from "@/utils/common/formatDate";
 import { Pool } from "@cryptoalgebra/integral-sdk";
-import { ArrowUp, ArrowDown, Clock } from "lucide-react";
+import { ArrowUp, ArrowDown, Clock, Users2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { erc20Abi, formatUnits } from "viem";
-import { useReadContract } from "wagmi";
+import { formatUnits } from "viem";
 
 interface IPredictionMarketCard {
     market: PredictionMarket;
@@ -36,12 +35,7 @@ const PredictionMarketCard = ({ market, pool }: IPredictionMarketCard) => {
     const formattedYesPrice = priceYes ? (Number(formatUnits(priceYes, 18)) * 100).toFixed(2) : 0
     const formattedNoPrice = priceNo ? (Number(formatUnits(priceNo, 18)) * 100).toFixed(2) : 0
 
-    const { data: marketTVL } = useReadContract({
-        address: market.collateralToken,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [market.id]
-    })
+    const { tvl, volume, users, tradingDeadline } = useMarketStats(market)
 
     const isOpen = Number(market.plannedResolutionTimestamp) * 1000 > Date.now();
 
@@ -73,11 +67,11 @@ const PredictionMarketCard = ({ market, pool }: IPredictionMarketCard) => {
                 { isOpen ? <div className="inline-flex items-center gap-2 ml-auto rounded-full text-white text-xs font-medium">
 
                     <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
                     </span>
 
-                    <span className="uppercase tracking-wide text-red-400">
+                    <span className="uppercase tracking-wide text-green-400">
                         Live
                     </span>
                 </div> : market.userWon ? <div className="ml-auto text-xs text-green-400">Win</div> : <div className="ml-auto text-xs text-red-400">Lose</div> }
@@ -85,7 +79,7 @@ const PredictionMarketCard = ({ market, pool }: IPredictionMarketCard) => {
             </div>
 
             <div>
-                Will {marketCurrency?.symbol} be{" "}
+                Will {marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol} be{" "}
                 <span
                     className={cn(
                         isGreater ? "text-green-400" : "text-red-400"
@@ -130,16 +124,21 @@ const PredictionMarketCard = ({ market, pool }: IPredictionMarketCard) => {
             <div className="flex items-center text-xs text-text-200">
                     <div className="flex gap-1">
                         <Clock size={16} />
-                        <div>{formatDateDDMM(market.tradingDeadline)}</div>
+                        <div>{tradingDeadline}</div>
                     </div>
                     <div className="ml-auto flex gap-1">
-                        <div>{marketTVL ? `$${Number(formatUnits(marketTVL, 6)).toFixed(0)}` : ''}</div>
+                        <div>{tvl}</div>
                         <div>TVL</div>
                     </div>
                     <div className="mx-1">•</div>
                     <div className="flex gap-1">
-                        <div>{`$${Number(formatUnits(BigInt(market.totalVolume), 6)).toFixed(0)}`}</div>
+                        <div>${volume}</div>
                         <div>volume</div>
+                    </div>
+                    <div className="mx-1">•</div>
+                    <div className="flex gap-1">
+                        <Users2 size={16} />
+                        <div>{users}</div>
                     </div>
             </div>
         </Link>

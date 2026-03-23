@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 type LiveChipProps = {
-  targetDate: string | number | Date;
+  targetDate?: string | number | Date;
 };
 
 function formatTime(ms: number) {
@@ -24,12 +24,12 @@ function formatTime(ms: number) {
 
 export default function LiveChip({ targetDate }: LiveChipProps) {
   const [timeLeft, setTimeLeft] = useState(
-    new Date(targetDate).getTime() - Date.now()
+    new Date(targetDate || 0).getTime() - Date.now()
   );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft(new Date(targetDate).getTime() - Date.now());
+      setTimeLeft(new Date(targetDate || 0).getTime() - Date.now());
     }, 1000);
 
     return () => clearInterval(interval);
@@ -39,18 +39,18 @@ export default function LiveChip({ targetDate }: LiveChipProps) {
     <div className="w-fit inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 text-white text-sm font-medium">
       
       <span className="relative flex h-2.5 w-2.5">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600"></span>
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
       </span>
 
-      <span className="uppercase tracking-wide text-red-400">
+      <span className="uppercase tracking-wide text-green-400">
         Live
       </span>
 
-      <span className="flex gap-2">
+      { targetDate && <span className="flex gap-2">
         <span>Ends in</span>
         <span>{formatTime(timeLeft)}</span>
-      </span>
+      </span> }
     </div>
   );
 }
