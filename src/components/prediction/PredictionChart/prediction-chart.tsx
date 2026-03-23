@@ -6,8 +6,6 @@ import { PredictionMarket } from "@/types/prediction";
 import { Pool } from "@cryptoalgebra/integral-sdk";
 import { formatUnits } from "viem";
 import LiveChip from "../LiveChip";
-import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type MarketType = "lower" | "greater";
@@ -32,7 +30,6 @@ export function PredictionChart({
     lowerData,
     greaterData,
     currentMarket,
-    changeMarket,
     height = 260,
     showOverlay = false,
     loading,
@@ -270,7 +267,7 @@ export function PredictionChart({
                     </div> : <div/>
                 }
 
-                <div className="flex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1">
+                {/* <div className="flex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1">
                     <Button
                         size={"sm"}
                         onClick={() => changeMarket("greater")}
@@ -297,7 +294,7 @@ export function PredictionChart({
                         <ArrowDown size={16} className="text-red-400" />
                         Lower
                     </Button>
-                </div>
+                </div> */}
             </div> }
 
             <div className="text-left text-lg">

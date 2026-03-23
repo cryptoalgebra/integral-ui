@@ -3,7 +3,7 @@ import { PredictionTrade } from "@/types/prediction";
 import { cn } from "@/utils";
 import { formatDate } from "@/utils/common/formatDate";
 import { useAppKitNetwork } from "@reown/appkit/react";
-import { ArrowDown, ArrowUp, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const formatNumber = (value: string, decimals = 6) => {
@@ -38,8 +38,7 @@ export default function PredictionTradesTable({ trades }: IPredictionTradesTable
   return (
     <div className="w-full">
 
-      <div className="grid grid-cols-[1fr_40px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm text-gray-400 border-b border-gray-800">
-        <div className="text-left">Type</div>
+      <div className="grid grid-cols-[40px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm text-gray-400 border-b border-gray-800">
         <div className="text-left">Side</div>
         <div>You Buy</div>
         <div>You Win</div>
@@ -57,14 +56,14 @@ export default function PredictionTradesTable({ trades }: IPredictionTradesTable
 
         {trades.map((trade) => {
           const outcome = getOutcome(trade.market.outcome, trade.market.condition, trade.type);
-          const mark = formatNumber(trade.market.mark).toFixed(0)
+          // const mark = formatNumber(trade.market.mark).toFixed(0)
 
           return (
             <div
               key={trade.id}
-              className="grid grid-cols-[1fr_40px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm items-center hover:bg-black/10 transition"
+              className="grid grid-cols-[40px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm items-center hover:bg-black/10 transition"
             >
-              <div
+              {/* <div
                 className={
                   cn(
                     "inline-flex items-center gap-1",
@@ -75,7 +74,7 @@ export default function PredictionTradesTable({ trades }: IPredictionTradesTable
               >
                 <span>{trade.market.condition === 'lower' ? <ArrowDown size={16} /> : <ArrowUp size={16} /> }</span>
                 <span>{mark}</span>
-              </div>
+              </div> */}
               <div
                 className={
                   cn(
