@@ -9,9 +9,10 @@ import SwapChart from "@/components/swap/SwapChart";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 import PredictionMarkets from "@/components/prediction/PredictionMarkets";
-import PredictionChart from "@/components/prediction/PredictionChart";
+// import PredictionChart from "@/components/prediction/PredictionChart";
 import { useMarketsByTokens } from "@/hooks/prediction/useMarketsByTokens";
 import { Address } from "viem";
+import PredictionMarketCard from "@/components/prediction/PredictionMarketCard";
 
 const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
 
@@ -56,7 +57,12 @@ const SwapPage = ({ type }: SwapPageProps) => {
                 <div className="flex flex-col col-span-2 md:max-h-[514px]">
                     {
                         isLoadingMarkets ? null : isPredictionPool ?
-                            <PredictionChart marketWithToken={marketsForTokens} /> :
+                            <div className="grid grid-cols-1 md:grid-cols-2">
+                                {
+                                    marketsForTokens.map((market) => <PredictionMarketCard key={market.id} market={market} />)
+                                }
+                            </div> :
+                            // <PredictionChart marketWithToken={marketsForTokens} /> :
                             <SwapChart derivedSwap={derivedSwap} />
                     }
                 </div>
