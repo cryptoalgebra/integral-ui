@@ -10,6 +10,8 @@ import SwapChart from "@/components/swap/SwapChart";
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 import PredictionMarkets from "@/components/prediction/PredictionMarkets";
 import PredictionChart from "@/components/prediction/PredictionChart";
+import { useMarketsByTokens } from "@/hooks/prediction/useMarketsByTokens";
+import { Address } from "viem";
 
 const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
 
@@ -21,7 +23,12 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     const derivedSwap = useDerivedSwapInfo();
 
-    const isPredictionPool = derivedSwap.poolAddress?.toLowerCase() === "0x671ddf7e29272c5bf6996f765fabf58351cff137".toLowerCase()
+    const { data: marketsForTokens, loading: isLoadingMarkets } = useMarketsByTokens(
+        derivedSwap.currencies.INPUT?.wrapped.address as Address,
+        derivedSwap.currencies.OUTPUT?.wrapped.address as Address
+    )
+
+    const isPredictionPool = Boolean(marketsForTokens.length)
 
     return (
         <PageContainer>
@@ -48,8 +55,8 @@ const SwapPage = ({ type }: SwapPageProps) => {
                 </div>
                 <div className="flex flex-col col-span-2 md:max-h-[514px]">
                     {
-                        isPredictionPool ?
-                            <PredictionChart derivedSwap={derivedSwap} /> :
+                        isLoadingMarkets ? null : isPredictionPool ?
+                            <PredictionChart marketWithToken={marketsForTokens} /> :
                             <SwapChart derivedSwap={derivedSwap} />
                     }
                 </div>

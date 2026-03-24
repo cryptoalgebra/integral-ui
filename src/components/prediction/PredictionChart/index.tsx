@@ -1,42 +1,35 @@
 import { PredictionChart as Chart } from "./prediction-chart";
 import { useMarketHourData } from "@/hooks/prediction/useMarketHourData";
 import { useState } from "react";
-import { IDerivedSwapInfo } from "@/state/swapStore";
-import { usePoolMarkets } from "@/hooks/prediction/usePoolMarkets";
 import { usePool } from "@/hooks/pools/usePool";
 import { useMarketStats } from "@/hooks/prediction/useMarketStats";
 import { BarChart, Clock, DollarSign, Users2 } from "lucide-react";
+import { PredictionMarket } from "@/types/prediction";
 
 interface IPredicitonChart {
-    derivedSwap: IDerivedSwapInfo;
+    marketWithToken: PredictionMarket[];
 }
 
-export default function PredictionChart({ derivedSwap }: IPredicitonChart) {
+export default function PredictionChart({ marketWithToken }: IPredicitonChart) {
 
-    const [, pool] = usePool("0x671ddf7e29272c5bf6996f765fabf58351cff137");
-
-    const { data: marketsForPools } = usePoolMarkets(derivedSwap.poolAddress)
+    const [, pool] = usePool(marketWithToken[0].pool);
 
     const [currentMarket, setCurrentMarket] = useState<"greater" | "lower">("greater")
 
-    const lowerMarket = marketsForPools.filter((market) => market.condition === "lower");
-    const greaterMarket = marketsForPools.filter((market) => market.condition === "greater");
+    const market =  marketWithToken.filter((market) => market.condition === "greater");
 
-    const { data: lowerMarketHourData, loading: isLowerMarketDataLoading } = useMarketHourData(lowerMarket[0] ? lowerMarket[0].id : undefined);
-    const { data: greaterMarketHourData, loading: isGreaterMarketDataLoading } = useMarketHourData(greaterMarket[0] ? greaterMarket[0].id : undefined);
+    const { data: greaterMarketHourData, loading: isGreaterMarketDataLoading } = useMarketHourData(market[0] ? market[0].id : undefined);
 
-    const isLoading = isLowerMarketDataLoading || isGreaterMarketDataLoading;
-
-    const market = currentMarket === "lower" ? lowerMarket : greaterMarket;
+    const isLoading = isGreaterMarketDataLoading;
 
     const { tvl, volume, users, resolutionDate } = useMarketStats(market[0])
 
     return <>
         <Chart
             pool={pool}
-            lowerMarket={lowerMarket[0]}
-            greaterMarket={greaterMarket[0]}
-            lowerData={lowerMarketHourData}
+            lowerMarket={undefined}
+            greaterMarket={market[0]}
+            lowerData={[]}
             greaterData={greaterMarketHourData}
             currentMarket={currentMarket}
             changeMarket={(type) => setCurrentMarket(type)}

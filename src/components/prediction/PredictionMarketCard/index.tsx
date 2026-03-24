@@ -1,23 +1,23 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadPredictionMarketPriceNo, useReadPredictionMarketPriceYes } from "@/generated";
+import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMarketStats } from "@/hooks/prediction/useMarketStats";
 import { PredictionMarket } from "@/types/prediction";
 import { cn } from "@/utils";
-import { Pool } from "@cryptoalgebra/integral-sdk";
 import { ArrowUp, ArrowDown, Clock, Users2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
 
 interface IPredictionMarketCard {
     market: PredictionMarket;
-    pool: Pool | undefined | null;
 }
 
-const PredictionMarketCard = ({ market, pool }: IPredictionMarketCard) => {
+const PredictionMarketCard = ({ market }: IPredictionMarketCard) => {
+    
     const isGreater = market.condition === "greater";
 
-    const marketCurrency = market.marketToken === 0 ? pool?.token0 : pool?.token1;
-    const quoteCurrency = market.marketToken === 0 ? pool?.token1 : pool?.token0;
+    const marketCurrency = useCurrency(market.marketToken === 0 ? market.token0 : market.token1);
+    const quoteCurrency = useCurrency(market.marketToken === 0 ? market.token1 : market.token0);
 
     const formattedCondition = quoteCurrency
         ? formatUnits(BigInt(market.mark), quoteCurrency.decimals).split(".")[0]

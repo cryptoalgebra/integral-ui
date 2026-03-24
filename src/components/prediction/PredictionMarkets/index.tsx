@@ -1,28 +1,15 @@
-import { useEffect, useState } from "react";
 import PredictionMarketCard from "../PredictionMarketCard";
-import { usePoolMarkets } from "@/hooks/prediction/usePoolMarkets";
-import { usePool } from "@/hooks/pools/usePool";
-import { PredictionMarket } from "@/types/prediction";
 import { useUserMarkets } from "@/hooks/prediction/useUserMarkets";
 import { useAccount } from "wagmi";
+import { useAllOpenMarkets } from "@/hooks/prediction/useAllOpenMarkets";
 
 
 const PredictionMarkets = () => {
 
     const { address: account } = useAccount()
 
-    const { data: poolMarkets } = usePoolMarkets("0x671ddf7e29272c5bf6996f765fabf58351cff137")
+    const { data: poolMarkets } = useAllOpenMarkets()
     const { data: { closedMarkets, openedMarkets } } = useUserMarkets(account)
-
-    const [selectedMarket, selectMarket] = useState<PredictionMarket>()
-
-    const [, pool] = usePool("0x671ddf7e29272c5bf6996f765fabf58351cff137")
-
-    useEffect(() => {
-        if (!selectedMarket && poolMarkets[0]) {
-            selectMarket(poolMarkets[0])
-        }
-    }, [poolMarkets])
 
     return <div className="flex flex-col gap-6">
         <div className="flex items-center gap-4">
@@ -34,7 +21,6 @@ const PredictionMarkets = () => {
                     <PredictionMarketCard
                         key={market.id}
                         market={market}
-                        pool={pool}
                     />
                 ))
             }
@@ -47,7 +33,6 @@ const PredictionMarkets = () => {
                         <PredictionMarketCard
                             key={market.id}
                             market={market}
-                            pool={pool}
                         />
                     ))
                 }
@@ -61,7 +46,6 @@ const PredictionMarkets = () => {
                         <PredictionMarketCard
                             key={market.id}
                             market={market}
-                            pool={pool}
                         />
                     ))
                 }

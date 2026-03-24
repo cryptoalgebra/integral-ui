@@ -4,6 +4,8 @@ export const MARKET_FRAGMENT = gql`
     fragment MarketFields on Market {
         id
         pool
+        token0
+        token1
         collateralToken
         tradingDeadline
         plannedResolutionTimestamp
@@ -93,6 +95,14 @@ export const MARKET_HOUR_FRAGMENT = gql`
 export const OPEN_MARKETS_FOR_POOL_LIST = gql`
     query OpenMarketsForPoolList($pool: Bytes) {
         markets(where: { pool: $pool, seeded: true, outcome: 0 }) {
+            ...MarketFields
+        }
+    }
+`;
+
+export const OPEN_MARKETS_BY_TOKENS_LIST = gql`
+    query OpenMarketsByTokensList($token0: Bytes, $token1: Bytes) {
+        markets(where: { or: [ { seeded: true, outcome: 0, token0: $token0 }, { seeded: true, outcome: 0, token0: $token1 }, { seeded: true, outcome: 0, token1: $token0 }, { seeded: true, outcome: 0, token1: $token1 },] }) {
             ...MarketFields
         }
     }
