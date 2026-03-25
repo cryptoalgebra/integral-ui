@@ -22,8 +22,12 @@ export function useAllOpenMarkets() {
             collateralToken: market.collateralToken as Address,
             marketToken: Number(market.marketToken),
             condition: market.condition as MarketCondition,
-        })).sort((a) => {
-            if (a.condition === "greater") return 1
+        })).sort((a, b) => {
+            const marketADuration = Number(a.plannedResolutionTimestamp) - Number(a.createdAt)
+            const marketBDuration = Number(b.plannedResolutionTimestamp) - Number(b.createdAt)
+            return marketADuration - marketBDuration
+        }).sort((a, b) => {
+            if (b.condition === "greater") return 1
             return -1
         })
 

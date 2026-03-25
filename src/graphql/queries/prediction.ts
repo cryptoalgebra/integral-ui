@@ -21,6 +21,7 @@ export const MARKET_FRAGMENT = gql`
         totalVolume
         totalTrades
         activeUsers
+        createdAt
     }
 `;
 

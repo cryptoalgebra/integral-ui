@@ -3,6 +3,7 @@ import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
+import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +25,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "USDC",
         logo: USDCLogo,
     },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
+    ["0x50d22384026efc4b5bd3734a7456bfab35c929a4"]: {
         symbol: "BTC",
         logo: BTCLogo,
     },
@@ -32,6 +33,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "TOKEN",
         logo: TOKENLogo,
     },
+    ["0x0ebdc0b736b34207f6e8abe10c282b4003021a22"]: {
+        symbol: "PROJECTX",
+        logo: ProjectXLogo
+    }
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {

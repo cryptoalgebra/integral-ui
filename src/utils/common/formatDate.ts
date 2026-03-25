@@ -96,3 +96,21 @@ export const formatDateDDMM = (ts: string | number) => {
 
   return `${day}.${month} ${hours}:${minutes}`;
 };
+
+export function formatFutureTime(ms: number) {
+  if (ms <= 0) return "0m";
+
+  const totalSeconds = Math.floor(ms / 1000);
+
+  const days = Math.floor(totalSeconds / (60 * 60 * 24));
+  const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+
+  const parts = [];
+
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0 || days > 0) parts.push(`${hours}h`);
+  parts.push(`${minutes}m`);
+
+  return parts.join(" ");
+}

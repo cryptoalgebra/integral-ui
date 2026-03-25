@@ -13,6 +13,7 @@ import PredictionMarkets from "@/components/prediction/PredictionMarkets";
 import { useMarketsByTokens } from "@/hooks/prediction/useMarketsByTokens";
 import { Address } from "viem";
 import PredictionMarketCard from "@/components/prediction/PredictionMarketCard";
+import { useNow } from "@/hooks/common/useNow";
 
 const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
 
@@ -30,6 +31,8 @@ const SwapPage = ({ type }: SwapPageProps) => {
     )
 
     const isPredictionPool = Boolean(marketsForTokens.length)
+
+    const now = useNow();
 
     return (
         <PageContainer>
@@ -57,9 +60,16 @@ const SwapPage = ({ type }: SwapPageProps) => {
                 <div className="flex flex-col col-span-2 md:max-h-[514px]">
                     {
                         isLoadingMarkets ? null : isPredictionPool ?
-                            <div className="grid grid-cols-1 md:grid-cols-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 {
-                                    marketsForTokens.map((market) => <PredictionMarketCard key={market.id} market={market} />)
+                                    marketsForTokens.map((market) => (
+                                        <PredictionMarketCard 
+                                            key={market.id} 
+                                            market={market} 
+                                            now={now}
+                                            from={'swap'}
+                                        />
+                                    ))
                                 }
                             </div> :
                             // <PredictionChart marketWithToken={marketsForTokens} /> :

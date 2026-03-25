@@ -10,9 +10,13 @@ import { useSingleMarket } from "@/hooks/prediction/useSingleMarket";
 import { cn } from "@/utils";
 import { ChevronLeft, Clock, DollarSign, Users2, BarChart, PauseCircle } from "lucide-react";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Address, formatUnits } from "viem";
 import { useMarketHourData } from "@/hooks/prediction/useMarketHourData";
+import { Chart } from "@/components/common/Chart";
+import { CHART_SPAN, POOL_CHART_TYPE } from "@/types/swap-chart";
+import { usePoolChartData } from "@/hooks/analytics";
+import { Button } from "@/components/ui/button";
 
 const styles = {
     greater: "text-green-300",
@@ -21,6 +25,9 @@ const styles = {
 
 const PredictionMarketPage = () => {
 
+    const [searchParams] = useSearchParams();
+    const returnLink = searchParams.get("from") as "yes" | "no";
+    
     const { market: marketAddress } = useParams() as { market: Address; };
 
     const { data: market } = useSingleMarket(marketAddress);
@@ -39,14 +46,21 @@ const PredictionMarketPage = () => {
     const isLower = market?.condition === "lower";
     const isOpen = market && Number(market.tradingDeadline) * 1000 > Date.now();
 
+    const isOneHourMarket = market && Number(market.plannedResolutionTimestamp) - Number(market.createdAt) <= 3600 * 4
+
+    const [chartType, setChartType] = useState<"price" | "probability">("probability")
+
     const { data: marketHourData, loading: isMarketDataLoading } = useMarketHourData(market?.id);
+    const { chartData, loading: isChartDataLoading } = usePoolChartData(market?.pool, CHART_SPAN.DAY, POOL_CHART_TYPE.PRICE);
 
     return <PageContainer>
         <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
 
-            {market && <div className="flex flex-col md:flex-row md:items-center gap-2">
+            {market && <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div className="flex items-center gap-2">
-                    <Link to={'/prediction'}>
+                    <Link to={{
+                        pathname: `/${returnLink || 'prediction'}`,
+                    }}>
                         <ChevronLeft size={28} />
                     </Link>
                     <div className="inline-flex items-center text-xs md:text-2xl font-semibold">
@@ -59,7 +73,7 @@ const PredictionMarketPage = () => {
                         <span className="ml-2">{quoteCurrency?.symbol}?</span>
                     </div>
                 </div>
-                {isOpen && <LiveChip targetDate={+market.plannedResolutionTimestamp * 1000} />}
+                {isOpen && <LiveChip showDot={isOneHourMarket} targetDate={+market.plannedResolutionTimestamp * 1000} />}
             </div>}
 
         </div>
@@ -122,20 +136,59 @@ const PredictionMarketPage = () => {
                     </div>
                 </div>}
             </div>
-            <div className="flex flex-col col-span-2 md:max-h-[514px]">
+            <div className="flex flex-col gap-4 col-span-2 md:max-h-[514px]">
+                <div className="fflex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1 ml-auto mr-auto lg:mr-4 w-fit">
+                    <Button
+                        size={"sm"}
+                        onClick={() => setChartType("price")}
+                        variant={"icon"}
+                        disabled={chartType === "price"}
+                        className={cn(
+                            "border rounded-xl disabled:opacity-100 hover:bg-text-100/5",
+                            chartType === "price" ? "bg-text-100/5 border-text-100/20" : "border-none"
+                        )}
+                    >
+                        Price
+                    </Button>
+                    <Button
+                        size={"sm"}
+                        onClick={() => setChartType("probability")}
+                        variant={"icon"}
+                        disabled={chartType === "probability"}
+                        className={cn(
+                            "border rounded-xl disabled:opacity-100 hover:bg-text-100/5",
+                            chartType === "probability" ? "bg-text-100/5 border-text-100/20" : "border-none"
+                        )}
+                    >
+                        Chance
+                    </Button>
+                </div>
+                {
+                    chartType === "price" ? <Chart
+                        chartData={chartData}
+                        chartSpan={CHART_SPAN.DAY}
+                        chartTitle={POOL_CHART_TYPE.PRICE}
+                        chartView={"line"}
+                        chartType={POOL_CHART_TYPE.PRICE}
+                        setChartType={() => { }}
+                        setChartSpan={() => { }}
+                        height={260}
+                        tokenA={marketCurrency?.symbol}
+                        tokenB={quoteCurrency?.symbol}
+                        isChartDataLoading={isChartDataLoading}
+                    /> : <PredictionChart
+                        pool={pool}
+                        lowerMarket={isLower ? market : undefined}
+                        greaterMarket={isLower ? undefined : market}
+                        lowerData={isLower ? marketHourData : []}
+                        greaterData={isLower ? [] : marketHourData}
+                        currentMarket={market?.condition === "lower" ? "lower" : "greater"}
+                        changeMarket={() => { }}
+                        loading={isMarketDataLoading}
+                    />
+                }
 
-                <PredictionChart
-                    pool={pool}
-                    lowerMarket={isLower ? market : undefined}
-                    greaterMarket={isLower ? undefined : market}
-                    lowerData={isLower ? marketHourData : []}
-                    greaterData={isLower ? [] : marketHourData}
-                    currentMarket={market?.condition === "lower" ? "lower" : "greater"}
-                    changeMarket={() => {}}
-                    loading={isMarketDataLoading}
-                />
-
-                { market && <PredictionInfo market={market} /> }
+                {market && <PredictionInfo market={market} />}
             </div>
         </div>
     </PageContainer>
