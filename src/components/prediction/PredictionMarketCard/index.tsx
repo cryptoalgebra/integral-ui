@@ -73,7 +73,7 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                 </div>
 
                 {isOneHourMarket ? <div className="flex flex-1 items-center gap-2 text-base">
-                    <div>{`1 Day ${marketCurrency?.symbol} Up or Down`}</div>
+                    <div>{`1 Hour ${marketCurrency?.symbol} Up or Down`}</div>
                 </div> : <div>
                     Will {marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol} be{" "}
                     <span
