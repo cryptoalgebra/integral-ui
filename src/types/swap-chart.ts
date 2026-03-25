@@ -59,6 +59,7 @@ export interface IChart {
     setChartSpan: (chartSpan: ChartSpanType) => void;
     chartType: ChartTypeType | PoolChartTypeType;
     setChartType: (chartType: ChartTypeType) => void;
+    showSpanSelector?: boolean;
     showTypeSelector?: boolean;
     height: number;
     // showAPR: boolean;

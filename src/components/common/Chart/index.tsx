@@ -17,6 +17,7 @@ export function Chart({
     chartType,
     setChartType,
     showTypeSelector,
+    showSpanSelector = true,
     height,
     tokenA,
     tokenB,
@@ -163,8 +164,8 @@ export function Chart({
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction?.lower ? [ { value: prediction.lower, time: prediction.lowerTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
-                        maxValue: Math.max(...effectiveData.concat(prediction?.greater ? [ { value: prediction.greater, time: prediction.greaterTimestamp as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction?.lower ? [ { value: prediction.lower, time: Date.now() as LightWeightCharts.UTCTimestamp }] : prediction?.greater ? [{ value: prediction.greater, time: Date.now() as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.concat(prediction?.greater ? [ { value: prediction.greater, time: Date.now() as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
                     },
                 }),
             });
@@ -214,19 +215,19 @@ export function Chart({
 
         // const bucketedData = bucketChartData(effectiveData, bucketSize);
 
-        if (prediction) {
-            const futureSeries = chart.addHistogramSeries({
-                color: 'transparent', // invisible line
-            });
+        // if (prediction) {
+        //     const futureSeries = chart.addHistogramSeries({
+        //         color: 'transparent', // invisible line
+        //     });
 
-            futureSeries.setData([
-                { time: 1773878400 as LightWeightCharts.UTCTimestamp },
-                { time: 1773964800 as LightWeightCharts.UTCTimestamp },
-                { time: 1774051200 as LightWeightCharts.UTCTimestamp },
-                { value: prediction.lower, time: 1774137600 as LightWeightCharts.UTCTimestamp },
-                { value: prediction.greater, time: 1774224000 as LightWeightCharts.UTCTimestamp }
-            ]);
-        }
+        //     futureSeries.setData([
+        //         { time: 1773878400 as LightWeightCharts.UTCTimestamp },
+        //         { time: 1773964800 as LightWeightCharts.UTCTimestamp },
+        //         { time: 1774051200 as LightWeightCharts.UTCTimestamp },
+        //         { value: prediction.lower, time: Date.now() as LightWeightCharts.UTCTimestamp },
+        //         { value: prediction.greater, time: Date.now() as LightWeightCharts.UTCTimestamp }
+        //     ]);
+        // }
 
         series.setData(effectiveData);
 
@@ -278,14 +279,14 @@ export function Chart({
                 </div>
 
                 <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
-                    <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />
+                    {showSpanSelector && <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />}
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>
             </div>
             <div className={cn('relative', fadeOut && !prediction && 'soft-div' )}>
                 {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
                     <div className="w-full h-full min-h-[180px] flex items-center justify-center">
-                        <Loader className="w-10 h-10" />
+                        {!prediction && <Loader className="w-10 h-10" />}
                     </div>
                 ) : (
                     <div

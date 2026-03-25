@@ -20,11 +20,11 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
     const isGreater = market.condition === "greater";
 
     const marketCurrency = useCurrency(market.marketToken === 0 ? market.token0 : market.token1);
-    const quoteCurrency = useCurrency(market.marketToken === 0 ? market.token1 : market.token0);
+    // const quoteCurrency = useCurrency(market.marketToken === 0 ? market.token1 : market.token0);
 
-    const formattedCondition = quoteCurrency
-        ? ((value) => value < 1 ? value.toFixed(2) : value.toFixed(0))(Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals)))
-        : 0;
+    // const formattedCondition = quoteCurrency
+    //     ? ((value) => value < 1 ? value.toFixed(2) : value.toFixed(0))(Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals)))
+    //     : 0;
 
 
     const { data: priceYes } = useReadPredictionMarketPriceYes({
@@ -73,17 +73,17 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                 </div>
 
                 {isOneHourMarket ? <div className="flex flex-1 items-center gap-2 text-base">
-                    <div>{`1 Hour ${marketCurrency?.symbol} Up or Down`}</div>
+                    <div>{`1 Hour ${marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol} Up or Down`}</div>
                 </div> : <div>
-                    Will {marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol} be{" "}
+                    1 Day {marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol}{" "}
                     <span
                         className={cn(
                             isGreater ? "text-green-400" : "text-red-400"
                         )}
                     >
-                        {market.condition}
+                        {isGreater ? "Up" : "Down"}
                     </span>{" "}
-                    than {formattedCondition} {quoteCurrency?.symbol}?
+                    10%?
                 </div>}
 
             </div>

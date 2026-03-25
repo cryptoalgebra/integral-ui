@@ -48,7 +48,7 @@ const PredictionMarketPage = () => {
 
     const isOneHourMarket = market && Number(market.plannedResolutionTimestamp) - Number(market.createdAt) <= 3600 * 4
 
-    const [chartType, setChartType] = useState<"price" | "probability">("probability")
+    const [chartType, setChartType] = useState<"price" | "probability">("price")
 
     const { data: marketHourData, loading: isMarketDataLoading } = useMarketHourData(market?.id);
     const { chartData, loading: isChartDataLoading } = usePoolChartData(market?.pool, CHART_SPAN.DAY, POOL_CHART_TYPE.PRICE);
@@ -176,6 +176,15 @@ const PredictionMarketPage = () => {
                         tokenA={marketCurrency?.symbol}
                         tokenB={quoteCurrency?.symbol}
                         isChartDataLoading={isChartDataLoading}
+                        showSpanSelector={false}
+                        prediction={
+                            market ? 
+                                isLower ? 
+                                    { lower: +formattedCondition } :
+                                    { greater: +formattedCondition } :
+                            undefined
+
+                        }
                     /> : <PredictionChart
                         pool={pool}
                         lowerMarket={isLower ? market : undefined}
