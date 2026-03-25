@@ -4,7 +4,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMarketStats } from "@/hooks/prediction/useMarketStats";
 import { PredictionMarket } from "@/types/prediction";
 import { cn } from "@/utils";
-import { formatFutureTime } from "@/utils/common/formatDate";
+import { formatDateDDMM, formatFutureTime } from "@/utils/common/formatDate";
 import { ArrowDown, ArrowUp, Clock, Users2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
@@ -46,7 +46,7 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
     const timeLeftForTrading = Number(market.plannedResolutionTimestamp) * 1000 - now;
     const timeLeftUntilResolution = Number(market.plannedResolutionTimestamp) * 1000 - now;
 
-    const isOneHourMarket = Number(market.plannedResolutionTimestamp) - Number(market.createdAt) <= 3600 * 4
+    const isOneHourMarket = Number(market.plannedResolutionTimestamp) - Number(market.createdAt) <= 3600;
 
     return (
         <Link to={{
@@ -73,7 +73,12 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                 </div>
 
                 {isOneHourMarket ? <div className="flex flex-1 items-center gap-2 text-base">
-                    <div>{`1 Hour ${marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol} Up or Down`}</div>
+                    <div className="flex gap-1">
+                        <span>{`1 Hour ${marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol}`}</span>
+                        <span className="text-green-400">Up</span>
+                        <span>or</span>
+                        <span className="text-red-400">Down</span>
+                    </div>
                 </div> : <div>
                     1 Day {marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol}{" "}
                     <span
@@ -100,7 +105,7 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                         "bg-white/5 hover:bg-lime-600"
                     )}
                 >
-                    <span className="text-white/70 mr-2">Yes</span>
+                    <span className="text-white/70 mr-2">{isOneHourMarket ? "Up" : "Yes"}</span>
                     {priceYes !== undefined && <span>{formattedYesPrice}¢</span>}
                 </Link>
                 <Link
@@ -113,16 +118,25 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                         "bg-white/5 hover:bg-orange-600"
                     )}
                 >
-                    <span className="text-white/70 mr-2">No</span>
+                    <span className="text-white/70 mr-2">{isOneHourMarket ? "Down" : "No"}</span>
                     {priceNo !== undefined && <span>{formattedNoPrice}¢</span>}
                 </Link>
 
-            </div> : <div className="my-4 flex-1" /> }
+            </div> : isResolved ? <div className="my-4 flex-1" /> : <div className="flex gap-3 my-4 font-semibold mt-auto">
+                <div
+                    className={cn(
+                        "w-full py-3 bg-white/5 border border-card-border rounded-lg text-center transition",
+                        "bg-white/5"
+                    )}
+                >
+                    Trading Ended
+                </div>
+            </div>}
 
             <div className="flex items-center text-xs text-text-200">
                 <div className="flex gap-1">
                     <Clock size={16} />
-                    <div className="mr-2">{isOpen ? formatFutureTime(timeLeftForTrading) : isResolved ? 'Resolved' : `Resolves in ${formatFutureTime(timeLeftUntilResolution)}`}</div>
+                    <div className="mr-2">{isOpen ? formatFutureTime(timeLeftForTrading) : isResolved ? formatDateDDMM(market.plannedResolutionTimestamp) : `Resolves in ${formatFutureTime(timeLeftUntilResolution)}`}</div>
                     {isOpen && !isResolved && isOneHourMarket ? <div className="inline-flex items-center gap-2 ml-auto rounded-full text-white text-xs font-medium">
 
                         <span className="relative flex h-2.5 w-2.5">
@@ -133,7 +147,7 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                         <span className="uppercase tracking-wide text-green-400">
                             Live
                         </span>
-                    </div> : isResolved ? market.userWon ? <div className="ml-auto text-xs text-green-400">Win</div> : <div className="ml-auto text-xs text-red-400">Lose</div> : null}
+                    </div> : isResolved ? market.userWon ? market.userRedeemed ? <div className="ml-auto text-xs text-green-400">Redeemed</div> : <div className="ml-auto text-xs text-green-400">Redeem</div> : <div className="ml-auto text-xs text-red-400">Lose</div> : null}
                 </div>
                 <div className="ml-auto flex gap-1">
                     <div>{tvl}</div>

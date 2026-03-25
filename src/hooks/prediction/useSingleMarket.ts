@@ -13,7 +13,7 @@ export function useSingleMarket(id: Address | undefined) {
         variables: {
             market: id || ''
         },
-        skip: id === undefined
+        skip: id === undefined,
     })
 
     const formattedData = useMemo(() => {

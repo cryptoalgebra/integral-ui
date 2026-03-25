@@ -77,13 +77,13 @@ export const USER_FRAGMENT = gql`
     }
 `;
 
-export const MARKET_HOUR_FRAGMENT = gql`
-    fragment MarketHourFields on MarketHourData {
+export const MARKET_FIVE_MINUTE_FRAGMENT = gql`
+    fragment MarketFiveMinuteFields on MarketFiveMinuteData {
         id
         market {
             ...MarketFields
         }
-        periodStartUnix
+        date
         qYes
         qNo
         priceYes
@@ -150,9 +150,17 @@ export const SINGLE_MARKET_USER_TRADES = gql`
 `;
 
 export const MARKET_HOUR_DATA = gql`
-    query MarketHourData($market: String) {
-        marketHourDatas(where: { market: $market }) {
-            ...MarketHourFields
+    query MarketFiveMinuteData($market: String) {
+        marketFiveMinuteDatas(where: { market: $market }) {
+            ...MarketFiveMinuteFields
+        }
+    }
+`;
+
+export const USER_POSITION_BY_MARKET = gql`
+    query UserPositionByMarket($market:String, $user: String) {
+        userPositions(where: { market: $market, user: $user }) {
+            ...UserPositionFields
         }
     }
 `;

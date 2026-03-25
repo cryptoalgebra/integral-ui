@@ -12,11 +12,13 @@ import { ChevronLeft, Clock, DollarSign, Users2, BarChart, PauseCircle } from "l
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Address, formatUnits } from "viem";
-import { useMarketHourData } from "@/hooks/prediction/useMarketHourData";
+import { useMarketFiveMinuteData } from "@/hooks/prediction/useMarketFiveMinuteData";
 import { Chart } from "@/components/common/Chart";
 import { CHART_SPAN, POOL_CHART_TYPE } from "@/types/swap-chart";
 import { usePoolChartData } from "@/hooks/analytics";
 import { Button } from "@/components/ui/button";
+import { useUserPositionByMarket } from "@/hooks/prediction/useUserPositionsByMarket";
+import { useAccount } from "wagmi";
 
 const styles = {
     greater: "text-green-300",
@@ -29,8 +31,11 @@ const PredictionMarketPage = () => {
     const returnLink = searchParams.get("from") as "yes" | "no";
     
     const { market: marketAddress } = useParams() as { market: Address; };
+    
+    const { address: account } = useAccount();
 
     const { data: market } = useSingleMarket(marketAddress);
+    const { data: userPosition } = useUserPositionByMarket(account, marketAddress)
 
     const [action, setAction] = useState<"buy" | "sell">("buy")
 
@@ -39,18 +44,20 @@ const PredictionMarketPage = () => {
     const marketCurrency = market ? market.marketToken === 0 ? pool?.token0 : pool?.token1 : undefined;
     const quoteCurrency = market ? market.marketToken === 0 ? pool?.token1 : pool?.token0 : undefined;
 
-    const formattedCondition = quoteCurrency && market ? formatUnits(BigInt(market.mark), quoteCurrency.decimals).split(".")[0] : 0;
+    const formattedCondition = quoteCurrency && market
+        ? ((value) => value < 1 ? value.toPrecision(4) : value.toFixed(0))(Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals)))
+        : 0;
 
     const { tvl, volume, users, tradingDeadline, resolutionDate } = useMarketStats(market)
 
     const isLower = market?.condition === "lower";
     const isOpen = market && Number(market.tradingDeadline) * 1000 > Date.now();
 
-    const isOneHourMarket = market && Number(market.plannedResolutionTimestamp) - Number(market.createdAt) <= 3600 * 4
+    const isOneHourMarket = Boolean(market && Number(market.plannedResolutionTimestamp) - Number(market.createdAt) <= 3600 * 4);
 
     const [chartType, setChartType] = useState<"price" | "probability">("price")
 
-    const { data: marketHourData, loading: isMarketDataLoading } = useMarketHourData(market?.id);
+    const { data: marketFiveMinuteData, loading: isMarketDataLoading } = useMarketFiveMinuteData(market?.id);
     const { chartData, loading: isChartDataLoading } = usePoolChartData(market?.pool, CHART_SPAN.DAY, POOL_CHART_TYPE.PRICE);
 
     return <PageContainer>
@@ -89,6 +96,8 @@ const PredictionMarketPage = () => {
                         <PredictionSideSelector
                             market={market}
                             action={action}
+                            isOneHourMarket={isOneHourMarket}
+                            userPosition={userPosition}
                         />
                     </div>
                 </div>
@@ -137,7 +146,7 @@ const PredictionMarketPage = () => {
                 </div>}
             </div>
             <div className="flex flex-col gap-4 col-span-2 md:max-h-[514px]">
-                <div className="fflex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1 ml-auto mr-auto lg:mr-4 w-fit">
+                <div className="flex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1 ml-auto mr-auto lg:mr-0 w-fit">
                     <Button
                         size={"sm"}
                         onClick={() => setChartType("price")}
@@ -189,8 +198,8 @@ const PredictionMarketPage = () => {
                         pool={pool}
                         lowerMarket={isLower ? market : undefined}
                         greaterMarket={isLower ? undefined : market}
-                        lowerData={isLower ? marketHourData : []}
-                        greaterData={isLower ? [] : marketHourData}
+                        lowerData={isLower ? marketFiveMinuteData : []}
+                        greaterData={isLower ? [] : marketFiveMinuteData}
                         currentMarket={market?.condition === "lower" ? "lower" : "greater"}
                         changeMarket={() => { }}
                         loading={isMarketDataLoading}

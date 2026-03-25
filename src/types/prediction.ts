@@ -14,6 +14,7 @@ export interface PredictionMarket extends Omit<Markets, "marketToken"> {
     marketToken: Number;
     condition: MarketCondition;
     userWon?: boolean;
+    userRedeemed?: boolean;
 } 
 
 export type PredictionTrade = TradeFieldsFragment;

@@ -1,5 +1,5 @@
 import { PredictionChart as Chart } from "./prediction-chart";
-import { useMarketHourData } from "@/hooks/prediction/useMarketHourData";
+import { useMarketFiveMinuteData } from "@/hooks/prediction/useMarketFiveMinuteData";
 import { useState } from "react";
 import { usePool } from "@/hooks/pools/usePool";
 import { useMarketStats } from "@/hooks/prediction/useMarketStats";
@@ -18,7 +18,7 @@ export default function PredictionChart({ marketWithToken }: IPredicitonChart) {
 
     const market =  marketWithToken.filter((market) => market.condition === "greater");
 
-    const { data: greaterMarketHourData, loading: isGreaterMarketDataLoading } = useMarketHourData(market[0] ? market[0].id : undefined);
+    const { data: greaterMarketFiveMinuteData, loading: isGreaterMarketDataLoading } = useMarketFiveMinuteData(market[0] ? market[0].id : undefined);
 
     const isLoading = isGreaterMarketDataLoading;
 
@@ -30,7 +30,7 @@ export default function PredictionChart({ marketWithToken }: IPredicitonChart) {
             lowerMarket={undefined}
             greaterMarket={market[0]}
             lowerData={[]}
-            greaterData={greaterMarketHourData}
+            greaterData={greaterMarketFiveMinuteData}
             currentMarket={currentMarket}
             changeMarket={(type) => setCurrentMarket(type)}
             loading={isLoading}

@@ -1,26 +1,27 @@
 import { Address } from "viem"
 import { useClients } from "../graphql/useClients"
-import { useMarketHourDataQuery } from "@/graphql/generated/graphql"
+import { useMarketFiveMinuteDataQuery } from "@/graphql/generated/graphql"
 import { useMemo } from "react"
 import { MarketCondition, PredictionMarket } from "@/types/prediction"
 
-export function useMarketHourData(id: Address | undefined) {
+export function useMarketFiveMinuteData(id: Address | undefined) {
 
     const { predictionClient } = useClients()
 
-    const { data, loading, error } = useMarketHourDataQuery({
+    const { data, loading, error } = useMarketFiveMinuteDataQuery({
         client: predictionClient,
         variables: {
             market: id
         },
-        skip: id === undefined
+        skip: id === undefined,
+        pollInterval: 60_000 * 5
     })
 
     const formattedData = useMemo(() => {
 
         if (!data) return []
 
-        return data.marketHourDatas.map((data) => ({
+        return data.marketFiveMinuteDatas.map((data) => ({
             ...data,
             market: {
                 ...data.market,

@@ -6,7 +6,14 @@ import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
 import Loader from "../Loader";
 import { cn } from "@/utils";
-// import { bucketChartData } from "@/utils/chart/bucketChartData";
+
+const toLocalTimestamp = (utcSeconds: number) => {
+    const date = new Date(utcSeconds * 1000);
+
+    return Math.floor(
+        (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
+    );
+};
 
 export function Chart({
     chartData,
@@ -164,8 +171,8 @@ export function Chart({
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction?.lower ? [ { value: prediction.lower, time: Date.now() as LightWeightCharts.UTCTimestamp }] : prediction?.greater ? [{ value: prediction.greater, time: Date.now() as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
-                        maxValue: Math.max(...effectiveData.concat(prediction?.greater ? [ { value: prediction.greater, time: Date.now() as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction?.lower ? [ { value: prediction.lower, time: toLocalTimestamp(Math.floor(Date.now() / 1000)) as LightWeightCharts.UTCTimestamp }] : prediction?.greater ? [{ value: prediction.greater, time: toLocalTimestamp(Math.floor(Date.now() / 1000)) as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.concat(prediction?.greater ? [ { value: prediction.greater, time: toLocalTimestamp(Math.floor(Date.now() / 1000)) as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
                     },
                 }),
             });
@@ -211,27 +218,32 @@ export function Chart({
             });
         }
 
-        // const bucketSize = chartSpan === CHART_SPAN.WEEK ? 3600 : chartSpan === CHART_SPAN.DAY ? 600 : 3600 * 24;
-
-        // const bucketedData = bucketChartData(effectiveData, bucketSize);
-
-        // if (prediction) {
-        //     const futureSeries = chart.addHistogramSeries({
-        //         color: 'transparent', // invisible line
-        //     });
-
-        //     futureSeries.setData([
-        //         { time: 1773878400 as LightWeightCharts.UTCTimestamp },
-        //         { time: 1773964800 as LightWeightCharts.UTCTimestamp },
-        //         { time: 1774051200 as LightWeightCharts.UTCTimestamp },
-        //         { value: prediction.lower, time: Date.now() as LightWeightCharts.UTCTimestamp },
-        //         { value: prediction.greater, time: Date.now() as LightWeightCharts.UTCTimestamp }
-        //     ]);
-        // }
-
-        series.setData(effectiveData);
+        series.setData(
+            effectiveData.map((point) => ({
+                ...point,
+                time: toLocalTimestamp(point.time) as LightWeightCharts.UTCTimestamp
+            }))
+        );
 
         chart.timeScale().fitContent();
+        (chart.timeScale() as any).applyOptions({
+            timeVisible: true,
+            secondsVisible: false,
+            tickMarkFormatter: (time: any) => {
+                let date: Date;
+
+                if (typeof time === "number") {
+                    date = new Date(time * 1000);
+                } else {
+                    date = new Date(time.year, time.month - 1, time.day);
+                }
+        
+                return date.toLocaleTimeString(undefined, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            },
+        })
 
         setChart(chart);
         setSeries(series);

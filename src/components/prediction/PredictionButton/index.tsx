@@ -1,6 +1,7 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { useSimulatePredictionMarketSellNo, useSimulatePredictionMarketSellYes, useWritePredictionMarketBuyNo, useWritePredictionMarketBuyYes, useWritePredictionMarketRedeem, useWritePredictionMarketSellNo, useWritePredictionMarketSellYes } from "@/generated";
+import { UserPosition } from "@/graphql/generated/graphql";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -9,11 +10,13 @@ import { PredictionMarket } from "@/types/prediction";
 import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { DEFAULT_CHAIN_NAME } from "config";
+import { useState } from "react";
 import { parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 
 interface IPredictionButton {
     market: PredictionMarket;
+    userPosition: UserPosition | undefined;
     collateralToken: Currency | undefined;
     balance: bigint | undefined;
     amountToPay: string;
@@ -21,9 +24,10 @@ interface IPredictionButton {
     maxTotalCost: bigint | undefined;
     side: "yes" | "no";
     action: "buy" | "sell";
+    refetch: () => void;
 }
 
-const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collateralToken, side, action }: IPredictionButton) => {
+const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collateralToken, side, action, userPosition, refetch }: IPredictionButton) => {
 
     const appChainId = useChainId();
 
@@ -39,6 +43,8 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         market.id
     )
 
+    const [isRedeemed, setIsRedeemed] = useState(userPosition?.redeemed)
+
     const needsApproval = approvalState === ApprovalState.NOT_APPROVED;
     const isApproving = approvalState === ApprovalState.PENDING;
 
@@ -50,11 +56,11 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         type: TransactionType.SWAP,
     })
 
-    const { data: sellYesAmount } = useSimulatePredictionMarketSellYes({
+    const { data: sellYesAmount, isLoading: isSellYesLoading } = useSimulatePredictionMarketSellYes({
         address: market?.id,
         args: amountToPay ? [parseUnits(amountToPay, 6), 0n] : undefined
     })
-    const { data: sellNoAmount } = useSimulatePredictionMarketSellNo({
+    const { data: sellNoAmount, isLoading: isSellNoLoading } = useSimulatePredictionMarketSellNo({
         address: market?.id,
         args: amountToPay ? [parseUnits(amountToPay, 6), 0n] : undefined
     })
@@ -73,23 +79,27 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         type: TransactionType.SWAP
     })
 
-    const handleTrade = async () => {
+    const sellDisabled = action === "sell" && (Boolean(side === "no" && !sellNoAmount?.result && !isSellNoLoading) || Boolean(side === "yes" && !sellYesAmount?.result && !isSellYesLoading))
+
+    const handleBuy = async () => {
 
         if (!shares || !maxTotalCost) return
 
         if (side === "no") {
-            buyNo({
+            await buyNo({
                 address: market.id,
                 args: [shares, maxTotalCost]
             })
         }
 
         if (side === "yes") {
-            buyYes({
+            await buyYes({
                 address: market.id,
                 args: [shares, maxTotalCost]
             })
         }
+
+        refetch()
     }
 
     const handleSell = async () => {
@@ -100,27 +110,33 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         if (side === "yes" && !sellYesAmount?.result) return
 
         if (side === "no") {
-            sellNo({
+            await sellNo({
                 address: market.id,
                 args: [parseUnits(amountToPay, 6), sellNoAmount!.result]
             })
         }
 
         if (side === "yes") {
-            sellYes({
+            await sellYes({
                 address: market.id,
                 args: [parseUnits(amountToPay, 6), sellYesAmount!.result]
             })
         }
 
+        refetch()
+
     }
 
     const handleRedeem = async () => {
-        if (!account) return
+        if (!market) return
 
         await redeem({
-            address: account
+            address: market.id
         })
+
+        setIsRedeemed(true)
+
+        refetch()
     }
 
     const isValid = Boolean(shares && maxTotalCost && amountToPay && market && collateralToken);
@@ -141,11 +157,12 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         return <Button variant={"destructive"} className="w-full" onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
 
-    if (isTradingEnded)
+    if (isRedeemed)
         return (
-            <Button variant={"primary"} disabled className="w-full">
-                Trading Ended
-            </Button>)
+            <Button  variant={"primary"} className="w-full" disabled={true}>
+                Redeemed
+            </Button>
+        )
 
     if (isResolved)
         return (
@@ -153,6 +170,12 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
                 {isRedeemLoading ? <Loader /> : 'Redeem'}
             </Button>
         )
+
+    if (isTradingEnded)
+        return (
+            <Button variant={"primary"} disabled className="w-full">
+                Trading Ended
+            </Button>)
 
     if ((needsApproval || isApproving) && action === "buy") {
         return (
@@ -162,19 +185,26 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         );
     }
 
+    if (sellDisabled)
+        return (
+            <Button  variant={"primary"} className="w-full" disabled={true}>
+                Insufficient amount
+            </Button>
+        )
+
     return (
         <Button
             variant={"primary"}
             className="w-full"
-            onClick={() => action === "buy" ? handleTrade() : handleSell()}
+            onClick={() => action === "buy" ? handleBuy() : handleSell()}
             disabled={
-                !isValid || isTradeLoading
+                !isValid || isTradeLoading || sellDisabled
             }
         >
             {isTradeLoading ? (
                 <Loader />
             ) : (
-                action === "buy" ? "Trade" : "Sell"
+                action === "buy" ? "Buy" : "Sell"
             )}
         </Button>
     );

@@ -23,7 +23,7 @@ export function usePredictionUserInfo(address: Address | undefined, market: Addr
 
         return {
             ...data.trades[0],
-            trades: [...data.trades].sort((a, b) => +b.timestamp - +a.timestamp).filter((trade) => ["BuyYes", "BuyNo"].includes(trade.type)) as PredictionTrade[]
+            trades: [...data.trades].sort((a, b) => +b.timestamp - +a.timestamp) as PredictionTrade[]
         }
 
     }, [data])

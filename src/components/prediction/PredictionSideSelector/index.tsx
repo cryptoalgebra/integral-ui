@@ -10,36 +10,42 @@ import { formatUnits, parseUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import PredictionButton from "../PredictionButton";
 import { useSearchParams } from "react-router-dom";
+import { SingleMarketUserTradesDocument, UserPosition } from "@/graphql/generated/graphql";
+import { useClients } from "@/hooks/graphql/useClients";
 
 interface IPredictionSideSelector {
     market: PredictionMarket | undefined;
-    action: "buy" | "sell"
+    userPosition: UserPosition | undefined;
+    action: "buy" | "sell";
+    isOneHourMarket: boolean;
 }
 
-const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => {
+const PredictionSideSelector = ({ market, action, isOneHourMarket, userPosition }: IPredictionSideSelector) => {
 
     const [searchParams] = useSearchParams();
     const buyFromParam = searchParams.get("buy") as "yes" | "no";
 
     const { address: account } = useAccount()
 
+    const { predictionClient } = useClients()
+
     const [side, setSide] = useState<"yes" | "no">("yes")
     const [value, setValue] = useState("1")
 
-    const { data: priceYes } = useReadPredictionMarketPriceYes({
+    const { data: priceYes, refetch: refetchPriceYes } = useReadPredictionMarketPriceYes({
         address: market?.id,
     })
 
-    const { data: priceNo } = useReadPredictionMarketPriceNo({
+    const { data: priceNo, refetch: refetchPriceNo } = useReadPredictionMarketPriceNo({
         address: market?.id
     })
 
-    const { data: previewBuyNo } = useReadPredictionMarketPreviewBuyNo({
+    const { data: previewBuyNo, refetch: refetchPreviewBuyNo } = useReadPredictionMarketPreviewBuyNo({
         address: market?.id,
         args: [parseUnits(value, 6)]
     })
 
-    const { data: previewBuyYes } = useReadPredictionMarketPreviewBuyYes({
+    const { data: previewBuyYes, refetch: refetchPreviewBuyYes } = useReadPredictionMarketPreviewBuyYes({
         address: market?.id,
         args: [parseUnits(value, 6)]
     })
@@ -54,12 +60,12 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         args: [parseUnits(value, 6), 0n]
     })
 
-    const { data: yesBalance } = useReadPredictionMarketYesBalance({
+    const { data: yesBalance, refetch: refetchYesBalance } = useReadPredictionMarketYesBalance({
         address: market?.id,
         args: account ? [account] : undefined
     })
 
-    const { data: noBalance } = useReadPredictionMarketNoBalance({
+    const { data: noBalance, refetch: refetchNoBalance } = useReadPredictionMarketNoBalance({
         address: market?.id,
         args: account ? [account] : undefined
     })
@@ -83,7 +89,7 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         setValue?.(_value);
     };
 
-    const { data: balance, isLoading: isBalanceLoading } = useBalance({
+    const { data: balance, isLoading: isBalanceLoading, refetch: refetchBalance } = useBalance({
         address: account,
         token: market?.collateralToken
     })
@@ -117,6 +123,60 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         }
     }, [buyFromParam])
 
+    const showMax = balanceString !== "0" && balanceString !== "Loading...";
+
+    const handleMax = () => {
+
+        if (action === "buy") {
+            return handleInput(
+                balance?.formatted || "0"
+            );
+        }
+
+        if (side === "no") {
+            if (noBalance === undefined) {
+                return "0"
+            }
+            return handleInput(
+                formatUnits(noBalance, 6)
+            );
+        }
+
+        if (side === "yes") {
+            if (yesBalance === undefined) {
+                return "0"
+            }
+            return handleInput(
+                formatUnits(yesBalance, 6)
+            );
+        }
+
+    }
+
+    const handleRefetch = async () => {
+
+        if (side === "yes") {
+            await refetchYesBalance()
+        } else {
+            await refetchNoBalance()
+        }
+
+        setTimeout(async () => {
+            await predictionClient.refetchQueries({
+                include: [SingleMarketUserTradesDocument]
+            })
+        }, 10_000)
+
+        await refetchBalance()
+
+        await refetchPriceNo()
+        await refetchPriceYes()
+
+        await refetchPreviewBuyYes()
+        await refetchPreviewBuyNo()
+
+    }
+
     if (!market) return null;
 
     return <div>
@@ -128,7 +188,7 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
                     side === "yes" ? "bg-lime-600 hover:bg-lime-600" : "hover:bg-card-hover"
                 )}
             >
-                <span className="text-white/70">Yes</span>
+                <span className="text-white/70">{isOneHourMarket ? "Up" : "Yes"}</span>
                 {priceYes !== undefined && collateralToken && <span>{formattedYesPrice}¢</span>}
             </Button>
             <Button 
@@ -138,7 +198,7 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
                     side === "no" ? "bg-orange-600 hover:bg-orange-600" : "hover:bg-card-hover"
                 )}
             >
-                <span className="text-white/70">No</span>
+                <span className="text-white/70">{isOneHourMarket ? "Down" : "No"}</span>
                 {priceNo !== undefined && collateralToken && <span>{formattedNoPrice}¢</span>}
             </Button>
         </div>
@@ -165,9 +225,12 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
                     maxDecimals={collateralToken?.decimals}
                 />
             </div>
-            <div className="px-4 pb-4 text-text-200 text-sm whitespace-nowrap">
-                <span className="font-semibold">Balance: </span>
-                <span>{balanceString}</span>
+            <div className="flex items-center justify-between px-4 pb-3 text-sm whitespace-nowrap">
+                <div className="text-text-200">
+                    <span className="font-semibold">Balance: </span>
+                    <span>{balanceString}</span>
+                </div>
+                { showMax && <button onClick={handleMax} className="text-sm text-primary-50 pb-1 underline underline-offset-4 hover:text-primary-50/70">Max</button> }
             </div>
         </div>
         <div className="flex items-center p-4 pb-2 mt-1 mb-2 bg-card-dark border border-card-border rounded-lg">
@@ -198,6 +261,7 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
         </div>
         <PredictionButton
             market={market}
+            userPosition={userPosition}
             side={side}
             action={action}
             amountToPay={value}
@@ -205,6 +269,7 @@ const PredictionSideSelector = ({ market, action }: IPredictionSideSelector) => 
             maxTotalCost={toPay}
             collateralToken={collateralToken}
             balance={balance?.value}
+            refetch={handleRefetch}
         />
     </div>
 

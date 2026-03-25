@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, useCallback, useMemo } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { cn } from "@/utils";
-import { MarketHourData } from "@/graphql/generated/graphql";
+import { MarketFiveMinuteData } from "@/graphql/generated/graphql";
 import { PredictionMarket } from "@/types/prediction";
 import { Pool } from "@cryptoalgebra/integral-sdk";
 import { formatUnits } from "viem";
@@ -14,8 +14,8 @@ interface PredictionYesChartProps {
     pool: Pool | undefined | null;
     lowerMarket: PredictionMarket | undefined;
     greaterMarket: PredictionMarket | undefined;
-    lowerData: (Omit<MarketHourData, "market"> & { market: PredictionMarket })[];
-    greaterData: (Omit<MarketHourData, "market"> & { market: PredictionMarket })[];
+    lowerData: (Omit<MarketFiveMinuteData, "market"> & { market: PredictionMarket })[];
+    greaterData: (Omit<MarketFiveMinuteData, "market"> & { market: PredictionMarket })[];
     currentMarket: MarketType;
     changeMarket: (type: MarketType) => void;
     showOverlay?: boolean;
@@ -65,7 +65,7 @@ export function PredictionChart({
         } else {
 
             const transformed = rawData.map((d) => ({
-                time: d.periodStartUnix,
+                time: d.date,
                 value: Number(d.priceYes),
             }));
 
@@ -77,11 +77,11 @@ export function PredictionChart({
 
         let prev = _rawData[0];
 
-        const HOURS_BACK = 24;
+        const HOURS_BACK = 1;
 
         const startTime = prev.time - HOURS_BACK * 3600;
 
-        for (let t = startTime; t < prev.time; t += 3600) {
+        for (let t = startTime; t < prev.time; t += 300) {
             result.push({
                 time: t,
                 value: 50,
@@ -93,14 +93,14 @@ export function PredictionChart({
         for (let i = 1; i < _rawData.length; i++) {
             const current = _rawData[i];
 
-            let t = prev.time + 3600;
+            let t = prev.time + 300;
 
             while (t < current.time) {
                 result.push({
                     time: t,
                     value: prev.value,
                 });
-                t += 3600;
+                t += 300;
             }
 
             result.push(current);

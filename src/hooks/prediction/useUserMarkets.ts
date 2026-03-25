@@ -34,8 +34,12 @@ export function useUserMarkets(address: Address | undefined) {
                     collateralToken: position.market.collateralToken as Address,
                     marketToken: Number(position.market.marketToken),
                     condition: position.market.condition as MarketCondition,
+                    userRedeemed: position.redeemed,
                     userWon: Boolean(data.users[0].trades.find((trade) => trade.market.id === position.market.id && ( (trade.type ===  "BuyYes" && trade.market.outcome === 1) || (trade.type === "BuyNo" && trade.market.outcome === 2) )))
-                })) as PredictionMarket[],
+                }))
+                .sort((a, b) => +b.plannedResolutionTimestamp - +a.plannedResolutionTimestamp)
+                .sort((market) => market.userRedeemed ? -1 : 1)
+                .sort((market) => market.userWon ? -1 : 1) as PredictionMarket[],
             openedMarkets: data.users[0].positions
                 .filter((position) => Number(position.market.plannedResolutionTimestamp) * 1000 > now)
                 .map((position) => ({

@@ -9,7 +9,8 @@ export function useAllOpenMarkets() {
     const { predictionClient } = useClients()
 
     const { data, loading, error } = useAllOpenMarketsListQuery({
-        client: predictionClient
+        client: predictionClient,
+        pollInterval: 60_000
     })
 
     const formattedData = useMemo(() => {

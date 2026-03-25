@@ -15,7 +15,8 @@ export function useMarketsByTokens(token0: Address | undefined, token1: Address 
             token1: token1?.toLowerCase() === TOKENS[DEFAULT_CHAIN_ID].USDC.address.toLowerCase() ? undefined : token1,
         },
         client: predictionClient,
-        skip: token0 === undefined && token1 === undefined
+        skip: token0 === undefined && token1 === undefined,
+        pollInterval: 60_000
     })
 
     const formattedData = useMemo(() => {

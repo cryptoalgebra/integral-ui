@@ -11,13 +11,16 @@ const formatNumber = (value: string, decimals = 6) => {
 };
 
 const getTypeLabel = (type: TradeType) => {
-  if (type === "BuyYes") return "Yes";
-  if (type === "BuyNo") return "No";
+  if (type === "BuyYes") return "Buy Yes";
+  if (type === "BuyNo") return "Buy No";
+  if (type === "SellYes") return "Sell Yes";
+  if (type === "SellNo") return "Sell No";
   return type;
 };
 
 const getOutcome = (outcome: number, side: string, type: TradeType) => {
-  if (outcome === 0) return { label: "Wait", color: "text-gray-400" };
+  if (["SellNo", "SellYes"].includes(type)) return { label: "Sold", color: "text-gray-400" }
+  if (outcome === 0) return { label: "Waiting", color: "text-gray-400" };
   if (
     (outcome === 1 && side === "lower" && type === "BuyYes") ||
     (outcome === 2 && side === "lower" && type === "BuyNo") ||
@@ -38,10 +41,10 @@ export default function PredictionTradesTable({ trades }: IPredictionTradesTable
   return (
     <div className="w-full">
 
-      <div className="grid grid-cols-[40px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm text-gray-400 border-b border-gray-800">
+      <div className="grid grid-cols-[60px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm text-gray-400 border-b border-gray-800">
         <div className="text-left">Side</div>
-        <div>You Buy</div>
-        <div>You Win</div>
+        <div>You Gave</div>
+        <div>You Got</div>
         <div>Time</div>
         <div>Outcome</div>
         <div></div>
@@ -61,7 +64,7 @@ export default function PredictionTradesTable({ trades }: IPredictionTradesTable
           return (
             <div
               key={trade.id}
-              className="grid grid-cols-[40px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm items-center hover:bg-black/10 transition"
+              className="grid grid-cols-[60px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm items-center hover:bg-black/10 transition"
             >
               {/* <div
                 className={
@@ -79,7 +82,7 @@ export default function PredictionTradesTable({ trades }: IPredictionTradesTable
                 className={
                   cn(
                     "text-left",
-                    trade.type === "BuyYes"
+                    ["BuyYes", "SellYes"].includes(trade.type)
                     ? "text-lime-400"
                     : "text-orange-400")
                 }
