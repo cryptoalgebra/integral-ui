@@ -159,7 +159,7 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                     <div>volume</div>
                 </div>
                 <div className="mx-1">•</div>
-                <div className="flex gap-1">
+                <div className={`flex gap-1`}>
                     <Users2 size={16} />
                     <div>{users}</div>
                 </div>

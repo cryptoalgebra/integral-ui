@@ -178,6 +178,10 @@ const PredictionSideSelector = ({ market, action, isOneHourMarket, userPosition 
 
     }
 
+    useEffect(() => {
+        handleInput("0")
+    }, [action])
+
     if (!market) return null;
 
     return <div>

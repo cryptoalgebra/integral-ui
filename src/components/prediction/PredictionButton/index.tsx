@@ -166,7 +166,7 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
             </Button>
         )
 
-    if (isResolved)
+    if (isResolved && ((market.outcome === 1 && yesBalance) || (market.outcome === 2 && noBalance)))
         return (
             <Button  variant={"primary"} className="w-full" onClick={handleRedeem} disabled={isRedeemLoading}>
                 {isRedeemLoading ? <Loader /> : `Redeem ${market.outcome === 1 ? formatUnits(yesBalance || 0n, 6) : formatUnits(noBalance || 0n, 6)} USDC`}

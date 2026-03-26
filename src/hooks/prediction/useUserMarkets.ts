@@ -35,11 +35,22 @@ export function useUserMarkets(address: Address | undefined) {
                     marketToken: Number(position.market.marketToken),
                     condition: position.market.condition as MarketCondition,
                     userRedeemed: position.redeemed,
-                    userWon: Boolean(data.users[0].trades.find((trade) => trade.market.id === position.market.id && ( (trade.type ===  "BuyYes" && trade.market.outcome === 1) || (trade.type === "BuyNo" && trade.market.outcome === 2) )))
+                    userWon: Boolean(data.users[0].trades.find((trade) => trade.market.id === position.market.id && ((trade.type === "BuyYes" && trade.market.outcome === 1) || (trade.type === "BuyNo" && trade.market.outcome === 2))))
                 }))
-                .sort((a, b) => +b.plannedResolutionTimestamp - +a.plannedResolutionTimestamp)
-                .sort((market) => market.userRedeemed ? -1 : 1)
-                .sort((market) => market.userWon ? -1 : 1) as PredictionMarket[],
+                .sort((a, b) => {
+                    const getPriority = (m: any) => {
+                        if (m.userWon && !m.userRedeemed) return 0
+                        if (m.userRedeemed) return 1
+                        return 2
+                    }
+                
+                    const pa = getPriority(a)
+                    const pb = getPriority(b)
+                
+                    if (pa !== pb) return pa - pb
+                
+                    return Number(b.plannedResolutionTimestamp) - Number(a.plannedResolutionTimestamp)
+                }) as PredictionMarket[],
             openedMarkets: data.users[0].positions
                 .filter((position) => Number(position.market.plannedResolutionTimestamp) * 1000 > now)
                 .map((position) => ({
