@@ -155,25 +155,26 @@ const PredictionSideSelector = ({ market, action, isOneHourMarket, userPosition 
 
     const handleRefetch = async () => {
 
-        if (side === "yes") {
-            await refetchYesBalance()
-        } else {
-            await refetchNoBalance()
-        }
-
         setTimeout(async () => {
             await predictionClient.refetchQueries({
                 include: [SingleMarketUserTradesDocument]
             })
+
+            if (side === "yes") {
+                await refetchYesBalance()
+            } else {
+                await refetchNoBalance()
+            }
+
+            await refetchBalance()
+
+            await refetchPriceNo()
+            await refetchPriceYes()
+    
+            await refetchPreviewBuyYes()
+            await refetchPreviewBuyNo()
+
         }, 10_000)
-
-        await refetchBalance()
-
-        await refetchPriceNo()
-        await refetchPriceYes()
-
-        await refetchPreviewBuyYes()
-        await refetchPreviewBuyNo()
 
     }
 
@@ -269,6 +270,8 @@ const PredictionSideSelector = ({ market, action, isOneHourMarket, userPosition 
             maxTotalCost={toPay}
             collateralToken={collateralToken}
             balance={balance?.value}
+            yesBalance={yesBalance}
+            noBalance={noBalance}
             refetch={handleRefetch}
         />
     </div>

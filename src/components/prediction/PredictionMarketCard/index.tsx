@@ -147,7 +147,7 @@ const PredictionMarketCard = ({ market, now, from = 'prediction' }: IPredictionM
                         <span className="uppercase tracking-wide text-green-400">
                             Live
                         </span>
-                    </div> : isResolved ? market.userWon ? market.userRedeemed ? <div className="ml-auto text-xs text-green-400">Redeemed</div> : <div className="ml-auto text-xs text-green-400">Redeem</div> : <div className="ml-auto text-xs text-red-400">Lose</div> : null}
+                    </div> : isResolved ? market.userWon ? market.userRedeemed ? <div className="ml-auto text-xs text-gray-400">Redeemed</div> : <div className="ml-auto text-xs text-green-400">Redeem</div> : <div className="ml-auto text-xs text-red-400">Lose</div> : null}
                 </div>
                 <div className="ml-auto flex gap-1">
                     <div>{tvl}</div>

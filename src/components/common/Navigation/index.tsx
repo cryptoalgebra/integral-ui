@@ -6,6 +6,7 @@ import { matchPath, NavLink, useLocation } from "react-router-dom";
 const PATHS = {
     SWAP: "/swap",
     LIMIT_ORDERS: "limit-order",
+    PREDICTION: "prediction/*",
     POOLS: "/pools",
     POOL: "/pool/*",
     ANALYTICS: "/analytics/*",
@@ -17,7 +18,7 @@ const menuItems = [
     {
         title: "Trade",
         link: "/swap",
-        active: [PATHS.SWAP, PATHS.LIMIT_ORDERS],
+        active: [PATHS.SWAP, PATHS.LIMIT_ORDERS, PATHS.PREDICTION],
         icon: <ArrowUpDown size={20} />,
     },
     {

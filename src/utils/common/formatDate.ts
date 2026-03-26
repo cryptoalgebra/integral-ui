@@ -114,3 +114,11 @@ export function formatFutureTime(ms: number) {
 
   return parts.join(" ");
 }
+
+export const toLocalTimestamp = (utcSeconds: number) => {
+  const date = new Date(utcSeconds * 1000);
+
+  return Math.floor(
+      (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
+  );
+};

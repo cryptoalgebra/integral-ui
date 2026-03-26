@@ -11,7 +11,7 @@ import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { DEFAULT_CHAIN_NAME } from "config";
 import { useState } from "react";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 
 interface IPredictionButton {
@@ -19,6 +19,8 @@ interface IPredictionButton {
     userPosition: UserPosition | undefined;
     collateralToken: Currency | undefined;
     balance: bigint | undefined;
+    yesBalance: bigint | undefined;
+    noBalance: bigint | undefined;
     amountToPay: string;
     shares: bigint | undefined;
     maxTotalCost: bigint | undefined;
@@ -27,7 +29,7 @@ interface IPredictionButton {
     refetch: () => void;
 }
 
-const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collateralToken, side, action, userPosition, refetch }: IPredictionButton) => {
+const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collateralToken, side, action, yesBalance, noBalance, userPosition, refetch }: IPredictionButton) => {
 
     const appChainId = useChainId();
 
@@ -43,7 +45,7 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
         market.id
     )
 
-    const [isRedeemed, setIsRedeemed] = useState(userPosition?.redeemed)
+    const [isRedeemed, setIsRedeemed] = useState(() => userPosition?.redeemed)
 
     const needsApproval = approvalState === ApprovalState.NOT_APPROVED;
     const isApproving = approvalState === ApprovalState.PENDING;
@@ -167,7 +169,7 @@ const PredictionButton = ({ market, amountToPay, shares, maxTotalCost, collatera
     if (isResolved)
         return (
             <Button  variant={"primary"} className="w-full" onClick={handleRedeem} disabled={isRedeemLoading}>
-                {isRedeemLoading ? <Loader /> : 'Redeem'}
+                {isRedeemLoading ? <Loader /> : `Redeem ${market.outcome === 1 ? formatUnits(yesBalance || 0n, 6) : formatUnits(noBalance || 0n, 6)} USDC`}
             </Button>
         )
 

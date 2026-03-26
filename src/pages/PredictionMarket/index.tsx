@@ -25,6 +25,11 @@ const styles = {
     lower: "text-rose-300"
 }
 
+const poolsWithInvertedPrice = [
+    "0x4a1d36d8d868bafe8ea1060d4de478387bfab2f7",
+    "0xe7e221f4adaed1d6660354fdc6a7f11cc0aa5a40"
+]
+
 const PredictionMarketPage = () => {
 
     const [searchParams] = useSearchParams();
@@ -59,6 +64,10 @@ const PredictionMarketPage = () => {
 
     const { data: marketFiveMinuteData, loading: isMarketDataLoading } = useMarketFiveMinuteData(market?.id);
     const { chartData, loading: isChartDataLoading } = usePoolChartData(market?.pool, CHART_SPAN.DAY, POOL_CHART_TYPE.PRICE);
+
+    console.log("chart data", chartData)
+
+    if (!market) return
 
     return <PageContainer>
         <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
@@ -186,6 +195,7 @@ const PredictionMarketPage = () => {
                         tokenB={quoteCurrency?.symbol}
                         isChartDataLoading={isChartDataLoading}
                         showSpanSelector={false}
+                        invert={poolsWithInvertedPrice.includes(market?.pool.toLowerCase())}
                         prediction={
                             market ? 
                                 isLower ? 

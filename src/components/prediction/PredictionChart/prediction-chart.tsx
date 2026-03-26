@@ -7,6 +7,7 @@ import { Pool } from "@cryptoalgebra/integral-sdk";
 import { formatUnits } from "viem";
 import LiveChip from "../LiveChip";
 import { Link } from "react-router-dom";
+import { toLocalTimestamp } from "@/utils/common/formatDate";
 
 type MarketType = "lower" | "greater";
 
@@ -108,7 +109,7 @@ export function PredictionChart({
         }
 
         return result.map((d) => ({
-            time: d.time as LightWeightCharts.UTCTimestamp,
+            time: toLocalTimestamp(d.time) as LightWeightCharts.UTCTimestamp,
             value: d.value,
         }));
     }, [rawData]);

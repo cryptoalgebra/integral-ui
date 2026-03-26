@@ -6,14 +6,8 @@ import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
 import Loader from "../Loader";
 import { cn } from "@/utils";
+import { toLocalTimestamp } from "@/utils/common/formatDate";
 
-const toLocalTimestamp = (utcSeconds: number) => {
-    const date = new Date(utcSeconds * 1000);
-
-    return Math.floor(
-        (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
-    );
-};
 
 export function Chart({
     chartData,
@@ -30,6 +24,7 @@ export function Chart({
     tokenB,
     isChartDataLoading,
     fadeOut,
+    invert,
     prediction
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
@@ -92,9 +87,16 @@ export function Chart({
     useLayoutEffect(() => {
         if (!chartRef.current || !previousChartDataRef.current) return;
 
-        const effectiveData = isChartDataLoading ? previousChartDataRef.current : chartData;
+        let effectiveData = isChartDataLoading ? previousChartDataRef.current : chartData;
 
         effectiveData.sort((a, b) => a.time - b.time);
+
+        if (invert) {
+            effectiveData = effectiveData.map((el) => ({
+                ...el,
+                value: 1 / el.value
+            }))
+        }
 
         if (!isChartDataLoading) {
             previousChartDataRef.current = chartData;

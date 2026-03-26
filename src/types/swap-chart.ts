@@ -67,6 +67,7 @@ export interface IChart {
     tokenB?: string;
     isChartDataLoading: boolean;
     fadeOut?: boolean;
+    invert?: boolean;
     prediction?: { lower?: number; lowerTimestamp?: number; greater?: number; greaterTimestamp?: number };
 }
 
