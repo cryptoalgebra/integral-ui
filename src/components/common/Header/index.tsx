@@ -16,7 +16,7 @@ import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 
 const Header = () => (
-    <header className="md:sticky top-2 z-10 flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
+    <header className=" z-10 flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
         <nav className="w-fit flex gap-8 h-full py-2">
             <Algebra />
             <Navigation />
@@ -70,7 +70,7 @@ const Account = () => {
                             </Button>
                         ) : (
                             <Button
-                                variant={"icon"} 
+                                variant={"icon"}
                                 size={"md"}
                                 className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200 border border-card-border px-4"
                                 aria-label="Transaction history"
@@ -81,19 +81,24 @@ const Account = () => {
                     </TransactionHistoryPopover>
                 )}
                 <Settings />
-                <Button className="flex gap-2 h-full rounded-lg border border-card-border" variant={"icon"} size={"sm"} onClick={() => open({ view: "Networks" })}>
+                <Button
+                    className="flex gap-2 h-full rounded-lg border border-card-border"
+                    variant={"icon"}
+                    size={"sm"}
+                    onClick={() => open({ view: "Networks" })}
+                >
                     <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
                 </Button>
                 <Button
                     className={cn(
                         "flex gap-2 h-full rounded-lg border border-card-border",
-                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75"
+                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75",
                     )}
                     onClick={() => open()}
                     variant={"icon"}
                     size={"sm"}
                 >
-                    <WalletIcon size={16} className="md:hidden" /> 
+                    <WalletIcon size={16} className="md:hidden" />
                     <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
                 </Button>
             </div>

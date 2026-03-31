@@ -32,7 +32,7 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
     const { data: poolIndexerHourDatas, loading: poolIndexerHourDatasLoading } = usePoolHourDatasQuery({
         variables: {
             poolId: USE_UNISWAP_PLACEHOLDER_DATA ? uniswapPlaceholderPools[poolId?.toLowerCase() || ""] : poolId?.toLowerCase() || "",
-            from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
+            from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.WEEK],
             to: now,
         },
         client: USE_UNISWAP_PLACEHOLDER_DATA ? uniswapInfoClient : infoClient,
@@ -63,8 +63,8 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
             chartType === POOL_CHART_TYPE.PRICE && isSorted
                 ? "token1Price"
                 : chartType === POOL_CHART_TYPE.PRICE && !isSorted
-                  ? "token0Price"
-                  : value;
+                ? "token0Price"
+                : value;
 
         const formattedData = poolDatas.filter(isDefined).map((v) => {
             return {
