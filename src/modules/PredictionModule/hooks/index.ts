@@ -1,4 +1,6 @@
 export * from "./useAllOpenMarkets";
+export * from "./useCountdown";
+export * from "./useLivePoolPrice";
 export * from "./useMarketFiveMinuteData";
 export * from "./useMarketStats";
 export * from "./useMarketsByTokens";
@@ -6,6 +8,7 @@ export * from "./usePredictionBuy";
 export * from "./usePredictionRedeem";
 export * from "./usePredictionSell";
 export * from "./useSingleMarket";
+export * from "./useSwapPriceHistory";
 export * from "./useUserInfo";
 export * from "./useUserMarkets";
 export * from "./useUserPositionsByMarket";

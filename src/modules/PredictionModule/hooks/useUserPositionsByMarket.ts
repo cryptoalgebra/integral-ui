@@ -6,7 +6,7 @@ import { useMemo } from "react";
 export function useUserPositionByMarket(address: Address | undefined, market: Address | undefined) {
     const { predictionClient } = useClients();
 
-    const { data, loading, error } = useUserPositionByMarketQuery({
+    const { data, loading, error, refetch } = useUserPositionByMarketQuery({
         client: predictionClient,
         variables: {
             market,
@@ -27,5 +27,6 @@ export function useUserPositionByMarket(address: Address | undefined, market: Ad
         data: formattedData as UserPosition,
         loading,
         error,
+        refetch,
     };
 }

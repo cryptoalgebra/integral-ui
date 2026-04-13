@@ -54,3 +54,8 @@ export const VOTER: Record<number, Address> = {
 export const REBASE_REWARD: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xd4BDe8f104d8317bB348D4bD7F96318Aad244932",
 };
+
+/* Prediction */
+export const BINARY_LMSR_MARKET_MANAGER: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0xf04604de76eb31004F2331bd0701b6eBF8ffdCB1",
+};

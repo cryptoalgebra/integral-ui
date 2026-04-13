@@ -1,10 +1,10 @@
-import { useWritePredictionMarketRedeem } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { useWriteBinaryLmsrMarketManagerRedeem } from "@/generated";
 import { PredictionMarket } from "../types";
 
 export function usePredictionRedeem(market: PredictionMarket, onSuccess: () => void) {
-    const { data: redeemHash, writeContract: redeem } = useWritePredictionMarketRedeem();
+    const { data: redeemHash, writeContract: redeem } = useWriteBinaryLmsrMarketManagerRedeem();
 
     const { isLoading } = useTransactionAwait(redeemHash, {
         title: "Redeem",
@@ -13,7 +13,9 @@ export function usePredictionRedeem(market: PredictionMarket, onSuccess: () => v
     });
 
     const handleRedeem = () => {
-        redeem({ address: market.id });
+        redeem({
+            args: [market.index],
+        });
     };
 
     return { redeem: handleRedeem, isLoading };

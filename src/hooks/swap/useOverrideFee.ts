@@ -91,7 +91,6 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                     }
 
                     for (let idx = 0; idx < route.route.pools.length; idx++) {
-
                         const poolAddress = computePoolAddress({
                             tokenA: route.route.pools[idx].token0.wrapped,
                             tokenB: route.route.pools[idx].token1.wrapped,
@@ -156,7 +155,7 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
         };
 
         getFees();
-    }, [trade, chainId]);
+    }, [trade?.inputAmount.quotient.toString(), trade?.outputAmount.quotient.toString(), chainId]);
 
     return overrideFees;
 }

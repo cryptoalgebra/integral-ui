@@ -5,13 +5,15 @@ export type MarketCondition = "lower" | "greater";
 
 type Markets = OpenMarketsForPoolListQuery["markets"][number];
 
-export interface PredictionMarket extends Omit<Markets, "marketToken"> {
-    id: Address;
+type MarketId = `${Address}-${number}`
+
+export interface PredictionMarket extends Markets {
+    id: MarketId;
+    index: bigint;
     pool: Address;
-    token0: Address;
-    token1: Address;
+    marketToken: Address;
+    quoteToken: Address;
     collateralToken: Address;
-    marketToken: number;
     condition: MarketCondition;
     userWon?: boolean;
     userRedeemed?: boolean;

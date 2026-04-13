@@ -1,15 +1,10 @@
+import { useCurrency } from "@/hooks/common/useCurrency";
 import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
 import { formatDateDDMM } from "@/utils/common/formatDate";
-import { erc20Abi, formatUnits } from "viem";
-import { useReadContract } from "wagmi";
+import { formatUnits } from "viem";
 
 export function useMarketStats(market: PredictionMarket | undefined) {
-    const { data: tvl } = useReadContract({
-        address: market?.collateralToken,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: market ? [market.id] : undefined,
-    });
+    const collateralToken = useCurrency(market?.collateralToken);
 
     if (!market)
         return {
@@ -21,8 +16,13 @@ export function useMarketStats(market: PredictionMarket | undefined) {
         };
 
     return {
-        tvl: tvl ? `$${Number(formatUnits(tvl, 6)).toFixed(0)}` : "",
-        volume: Number(formatUnits(BigInt(market.totalVolume), 6)).toFixed(0),
+        tvl: market.accountedCollateral
+            ? `${Number(formatUnits(BigInt(market.accountedCollateral), collateralToken?.decimals || 6)).toFixed(
+                  0,
+              )} ${collateralToken?.symbol || ""}`
+            : "",
+        volume: `${Number(formatUnits(BigInt(market.totalVolume), collateralToken?.decimals || 6)).toFixed(0)} ${collateralToken?.symbol ||
+            ""}`,
         tradingDeadline: formatDateDDMM(market.tradingDeadline),
         resolutionDate: formatDateDDMM(market.plannedResolutionTimestamp),
         users: market.activeUsers,

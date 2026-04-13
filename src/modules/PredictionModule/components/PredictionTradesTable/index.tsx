@@ -40,7 +40,7 @@ export function PredictionTradesTable({ trades }: IPredictionTradesTable) {
 
     return (
         <div className="w-full">
-            <div className="grid grid-cols-[60px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm text-gray-400 border-b border-gray-800">
+            <div className="grid grid-cols-[60px_1fr_1fr_1.5fr_1fr_40px] px-4 py-3 text-sm text-text-300 border-b border-card-border">
                 <div className="text-left">Side</div>
                 <div>You Gave</div>
                 <div>You Got</div>
@@ -49,7 +49,7 @@ export function PredictionTradesTable({ trades }: IPredictionTradesTable) {
                 <div></div>
             </div>
 
-            <div className="divide-y divide-gray-800">
+            <div className="divide-y divide-card-border">
                 {trades.length === 0 && <div className="px-4 py-6 text-center text-gray-500">No trades yet</div>}
 
                 {trades.map((trade) => {
@@ -74,10 +74,7 @@ export function PredictionTradesTable({ trades }: IPredictionTradesTable) {
                 <span>{mark}</span>
               </div> */}
                             <div
-                                className={cn(
-                                    "text-left",
-                                    ["BuyYes", "SellYes"].includes(trade.type) ? "text-lime-400" : "text-orange-400",
-                                )}
+                                className={cn("text-left", ["BuyYes", "SellYes"].includes(trade.type) ? "text-green-600" : "text-red-600")}
                             >
                                 <span>{getTypeLabel(trade.type)}</span>
                             </div>

@@ -8,7 +8,7 @@ import { usePredictionSell } from "../../hooks/usePredictionSell";
 import { ApprovalState } from "@/types/approve-state";
 import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { BINARY_LMSR_MARKET_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
@@ -18,12 +18,11 @@ interface IPredictionButton {
     market: PredictionMarket;
     userPosition: UserPosition | undefined;
     collateralToken: Currency | undefined;
-    balance: bigint | undefined;
     yesBalance: bigint | undefined;
     noBalance: bigint | undefined;
     amountToPay: string;
-    shares: bigint | undefined;
-    maxTotalCost: bigint | undefined;
+    amountToWin: bigint | undefined;
+    maxAmountToPay: bigint | undefined;
     side: "yes" | "no";
     action: "buy" | "sell";
     refetch: () => void;
@@ -31,15 +30,15 @@ interface IPredictionButton {
 
 export function PredictionButton({
     market,
+    userPosition,
     amountToPay,
-    shares,
-    maxTotalCost,
+    maxAmountToPay,
+    amountToWin,
     collateralToken,
     side,
     action,
     yesBalance,
     noBalance,
-    userPosition,
     refetch,
 }: IPredictionButton) {
     const appChainId = useChainId();
@@ -67,7 +66,7 @@ export function PredictionButton({
     const shouldCheckApproval = !!account && !isWrongChain && !isRedeemed && !canRedeem && !isTradingEnded && action === "buy";
     const { approvalState, approvalCallback } = useApprove(
         shouldCheckApproval ? tryParseAmount(amountToPay, collateralToken) : undefined,
-        market.id,
+        BINARY_LMSR_MARKET_MANAGER[appChainId],
     );
     const needsApproval = shouldCheckApproval && approvalState === ApprovalState.NOT_APPROVED;
     const isApproving = shouldCheckApproval && approvalState === ApprovalState.PENDING;
@@ -132,13 +131,13 @@ export function PredictionButton({
         );
     }
 
-    const buyDisabled = !shares || !maxTotalCost || !amountToPay || !collateralToken;
+    const buyDisabled = !amountToWin || !maxAmountToPay || !amountToPay || !collateralToken;
 
     return (
         <Button
             variant={"primary"}
             className="w-full"
-            onClick={() => shares && maxTotalCost && buy(shares, maxTotalCost)}
+            onClick={() => amountToWin && maxAmountToPay && buy(amountToWin, maxAmountToPay)}
             disabled={buyDisabled || isBuyLoading}
         >
             {isBuyLoading ? <Loader /> : "Buy"}

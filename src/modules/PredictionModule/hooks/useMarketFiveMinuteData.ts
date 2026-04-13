@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { useClients } from "../../../hooks/graphql/useClients";
 import { useMarketFiveMinuteDataQuery } from "@/graphql/generated/graphql";
 import { useMemo } from "react";
-import { MarketCondition, PredictionMarket } from "@/modules/PredictionModule/types/prediction";
+import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
 
 export function useMarketFiveMinuteData(id: Address | undefined) {
     const { predictionClient } = useClients();
@@ -23,10 +23,7 @@ export function useMarketFiveMinuteData(id: Address | undefined) {
             ...data,
             market: {
                 ...data.market,
-                id: data.market.id as Address,
-                collateralToken: data.market.collateralToken as Address,
-                marketToken: Number(data.market.marketToken),
-                condition: data.market.condition as MarketCondition,
+                index: BigInt(data.market.id.split("-")[1]),
             } as PredictionMarket,
         }));
     }, [data]);

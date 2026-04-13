@@ -42,7 +42,7 @@ export function formatAmount(amount: string | number, decimals = 3): string {
     if (amountNum < minAmount) return `< ${minAmount}`;
     if (amountNum < 1e-6) return formatTinyAmount(amountNum);
     if (amountNum < 1) return Number((Math.floor(amountNum / minAmount) * minAmount).toFixed(decimals)).toString();
-    if (amountNum < 1_000)
+    if (amountNum < 10_000)
         return (Math.floor(amountNum * 100) / 100).toLocaleString("en-us", {
             maximumFractionDigits: 2,
         });

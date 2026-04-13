@@ -1,40 +1,20 @@
 import { useEffect, useLayoutEffect, useRef, useState, useCallback, useMemo } from "react";
 import * as LightWeightCharts from "lightweight-charts";
-import { cn } from "@/utils";
 import { MarketFiveMinuteData } from "@/graphql/generated/graphql";
-import { Pool } from "@cryptoalgebra/integral-sdk";
-import { formatUnits } from "viem";
-import { LiveChip } from "..";
-import { Link } from "react-router-dom";
 import { toLocalTimestamp } from "@/utils/common/formatDate";
 import { PredictionMarket } from "../../types";
 
 type MarketType = "lower" | "greater";
 
 interface PredictionYesChartProps {
-    pool: Pool | undefined | null;
-    lowerMarket: PredictionMarket | undefined;
-    greaterMarket: PredictionMarket | undefined;
     lowerData: (Omit<MarketFiveMinuteData, "market"> & { market: PredictionMarket })[];
     greaterData: (Omit<MarketFiveMinuteData, "market"> & { market: PredictionMarket })[];
     currentMarket: MarketType;
-    changeMarket: (type: MarketType) => void;
-    showOverlay?: boolean;
     height?: number;
     loading?: boolean;
 }
 
-export function PredictionChart({
-    pool,
-    lowerMarket,
-    greaterMarket,
-    lowerData,
-    greaterData,
-    currentMarket,
-    height = 260,
-    showOverlay = false,
-    loading,
-}: PredictionYesChartProps) {
+export function PredictionChart({ lowerData, greaterData, currentMarket, height = 260, loading }: PredictionYesChartProps) {
     const chartRef = useRef<HTMLDivElement>(null);
     const dotRef = useRef<HTMLDivElement>(null);
     const chartInstance = useRef<LightWeightCharts.IChartApi | null>(null);
@@ -42,15 +22,6 @@ export function PredictionChart({
     const [displayValue, setDisplayValue] = useState<number>(50);
 
     const rawData = currentMarket === "lower" ? lowerData : greaterData;
-
-    const market = currentMarket === "lower" ? lowerMarket : greaterMarket;
-
-    const marketCurrency = market?.marketToken === 0 ? pool?.token0 : pool?.token1;
-    const quoteCurrency = market?.marketToken === 0 ? pool?.token1 : pool?.token0;
-
-    const formattedCondition = quoteCurrency ? formatUnits(BigInt(market?.mark || 0), quoteCurrency.decimals).split(".")[0] : 0;
-
-    const isGreater = market?.condition === "greater";
 
     const chartData = useMemo(() => {
         let _rawData: { time: number; value: number }[] = [];
@@ -176,7 +147,7 @@ export function PredictionChart({
         });
 
         const series = chart.addLineSeries({
-            color: "#7ccf00",
+            color: "#16a34a",
             lineWidth: 2,
             priceLineVisible: false,
             lastValueVisible: false,
@@ -239,56 +210,14 @@ export function PredictionChart({
     }, [currentValue]);
 
     return (
-        <div className="px-4">
-            {showOverlay && (
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-3">
-                    {market ? (
-                        <div className="flex items-center justify-start gap-4">
-                            <Link to={`/prediction/${market.id}`} className="text-base md:text-xl font-semibold hover:underline">
-                                Will {marketCurrency?.symbol === "WETH" ? "ETH" : marketCurrency?.symbol} be{" "}
-                                <span className={cn(isGreater ? "text-green-400" : "text-red-400")}>{market.condition}</span> than{" "}
-                                {formattedCondition} {quoteCurrency?.symbol}?
-                            </Link>
-                            <LiveChip />
-                        </div>
-                    ) : (
-                        <div />
-                    )}
+        <>
+            <div className="text-title flex flex-col items-start text-left px-4">
+                <div className="mb-2 font-semibold text-left">Probability</div>
 
-                    {/* <div className="flex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1">
-                    <Button
-                        size={"sm"}
-                        onClick={() => changeMarket("greater")}
-                        variant={"icon"}
-                        disabled={market?.condition === "greater"}
-                        className={cn(
-                            "gap-1 border rounded-xl disabled:opacity-100 hover:bg-text-100/5",
-                            market?.condition === "greater" ? "bg-text-100/5 border-text-100/20" : "border-none"
-                        )}
-                    >
-                        <ArrowUp size={16} className="text-green-400" />
-                        Greater
-                    </Button>
-                    <Button
-                        size={"sm"}
-                        onClick={() => changeMarket("lower")}
-                        variant={"icon"}
-                        disabled={market?.condition === "lower"}
-                        className={cn(
-                            "gap-1 border rounded-xl disabled:opacity-100 hover:bg-text-100/5",
-                            market?.condition === "lower" ? "bg-text-100/5 border-text-100/20" : "border-none"
-                        )}
-                    >
-                        <ArrowDown size={16} className="text-red-400" />
-                        Lower
-                    </Button>
-                </div> */}
+                <div className="text-xl font-semibold">
+                    <div className="mb-2">{displayValue.toFixed(2)}% chance</div>
+                    <div className="text-xs font-semibold uppercase text-green-600">Yes</div>
                 </div>
-            )}
-
-            <div className="text-left text-lg">
-                <div className="text-xs font-semibold uppercase text-lime-500">Yes</div>
-                <div>{displayValue.toFixed(2)}% chance</div>
             </div>
 
             <div className="relative">
@@ -300,11 +229,11 @@ export function PredictionChart({
 
                 <div ref={dotRef} className="absolute z-2" style={{ transform: "translate(-50%, -50%)" }}>
                     <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-500 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-lime-500"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
                     </span>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

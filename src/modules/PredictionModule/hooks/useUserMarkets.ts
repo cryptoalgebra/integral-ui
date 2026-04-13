@@ -2,12 +2,20 @@ import { useUserInfoQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
 import { useClients } from "../../../hooks/graphql/useClients";
 import { useMemo } from "react";
-import { MarketCondition, PredictionMarket } from "@/modules/PredictionModule/types/prediction";
+import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
+
+export interface UserClosedMarket extends PredictionMarket {
+    yesShares: string;
+    noShares: string;
+    totalSpent: string;
+    totalReceived: string;
+    redeemedAmount: string;
+}
 
 export function useUserMarkets(address: Address | undefined) {
     const { predictionClient } = useClients();
 
-    const { data, loading, error } = useUserInfoQuery({
+    const { data, loading, error, refetch } = useUserInfoQuery({
         variables: {
             user: address,
         },
@@ -18,8 +26,8 @@ export function useUserMarkets(address: Address | undefined) {
     const formattedData = useMemo(() => {
         if (!data?.users[0])
             return {
-                closedMarkets: [],
-                openedMarkets: [],
+                closedMarkets: [] as UserClosedMarket[],
+                openedMarkets: [] as PredictionMarket[],
             };
 
         const now = Date.now();
@@ -28,23 +36,28 @@ export function useUserMarkets(address: Address | undefined) {
             closedMarkets: data.users[0].positions
                 .filter((position) => Number(position.market.plannedResolutionTimestamp) * 1000 <= now)
                 .map((position) => {
-                    const userWon = position.market.outcome === 1 ? Number(position.yesShares) > 0 : Number(position.noShares) > 0;
+                    const outcome = position.market.outcome;
+                    // outcome: 0 = unresolved, 1 = YES won, 2 = NO won
+                    const userWon = outcome === 1 ? Number(position.yesShares) > 0 : outcome === 2 ? Number(position.noShares) > 0 : false;
 
                     return {
                         ...position.market,
-                        id: position.market.id as Address,
-                        collateralToken: position.market.collateralToken as Address,
-                        marketToken: Number(position.market.marketToken),
-                        condition: position.market.condition as MarketCondition,
+                        index: BigInt(position.market.id.split("-")[1]),
                         userRedeemed: position.redeemed,
                         userWon,
+                        yesShares: position.yesShares,
+                        noShares: position.noShares,
+                        totalSpent: position.totalSpent,
+                        totalReceived: position.totalReceived,
+                        redeemedAmount: position.redeemedAmount,
                     };
                 })
                 .sort((a, b) => {
-                    const getPriority = (m: any) => {
-                        if (m.userWon && !m.userRedeemed) return 0;
-                        if (m.userRedeemed) return 1;
-                        return 2;
+                    const getPriority = (m: typeof a) => {
+                        if (m.userWon && !m.userRedeemed) return 0; // Can claim - highest priority
+                        if (!m.userWon && !m.userRedeemed) return 1; // Lost but not acknowledged
+                        if (m.userRedeemed) return 2; // Already claimed
+                        return 3;
                     };
 
                     const pa = getPriority(a);
@@ -53,15 +66,12 @@ export function useUserMarkets(address: Address | undefined) {
                     if (pa !== pb) return pa - pb;
 
                     return Number(b.plannedResolutionTimestamp) - Number(a.plannedResolutionTimestamp);
-                }) as PredictionMarket[],
+                }) as UserClosedMarket[],
             openedMarkets: data.users[0].positions
                 .filter((position) => Number(position.market.plannedResolutionTimestamp) * 1000 > now)
                 .map((position) => ({
                     ...position.market,
-                    id: position.market.id as Address,
-                    collateralToken: position.market.collateralToken as Address,
-                    marketToken: Number(position.market.marketToken),
-                    condition: position.market.condition as MarketCondition,
+                    index: BigInt(position.market.id.split("-")[1]),
                 })) as PredictionMarket[],
         };
     }, [data]);
@@ -70,5 +80,6 @@ export function useUserMarkets(address: Address | undefined) {
         data: formattedData,
         loading,
         error,
+        refetch,
     };
 }

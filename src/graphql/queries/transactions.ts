@@ -28,6 +28,8 @@ export const SWAP_FRAGMENT = gql`
         amountUSD
         id
         origin
+        tick
+        price
         pool {
             id
             token0 {

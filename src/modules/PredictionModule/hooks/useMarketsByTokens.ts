@@ -2,7 +2,7 @@ import { useOpenMarketsByTokensListQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
 import { useClients } from "../../../hooks/graphql/useClients";
 import { useMemo } from "react";
-import { MarketCondition, PredictionMarket } from "@/modules/PredictionModule/types/prediction";
+import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
 import { DEFAULT_CHAIN_ID, TOKENS } from "config";
 
 export function useMarketsByTokens(token0: Address | undefined, token1: Address | undefined) {
@@ -24,10 +24,7 @@ export function useMarketsByTokens(token0: Address | undefined, token1: Address 
         return data.markets
             .map((market) => ({
                 ...market,
-                id: market.id as Address,
-                collateralToken: market.collateralToken as Address,
-                marketToken: Number(market.marketToken),
-                condition: market.condition as MarketCondition,
+                index: BigInt(market.id.split("-")[1]),
             }))
             .sort((a, b) => {
                 const marketADuration = Number(a.plannedResolutionTimestamp) - Number(a.createdAt);

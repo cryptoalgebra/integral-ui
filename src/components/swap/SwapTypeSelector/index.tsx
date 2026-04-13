@@ -1,70 +1,55 @@
+import { SwapPageView, SwapPageViewType } from "@/pages/Swap/types";
 import { cn } from "@/utils";
 import { enabledModules } from "config";
 import { NavLink } from "react-router-dom";
 
-export function SwapTypeSelector({
-    isSwap,
-    isLimitOrder,
-    isPrediction,
-}: {
-    isSwap: boolean;
-    isLimitOrder: boolean;
-    isPrediction: boolean;
-}) {
+type Tab = {
+    to: string;
+    label: string;
+    value: SwapPageViewType;
+    enabled?: boolean;
+};
+
+const tabs: Tab[] = [
+    { to: "/swap", label: "Swap", value: SwapPageView.SWAP },
+    {
+        to: "/limit-order",
+        label: "Limit",
+        value: SwapPageView.LIMIT_ORDER,
+        enabled: enabledModules.LimitOrdersModule,
+    },
+    {
+        to: "/prediction",
+        label: "Prediction",
+        value: SwapPageView.PREDICTION,
+        enabled: enabledModules.PredictionModule,
+    },
+];
+
+export function SwapTypeSelector({ type }: { type: SwapPageViewType }) {
+    const visibleTabs = tabs.filter((t) => t.enabled !== false);
+    const activeIndex = visibleTabs.findIndex((t) => t.value === type);
+
     return (
-        <div className="w-full overflow-x-auto">
-            <div className="flex items-center min-w-max h-full max-h-16 text-xl sm:text-2xl md:text-4xl font-bold rounded-xl">
-                <NavLink className="h-full shrink-0" to="/swap">
-                    <h1
-                        className={cn(
-                            "leading-tight bg-gradient-to-t bg-clip-text text-transparent pr-4 sm:pr-6 md:pr-8 duration-200",
-                            isSwap ? "from-primary-100 to-primary-200" : "from-text-300 to-text-400 hover:opacity-70",
-                        )}
-                    >
-                        Swap
-                    </h1>
-                </NavLink>
+        <div className="relative flex w-fit rounded-xl bg-card-light overflow-hidden">
+            {visibleTabs.map((tab) => {
+                const isActive = tab.value === type;
 
-                {enabledModules.LimitOrdersModule && (
-                    <>
-                        <Divider />
-                        <NavLink className="h-full shrink-0" to="/limit-order">
-                            <h1
-                                className={cn(
-                                    "leading-tight bg-gradient-to-b bg-clip-text text-transparent px-4 sm:px-6 md:px-8 duration-200",
-                                    isLimitOrder ? "from-primary-100 to-primary-200" : "from-text-300 to-text-400 hover:opacity-70",
-                                )}
-                            >
-                                Limit Order
-                            </h1>
-                        </NavLink>
-                    </>
-                )}
-
-                {enabledModules.PredictionModule && (
-                    <>
-                        <Divider />
-                        <NavLink className="h-full shrink-0" to="/prediction">
-                            <h1
-                                className={cn(
-                                    "leading-tight bg-gradient-to-b bg-clip-text text-transparent pl-4 sm:pl-6 md:pl-8 duration-200",
-                                    isPrediction ? "from-primary-100 to-primary-200" : "from-text-300 to-text-400 hover:opacity-70",
-                                )}
-                            >
-                                Prediction
-                            </h1>
-                        </NavLink>
-                    </>
-                )}
-            </div>
-        </div>
-    );
-}
-
-function Divider() {
-    return (
-        <div className="flex items-center h-full px-2 shrink-0">
-            <div className="w-2 h-2 bg-text-100/5 border border-text-100/25 rotate-45" />
+                return (
+                    <NavLink key={tab.to} to={tab.to} className="relative z-10">
+                        <button
+                            className={cn(
+                                "px-6 py-3  text-sm font-medium",
+                                isActive ? "text-text bg-card-border/40" : "text-text-300 hover:text-text",
+                                activeIndex === 0 && "rounded-l-xl",
+                                activeIndex === visibleTabs.length - 1 && "rounded-r-xl",
+                            )}
+                        >
+                            {tab.label}
+                        </button>
+                    </NavLink>
+                );
+            })}
         </div>
     );
 }

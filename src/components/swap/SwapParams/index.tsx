@@ -5,14 +5,14 @@ import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { Percent, TradeType } from "@cryptoalgebra/integral-sdk";
-import { ChevronDownIcon, ZapIcon } from "lucide-react";
+import { ChevronDownIcon, InfoIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Button } from "@/components/ui/button.tsx";
 import { useOverrideFee } from "@/hooks/swap/useOverrideFee";
 import { TradeState } from "@/types/trade-state";
 import { cn } from "@/utils";
 import { SwapRouteModal } from "../SwapRouteModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -58,91 +58,90 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     if (wrapType !== WrapType.NOT_APPLICABLE) return;
 
-    return trade ? (
-        <div className="rounded">
-            <div className="flex justify-between">
-                <button
-                    className="flex items-center w-full text-md mb-1 text-center bg-card-dark border border-card-border py-1 px-3 rounded-lg"
-                    onClick={() => toggleExpanded(!isExpanded)}
-                >
-                    {fee !== undefined ? (
-                        <div className="rounded select-none pointer px-1.5 py-1 flex items-center relative">
-                            {dynamicFeePlugin && <ZapIcon className="mr-2 fill-text" strokeWidth={1} stroke="white" size={16} />}
-                            <span>{`${fee?.toFixed(4)}% fee`}</span>
-                        </div>
-                    ) : (
-                        <div className="rounded select-none px-1.5 py-1 flex items-center relative">
-                            <Loader size={16} />
-                        </div>
-                    )}
-                    <div className={`ml-auto duration-300 ${isExpanded && "rotate-180"}`}>
-                        <ChevronDownIcon strokeWidth={2} size={16} />
-                    </div>
-                </button>
-            </div>
-            <div
-                className={cn(
-                    "h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg",
-                    isExpanded && "h-[160px]",
-                    isExpanded && "border border-card-border"
-                )}
-            >
-                <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Route</span>
-                        <span>
-                            <SwapRouteModal
-                                isOpen={isOpen}
-                                setIsOpen={setIsOpen}
-                                routes={isSmartTrade ? trade?.routes : trade.swaps.map((swap) => swap.route)}
-                                fees={fees}
-                                tradeType={trade?.tradeType}
-                            >
-                                <Button size={"sm"} variant={"outline"} onClick={() => setIsOpen(true)}>
-                                    Show
-                                </Button>
-                            </SwapRouteModal>
-                        </span>
-                    </div>
+    if (!trade && !isTradeLoading) return null;
 
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">
-                            {trade.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent"}
-                        </span>
-                        <span>{minimumAmountOut}</span>
-                    </div>
-                    {/*<div className="flex items-center justify-between">*/}
-                    {/*    <span className="font-semibold">LP Fee</span>*/}
-                    {/*    <span>{LPFeeString}</span>*/}
-                    {/*</div>*/}
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Price impact</span>
-                        <span>
-                            <PriceImpact priceImpact={priceImpact} />
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Slippage tolerance</span>
-                        <span>{allowedSlippage.toFixed(2)}%</span>
+    return (
+        <div>
+            <button
+                className="flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-xl bg-card-light hover:bg-card-light/80 transition-all duration-200"
+                onClick={() => toggleExpanded(!isExpanded)}
+            >
+                {trade !== undefined && isTradeLoading ? (
+                    <Skeleton className="w-full h-5 rounded-xl" />
+                ) : (
+                    <>
+                        <div className="flex items-center gap-2 text-text-300">
+                            <InfoIcon size={14} />
+                            <span>
+                                {fee !== undefined ? (
+                                    <span className="text-text-200">
+                                        {dynamicFeePlugin && "Dynamic "}
+                                        Fee: <span className="text-white font-medium">{fee?.toFixed(2)}%</span>
+                                    </span>
+                                ) : (
+                                    <Loader size={14} />
+                                )}
+                            </span>
+                        </div>
+                        <ChevronDownIcon
+                            size={16}
+                            className={cn("text-text-300 transition-transform duration-200", isExpanded && "rotate-180")}
+                        />
+                    </>
+                )}
+            </button>
+
+            {trade && !isTradeLoading && (
+                <div
+                    className={cn(
+                        "overflow-hidden transition-all duration-300 ease-out",
+                        isExpanded ? "max-h-48 opacity-100" : "max-h-0 opacity-0",
+                    )}
+                >
+                    <div className="flex flex-col gap-2 px-3 py-2 mt-1 rounded-xl bg-bg-100/30">
+                        <SwapDetailRow
+                            label="Route"
+                            value={
+                                <SwapRouteModal
+                                    isOpen={isOpen}
+                                    setIsOpen={setIsOpen}
+                                    routes={isSmartTrade ? trade?.routes : trade.swaps.map((swap) => swap.route)}
+                                    fees={fees}
+                                    tradeType={trade?.tradeType}
+                                >
+                                    <button
+                                        onClick={() => setIsOpen(true)}
+                                        className="text-primary-100 hover:text-primary-200 text-sm font-medium transition-colors"
+                                    >
+                                        View
+                                    </button>
+                                </SwapRouteModal>
+                            }
+                        />
+                        <SwapDetailRow
+                            label={trade.tradeType === TradeType.EXACT_INPUT ? "Min. received" : "Max. sent"}
+                            value={<span className="text-white">{minimumAmountOut}</span>}
+                        />
+                        <SwapDetailRow label="Price impact" value={<PriceImpact priceImpact={priceImpact} />} />
+                        <SwapDetailRow label="Slippage" value={<span className="text-white">{allowedSlippage.toFixed(2)}%</span>} />
                     </div>
                 </div>
-            </div>
-        </div>
-    ) : trade !== undefined && isTradeLoading ? (
-        <div className="flex justify-center mb-1 bg-card-dark border border-card-border py-3 px-3 rounded-lg">
-            <Loader size={17} className="text-text" />
-        </div>
-    ) : (
-        <div className="text-md mb-1 text-center opacity-70 bg-card-dark border border-card-border py-2 px-3 rounded-lg">
-            Select an amount for swap
+            )}
         </div>
     );
 };
 
+const SwapDetailRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
+    <div className="flex items-center justify-between text-sm">
+        <span className="text-text-300">{label}</span>
+        {value}
+    </div>
+);
+
 const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
     const severity = warningSeverity(priceImpact);
 
-    const color = severity === 3 || severity === 4 ? "text-red-400" : severity === 2 ? "text-yellow-400" : "currentColor";
+    const color = severity === 3 || severity === 4 ? "text-red-400" : severity === 2 ? "text-orange-400" : "text-white";
 
     return <span className={color}>{priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}</span>;
 };

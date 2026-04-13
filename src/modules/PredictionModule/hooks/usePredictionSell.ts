@@ -1,31 +1,29 @@
-import {
-    useSimulatePredictionMarketSellNo,
-    useSimulatePredictionMarketSellYes,
-    useWritePredictionMarketSellNo,
-    useWritePredictionMarketSellYes,
-} from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { parseUnits } from "viem";
 import { PredictionMarket } from "../types";
+import {
+    useSimulateBinaryLmsrMarketManagerSellNo,
+    useSimulateBinaryLmsrMarketManagerSellYes,
+    useWriteBinaryLmsrMarketManagerSellNo,
+    useWriteBinaryLmsrMarketManagerSellYes,
+} from "@/generated";
 
-export function usePredictionSell(market: PredictionMarket, amountToSell: string, side: "yes" | "no", onSuccess: () => void) {
+export function usePredictionSell(market: PredictionMarket | undefined, amountToSell: string, side: "yes" | "no", onSuccess: () => void) {
     const parsedAmount = amountToSell ? parseUnits(amountToSell, 6) : undefined;
 
-    const { data: sellYesAmount, isLoading: isSellYesSimulating } = useSimulatePredictionMarketSellYes({
-        address: market.id,
-        args: parsedAmount && side === "yes" ? [parsedAmount, 0n] : undefined,
+    const { data: sellYesAmount, isLoading: isSellYesSimulating } = useSimulateBinaryLmsrMarketManagerSellYes({
+        args: market && parsedAmount && side === "yes" ? [market.index, parsedAmount, 0n] : undefined,
         query: { enabled: side === "yes" && !!parsedAmount },
     });
 
-    const { data: sellNoAmount, isLoading: isSellNoSimulating } = useSimulatePredictionMarketSellNo({
-        address: market.id,
-        args: parsedAmount && side === "no" ? [parsedAmount, 0n] : undefined,
+    const { data: sellNoAmount, isLoading: isSellNoSimulating } = useSimulateBinaryLmsrMarketManagerSellNo({
+        args: market && parsedAmount && side === "no" ? [market.index, parsedAmount, 0n] : undefined,
         query: { enabled: side === "no" && !!parsedAmount },
     });
 
-    const { data: sellYesHash, writeContract: sellYes } = useWritePredictionMarketSellYes();
-    const { data: sellNoHash, writeContract: sellNo } = useWritePredictionMarketSellNo();
+    const { data: sellYesHash, writeContract: sellYes } = useWriteBinaryLmsrMarketManagerSellYes();
+    const { data: sellNoHash, writeContract: sellNo } = useWriteBinaryLmsrMarketManagerSellNo();
 
     const { isLoading: isSellLoading } = useTransactionAwait(side === "yes" ? sellYesHash : sellNoHash, {
         title: `Sell ${side}`,
@@ -37,12 +35,12 @@ export function usePredictionSell(market: PredictionMarket, amountToSell: string
     const isSimulating = side === "yes" ? isSellYesSimulating : isSellNoSimulating;
 
     const sell = () => {
-        if (!parsedAmount || !simulationResult) return;
+        if (!parsedAmount || !simulationResult || !market) return;
 
         if (side === "no") {
-            sellNo({ address: market.id, args: [parsedAmount, simulationResult] });
+            sellNo({ args: [market.index, parsedAmount, simulationResult] });
         } else {
-            sellYes({ address: market.id, args: [parsedAmount, simulationResult] });
+            sellYes({ args: [market.index, parsedAmount, simulationResult] });
         }
     };
 

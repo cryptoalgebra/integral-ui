@@ -32,7 +32,7 @@ interface FailedCall extends SwapCallEstimate {
 export function useSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
-    onTransactionSuccess?: () => void
+    onTransactionSuccess?: () => void,
 ) {
     const { address: account } = useAccount();
 
@@ -71,7 +71,7 @@ export function useSwapCallback(
                         // console.error(error);
                         return { calldata, value, error: error as Error };
                     }
-                })
+                }),
             );
 
             const successfulCalls = calls.filter((call): call is SuccessfulCall => "gasEstimate" in call);
@@ -99,7 +99,7 @@ export function useSwapCallback(
                       gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
                   }
                 : undefined,
-        [bestCall]
+        [bestCall],
     );
 
     const { data: swapData, writeContractAsync: swapCallback, isPending } = useWriteSwapRouterMulticall();

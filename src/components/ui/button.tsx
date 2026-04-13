@@ -9,7 +9,7 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                primary: "bg-primary-gradient text-primary-foreground hover:opacity-85",
+                primary: "bg-radial-[at_10%_22%] via-64% from-primary via-primary-200 to-accent-200 text-primary-foreground hover:opacity-85",
                 primaryLink: "bg-primary-800 border border-primary-200 hover:opacity-65",
                 default: "bg-primary text-primary-foreground hover:bg-primary/90",
                 action: "bg-primary-button text-primary-foreground font-bold hover:bg-primary-button/80",
@@ -24,10 +24,10 @@ const buttonVariants = cva(
                 ghostActive: "bg-gradient-to-r from-primary-100 to-accent-100 hover:bg-bg-100 text-white",
             },
             size: {
-                default: "h-10 px-4 py-2",
+                default: "h-10 px-4 py-2 ",
                 sm: "h-9 rounded-lg px-3",
                 md: "h-6 rounded-lg p-4 py-6",
-                lg: "rounded-2xl text-md p-4",
+                lg: "text-md p-5 rounded-full",
                 icon: "h-10 w-10 rounded-xl",
             },
         },

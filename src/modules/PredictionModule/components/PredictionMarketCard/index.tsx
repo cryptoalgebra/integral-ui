@@ -52,11 +52,7 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                 pathname: `/prediction/${market.id}`,
                 search: `from=${from}`,
             }}
-            className={cn(
-                "relative flex flex-col w-full rounded-2xl border p-5 transition-all duration-200 text-left",
-                "bg-card-dark shadow-sm",
-                "border-card-border hover:bg-card-hover",
-            )}
+            className={cn("relative flex flex-col w-full rounded-2xl p-5 transition-all duration-200 text-left", "bg-card-dark shadow-sm")}
         >
             <div className="flex items-center gap-4 mb-4">
                 <div className="w-9 h-9 relative">

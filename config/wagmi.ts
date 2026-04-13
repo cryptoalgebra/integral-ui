@@ -15,14 +15,15 @@ import {
     wNativeABI,
     voterABI,
     votingRewardABI,
-    rebaseRewardAbi,
+    rebaseRewardABI,
     votingEscrowABI,
-    securityRegistryAbi,
-    predictionMarketABI,
+    securityRegistryABI,
+    binaryLMSRMarketManagerABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
     ALGEBRA_FACTORY,
+    BINARY_LMSR_MARKET_MANAGER,
     FARMING_CENTER,
     LIMIT_ORDER_MANAGER,
     NONFUNGIBLE_POSITION_MANAGER,
@@ -85,10 +86,10 @@ const rawContracts = [
     { name: "WrappedNative", abi: wNativeABI },
     { name: "Voter", abi: voterABI },
     { name: "VotingReward", abi: votingRewardABI },
-    { name: "RebaseReward", abi: rebaseRewardAbi },
+    { name: "RebaseReward", abi: rebaseRewardABI },
     { name: "VotingEscrow", abi: votingEscrowABI },
-    { name: "SecurityRegistry", abi: securityRegistryAbi },
-    { name: "PredictionMarket", abi: predictionMarketABI }
+    { name: "SecurityRegistry", abi: securityRegistryABI },
+    { name: "BinaryLMSRMarketManager", abi: binaryLMSRMarketManagerABI },
 ];
 
 const contractAddresses = {
@@ -103,6 +104,7 @@ const contractAddresses = {
     RebaseReward: REBASE_REWARD,
     VotingEscrow: VOTING_ESCROW,
     SecurityRegistry: SECURITY_REGISTRY,
+    BinaryLMSRMarketManager: BINARY_LMSR_MARKET_MANAGER,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts

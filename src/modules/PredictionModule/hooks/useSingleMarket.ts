@@ -2,7 +2,7 @@ import { Address } from "viem";
 import { useClients } from "../../../hooks/graphql/useClients";
 import { useSingleMarketQuery } from "@/graphql/generated/graphql";
 import { useMemo } from "react";
-import { MarketCondition, PredictionMarket } from "@/modules/PredictionModule/types/prediction";
+import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
 
 export function useSingleMarket(id: Address | undefined) {
     const { predictionClient } = useClients();
@@ -22,10 +22,7 @@ export function useSingleMarket(id: Address | undefined) {
 
         return {
             ...market,
-            id: market.id as Address,
-            collateralToken: market.collateralToken as Address,
-            marketToken: Number(market.marketToken),
-            condition: market.condition as MarketCondition,
+            index: BigInt(market.id.split("-")[1]),
         } as PredictionMarket;
     }, [data]);
 

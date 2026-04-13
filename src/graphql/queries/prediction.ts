@@ -4,13 +4,12 @@ export const MARKET_FRAGMENT = gql`
     fragment MarketFields on Market {
         id
         pool
-        token0
-        token1
         collateralToken
+        marketToken
+        quoteToken
         tradingDeadline
         plannedResolutionTimestamp
         mark
-        marketToken
         condition
         seeded
         seedAmount
@@ -22,6 +21,7 @@ export const MARKET_FRAGMENT = gql`
         totalTrades
         activeUsers
         createdAt
+        accountedCollateral
     }
 `;
 
@@ -45,7 +45,7 @@ export const USER_POSITION_FRAGMENT = gql`
         totalFeesPaid
         redeemed
         redeemedAmount
-    } 
+    }
 `;
 
 export const TRADE_FRAGMENT = gql`
@@ -103,7 +103,16 @@ export const OPEN_MARKETS_FOR_POOL_LIST = gql`
 
 export const OPEN_MARKETS_BY_TOKENS_LIST = gql`
     query OpenMarketsByTokensList($token0: Bytes, $token1: Bytes) {
-        markets(where: { or: [ { seeded: true, outcome: 0, token0: $token0 }, { seeded: true, outcome: 0, token0: $token1 }, { seeded: true, outcome: 0, token1: $token0 }, { seeded: true, outcome: 0, token1: $token1 },] }) {
+        markets(
+            where: {
+                or: [
+                    { seeded: true, outcome: 0, marketToken: $token0 }
+                    { seeded: true, outcome: 0, marketToken: $token1 }
+                    { seeded: true, outcome: 0, quoteToken: $token0 }
+                    { seeded: true, outcome: 0, quoteToken: $token1 }
+                ]
+            }
+        ) {
             ...MarketFields
         }
     }
@@ -158,7 +167,7 @@ export const MARKET_HOUR_DATA = gql`
 `;
 
 export const USER_POSITION_BY_MARKET = gql`
-    query UserPositionByMarket($market:String, $user: String) {
+    query UserPositionByMarket($market: String, $user: String) {
         userPositions(where: { market: $market, user: $user }) {
             ...UserPositionFields
         }

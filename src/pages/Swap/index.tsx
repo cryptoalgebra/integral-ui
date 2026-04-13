@@ -1,6 +1,3 @@
-import SwapPair from "@/components/swap/SwapPair";
-import SwapButton from "@/components/swap/SwapButton";
-import SwapParams from "@/components/swap/SwapParams";
 import PageContainer from "@/components/common/PageContainer";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 import { useDerivedSwapInfo } from "@/state/swapStore.ts";
@@ -8,20 +5,19 @@ import { SwapPageProps, SwapPageView } from "./types";
 import SwapChart from "@/components/swap/SwapChart";
 import { Address } from "viem";
 import { useNow } from "@/hooks/common/useNow";
-import { SwapTypeSelector } from "@/components/swap/SwapTypeSelector";
+import { useState, useCallback, useMemo } from "react";
+import { SwapForm } from "@/components/swap/SwapForm";
+import PageTitle from "@/components/common/PageTitle";
 
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
-const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
+const { LimitOrderForm, LimitOrdersList } = LimitOrdersModule.components;
 
 import PredictionModule from "@/modules/PredictionModule";
-const { PredictionMarketCard, PredictionMarkets } = PredictionModule.components;
+import { PredictionMarket } from "@/modules/PredictionModule/types";
+const { PredictionForm, OpportunityStage } = PredictionModule.components;
 const { useMarketsByTokens } = PredictionModule.hooks;
 
 const SwapPage = ({ type }: SwapPageProps) => {
-    const isSwap = type === SwapPageView.SWAP;
-    const isLimitOrder = type === SwapPageView.LIMIT_ORDER;
-    const isPrediction = type === SwapPageView.PREDICTION;
-
     const derivedSwap = useDerivedSwapInfo();
 
     const { data: marketsForTokens, loading: isLoadingMarkets } = useMarketsByTokens(
@@ -33,49 +29,57 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     const now = useNow();
 
+    const [selectedMarketId, setSelectedMarketId] = useState<string | undefined>();
+    const [selectedSide, setSelectedSide] = useState<"yes" | "no" | undefined>();
+
+    const featuredMarket = useMemo(() => {
+        if (!marketsForTokens?.length) return undefined;
+        if (selectedMarketId) {
+            return marketsForTokens.find((m) => m.id === selectedMarketId) || marketsForTokens[0];
+        }
+        return marketsForTokens[0];
+    }, [marketsForTokens, selectedMarketId]);
+
+    const handleSelectMarket = useCallback((market: PredictionMarket) => {
+        setSelectedMarketId(market.id);
+    }, []);
+
+    const handleSelectSide = useCallback((side: "yes" | "no") => {
+        setSelectedSide(side);
+    }, []);
+
     return (
         <PageContainer>
-            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-fit gap-3 mb-8">
-                <SwapTypeSelector isSwap={isSwap} isLimitOrder={isLimitOrder} isPrediction={isPrediction} />
+            <div className="mb-8">
+                <PageTitle title={"Trade"} showSettings={false} />
             </div>
 
-            {(isSwap || isLimitOrder) && (
-                <div className="grid md:grid-cols-3 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3">
-                    <div className="flex flex-col gap-2 col-span-1 w-full">
-                        {
-                            <div className="flex flex-col gap-1.5 col-span-1 w-full bg-dark-gradient border border-card-border p-2 rounded-xl">
-                                {<SwapPair derivedSwap={derivedSwap} />}
-
-                                {isSwap && <SwapParams derivedSwap={derivedSwap} />}
-                                {isSwap && <SwapButton derivedSwap={derivedSwap} />}
-
-                                {isLimitOrder && <LimitOrder derivedSwap={derivedSwap} />}
-                            </div>
-                        }
-                        <PoweredByAlgebra />
-                    </div>
-                    <div className="flex flex-col col-span-2 md:max-h-[514px]">
-                        {isLoadingMarkets ? null : isPredictionPool ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                {marketsForTokens.map((market) => (
-                                    <PredictionMarketCard key={market.id} market={market} now={now} from={"swap"} />
-                                ))}
-                            </div>
-                        ) : (
-                            // <PredictionChart marketWithToken={marketsForTokens} /> :
-                            <SwapChart derivedSwap={derivedSwap} />
-                        )}
-                    </div>
+            <div className="grid md:grid-cols-5 grid-cols-1 w-full md:gap-3 gap-y-3 mb-3 relative">
+                <div className="flex flex-col gap-3 col-span-2 w-full h-fit">
+                    {type === SwapPageView.SWAP && <SwapForm derivedSwap={derivedSwap} />}
+                    {type === SwapPageView.LIMIT_ORDER && <LimitOrderForm derivedSwap={derivedSwap} />}
+                    {type === SwapPageView.PREDICTION && <PredictionForm market={featuredMarket} initialSide={selectedSide} />}
+                    <PoweredByAlgebra />
                 </div>
-            )}
 
-            {isPrediction && (
-                <div className="w-full">
-                    <PredictionMarkets />
+                <div className="flex flex-col col-span-3 overflow-y-auto">
+                    {isLoadingMarkets ? null : isPredictionPool ? (
+                        <OpportunityStage
+                            markets={marketsForTokens}
+                            inputCurrency={derivedSwap.currencies.INPUT}
+                            now={now}
+                            isLoading={isLoadingMarkets}
+                            selectedMarketId={selectedMarketId || featuredMarket?.id}
+                            onSelectMarket={handleSelectMarket}
+                            onSelectSide={handleSelectSide}
+                        />
+                    ) : (
+                        <SwapChart derivedSwap={derivedSwap} />
+                    )}
                 </div>
-            )}
+            </div>
 
-            {isLimitOrder && <LimitOrdersList />}
+            {type === SwapPageView.LIMIT_ORDER && <LimitOrdersList />}
         </PageContainer>
     );
 };

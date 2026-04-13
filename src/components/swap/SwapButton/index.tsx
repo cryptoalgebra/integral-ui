@@ -187,15 +187,17 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const handleSwap = useCallback(async () => {
         if (!swapCallback && !smartSwapCallback && !omegaSwapCallback) return;
+
         try {
             if (isSmartTrade) {
                 await smartSwapCallback?.();
             } else if (shouldUseOmegaRouter) {
                 await omegaSwapCallback?.();
                 if (permit2Allowance.state === AllowanceState.ALLOWED) {
-                    permit2Allowance.removePermitSign()
+                    permit2Allowance.removePermitSign();
                 }
             } else {
+                console.log("Executing regular swap callback", { swapCallback });
                 await swapCallback?.();
             }
         } catch (error) {

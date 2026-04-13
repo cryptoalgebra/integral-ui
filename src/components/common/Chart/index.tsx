@@ -269,7 +269,7 @@ export function Chart({
                 <div>
                     <div className="mb-2 font-semibold">{chartTitle}</div>
 
-                    <div className="mb-2 text-2xl font-semibold">
+                    <div className="mb-2 text-xl font-semibold">
                         {displayValue !== undefined ? (
                             chartType === POOL_CHART_TYPE.PRICE ? (
                                 tokenA && tokenB ? (
