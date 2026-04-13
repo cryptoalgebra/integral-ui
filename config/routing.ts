@@ -14,9 +14,5 @@ const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(Object.entries(WNATIVE_E
 // for native swap router
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     ...WNATIVE_ONLY,
-    [ChainId.CitreaMainnet]: [
-        ...WNATIVE_ONLY[ChainId.CitreaMainnet],
-        STABLECOINS[ChainId.CitreaMainnet].USDC,
-        STABLECOINS[ChainId.CitreaMainnet].USDT,
-    ],
+    [ChainId.BSC]: [...WNATIVE_ONLY[ChainId.BSC], STABLECOINS[ChainId.BSC].USDC, STABLECOINS[ChainId.BSC].USDT],
 };

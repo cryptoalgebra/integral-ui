@@ -1458,10 +1458,10 @@
     tsdx "^0.14.1"
     typechain "^8.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/citrea-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/citrea-sdk/-/citrea-sdk-1.0.0.tgz#3053c0b92e564d29e1ba2e1355dc004594352dc9"
-  integrity sha512-ZQU4sriHXSGBacEDW+7CqL3e3xObmq5KZhNPeqbZUOkOZ+LTysNoKTy8zWJcBdX/bkM0WKJOGRv1lN6rzWGgLw==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/dna-sdk@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/dna-sdk/-/dna-sdk-1.0.1.tgz#6f87c1856992e9c50bd5da18b849eb5da4f98cef"
+  integrity sha512-qBX/scv1EbvZbwBY//XAJWqU/MiJBQ8pKhG1x3ZsFwymtLlPuguo4ewGTipRonzWjs6MBRdPdAtVEJPo3eEgng==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

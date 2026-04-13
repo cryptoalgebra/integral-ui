@@ -5,14 +5,13 @@ export const USE_UNISWAP_PLACEHOLDER_DATA = true;
 export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // actually it's Thena Fusion BSC Mainnet
 
 export const INFO_GRAPH_URL = {
-    [ChainId.CitreaMainnet]: "https://api.goldsky.com/api/public/project_cmamb6kkls0v2010932jjhxj4/subgraphs/analytics-mainnet/v1.0.1/gn",
+    [ChainId.BSC]: "https://api.studio.thegraph.com/query/50593/dna-analytics/version/latest",
 };
 
 export const FARMING_GRAPH_URL = {
-    [ChainId.CitreaMainnet]: "https://api.goldsky.com/api/public/project_cmamb6kkls0v2010932jjhxj4/subgraphs/farms-mainnet/v1.0.0/gn",
+    [ChainId.BSC]: "https://api.studio.thegraph.com/query/50593/dna-farmings/version/latest",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
-    [ChainId.CitreaMainnet]:
-        "https://api.studio.thegraph.com/query/82608/ve-limits/version/latest",
+    [ChainId.BSC]: "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-limits/v1.0.0/gn",
 };

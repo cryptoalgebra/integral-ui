@@ -1,5 +1,5 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork } from "@reown/appkit/networks";
+import { AppKitNetwork, bsc } from "@reown/appkit/networks";
 import {
     algebraBasePluginV1ABI,
     algebraCustomPoolEntryPointABI,
@@ -30,31 +30,9 @@ import {
     VOTER,
     VOTING_ESCROW,
 } from "./contract-addresses";
-import { defineChain } from "viem";
-
-const citreaChain = /*#__PURE__*/ defineChain({
-    id: 4114,
-    network: "citrea",
-    name: "Citrea",
-    nativeCurrency: { name: "WCBTC", symbol: "WCBTC", decimals: 18 },
-    rpcUrls: {
-        default: {
-            http: ["https://rpc.mainnet.citrea.xyz"],
-        },
-        public: {
-            http: ["https://rpc.mainnet.citrea.xyz"],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: "Citrea Explorer",
-            url: "https://explorer.mainnet.citrea.xyz",
-        }
-    }
-});
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [citreaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [bsc];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },

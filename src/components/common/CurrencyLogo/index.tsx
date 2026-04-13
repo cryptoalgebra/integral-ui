@@ -1,12 +1,12 @@
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Currency, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
-import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
-import EtherLogo from "@/assets/tokens/ether.svg";
-import TOKENLogo from "@/assets/algebra-logo.svg";
+import USDTLogo from "@/assets/tokens/usdt.png";
+import EtherLogo from "@/assets/tokens/bnb.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
+import { STABLECOINS } from "config/tokens";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
@@ -16,14 +16,18 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0xe045e6c36cf77faa2cfb54466d71a3aef7bbe839"]: {
+    [WNATIVE[ChainId.BSC].address.toLowerCase()]: {
+        symbol: "BNB",
+        logo: EtherLogo,
+    },
+    [STABLECOINS[ChainId.BSC].USDC.address.toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
-    ["0x3100000000000000000000000000000000000006"]: {
-        symbol: "WCBTC",
-        logo: BTCLogo,
-    }
+    [STABLECOINS[ChainId.BSC].USDT.address.toLowerCase()]: {
+        symbol: "USDT",
+        logo: USDTLogo,
+    },
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
