@@ -18,7 +18,7 @@ export const LIMIT_ORDERS_GRAPH_URL = {
 
 export const PREDICTION_GRAPH_URL = {
     [ChainId.BaseSepolia]:
-        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/subgraphs/id/8tUYGvG7UNMo5fWCZAsucreQfK1NRxr2c7o11sLiVgQV",
+        "https://gateway.thegraph.com/api/4d7b59e4fd14365ae609945af85f3938/deployments/id/QmTa4fTLDjaELTMNkKiQW2Ejqaj6TNtB4RhpCuBk2UTdaG",
 };
 
 export const BLOCKS_GRAPH_URL = {

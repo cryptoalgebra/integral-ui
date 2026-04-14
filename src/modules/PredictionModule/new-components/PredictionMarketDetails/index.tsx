@@ -54,19 +54,27 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
         const end = new Date(Number(market.tradingDeadline) * 1000);
 
         const formatTime = (d: Date) => {
-            const hours = d.getHours();
-            const minutes = d.getMinutes();
-            const ampm = hours >= 12 ? "PM" : "AM";
-            const h = hours % 12 || 12;
-            const m = minutes.toString().padStart(2, "0");
-            return `${h}:${m}${ampm}`;
+            const hours = d
+                .getHours()
+                .toString()
+                .padStart(2, "0");
+            const minutes = d
+                .getMinutes()
+                .toString()
+                .padStart(2, "0");
+            return `${hours}:${minutes}`;
         };
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const month = monthNames[start.getMonth()];
-        const day = start.getDate();
+        const startMonth = monthNames[start.getMonth()];
+        const startDay = start.getDate();
 
-        return `${month} ${day}, ${formatTime(start)}-${formatTime(end)}`;
+        const isSameDay =
+            start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth() && start.getDate() === end.getDate();
+
+        const endLabel = isSameDay ? formatTime(end) : `${monthNames[end.getMonth()]} ${end.getDate()}, ${formatTime(end)}`;
+
+        return `${startMonth} ${startDay}, ${formatTime(start)} — ${endLabel}`;
     }, [market.createdAt, market.tradingDeadline]);
 
     const { data: marketFiveMinuteData, loading: isMarketDataLoading } = useMarketFiveMinuteData(market.id);
