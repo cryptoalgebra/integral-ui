@@ -7,6 +7,7 @@ const PATHS = {
     SWAP: "/swap",
     LIMIT_ORDERS: "limit-order",
     PREDICTION: "prediction/*",
+    PREDICTIONS: "/predictions",
     POOLS: "/pools",
     POOL: "/pool/*",
     ANALYTICS: "/analytics/*",
@@ -49,15 +50,19 @@ const menuItems = [
         active: [PATHS.ANALYTICS],
         icon: <LucideLineChart size={20} />,
     },
+    enabledModules.PredictionModule && {
+        title: "Predictions",
+        link: "/predictions",
+        active: [PATHS.PREDICTIONS],
+        icon: <LucideLineChart size={20} />,
+    },
 ].filter(Boolean) as { title: string; link: string; active: string[]; icon?: React.ReactNode }[];
 
 export function NavButtons() {
     const { pathname } = useLocation();
 
     const setNavlinkClasses = (paths: string[]) =>
-        paths.some((path) => matchPath(path, pathname))
-            ? "font-bold border-b border-primary"
-            : "text-muted-foreground/70 hover:text-text-100/50";
+        paths.some((path) => matchPath(path, pathname)) ? "font-bold text-primary-200" : "text-text-200 hover:text-primary-200";
 
     return (
         <>
@@ -67,7 +72,7 @@ export function NavButtons() {
                     to={{ pathname: item.link }}
                     className={cn(
                         "flex items-center justify-center gap-1 w-fit min-w-10 h-full px-4 transition-all duration-200",
-                        setNavlinkClasses(item.active)
+                        setNavlinkClasses(item.active),
                     )}
                 >
                     <div className="text-lg md:hidden">{item.icon}</div>

@@ -115,9 +115,9 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
                 borderVisible: false,
                 timeVisible: true,
                 secondsVisible: true,
-                rightOffset: 3,
-                barSpacing: 6,
-                minBarSpacing: 2,
+                rightOffset: 6,
+                barSpacing: 12,
+                minBarSpacing: 6,
             },
             crosshair: {
                 mode: LightWeightCharts.CrosshairMode.Magnet,
@@ -230,7 +230,7 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         const maxPrice = Math.max(...prices);
         const priceRange = maxPrice - minPrice;
         const visibleMin = minPrice - priceRange * 0.15;
-        const visibleMax = maxPrice + priceRange * 0.1;
+        const visibleMax = maxPrice + priceRange * 0.15;
 
         if (targetPrice > visibleMax) {
             setTargetOutOfBounds("above");

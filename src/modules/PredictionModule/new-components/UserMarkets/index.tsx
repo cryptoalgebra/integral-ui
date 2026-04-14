@@ -3,17 +3,17 @@ import { cn, formatAmount } from "@/utils";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import { Loader2 } from "lucide-react";
-import { useUserMarkets, UserClosedMarket, usePredictionRedeem } from "../../hooks";
+import { useUserMarkets, UserClosedMarket, UserOpenMarket, usePredictionRedeem, useCountdown } from "../../hooks";
 import { Button } from "@/components/ui/button";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { formatDateDDMM } from "@/utils/common/formatDate";
 import { useState } from "react";
 
-interface UserClosedMarketsProps {
-    onSelectMarket?: (market: UserClosedMarket) => void;
+interface UserMarketsProps {
+    onSelectMarket?: (market: UserClosedMarket | UserOpenMarket) => void;
 }
 
-export function UserClosedMarkets({ onSelectMarket }: UserClosedMarketsProps) {
+export function UserMarkets({ onSelectMarket }: UserMarketsProps) {
     const { address: account } = useAccount();
     const { data, loading, refetch } = useUserMarkets(account);
 
@@ -27,18 +27,91 @@ export function UserClosedMarkets({ onSelectMarket }: UserClosedMarketsProps) {
         );
     }
 
-    if (!data.closedMarkets.length) return null;
+    const hasMarkets = data.closedMarkets.length > 0 || data.openedMarkets.length > 0;
+    if (!hasMarkets) return null;
 
     return (
-        <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between px-1 mb-1">
-                <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Your Markets</span>
-                <span className="text-xs text-text-300">{data.closedMarkets.length} closed</span>
-            </div>
+        <div className="flex flex-col gap-4">
+            {/* Pending Markets */}
+            {data.openedMarkets.length > 0 && (
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between px-1 mb-1">
+                        <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Your Pending</span>
+                        <span className="text-xs text-text-300">{data.openedMarkets.length} active</span>
+                    </div>
 
-            {data.closedMarkets.map((market) => (
-                <ClosedMarketCard key={market.id} market={market} onSelect={onSelectMarket} onRedeem={refetch} />
-            ))}
+                    {data.openedMarkets.map((market) => (
+                        <PendingMarketCard key={market.id} market={market} onSelect={onSelectMarket} />
+                    ))}
+                </div>
+            )}
+
+            {/* Closed Markets */}
+            {data.closedMarkets.length > 0 && (
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between px-1 mb-1">
+                        <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Your History</span>
+                        <span className="text-xs text-text-300">{data.closedMarkets.length} closed</span>
+                    </div>
+
+                    {data.closedMarkets.map((market) => (
+                        <ClosedMarketCard key={market.id} market={market} onSelect={onSelectMarket} onRedeem={refetch} />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+function PendingMarketCard({ market, onSelect }: { market: UserOpenMarket; onSelect?: (market: UserOpenMarket) => void }) {
+    const marketCurrency = useCurrency(market.marketToken);
+    const quoteCurrency = useCurrency(market.quoteToken);
+
+    const countdown = useCountdown(Number(market.tradingDeadline));
+
+    const isGreater = market.condition === "greater";
+
+    // Format values
+    const formattedMark = quoteCurrency
+        ? ((val) => (val < 1 ? val.toPrecision(4) : val.toLocaleString()))(Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals)))
+        : "0";
+
+    // Position info
+    const yesAmount = Number(formatUnits(BigInt(market.yesShares || "0"), 6));
+    const noAmount = Number(formatUnits(BigInt(market.noShares || "0"), 6));
+    const positionSide = yesAmount > 0 ? "YES" : noAmount > 0 ? "NO" : null;
+
+    return (
+        <div
+            className={cn(
+                "group rounded-xl transition-all flex justify-between items-center duration-150 border overflow-hidden p-4",
+                "bg-card-dark border-card-border",
+                "cursor-pointer duration-200",
+            )}
+            onClick={() => onSelect?.(market)}
+        >
+            <div className="flex items-center justify-between gap-2">
+                <CurrencyLogo currency={marketCurrency} size={36} className="mr-2" />
+                <span className="text-sm font-semibold text-white leading-snug">
+                    Will {marketCurrency?.symbol}{" "}
+                    <span className={cn(isGreater ? "text-green-400" : "text-red-400")}>be {isGreater ? "greater" : "lower"} than</span>{" "}
+                    {formattedMark} {quoteCurrency?.symbol}?
+                </span>
+
+                <span className="text-xs text-text-300 shrink-0">{countdown.formatted}</span>
+
+                {/* Position Badge */}
+                {positionSide && (
+                    <span
+                        className={cn(
+                            "px-1.5 py-0.5 rounded text-[10px] font-bold uppercase",
+                            positionSide === "YES" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400",
+                        )}
+                    >
+                        {positionSide}
+                    </span>
+                )}
+            </div>
         </div>
     );
 }

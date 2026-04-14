@@ -2,14 +2,14 @@
 export * from "./PredictionButton";
 export * from "./PredictionChart";
 // export * from "./PredictionInfo";
-// export * from "./PredictionMarketCard";
+export * from "./PredictionMarketCard";
 // export * from "./PredictionMarkets";
 // export * from "./PredictionSideSelector";
 export * from "./PredictionTradesTable";
 export * from "../new-components/MarketLadder";
-export * from "../new-components/MarketDetailView";
+export * from "../new-components/PredictionMarketDetails";
 export * from "../new-components/OpportunityStage";
 export * from "../new-components/PredictionForm";
 export * from "../new-components/FeaturedMarketCard";
 export * from "../new-components/UserActivitySection";
-export * from "../new-components/UserClosedMarkets";
+export * from "../new-components/UserMarkets";

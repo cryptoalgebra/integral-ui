@@ -18,7 +18,7 @@ const buttonVariants = cva(
                 secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 ghost: "hover:bg-card-hover",
                 link: "text-primary-200 underline-offset-4 hover:underline",
-                icon: "font-semibold hover:bg-card-hover",
+                icon: "font-semibold hover:bg-card-hover bg-card",
                 iconActive: "font-semibold bg-primary-800 border border-primary",
                 iconHover: "font-semibold bg-card-hover",
                 ghostActive: "bg-gradient-to-r from-primary-100 to-accent-100 hover:bg-bg-100 text-white",
@@ -26,7 +26,7 @@ const buttonVariants = cva(
             size: {
                 default: "h-10 px-4 py-2 ",
                 sm: "h-9 rounded-lg px-3",
-                md: "h-6 rounded-lg p-4 py-6",
+                md: "h-6 rounded-lg p-4 py-6 rounded-full",
                 lg: "text-md p-5 rounded-full",
                 icon: "h-10 w-10 rounded-xl",
             },

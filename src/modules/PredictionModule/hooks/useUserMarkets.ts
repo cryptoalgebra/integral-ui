@@ -12,6 +12,12 @@ export interface UserClosedMarket extends PredictionMarket {
     redeemedAmount: string;
 }
 
+export interface UserOpenMarket extends PredictionMarket {
+    yesShares: string;
+    noShares: string;
+    totalSpent: string;
+}
+
 export function useUserMarkets(address: Address | undefined) {
     const { predictionClient } = useClients();
 
@@ -27,7 +33,7 @@ export function useUserMarkets(address: Address | undefined) {
         if (!data?.users[0])
             return {
                 closedMarkets: [] as UserClosedMarket[],
-                openedMarkets: [] as PredictionMarket[],
+                openedMarkets: [] as UserOpenMarket[],
             };
 
         const now = Date.now();
@@ -72,7 +78,11 @@ export function useUserMarkets(address: Address | undefined) {
                 .map((position) => ({
                     ...position.market,
                     index: BigInt(position.market.id.split("-")[1]),
-                })) as PredictionMarket[],
+                    yesShares: position.yesShares,
+                    noShares: position.noShares,
+                    totalSpent: position.totalSpent,
+                }))
+                .sort((a, b) => Number(a.plannedResolutionTimestamp) - Number(b.plannedResolutionTimestamp)) as UserOpenMarket[],
         };
     }, [data]);
 

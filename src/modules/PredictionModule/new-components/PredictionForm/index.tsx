@@ -4,7 +4,7 @@ import TokenCard from "@/components/swap/TokenCard";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { SwapPageView } from "@/pages/Swap/types";
 import { cn } from "@/utils";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { PredictionButton } from "../../components";
@@ -23,13 +23,19 @@ import {
     useReadBinaryLmsrMarketManagerYesBalance,
 } from "@/generated";
 import { Button } from "@/components/ui/button";
+import { useSideCurrency } from "../../hooks/useSideCurrency";
+import { useClients } from "@/hooks/graphql/useClients";
+import { poll } from "@/utils/common/poll";
+import { SingleMarketUserTradesDocument } from "@/graphql/generated/graphql";
+import { delay } from "@/utils/common/delay";
 
 interface PredictionFormProps {
     market: PredictionMarket | undefined;
     initialSide?: "yes" | "no";
+    refetchMarket: () => void;
 }
 
-export function PredictionForm({ market, initialSide }: PredictionFormProps) {
+export function PredictionForm({ market, initialSide, refetchMarket }: PredictionFormProps) {
     const [searchParams] = useSearchParams();
     const buyFromParam = searchParams.get("buy") as "yes" | "no";
 
@@ -39,7 +45,6 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
     const [side, setSide] = useState<"yes" | "no">(initialSide || "yes");
     const [amount, setAmount] = useState("");
 
-    // Set side when initialSide prop changes (from FeaturedMarketCard)
     useEffect(() => {
         if (initialSide) {
             setSide(initialSide);
@@ -52,6 +57,8 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
     const marketCurrency = useCurrency(market?.marketToken);
     const quoteCurrency = useCurrency(market?.quoteToken);
     const collateralCurrency = useCurrency(market?.collateralToken);
+
+    const sideCurrency = useSideCurrency(side);
 
     const { data: priceYes, refetch: refetchPriceYes } = useReadBinaryLmsrMarketManagerPriceYes({
         args: market && [market.index],
@@ -90,21 +97,42 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
         token: market?.collateralToken,
     });
 
+    const { predictionClient } = useClients();
+
     const refetch = useCallback(async () => {
+        await delay(1_000);
+
+        // on-chain
         await Promise.all([
-            refetchPriceYes(),
-            refetchPriceNo(),
-            refetchPreviewBuyYes(),
-            refetchPreviewBuyNo(),
-            refetchBalance(),
             refetchYesBalance(),
             refetchNoBalance(),
+            refetchBalance(),
+            refetchPriceNo(),
+            refetchPriceYes(),
+            refetchPreviewBuyYes(),
+            refetchPreviewBuyNo(),
         ]);
-    }, [refetchPriceYes, refetchPriceNo, refetchPreviewBuyYes, refetchPreviewBuyNo, refetchBalance, refetchYesBalance, refetchNoBalance]);
+
+        // subgraph
+        await refetchMarket();
+        await poll(() =>
+            predictionClient.refetchQueries({
+                include: [SingleMarketUserTradesDocument],
+            }),
+        );
+    }, [
+        refetchMarket,
+        predictionClient,
+        refetchYesBalance,
+        refetchNoBalance,
+        refetchBalance,
+        refetchPriceNo,
+        refetchPriceYes,
+        refetchPreviewBuyYes,
+        refetchPreviewBuyNo,
+    ]);
 
     const positionBalance = side === "yes" ? yesBalance : noBalance;
-    const formattedPositionBalance = positionBalance ? formatUnits(positionBalance, 6) : "0";
-    const hasPosition = Boolean(positionBalance && positionBalance > 0n);
 
     const handleActionChange = (newAction: "buy" | "sell") => {
         setAction(newAction);
@@ -141,14 +169,14 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
     return (
         <>
             <FormContainer>
-                <div className="flex items-center justify-between">
+                <div className="flex max-lg:flex-col max-lg:gap-3 items-center justify-between">
                     <SwapTypeSelector type={SwapPageView.PREDICTION} />
 
-                    <div className="relative flex w-fit rounded-xl bg-card-light overflow-hidden">
+                    <div className="relative flex lg:w-fit w-full rounded-xl bg-card-light overflow-hidden">
                         <button
                             onClick={() => handleActionChange("buy")}
                             className={cn(
-                                "relative z-10 px-6 py-3 text-sm font-medium transition-all",
+                                "relative z-10 px-6 w-full py-3 text-sm font-medium transition-all",
                                 action === "buy" ? "text-text bg-card-border/40" : "text-text-300 hover:text-text",
                                 "rounded-l-xl",
                             )}
@@ -160,7 +188,7 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
                             onClick={() => handleActionChange("sell")}
                             disabled={!yesBalance && !noBalance}
                             className={cn(
-                                "relative z-10 px-6 py-3 text-sm font-medium transition-all",
+                                "relative z-10 px-6 w-full py-3 text-sm font-medium transition-all",
                                 action === "sell" ? "text-text bg-card-border/40" : "text-text-300 hover:text-text",
                                 "rounded-r-xl",
                                 !yesBalance && !noBalance && "opacity-40 cursor-not-allowed hover:text-text-300",
@@ -175,18 +203,9 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
 
                 <PredictionSideSelector priceYes={priceYes} priceNo={priceNo} side={side} setSide={setSide} />
 
-                {/* Position Info for Sell Mode */}
-                {action === "sell" && hasPosition && (
-                    <div className="flex items-center justify-between px-4 py-3 bg-card-dark rounded-xl border border-card-border">
-                        <span className="text-sm text-text-300">Your {side.toUpperCase()} Position</span>
-                        <span className="text-sm font-semibold text-white">${formattedPositionBalance}</span>
-                    </div>
-                )}
-
                 {action === "buy" ? (
-                    /* Buy Mode: Pay USDC amount */
                     <TokenCard
-                        label="You Pay"
+                        label="Pay"
                         value={amount}
                         currency={collateralCurrency}
                         handleValueChange={setAmount}
@@ -194,35 +213,26 @@ export function PredictionForm({ market, initialSide }: PredictionFormProps) {
                         showPercentButtons={true}
                     />
                 ) : (
-                    /* Sell Mode: Sell position amount */
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between px-1">
-                            <span className="text-sm text-text-300">Amount to Sell</span>
-                            <button
-                                onClick={() => setAmount(formattedPositionBalance)}
-                                className="text-xs text-primary-100 hover:text-primary-200 transition-colors"
-                            >
-                                Max
-                            </button>
-                        </div>
-                        <TokenCard
-                            label="Sell"
-                            value={amount}
-                            currency={collateralCurrency}
-                            handleValueChange={setAmount}
-                            usdValue={undefined}
-                            showPercentButtons={true}
-                        />
-                    </div>
+                    <TokenCard
+                        label="Sell"
+                        value={amount}
+                        currency={sideCurrency}
+                        handleValueChange={setAmount}
+                        usdValue={undefined}
+                        showPercentButtons={true}
+                        overrideBalance={positionBalance}
+                    />
                 )}
 
                 {/* Results */}
                 {action === "buy" && amount && amountToWin ? <PredictionParams amountToWin={amountToWin} /> : null}
 
                 {action === "sell" && amount && sellSimulationResult ? (
-                    <div className="flex items-center justify-between px-4 py-3 bg-card-dark rounded-xl border border-card-border">
+                    <div className="flex items-center justify-between px-4 py-3 bg-card-light rounded-xl">
                         <span className="text-sm text-text-300">You'll Receive</span>
-                        <span className="text-3xl font-bold text-green-400">${formatUnits(sellSimulationResult, 6)}</span>
+                        <span className="text-3xl font-bold text-green-400">
+                            ${formatUnits(sellSimulationResult, collateralCurrency?.decimals || 6)}
+                        </span>
                     </div>
                 ) : null}
             </FormContainer>

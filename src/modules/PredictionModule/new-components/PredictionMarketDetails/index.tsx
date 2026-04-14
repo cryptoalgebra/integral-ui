@@ -15,12 +15,12 @@ import { useAccount } from "wagmi";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
 
-interface MarketDetailViewProps {
+interface PredictionMarketDetailsProps {
     market: PredictionMarket;
     onBack: () => void;
 }
 
-export function MarketDetailView({ market, onBack }: MarketDetailViewProps) {
+export function PredictionMarketDetails({ market, onBack }: PredictionMarketDetailsProps) {
     const { address: account } = useAccount();
     const isGreater = market.condition === "greater";
 

@@ -16,7 +16,7 @@ export function PredictionQuestion({
     const quoteAmount = quoteCurrency ? formatUnits(BigInt(market.mark), quoteCurrency.decimals) : undefined;
 
     return (
-        <div className="flex items-center gap-1 font-semibold text-lg bg-card-light rounded-xl p-3">
+        <div className="flex items-center gap-1 font-semibold md:text-lg text-sm bg-card-light rounded-xl p-3">
             <span className=" text-white">Will {marketCurrency?.symbol}</span>{" "}
             <span className={cn(isGreater ? "text-green-400" : "text-red-400")}>be {market.condition} than</span>{" "}
             <span>

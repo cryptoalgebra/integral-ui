@@ -5,7 +5,7 @@ import { formatUnits } from "viem";
 import { useCountdown, useSwapPriceHistory, useMarketStats } from "../../hooks";
 import { PredictionMarket } from "../../types";
 import { LivePriceChart } from "../LivePriceChart";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
@@ -13,9 +13,10 @@ import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPr
 interface FeaturedMarketCardProps {
     market: PredictionMarket;
     onSelectMarket: (market: PredictionMarket) => void;
+    refetchMarket: () => void;
 }
 
-export function FeaturedMarketCard({ market, onSelectMarket }: FeaturedMarketCardProps) {
+export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: FeaturedMarketCardProps) {
     const marketCurrency = useCurrency(market.marketToken);
     const quoteCurrency = useCurrency(market.quoteToken);
 
@@ -83,6 +84,12 @@ export function FeaturedMarketCard({ market, onSelectMarket }: FeaturedMarketCar
     const noPercent = priceNo ? Number(formatUnits(priceNo, 18)) * 100 : 50;
 
     const displaySymbol = marketCurrency?.symbol === "WETH" ? "Ethereum" : marketCurrency?.symbol;
+
+    useEffect(() => {
+        if (countdown.isExpired) {
+            refetchMarket();
+        }
+    }, [refetchMarket, countdown.isExpired]);
 
     return (
         <div className="relative overflow-hidden rounded-2xl bg-card border border-card-border">

@@ -1,5 +1,4 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { useReadPredictionMarketPriceNo, useReadPredictionMarketPriceYes } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { cn } from "@/utils";
 import { formatDateDDMM, formatFutureTime } from "@/utils/common/formatDate";
@@ -8,6 +7,7 @@ import { Link } from "react-router-dom";
 import { formatUnits } from "viem";
 import { useMarketStats } from "../../hooks";
 import { PredictionMarket } from "../../types";
+import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
 
 interface IPredictionMarketCard {
     market: PredictionMarket;
@@ -18,19 +18,19 @@ interface IPredictionMarketCard {
 export function PredictionMarketCard({ market, now, from = "prediction" }: IPredictionMarketCard) {
     const isGreater = market.condition === "greater";
 
-    const marketCurrency = useCurrency(market.marketToken === 0 ? market.token0 : market.token1);
+    const marketCurrency = useCurrency(market.marketToken);
     // const quoteCurrency = useCurrency(market.marketToken === 0 ? market.token1 : market.token0);
 
     // const formattedCondition = quoteCurrency
     //     ? ((value) => value < 1 ? value.toFixed(2) : value.toFixed(0))(Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals)))
     //     : 0;
 
-    const { data: priceYes } = useReadPredictionMarketPriceYes({
-        address: market?.id,
+    const { data: priceYes } = useReadBinaryLmsrMarketManagerPriceYes({
+        args: market ? [market.index] : undefined,
     });
 
-    const { data: priceNo } = useReadPredictionMarketPriceNo({
-        address: market?.id,
+    const { data: priceNo } = useReadBinaryLmsrMarketManagerPriceNo({
+        args: market ? [market.index] : undefined,
     });
 
     const formattedYesPrice = priceYes ? (Number(formatUnits(priceYes, 18)) * 100).toFixed(2) : 0;
@@ -52,7 +52,10 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                 pathname: `/prediction/${market.id}`,
                 search: `from=${from}`,
             }}
-            className={cn("relative flex flex-col w-full rounded-2xl p-5 transition-all duration-200 text-left", "bg-card-dark shadow-sm")}
+            className={cn(
+                "relative flex flex-col w-full rounded-2xl p-5 transition-all duration-200 text-left",
+                "bg-card-dark shadow-sm border border-card-border",
+            )}
         >
             <div className="flex items-center gap-4 mb-4">
                 <div className="w-9 h-9 relative">
@@ -98,8 +101,8 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                             search: "?buy=yes",
                         }}
                         className={cn(
-                            "w-full py-3 bg-white/5 border border-card-border rounded-lg text-center transition",
-                            "bg-white/5 hover:bg-lime-600",
+                            "w-full py-3 bg-white/5 border border-card-border rounded-full text-center transition",
+                            "bg-white/5 hover:bg-green-600",
                         )}
                     >
                         <span className="text-white/70 mr-2">{isOneHourMarket ? "Up" : "Yes"}</span>
@@ -111,8 +114,8 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                             search: "?buy=no",
                         }}
                         className={cn(
-                            "w-full py-3 bg-white/5 border border-card-border rounded-lg text-center transition",
-                            "bg-white/5 hover:bg-orange-600",
+                            "w-full py-3 bg-white/5 border border-card-border rounded-full text-center transition",
+                            "bg-white/5 hover:bg-red-600",
                         )}
                     >
                         <span className="text-white/70 mr-2">{isOneHourMarket ? "Down" : "No"}</span>
@@ -123,7 +126,9 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                 <div className="my-4 flex-1" />
             ) : (
                 <div className="flex gap-3 my-4 font-semibold mt-auto">
-                    <div className={cn("w-full py-3 bg-white/5 border border-card-border rounded-lg text-center transition", "bg-white/5")}>
+                    <div
+                        className={cn("w-full py-3 bg-white/5 border border-card-border rounded-full text-center transition", "bg-white/5")}
+                    >
                         Trading Ended
                     </div>
                 </div>
@@ -166,7 +171,7 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                 </div>
                 <div className="mx-1">•</div>
                 <div className="flex gap-1">
-                    <div>${volume}</div>
+                    <div>{volume}</div>
                     <div>volume</div>
                 </div>
                 <div className="mx-1">•</div>

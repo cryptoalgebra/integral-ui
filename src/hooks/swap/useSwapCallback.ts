@@ -105,7 +105,7 @@ export function useSwapCallback(
     const { data: swapData, writeContractAsync: swapCallback, isPending } = useWriteSwapRouterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(swapData, {
-        title: `Swap ${formatAmount(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
+        title: `Swap ${formatAmount(trade?.inputAmount?.toSignificant(24) || 0)} ${trade?.inputAmount.currency.symbol}`,
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
         type: TransactionType.SWAP,

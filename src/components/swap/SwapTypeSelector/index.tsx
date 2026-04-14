@@ -31,15 +31,15 @@ export function SwapTypeSelector({ type }: { type: SwapPageViewType }) {
     const activeIndex = visibleTabs.findIndex((t) => t.value === type);
 
     return (
-        <div className="relative flex w-fit rounded-xl bg-card-light overflow-hidden">
+        <div className="relative flex w-full lg:w-fit rounded-xl bg-card-light overflow-hidden">
             {visibleTabs.map((tab) => {
                 const isActive = tab.value === type;
 
                 return (
-                    <NavLink key={tab.to} to={tab.to} className="relative z-10">
+                    <NavLink key={tab.to} to={tab.to} className="relative z-10 w-full">
                         <button
                             className={cn(
-                                "px-6 py-3  text-sm font-medium",
+                                "px-6 py-3  text-sm font-medium w-full",
                                 isActive ? "text-text bg-card-border/40" : "text-text-300 hover:text-text",
                                 activeIndex === 0 && "rounded-l-xl",
                                 activeIndex === visibleTabs.length - 1 && "rounded-r-xl",

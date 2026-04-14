@@ -8,7 +8,7 @@ import { DEFAULT_CHAIN_ID, TOKENS } from "config";
 export function useMarketsByTokens(token0: Address | undefined, token1: Address | undefined) {
     const { predictionClient } = useClients();
 
-    const { data, loading, error } = useOpenMarketsByTokensListQuery({
+    const { data, loading, error, refetch } = useOpenMarketsByTokensListQuery({
         variables: {
             token0: token0?.toLowerCase() === TOKENS[DEFAULT_CHAIN_ID].USDC.address.toLowerCase() ? undefined : token0,
             token1: token1?.toLowerCase() === TOKENS[DEFAULT_CHAIN_ID].USDC.address.toLowerCase() ? undefined : token1,
@@ -41,5 +41,6 @@ export function useMarketsByTokens(token0: Address | undefined, token1: Address 
         data: formattedData as PredictionMarket[],
         loading,
         error,
+        refetch,
     };
 }

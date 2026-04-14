@@ -29,11 +29,9 @@ export function MarketLadder({ markets, onSelectMarket, onSelectSide }: MarketLa
                     onSelect={() => onSelectMarket(market)}
                     onYes={() => {
                         onSelectSide?.(market, "yes");
-                        onSelectMarket(market);
                     }}
                     onNo={() => {
                         onSelectSide?.(market, "no");
-                        onSelectMarket(market);
                     }}
                 />
             ))}

@@ -53,7 +53,7 @@ export default defineConfig({
             emitWarning: false,
             emitError: true,
             failOnWarning: false,
-            failOnError: false,
+            failOnError: true,
         }),
     ],
     resolve: {

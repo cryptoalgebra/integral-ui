@@ -5,6 +5,8 @@ import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
 import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
+import YesLogo from "@/assets/tokens/yes.png";
+import NoLogo from "@/assets/tokens/no.png";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -35,8 +37,16 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     },
     ["0x0ebdc0b736b34207f6e8abe10c282b4003021a22"]: {
         symbol: "PROJECTX",
-        logo: ProjectXLogo
-    }
+        logo: ProjectXLogo,
+    },
+    ["0x1111111111111111111111111111111111111111"]: {
+        symbol: "YES",
+        logo: YesLogo,
+    },
+    ["0x2222222222222222222222222222222222222222"]: {
+        symbol: "NO",
+        logo: NoLogo,
+    },
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {

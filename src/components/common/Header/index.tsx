@@ -28,9 +28,9 @@ const Header = () => (
 export const Algebra = () => (
     <div className="flex items-center gap-2 w-full py-2">
         <NavLink to={"/"}>
-            <div className="flex items-center gap-2 md:mr-2 rounded-3xl duration-200">
+            <div className="flex items-center gap-4 md:mr-2 rounded-3xl duration-200">
                 <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
-                    <img src={AlgebraLogo} width={25} height={25} />
+                    <img src={AlgebraLogo} width={48} height={48} />
                 </div>
                 <img className="max-lg:hidden" src={AlgebraIntegral} width={140} height={25} />
             </div>
@@ -61,7 +61,7 @@ const Account = () => {
                     <TransactionHistoryPopover>
                         {pendingTxCount > 0 ? (
                             <Button
-                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-lg transition-all duration-200"
+                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-full transition-all duration-200"
                                 aria-label="Transaction history"
                             >
                                 <Loader />
@@ -82,7 +82,7 @@ const Account = () => {
                 )}
                 <Settings />
                 <Button
-                    className="flex gap-2 h-full rounded-lg border border-card-border"
+                    className="flex gap-2 h-full rounded-full border border-card-border"
                     variant={"icon"}
                     size={"sm"}
                     onClick={() => open({ view: "Networks" })}
@@ -90,12 +90,9 @@ const Account = () => {
                     <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
                 </Button>
                 <Button
-                    className={cn(
-                        "flex gap-2 h-full rounded-lg border border-card-border",
-                        account ? "hover:bg-primary-100/30 border-primary" : "bg-white text-black hover:bg-white/75",
-                    )}
+                    className={cn("flex gap-2 h-full rounded-full border border-card-border")}
                     onClick={() => open()}
-                    variant={"icon"}
+                    variant={account ? "icon" : "primary"}
                     size={"sm"}
                 >
                     <WalletIcon size={16} className="md:hidden" />

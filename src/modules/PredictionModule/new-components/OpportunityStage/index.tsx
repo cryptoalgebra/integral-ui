@@ -1,32 +1,20 @@
-import { Currency } from "@cryptoalgebra/integral-sdk";
-import { useMemo, useCallback, useState, useEffect } from "react";
+import { useMemo, useCallback } from "react";
 import { PredictionMarket } from "../../types";
 import { FeaturedMarketCard } from "../FeaturedMarketCard";
 import { MarketLadder } from "../MarketLadder";
-import { MarketDetailView } from "../MarketDetailView";
-import { UserClosedMarkets } from "../UserClosedMarkets";
+import { UserMarkets } from "../UserMarkets";
 import { useNavigate } from "react-router-dom";
 
 interface OpportunityStageProps {
     markets: PredictionMarket[];
-    inputCurrency?: Currency | null;
-    now: number;
+    featuredMarket?: PredictionMarket;
     isLoading?: boolean;
-    selectedMarketId?: string;
-    onSelectMarket?: (market: PredictionMarket) => void;
-    onSelectSide?: (side: "yes" | "no") => void;
+    hideUserMarkets?: boolean;
+    refetchMarkets: () => void;
 }
 
-export function OpportunityStage({ markets, isLoading, selectedMarketId, onSelectMarket, onSelectSide }: OpportunityStageProps) {
+export function OpportunityStage({ markets, featuredMarket, isLoading, hideUserMarkets, refetchMarkets }: OpportunityStageProps) {
     const navigate = useNavigate();
-    const [detailMarket, setDetailMarket] = useState<PredictionMarket | null>(null);
-
-    const featuredMarket = useMemo(() => {
-        if (selectedMarketId) {
-            return markets.find((m) => Number(m.plannedResolutionTimestamp) - Number(m.createdAt) <= 3600);
-        }
-        return markets[0];
-    }, [markets, selectedMarketId]);
 
     const secondaryMarkets = useMemo(() => {
         return markets.filter((m) => m.id !== featuredMarket?.id);
@@ -34,61 +22,38 @@ export function OpportunityStage({ markets, isLoading, selectedMarketId, onSelec
 
     const handleSelectMarket = useCallback(
         (market: PredictionMarket) => {
-            onSelectMarket?.(market);
-            setDetailMarket(market);
-            navigate("/prediction");
+            navigate(`/prediction/${market.id}`);
         },
-        [onSelectMarket, navigate],
+        [navigate],
     );
 
     const handleSelectSideFromLadder = useCallback(
         (market: PredictionMarket, side: "yes" | "no") => {
-            onSelectMarket?.(market);
-            setDetailMarket(market);
-            onSelectSide?.(side);
+            navigate(`/prediction/${market.id}?buy=${side}`);
         },
-        [onSelectMarket, onSelectSide],
+        [navigate],
     );
-
-    const handleBack = useCallback(() => {
-        setDetailMarket(null);
-        navigate("/swap");
-    }, [navigate]);
-
-    useEffect(() => {
-        if (detailMarket === null && featuredMarket) {
-            onSelectMarket?.(featuredMarket);
-        }
-    }, [detailMarket, featuredMarket, onSelectMarket]);
 
     if (isLoading) {
         return (
             <div className="flex flex-col gap-4 animate-pulse">
-                <div className="h-10 rounded-xl bg-card-dark/50 w-2/3" />
-                <div className="h-64 rounded-2xl bg-card-dark/50" />
-                <div className="h-20 rounded-xl bg-card-dark/50" />
-                <div className="h-20 rounded-xl bg-card-dark/50" />
+                <div className="h-10 rounded-xl bg-card-light/50 w-2/3" />
+                <div className="h-64 rounded-2xl bg-card-light/50" />
+                <div className="h-20 rounded-xl bg-card-light/50" />
+                <div className="h-20 rounded-xl bg-card-light/50" />
             </div>
         );
     }
 
     return (
         <div className="flex flex-col gap-4">
-            {detailMarket ? (
-                <MarketDetailView market={detailMarket} onBack={handleBack} />
-            ) : (
-                <>
-                    {featuredMarket && <FeaturedMarketCard market={featuredMarket} onSelectMarket={handleSelectMarket} />}
-                    {secondaryMarkets.length > 0 && (
-                        <MarketLadder
-                            markets={secondaryMarkets}
-                            onSelectMarket={handleSelectMarket}
-                            onSelectSide={handleSelectSideFromLadder}
-                        />
-                    )}
-                    <UserClosedMarkets onSelectMarket={handleSelectMarket} />
-                </>
+            {featuredMarket && (
+                <FeaturedMarketCard market={featuredMarket} onSelectMarket={handleSelectMarket} refetchMarket={refetchMarkets} />
             )}
+            {secondaryMarkets.length > 0 && (
+                <MarketLadder markets={secondaryMarkets} onSelectMarket={handleSelectMarket} onSelectSide={handleSelectSideFromLadder} />
+            )}
+            {!hideUserMarkets && <UserMarkets onSelectMarket={handleSelectMarket} />}
         </div>
     );
 }

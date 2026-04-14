@@ -5,7 +5,7 @@ import { cn, formatAmount } from "@/utils";
 import { Currency, CurrencyAmount, maxAmountSpend, Percent } from "@cryptoalgebra/integral-sdk";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Address } from "viem";
+import { Address, formatUnits } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
 interface TokenSwapCardProps {
@@ -22,6 +22,7 @@ interface TokenSwapCardProps {
     showNativeToken?: boolean;
     disabled?: boolean;
     showPercentButtons?: boolean;
+    overrideBalance?: bigint;
     label?: string;
 }
 
@@ -38,6 +39,7 @@ const TokenCard = ({
     showNativeToken = true,
     disabled,
     label,
+    overrideBalance,
     showPercentButtons = false,
 }: TokenSwapCardProps) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -45,15 +47,17 @@ const TokenCard = ({
 
     const { address: account } = useAccount();
 
-    const { data: balance, isLoading: isBalanceLoading } = useBalance({
+    const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
         address: account,
         token: currency?.isNative ? undefined : (currency?.wrapped.address as Address),
     });
 
+    const balance = overrideBalance ?? balanceData?.value;
+
     const balanceString = useMemo(() => {
-        if (isBalanceLoading) return "...";
-        return formatAmount(balance?.formatted || "0", 6);
-    }, [balance, isBalanceLoading]);
+        if ((isBalanceLoading && overrideBalance === undefined) || !currency) return "...";
+        return formatAmount(formatUnits(balance || 0n, currency.decimals), 6);
+    }, [balance, isBalanceLoading, currency, overrideBalance]);
 
     const handleInput = (value: string) => {
         let _value = value;
@@ -94,7 +98,7 @@ const TokenCard = ({
     }, [percentDifference]);
 
     const maxInputAmount: CurrencyAmount<Currency> | undefined =
-        currency && balance?.value ? maxAmountSpend(CurrencyAmount.fromRawAmount(currency, balance?.value.toString())) : undefined;
+        currency && balance ? maxAmountSpend(CurrencyAmount.fromRawAmount(currency, balance.toString())) : undefined;
     const showMaxButton = Boolean(maxInputAmount?.greaterThan(0));
 
     const handleMaxInput = useCallback(() => {
@@ -189,11 +193,11 @@ const TokenCard = ({
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     className={cn(
-                        "text-right bg-transparent border-none text-3xl font-semibold w-full p-0 focus:ring-0 focus-visible:ring-0",
+                        "text-right bg-transparent border-none placeholder:text-text-300 text-3xl font-semibold w-full p-0 focus:ring-0 focus-visible:ring-0",
                         isLoading ? "animate-pulse" : "",
                         disabled ? "text-text-300" : "text-text",
                     )}
-                    placeholder={"0"}
+                    placeholder={"0.00"}
                     maxDecimals={currency?.decimals}
                 />
             </div>

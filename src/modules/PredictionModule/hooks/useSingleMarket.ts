@@ -7,7 +7,7 @@ import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
 export function useSingleMarket(id: Address | undefined) {
     const { predictionClient } = useClients();
 
-    const { data, loading, error } = useSingleMarketQuery({
+    const { data, loading, error, refetch } = useSingleMarketQuery({
         client: predictionClient,
         variables: {
             market: id || "",
@@ -30,5 +30,6 @@ export function useSingleMarket(id: Address | undefined) {
         data: formattedData,
         loading,
         error,
+        refetch,
     };
 }
