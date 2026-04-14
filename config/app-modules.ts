@@ -19,6 +19,6 @@ export const enabledModules: Record<AppFeatureModule, boolean> = {
     [AppFeatureModule.LimitOrders]: true,
     [AppFeatureModule.ALM]: true,
     [AppFeatureModule.VE_33]: true,
-    [AppFeatureModule.BoostedPools]: false,
+    [AppFeatureModule.BoostedPools]: true,
     [AppFeatureModule.Prediction]: true,
 };
