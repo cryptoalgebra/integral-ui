@@ -9,6 +9,7 @@ import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
+import { useNow } from "@/hooks/common/useNow";
 
 interface FeaturedMarketCardProps {
     market: PredictionMarket;
@@ -41,6 +42,12 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
     // Market stats
     const { volume, users } = useMarketStats(market);
 
+    const now = useNow();
+    const isMarketClosed = Number(market.plannedResolutionTimestamp) * 1000 <= now;
+    const outcome = market.outcome; // 0 = unresolved, 1 = YES won, 2 = NO won
+    const outcomeResolved = outcome === 1 || outcome === 2;
+    const outcomeText = outcome === 1 ? "YES" : outcome === 2 ? "NO" : null;
+
     // Calculate market duration for title
     const marketDuration = useMemo(() => {
         const duration = Number(market.plannedResolutionTimestamp) - Number(market.createdAt);
@@ -70,7 +77,7 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
         const month = monthNames[start.getMonth()];
         const day = start.getDate();
 
-        return `${month} ${day}, ${formatTime(start)}-${formatTime(end)} ET`;
+        return `${month} ${day}, ${formatTime(start)}-${formatTime(end)}`;
     }, [market.createdAt, market.tradingDeadline]);
 
     const { data: priceYes } = useReadBinaryLmsrMarketManagerPriceYes({
@@ -102,15 +109,32 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                             <h2 className="text-xl font-bold text-white">
                                 {displaySymbol} Up or Down - {marketDuration}
                             </h2>
-                            {/* Live indicator */}
                             <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30">
-                                    <span className="relative flex h-2 w-2">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                                    </span>
-                                    <span className="text-xs font-semibold text-green-400 uppercase tracking-wide">Live</span>
-                                </div>
+                                {isMarketClosed ? (
+                                    <div
+                                        className={cn(
+                                            "flex items-center gap-2 px-2 py-1 rounded-full border",
+                                            outcomeResolved ? "bg-white/5 border-white/20" : "bg-yellow-500/10 border-yellow-500/30",
+                                        )}
+                                    >
+                                        <span
+                                            className={cn(
+                                                "text-xs font-semibold uppercase tracking-wide",
+                                                outcomeResolved ? "text-white" : "text-yellow-400",
+                                            )}
+                                        >
+                                            {outcomeResolved ? `Resolved: ${outcomeText}` : "Resolving..."}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30">
+                                        <span className="relative flex h-2 w-2">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                                        </span>
+                                        <span className="text-xs font-semibold text-green-400 uppercase tracking-wide">Live</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

@@ -12,8 +12,8 @@ const Settings = () => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant={"icon"} size={"md"} className="border border-card-border">
-                    <SettingsIcon />
+                <Button variant={"icon"} size={"sm"} className="flex gap-2 min-h-12 min-w-12 rounded-full border border-card-border">
+                    <SettingsIcon size={20} />
                 </Button>
             </PopoverTrigger>
             <PopoverContent

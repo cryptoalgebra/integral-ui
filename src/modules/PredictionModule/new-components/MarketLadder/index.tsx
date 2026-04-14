@@ -69,7 +69,7 @@ function MarketLadderCard({
         <div
             className={cn(
                 "group rounded-xl transition-all flex items-center duration-150 border overflow-hidden p-4 cursor-pointer",
-                "bg-card-dark border-card-border hover:border-card-border/80",
+                "bg-card-dark border-card-border hover:bg-card-hover",
             )}
             onClick={onSelect}
         >

@@ -25,8 +25,13 @@ export function usePredictionSell(market: PredictionMarket | undefined, amountTo
     const { data: sellYesHash, writeContract: sellYes } = useWriteBinaryLmsrMarketManagerSellYes();
     const { data: sellNoHash, writeContract: sellNo } = useWriteBinaryLmsrMarketManagerSellNo();
 
-    const { isLoading: isSellLoading } = useTransactionAwait(side === "yes" ? sellYesHash : sellNoHash, {
-        title: `Sell ${side}`,
+    const { isLoading: isSellYesLoading } = useTransactionAwait(sellYesHash, {
+        title: `Sell YES`,
+        type: TransactionType.SWAP,
+        callback: onSuccess,
+    });
+    const { isLoading: isSellNoLoading } = useTransactionAwait(sellNoHash, {
+        title: `Sell NO`,
         type: TransactionType.SWAP,
         callback: onSuccess,
     });
@@ -44,5 +49,5 @@ export function usePredictionSell(market: PredictionMarket | undefined, amountTo
         }
     };
 
-    return { sell, isLoading: isSellLoading, isSimulating, simulationResult };
+    return { sell, isLoading: isSellYesLoading || isSellNoLoading, isSimulating, simulationResult };
 }

@@ -7,19 +7,25 @@ export function usePredictionBuy(market: PredictionMarket, side: "yes" | "no", o
     const { data: buyNoHash, writeContract: buyNo } = useWriteBinaryLmsrMarketManagerBuyNo();
     const { data: buyYesHash, writeContract: buyYes } = useWriteBinaryLmsrMarketManagerBuyYes();
 
-    const { isLoading } = useTransactionAwait(side === "yes" ? buyYesHash : buyNoHash, {
-        title: `Buy ${side}`,
+    const { isLoading: isBuyYesLoading } = useTransactionAwait(buyYesHash, {
+        title: `Buy YES`,
+        type: TransactionType.SWAP,
+        callback: onSuccess,
+    });
+
+    const { isLoading: isBuyNoLoading } = useTransactionAwait(buyNoHash, {
+        title: `Buy NO`,
         type: TransactionType.SWAP,
         callback: onSuccess,
     });
 
     const buy = (shares: bigint, maxTotalCost: bigint) => {
         if (side === "no") {
-            buyNo({ args: [BigInt(market.id.split("-")[1]), shares, maxTotalCost] });
+            buyNo({ args: [market.index, shares, maxTotalCost] });
         } else {
-            buyYes({ args: [BigInt(market.id.split("-")[1]), shares, maxTotalCost] });
+            buyYes({ args: [market.index, shares, maxTotalCost] });
         }
     };
 
-    return { buy, isLoading };
+    return { buy, isLoading: isBuyYesLoading || isBuyNoLoading };
 }

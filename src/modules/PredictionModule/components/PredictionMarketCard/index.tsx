@@ -54,7 +54,7 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
             }}
             className={cn(
                 "relative flex flex-col w-full rounded-2xl p-5 transition-all duration-200 text-left",
-                "bg-card-dark shadow-sm border border-card-border",
+                "bg-card-dark shadow-sm border border-card-border hover:bg-card-hover",
             )}
         >
             <div className="flex items-center gap-4 mb-4">
@@ -91,6 +91,27 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                         <span className={cn(isGreater ? "text-green-400" : "text-red-400")}>{isGreater ? "Up" : "Down"}</span> 10%?
                     </div>
                 )}
+
+                {isOpen && !isResolved && isOneHourMarket ? (
+                    <div className="inline-flex items-center gap-2 ml-auto rounded-full text-white text-xs font-medium">
+                        <span className="relative flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
+                        </span>
+
+                        <span className="uppercase tracking-wide text-green-400">Live</span>
+                    </div>
+                ) : isResolved ? (
+                    market.userWon ? (
+                        market.userRedeemed ? (
+                            <div className="ml-auto text-xs text-gray-400">Redeemed</div>
+                        ) : (
+                            <div className="ml-auto text-xs text-green-400">Redeem</div>
+                        )
+                    ) : (
+                        <div className="ml-auto text-xs text-red-400">Lose</div>
+                    )
+                ) : null}
             </div>
 
             {isOpen ? (
@@ -144,26 +165,6 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                             ? formatDateDDMM(market.plannedResolutionTimestamp)
                             : `Resolves in ${formatFutureTime(timeLeftUntilResolution)}`}
                     </div>
-                    {isOpen && !isResolved && isOneHourMarket ? (
-                        <div className="inline-flex items-center gap-2 ml-auto rounded-full text-white text-xs font-medium">
-                            <span className="relative flex h-2.5 w-2.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-600"></span>
-                            </span>
-
-                            <span className="uppercase tracking-wide text-green-400">Live</span>
-                        </div>
-                    ) : isResolved ? (
-                        market.userWon ? (
-                            market.userRedeemed ? (
-                                <div className="ml-auto text-xs text-gray-400">Redeemed</div>
-                            ) : (
-                                <div className="ml-auto text-xs text-green-400">Redeem</div>
-                            )
-                        ) : (
-                            <div className="ml-auto text-xs text-red-400">Lose</div>
-                        )
-                    ) : null}
                 </div>
                 <div className="ml-auto flex gap-1">
                     <div>{tvl}</div>

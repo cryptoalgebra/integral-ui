@@ -14,6 +14,7 @@ import { UserActivitySection } from "../UserActivitySection";
 import { useAccount } from "wagmi";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
+import { useNow } from "@/hooks/common/useNow";
 
 interface PredictionMarketDetailsProps {
     market: PredictionMarket;
@@ -32,7 +33,7 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
     const isLower = market.condition === "lower";
 
     // Check if market is closed
-    const now = Date.now();
+    const now = useNow();
     const isMarketClosed = Number(market.plannedResolutionTimestamp) * 1000 <= now;
     const outcome = market.outcome; // 0 = unresolved, 1 = YES won, 2 = NO won
     const outcomeResolved = outcome === 1 || outcome === 2;
@@ -65,7 +66,7 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
         const month = monthNames[start.getMonth()];
         const day = start.getDate();
 
-        return `${month} ${day}, ${formatTime(start)}-${formatTime(end)} ET`;
+        return `${month} ${day}, ${formatTime(start)}-${formatTime(end)}`;
     }, [market.createdAt, market.tradingDeadline]);
 
     const { data: marketFiveMinuteData, loading: isMarketDataLoading } = useMarketFiveMinuteData(market.id);

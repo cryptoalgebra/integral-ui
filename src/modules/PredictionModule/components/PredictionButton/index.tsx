@@ -10,8 +10,8 @@ import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { BINARY_LMSR_MARKET_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useState } from "react";
-import { formatUnits } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { Address, formatUnits, parseUnits } from "viem";
+import { useAccount, useBalance, useChainId } from "wagmi";
 import { PredictionMarket } from "../../types";
 
 interface IPredictionButton {
@@ -71,6 +71,19 @@ export function PredictionButton({
     const needsApproval = shouldCheckApproval && approvalState === ApprovalState.NOT_APPROVED;
     const isApproving = shouldCheckApproval && approvalState === ApprovalState.PENDING;
 
+    const { data: collateralBalance } = useBalance({
+        address: account,
+        token: collateralToken?.isToken ? (collateralToken.address as Address) : undefined,
+        query: { enabled: !!account && action === "buy" && !!collateralToken },
+    });
+
+    const parsedBuyAmount = amountToPay && collateralToken ? parseUnits(amountToPay, collateralToken.decimals) : 0n;
+    const hasInsufficientCollateral = action === "buy" && !!amountToPay && !!collateralBalance && parsedBuyAmount > collateralBalance.value;
+
+    const parsedSellAmount = amountToPay ? parseUnits(amountToPay, 6) : 0n;
+    const availableShares = side === "yes" ? yesBalance ?? 0n : noBalance ?? 0n;
+    const hasInsufficientShares = action === "sell" && !!amountToPay && parsedSellAmount > availableShares;
+
     if (!account) {
         return (
             <Button variant={"primary"} className="w-full" onClick={() => open()}>
@@ -105,6 +118,22 @@ export function PredictionButton({
         );
     }
 
+    if (hasInsufficientCollateral) {
+        return (
+            <Button variant={"primary"} disabled className="w-full">
+                Insufficient {collateralToken?.symbol} balance
+            </Button>
+        );
+    }
+
+    if (hasInsufficientShares) {
+        return (
+            <Button variant={"primary"} disabled className="w-full">
+                Insufficient {side === "yes" ? "YES" : "NO"} balance
+            </Button>
+        );
+    }
+
     if (needsApproval || isApproving) {
         return (
             <Button variant={"primary"} className="w-full" onClick={approvalCallback} disabled={isApproving}>
@@ -119,7 +148,7 @@ export function PredictionButton({
         if (sellDisabled) {
             return (
                 <Button variant={"primary"} className="w-full" disabled>
-                    Insufficient amount
+                    {amountToPay ? "Insufficient amount" : "Enter amount"}
                 </Button>
             );
         }
@@ -132,6 +161,14 @@ export function PredictionButton({
     }
 
     const buyDisabled = !amountToWin || !maxAmountToPay || !amountToPay || !collateralToken;
+
+    if (buyDisabled) {
+        return (
+            <Button variant={"primary"} className="w-full" disabled>
+                {amountToPay ? "Insufficient amount" : "Enter amount"}
+            </Button>
+        );
+    }
 
     return (
         <Button

@@ -28,33 +28,34 @@ export function UserMarkets({ onSelectMarket }: UserMarketsProps) {
     }
 
     const hasMarkets = data.closedMarkets.length > 0 || data.openedMarkets.length > 0;
+
+    const redeemableMarkets = data.closedMarkets.filter((market) => market.userWon && !market.userRedeemed);
+
     if (!hasMarkets) return null;
 
     return (
         <div className="flex flex-col gap-4">
-            {/* Pending Markets */}
             {data.openedMarkets.length > 0 && (
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between px-1 mb-1">
-                        <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Your Pending</span>
+                        <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Your Opened</span>
                         <span className="text-xs text-text-300">{data.openedMarkets.length} active</span>
                     </div>
 
                     {data.openedMarkets.map((market) => (
-                        <PendingMarketCard key={market.id} market={market} onSelect={onSelectMarket} />
+                        <OpenedMarketCard key={market.id} market={market} onSelect={onSelectMarket} />
                     ))}
                 </div>
             )}
 
-            {/* Closed Markets */}
-            {data.closedMarkets.length > 0 && (
+            {redeemableMarkets.length > 0 && (
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between px-1 mb-1">
-                        <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Your History</span>
-                        <span className="text-xs text-text-300">{data.closedMarkets.length} closed</span>
+                        <span className="text-xs font-semibold text-text-300 uppercase tracking-wider">Ready to Claim</span>
+                        <span className="text-xs text-text-300">{redeemableMarkets.length} completed</span>
                     </div>
 
-                    {data.closedMarkets.map((market) => (
+                    {redeemableMarkets.map((market) => (
                         <ClosedMarketCard key={market.id} market={market} onSelect={onSelectMarket} onRedeem={refetch} />
                     ))}
                 </div>
@@ -63,7 +64,7 @@ export function UserMarkets({ onSelectMarket }: UserMarketsProps) {
     );
 }
 
-function PendingMarketCard({ market, onSelect }: { market: UserOpenMarket; onSelect?: (market: UserOpenMarket) => void }) {
+function OpenedMarketCard({ market, onSelect }: { market: UserOpenMarket; onSelect?: (market: UserOpenMarket) => void }) {
     const marketCurrency = useCurrency(market.marketToken);
     const quoteCurrency = useCurrency(market.quoteToken);
 
@@ -71,7 +72,6 @@ function PendingMarketCard({ market, onSelect }: { market: UserOpenMarket; onSel
 
     const isGreater = market.condition === "greater";
 
-    // Format values
     const formattedMark = quoteCurrency
         ? ((val) => (val < 1 ? val.toPrecision(4) : val.toLocaleString()))(Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals)))
         : "0";
@@ -85,7 +85,7 @@ function PendingMarketCard({ market, onSelect }: { market: UserOpenMarket; onSel
         <div
             className={cn(
                 "group rounded-xl transition-all flex justify-between items-center duration-150 border overflow-hidden p-4",
-                "bg-card-dark border-card-border",
+                "bg-card-dark border-card-border hover:bg-card-hover",
                 "cursor-pointer duration-200",
             )}
             onClick={() => onSelect?.(market)}
@@ -100,7 +100,6 @@ function PendingMarketCard({ market, onSelect }: { market: UserOpenMarket; onSel
 
                 <span className="text-xs text-text-300 shrink-0">{countdown.formatted}</span>
 
-                {/* Position Badge */}
                 {positionSide && (
                     <span
                         className={cn(
@@ -164,7 +163,7 @@ function ClosedMarketCard({
         <div
             className={cn(
                 "group rounded-xl transition-all flex justify-between items-center duration-150 border overflow-hidden p-4",
-                "bg-card-dark border-card-border ",
+                "bg-card-dark border-card-border hover:bg-card-hover ",
                 "cursor-pointer duration-200",
                 // canClaim && "border-green-500/30 bg-green-500/5",
             )}

@@ -71,8 +71,8 @@ const Account = () => {
                         ) : (
                             <Button
                                 variant={"icon"}
-                                size={"md"}
-                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200 border border-card-border px-4"
+                                size={"sm"}
+                                className="flex gap-2 min-h-12 min-w-12 rounded-full border border-card-border"
                                 aria-label="Transaction history"
                             >
                                 <Clock size={20} />
