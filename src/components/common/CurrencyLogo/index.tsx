@@ -2,7 +2,7 @@ import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDTLogo from "@/assets/tokens/usdt.png";
-import EtherLogo from "@/assets/tokens/ether.svg";
+import USDRLogo from "@/assets/tokens/usdr.png";
 import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,8 +17,8 @@ interface CurrencyLogoProps {
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
     ["0x0000000000000000000000000000000000000400"]: {
-        symbol: "ETH",
-        logo: EtherLogo,
+        symbol: "USDr",
+        logo: USDRLogo,
     },
     ["0x9f068c81ab7743ea7b2d48c0feceadafcad2c95c"]: {
         symbol: "USDT",
@@ -61,7 +61,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
     }
 
     if (currency.isNative) {
-        return <img src={EtherLogo} alt={"ETH"} width={size} height={size} className={classString} style={style} />;
+        return <img src={USDRLogo} alt={"ETH"} width={size} height={size} className={classString} style={style} />;
     }
 
     return (
