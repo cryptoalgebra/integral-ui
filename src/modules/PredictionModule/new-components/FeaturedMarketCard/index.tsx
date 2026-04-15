@@ -1,6 +1,6 @@
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { cn, formatAmount } from "@/utils";
-import { ArrowDown, ArrowRightIcon, ArrowUp, TrendingUp, Users } from "lucide-react";
+import { ArrowDown, ArrowRightIcon, ArrowUp, ArrowUpRight, TrendingUp, Users } from "lucide-react";
 import { formatUnits } from "viem";
 import { useCountdown, useSwapPriceHistory, useMarketStats } from "../../hooks";
 import { PredictionMarket } from "../../types";
@@ -154,9 +154,7 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                 </button>
             </div>
 
-            {/* Stats row */}
             <div className="relative grid grid-cols-3 px-5 py-4 bg-card border-b border-t border-card-border">
-                {/* Price To Beat */}
                 <div className="flex flex-col items-start">
                     <div className="text-[11px] text-text-300 uppercase tracking-wider mb-1">Price To Beat</div>
                     <div className="text-2xl font-bold text-white tabular-nums">
@@ -165,7 +163,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                     </div>
                 </div>
 
-                {/* Current Price */}
                 <div className="flex flex-col items-start border-l border-card-border pl-4">
                     <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider mb-1">
                         <span className={cn(isAboveTarget ? "text-green-400" : "text-red-400")}>Current Price</span>
@@ -181,7 +178,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                     </div>
                 </div>
 
-                {/* Countdown */}
                 <div className="flex flex-col items-start border-l border-card-border pl-4">
                     <div className="text-[11px] text-text-300 uppercase tracking-wider mb-1">Time Left</div>
                     <div className="flex items-baseline gap-1">
@@ -206,7 +202,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                 </div>
             </div>
 
-            {/* Chart section */}
             <div className="flex items-center justify-between ">
                 <LivePriceChart priceHistory={priceHistory} targetPrice={targetPrice} currentPrice={currentPrice} height={240} />
                 <div className="flex flex-col gap-2 z-20 min-w-fit h-[240px] p-2">
@@ -253,7 +248,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                 </div>
             </div>
 
-            {/* Footer stats */}
             <div className="relative flex items-center justify-between px-5 py-3 border-t border-card-border ">
                 <div className="flex items-center gap-4 text-xs text-text-300">
                     <span className="flex items-center gap-1.5">
@@ -265,11 +259,11 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
                         <span className="font-medium text-white">{users}</span> traders
                     </span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-xs text-text-300">
-                        Pool: {market.pool.slice(0, 6)}...{market.pool.slice(-4)}
-                    </span>
-                </div>
+
+                <Link to={`/pool/${market.pool}`} className="flex items-center gap-1 text-xs text-text-300 hover:text-text-200">
+                    Pool: {market.pool.slice(0, 6)}...{market.pool.slice(-4)}
+                    <ArrowUpRight size={12} />
+                </Link>
             </div>
         </div>
     );

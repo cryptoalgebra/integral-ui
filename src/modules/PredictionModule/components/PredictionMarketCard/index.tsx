@@ -53,7 +53,7 @@ export function PredictionMarketCard({ market, now, from = "prediction" }: IPred
                 search: `from=${from}`,
             }}
             className={cn(
-                "relative flex flex-col w-full rounded-2xl p-5 transition-all duration-200 text-left",
+                "relative flex flex-col w-full rounded-2xl p-4 transition-all duration-200 text-left",
                 "bg-card-dark shadow-sm border border-card-border hover:bg-card-hover",
             )}
         >
