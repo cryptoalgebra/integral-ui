@@ -5,11 +5,12 @@ import { formatUnits } from "viem";
 import { useCountdown, useSwapPriceHistory, useMarketStats } from "../../hooks";
 import { PredictionMarket } from "../../types";
 import { LivePriceChart } from "../LivePriceChart";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
 import { useNow } from "@/hooks/common/useNow";
+import { poll } from "@/utils/common/poll";
 
 interface FeaturedMarketCardProps {
     market: PredictionMarket;
@@ -26,7 +27,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
         return Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals));
     }, [market.mark, quoteCurrency]);
 
-    // Live price from swaps
     const { priceHistory, currentPrice } = useSwapPriceHistory(market.pool, marketCurrency, quoteCurrency);
 
     const priceDeltaPercent = useMemo(() => {
@@ -36,10 +36,8 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
 
     const isAboveTarget = priceDeltaPercent !== null && priceDeltaPercent >= 0;
 
-    // Countdown
     const countdown = useCountdown(Number(market.tradingDeadline));
 
-    // Market stats
     const { volume, users } = useMarketStats(market);
 
     const now = useNow();
@@ -48,7 +46,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
     const outcomeResolved = outcome === 1 || outcome === 2;
     const outcomeText = outcome === 1 ? "YES" : outcome === 2 ? "NO" : null;
 
-    // Calculate market duration for title
     const marketDuration = useMemo(() => {
         const duration = Number(market.plannedResolutionTimestamp) - Number(market.createdAt);
         const minutes = Math.round(duration / 60);
@@ -59,7 +56,6 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
         return `${Math.round(minutes / 60)} Hours`;
     }, [market.plannedResolutionTimestamp, market.createdAt]);
 
-    // Calculate date range
     const dateRange = useMemo(() => {
         const start = new Date(Number(market.createdAt) * 1000);
         const end = new Date(Number(market.tradingDeadline) * 1000);
@@ -100,9 +96,12 @@ export function FeaturedMarketCard({ market, onSelectMarket, refetchMarket }: Fe
 
     const displaySymbol = marketCurrency?.symbol === "WETH" ? "Ethereum" : marketCurrency?.symbol;
 
+    const hasPolledRef = useRef(false);
+
     useEffect(() => {
-        if (countdown.isExpired) {
-            refetchMarket();
+        if (countdown.isExpired && !hasPolledRef.current) {
+            hasPolledRef.current = true;
+            poll(async () => refetchMarket(), 2_000, 10_000);
         }
     }, [refetchMarket, countdown.isExpired]);
 

@@ -1,7 +1,7 @@
 import { usePool } from "@/hooks/pools/usePool";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { cn, formatAmount } from "@/utils";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Check, X, ArrowUpRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatUnits } from "viem";
 import { Chart } from "@/components/common/Chart";
@@ -15,6 +15,7 @@ import { useAccount } from "wagmi";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
 import { useNow } from "@/hooks/common/useNow";
+import { Link } from "react-router-dom";
 
 interface PredictionMarketDetailsProps {
     market: PredictionMarket;
@@ -79,6 +80,8 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
 
     const { data: marketFiveMinuteData, loading: isMarketDataLoading } = useMarketFiveMinuteData(market.id);
     const { chartData, loading: isChartDataLoading } = usePoolChartData(market.pool, CHART_SPAN.DAY, POOL_CHART_TYPE.PRICE);
+
+    const [tab, setTab] = useState<"rules" | "activity">("rules");
 
     return (
         <div className="flex flex-col gap-3 w-full">
@@ -235,12 +238,115 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
                     </div>
                 )}
 
-                {account && (
-                    <div>
-                        <div className="mb-2 text-left font-semibold p-4 pb-0">Your Activity</div>
-                        <UserActivitySection marketId={market.id} />
+                <div className="flex flex-col gap-0 border-t border-card-border">
+                    <div className="flex items-center gap-2 px-4 pt-4">
+                        <button
+                            className={cn(
+                                "px-4 py-2 rounded-xl text-sm font-medium border transition-all",
+                                tab === "rules"
+                                    ? "bg-card-border border-card-border text-white"
+                                    : "bg-card-dark border-card-border text-text-300 hover:text-white",
+                            )}
+                            onClick={() => setTab("rules")}
+                        >
+                            Rules
+                        </button>
+                        <button
+                            className={cn(
+                                "px-4 py-2 rounded-xl text-sm font-medium border transition-all",
+                                tab === "activity"
+                                    ? "bg-card-border border-card-border text-white"
+                                    : "bg-card-dark border-card-border text-text-300 hover:text-white",
+                            )}
+                            onClick={() => setTab("activity")}
+                        >
+                            Activity
+                        </button>
                     </div>
-                )}
+                    <div className="p-4">
+                        {tab === "rules" && (
+                            <div className="flex flex-col gap-4">
+                                <div className="flex flex-col items-start">
+                                    <div className="text-sm font-semibold text-white mb-2">Description</div>
+                                    <div className="bg-card-light rounded-xl p-4 text-sm text-text-200 w-full text-left">
+                                        This market predicts whether the {marketCurrency?.symbol}/{quoteCurrency?.symbol} 5-minute TWAP at{" "}
+                                        {dateRange.split("—")[1]?.trim() || "—"} will be {isGreater ? "above" : "below"}{" "}
+                                        {formatAmount(quoteAmount, 6)}.
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-start">
+                                    <div className="text-sm font-semibold text-white mb-2 ">Rules</div>
+                                    <div className="bg-card-light rounded-xl p-4 text-sm text-text-200 leading-relaxed w-full text-left">
+                                        A qualifying event is the {marketCurrency?.symbol}/{quoteCurrency?.symbol} price in the Algebra pool
+                                        at the resolution time. The resolution price is calculated as a 5-minute time-weighted average price
+                                        (TWAP) from the pool. YES if the TWAP is strictly {isGreater ? "above" : "below"}{" "}
+                                        {formatAmount(quoteAmount, 6)} {quoteCurrency?.symbol}. NO if it is{" "}
+                                        {isGreater
+                                            ? `${formatAmount(quoteAmount, 6)} or lower`
+                                            : `${formatAmount(quoteAmount, 6)} or higher`}
+                                        . Off-chain prices, oracle feeds, and other external sources do not count.
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="rounded-xl border border-green-600/30 bg-green-600/5 p-4">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-8 h-8 rounded-lg bg-green-600/20 flex items-center justify-center">
+                                                <Check size={18} className="text-green-600" />
+                                            </div>
+                                            <span className="text-sm font-semibold text-green-600">Resolves YES if</span>
+                                        </div>
+                                        <div className="text-sm text-text-200 text-left">
+                                            - The 5-min TWAP is {isGreater ? "above" : "below"} {formatAmount(quoteAmount, 6)} at the
+                                            resolution time.
+                                        </div>
+                                    </div>
+                                    <div className="rounded-xl border border-red-600/30 bg-red-600/5 p-4">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-8 h-8 rounded-lg bg-red-600/20 flex items-center justify-center">
+                                                <X size={18} className="text-red-600" />
+                                            </div>
+                                            <span className="text-sm font-semibold text-red-600">Resolves NO if</span>
+                                        </div>
+                                        <div className="text-sm text-text-200 text-left">
+                                            - The 5-min TWAP is{" "}
+                                            {isGreater
+                                                ? `${formatAmount(quoteAmount, 6)} or lower`
+                                                : `${formatAmount(quoteAmount, 6)} or higher`}{" "}
+                                            at the resolution time.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col items-start">
+                                    <div className="text-sm font-semibold text-white mb-2 ">Resolution source</div>
+                                    <div className="bg-card-light rounded-xl p-4 text-sm text-text-200 leading-relaxed w-full text-left">
+                                        <Link
+                                            to={`/pool/${market.pool}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-primary-200 hover:underline inline-flex items-center gap-1"
+                                        >
+                                            Pool {marketCurrency?.symbol}/{quoteCurrency?.symbol} <ArrowUpRight size={16} />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {tab === "activity" && account && (
+                            <div>
+                                <div className="text-sm font-semibold text-white mb-2 text-left">Your activity</div>
+                                <UserActivitySection marketId={market.id} />
+                            </div>
+                        )}
+                        {tab === "activity" && !account && (
+                            <div className="flex flex-col items-center justify-center py-12 text-center">
+                                <p className="text-sm text-text-300">Connect your wallet to see your activity</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

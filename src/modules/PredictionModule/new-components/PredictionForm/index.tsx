@@ -84,7 +84,6 @@ export function PredictionForm({ market, initialSide, refetchMarket }: Predictio
         args: account && market ? [market.index, account] : undefined,
     });
 
-    // Sell preview
     const { simulationResult: sellSimulationResult } = usePredictionSell(market, amount, side, () => {});
 
     const [winNo, youPayNo] = previewBuyNo || [];
@@ -224,7 +223,6 @@ export function PredictionForm({ market, initialSide, refetchMarket }: Predictio
                     />
                 )}
 
-                {/* Results */}
                 {action === "buy" && amount && amountToWin ? <PredictionParams amountToWin={amountToWin} /> : null}
 
                 {action === "sell" && amount && sellSimulationResult ? (

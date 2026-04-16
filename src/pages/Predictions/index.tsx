@@ -30,7 +30,7 @@ export function PredictionsPage() {
 
     const [tokenFilter, setTokenFilter] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-    const [myPositionsOnly, setMyPositionsOnly] = useState(false);
+    // const [myPositionsOnly, setMyPositionsOnly] = useState(false);
 
     const tokenOptions = useMemo(() => {
         const seen = new Set<Address>();
@@ -45,24 +45,27 @@ export function PredictionsPage() {
     }, [openedMarkets, closedMarkets]);
 
     const filteredMarkets = useMemo(() => {
-        let list: PredictionMarket[] = poolMarkets;
+        let list: PredictionMarket[];
 
+        // Status filter determines base list
+        if (statusFilter === "all") {
+            // All open markets + user's closed markets
+            list = [...poolMarkets, ...closedMarkets];
+        } else if (statusFilter === "open") {
+            // User's open positions only
+            list = openedMarkets;
+        } else {
+            // statusFilter === "closed" - User's closed positions only
+            list = closedMarkets;
+        }
+
+        // Apply token filter
         if (tokenFilter) {
             list = list.filter((m) => m.marketToken.toLowerCase() === tokenFilter);
         }
 
-        if (statusFilter === "open") {
-            list = list.filter((m) => Number(m.plannedResolutionTimestamp) * 1000 > now);
-        } else if (statusFilter === "closed") {
-            list = list.filter((m) => Number(m.plannedResolutionTimestamp) * 1000 <= now);
-        }
-
-        if (myPositionsOnly && account) {
-            list = list.filter((m) => myMarketIds.has(m.id));
-        }
-
         return list;
-    }, [poolMarkets, tokenFilter, statusFilter, myPositionsOnly, myMarketIds, account, now]);
+    }, [poolMarkets, openedMarkets, closedMarkets, tokenFilter, statusFilter, myMarketIds, account]);
 
     return (
         <PageContainer>
@@ -90,12 +93,12 @@ export function PredictionsPage() {
                 <div className="flex items-center rounded-xl ml-auto bg-card-dark border border-card-border">
                     {(["all", "open", "closed"] as StatusFilter[]).map((s) => (
                         <FilterPill key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
-                            {s === "all" ? "All" : s === "open" ? "Open" : "Closed"}
+                            {s === "all" ? "All" : s === "open" ? "My opened" : "My closed"}
                         </FilterPill>
                     ))}
                 </div>
 
-                {account && (
+                {/* {account && (
                     <Button
                         className={cn("h-10.5 rounded-xl px-6", !myPositionsOnly && " border border-card-border")}
                         onClick={() => setMyPositionsOnly((v) => !v)}
@@ -104,7 +107,7 @@ export function PredictionsPage() {
                     >
                         My positions
                     </Button>
-                )}
+                )} */}
             </div>
 
             {isLoading ? (
@@ -128,7 +131,12 @@ export function PredictionsPage() {
 
 function FilterPill({ children, active, onClick }: { children: React.ReactNode; active: boolean; onClick: () => void }) {
     return (
-        <Button className="h-10 rounded-xl px-5" onClick={onClick} variant={active ? "iconActive" : "icon"} size="sm">
+        <Button
+            className={cn("h-10 rounded-xl px-5", active ? "" : "hover:bg-card text-text-300 hover:text-text")}
+            onClick={onClick}
+            variant={active ? "secondary" : "icon"}
+            size="sm"
+        >
             {children}
         </Button>
     );
