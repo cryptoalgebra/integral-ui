@@ -3,6 +3,8 @@ import { useAllOpenMarketsListQuery } from "@/graphql/generated/graphql";
 import { useMemo } from "react";
 import { PredictionMarket } from "@/modules/PredictionModule/types/prediction";
 
+const bannedMarketIds = [0n, 1n];
+
 export function useAllOpenMarkets() {
     const { predictionClient } = useClients();
 
@@ -27,7 +29,8 @@ export function useAllOpenMarkets() {
             .sort((a, b) => {
                 if (b.condition === "greater") return 1;
                 return -1;
-            });
+            })
+            .filter((market) => !bannedMarketIds.includes(market.index));
     }, [data]);
 
     return {

@@ -30,7 +30,6 @@ export function PredictionsPage() {
 
     const [tokenFilter, setTokenFilter] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-    // const [myPositionsOnly, setMyPositionsOnly] = useState(false);
 
     const tokenOptions = useMemo(() => {
         const seen = new Set<Address>();
@@ -38,34 +37,23 @@ export function PredictionsPage() {
         return Array.from(seen);
     }, [poolMarkets]);
 
-    const myMarketIds = useMemo(() => {
-        const ids = new Set<string>();
-        [...openedMarkets, ...closedMarkets].forEach((m) => ids.add(m.id));
-        return ids;
-    }, [openedMarkets, closedMarkets]);
-
     const filteredMarkets = useMemo(() => {
         let list: PredictionMarket[];
 
-        // Status filter determines base list
         if (statusFilter === "all") {
-            // All open markets + user's closed markets
             list = [...poolMarkets, ...closedMarkets];
         } else if (statusFilter === "open") {
-            // User's open positions only
             list = openedMarkets;
         } else {
-            // statusFilter === "closed" - User's closed positions only
             list = closedMarkets;
         }
 
-        // Apply token filter
         if (tokenFilter) {
             list = list.filter((m) => m.marketToken.toLowerCase() === tokenFilter);
         }
 
         return list;
-    }, [poolMarkets, openedMarkets, closedMarkets, tokenFilter, statusFilter, myMarketIds, account]);
+    }, [poolMarkets, openedMarkets, closedMarkets, tokenFilter, statusFilter]);
 
     return (
         <PageContainer>
@@ -97,17 +85,6 @@ export function PredictionsPage() {
                         </FilterPill>
                     ))}
                 </div>
-
-                {/* {account && (
-                    <Button
-                        className={cn("h-10.5 rounded-xl px-6", !myPositionsOnly && " border border-card-border")}
-                        onClick={() => setMyPositionsOnly((v) => !v)}
-                        variant={myPositionsOnly ? "iconActive" : "icon"}
-                        size="sm"
-                    >
-                        My positions
-                    </Button>
-                )} */}
             </div>
 
             {isLoading ? (
@@ -143,7 +120,7 @@ function FilterPill({ children, active, onClick }: { children: React.ReactNode; 
 }
 
 function TokenPill({ active, onClick, address }: { active: boolean; onClick: () => void; address: Address }) {
-    const token = useCurrency(address, false);
+    const token = useCurrency(address);
     return (
         <FilterPill active={active} onClick={onClick}>
             <div className="flex items-center gap-1">
