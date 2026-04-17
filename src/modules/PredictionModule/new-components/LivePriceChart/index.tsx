@@ -30,42 +30,12 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
     const dotRef = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number | null>(null);
 
-    // Track recent swaps for visual feedback
-    const [recentSwaps, setRecentSwaps] = useState<{ timestamp: number; isUp: boolean }[]>([]);
-
-    // Track if target price is outside visible range
     const [targetOutOfBounds, setTargetOutOfBounds] = useState<"above" | "below" | null>(null);
 
-    // Determine if price is above/below target
     const isAboveTarget = currentPrice !== undefined && currentPrice > targetPrice;
 
-    // Chart colors based on position vs target - stable reference
     const colorKey = currentPrice === undefined ? "neutral" : isAboveTarget ? "green" : "red";
     const chartColors = COLORS[colorKey];
-
-    // Detect new swaps
-    useEffect(() => {
-        if (!priceHistory.length) return;
-
-        const now = Math.floor(Date.now() / 1000);
-        const swapPoints = priceHistory.filter((p) => p.isSwap && now - p.timestamp < 10);
-
-        if (swapPoints.length === 0) {
-            setRecentSwaps([]);
-            return;
-        }
-
-        const newSwaps = swapPoints.map((p) => {
-            const prevIdx = priceHistory.findIndex((pp) => pp.timestamp === p.timestamp) - 1;
-            const prevPrice = prevIdx >= 0 ? priceHistory[prevIdx].price : p.price;
-            return {
-                timestamp: p.timestamp,
-                isUp: p.price >= prevPrice,
-            };
-        });
-
-        setRecentSwaps(newSwaps);
-    }, [priceHistory]);
 
     const handleResize = useCallback(() => {
         if (!chartInstance.current || !chartRef.current) return;
@@ -77,7 +47,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         return () => window.removeEventListener("resize", handleResize);
     }, [handleResize]);
 
-    // Initialize chart - only depends on height and targetPrice
     useLayoutEffect(() => {
         if (!chartRef.current) return;
 
@@ -184,9 +153,8 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
             seriesRef.current = null;
             targetLineRef.current = null;
         };
-    }, [height, targetPrice]); // Removed chartColors dependency!
+    }, [height, targetPrice]);
 
-    // Update series colors separately - without recreating chart
     useEffect(() => {
         if (!seriesRef.current) return;
 
@@ -197,7 +165,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         });
     }, [chartColors]);
 
-    // Update dot position using RAF for smooth updates
     const updateDotPosition = useCallback(() => {
         if (!chartInstance.current || !seriesRef.current || !dotRef.current || priceHistory.length === 0) {
             return;
@@ -213,7 +180,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         }
     }, [priceHistory]);
 
-    // Update chart data when price history changes
     useEffect(() => {
         if (!seriesRef.current || !priceHistory.length) return;
 
@@ -224,7 +190,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
 
         seriesRef.current.setData(chartData);
 
-        // Check if target price is outside visible range
         const prices = priceHistory.map((p) => p.price);
         const minPrice = Math.min(...prices);
         const maxPrice = Math.max(...prices);
@@ -252,7 +217,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         rafRef.current = requestAnimationFrame(updateDotPosition);
     }, [priceHistory, targetPrice, updateDotPosition]);
 
-    // Continuously update dot position
     useEffect(() => {
         const updateLoop = () => {
             updateDotPosition();
@@ -268,7 +232,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         };
     }, [updateDotPosition]);
 
-    // Update target line if price changes
     useEffect(() => {
         if (!targetLineRef.current) return;
         targetLineRef.current.applyOptions({ price: targetPrice });
@@ -276,7 +239,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
 
     return (
         <div className="relative w-full">
-            {/* Live pulsing dot - positioned absolutely, updated via transform */}
             <div ref={dotRef} className="absolute z-10 pointer-events-none left-0 top-0 opacity-0 transition-opacity duration-150">
                 <span className="relative flex h-3 w-3">
                     <span
@@ -289,25 +251,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
                 </span>
             </div>
 
-            {/* Swap indicators */}
-            <div className="absolute left-3 top-3 flex flex-col gap-1 z-10 pointer-events-none">
-                {recentSwaps.slice(-3).map((swap, idx) => (
-                    <div
-                        key={swap.timestamp}
-                        className={cn(
-                            "px-2 py-0.5 rounded-full text-[10px] font-bold animate-fade-in-left backdrop-blur-sm",
-                            swap.isUp
-                                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                : "bg-red-500/20 text-red-400 border border-red-500/30",
-                        )}
-                        style={{ animationDelay: `${idx * 50}ms`, opacity: 1 - idx * 0.2 }}
-                    >
-                        {swap.isUp ? "↑ BUY" : "↓ SELL"}
-                    </div>
-                ))}
-            </div>
-
-            {/* Target badge */}
             <div className={cn("absolute left-2 z-10", targetOutOfBounds === "below" ? "bottom-9" : "top-2")}>
                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 backdrop-blur-sm border border-white/10">
                     {targetOutOfBounds ? (

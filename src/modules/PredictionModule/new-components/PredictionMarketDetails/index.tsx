@@ -4,11 +4,8 @@ import { cn, formatAmount } from "@/utils";
 import { ChevronLeft, Check, X, ArrowUpRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatUnits } from "viem";
-import { Chart } from "@/components/common/Chart";
-import { CHART_SPAN, POOL_CHART_TYPE } from "@/types/swap-chart";
-import { usePoolChartData } from "@/hooks/analytics";
 import { PredictionChart } from "../../components/PredictionChart";
-import { useMarketFiveMinuteData, useMarketStats } from "../../hooks";
+import { useMarketFiveMinuteData, useMarketStats, useSwapPriceHistory } from "../../hooks";
 import { PredictionMarket } from "../../types";
 import { UserActivitySection } from "../UserActivitySection";
 import { useAccount } from "wagmi";
@@ -16,6 +13,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useReadBinaryLmsrMarketManagerPriceNo, useReadBinaryLmsrMarketManagerPriceYes } from "@/generated";
 import { useNow } from "@/hooks/common/useNow";
 import { Link } from "react-router-dom";
+import { LivePriceChart } from "../LivePriceChart";
 
 interface PredictionMarketDetailsProps {
     market: PredictionMarket;
@@ -30,6 +28,13 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
     const marketCurrency = useCurrency(market.marketToken);
     const quoteCurrency = useCurrency(market.quoteToken);
     const quoteAmount = quoteCurrency ? formatUnits(BigInt(market.mark), quoteCurrency.decimals) : "0";
+
+    const targetPrice = useMemo(() => {
+        if (!quoteCurrency) return 0;
+        return Number(formatUnits(BigInt(market.mark), quoteCurrency.decimals));
+    }, [market.mark, quoteCurrency]);
+
+    const { priceHistory, currentPrice } = useSwapPriceHistory(market.pool, marketCurrency, quoteCurrency);
 
     const isLower = market.condition === "lower";
 
@@ -79,7 +84,6 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
     }, [market.createdAt, market.tradingDeadline]);
 
     const { data: marketFiveMinuteData, loading: isMarketDataLoading } = useMarketFiveMinuteData(market.id);
-    const { chartData, loading: isChartDataLoading } = usePoolChartData(market.pool, CHART_SPAN.DAY, POOL_CHART_TYPE.PRICE);
 
     const [tab, setTab] = useState<"rules" | "activity">("rules");
 
@@ -211,21 +215,20 @@ export function PredictionMarketDetails({ market, onBack }: PredictionMarketDeta
 
                         <div className="min-h-[220px]">
                             {chartType === "price" ? (
-                                <Chart
-                                    chartData={chartData}
-                                    chartSpan={CHART_SPAN.DAY}
-                                    chartTitle={POOL_CHART_TYPE.PRICE}
-                                    chartView={"line"}
-                                    chartType={POOL_CHART_TYPE.PRICE}
-                                    setChartType={() => {}}
-                                    setChartSpan={() => {}}
-                                    height={200}
-                                    tokenA={marketCurrency?.symbol}
-                                    tokenB={quoteCurrency?.symbol}
-                                    isChartDataLoading={isChartDataLoading}
-                                    showSpanSelector={false}
-                                    prediction={isLower ? { lower: +quoteAmount } : { greater: +quoteAmount }}
-                                />
+                                <>
+                                    <div className="text-title flex flex-col items-start text-left px-4 mb-2">
+                                        <div className="mb-2 font-semibold text-left">Price</div>
+                                        <div className="mb-2 text-xl font-semibold">
+                                            1 {marketCurrency?.symbol} = {formatAmount(currentPrice || 0, 6)} {quoteCurrency?.symbol}
+                                        </div>
+                                    </div>
+                                    <LivePriceChart
+                                        priceHistory={priceHistory}
+                                        targetPrice={targetPrice}
+                                        currentPrice={currentPrice}
+                                        height={250}
+                                    />
+                                </>
                             ) : (
                                 <PredictionChart
                                     lowerData={isLower ? marketFiveMinuteData : []}
