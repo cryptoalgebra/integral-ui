@@ -24,7 +24,7 @@ const Settings = () => {
                 className="flex w-[min(92vw,380px)] flex-col gap-4 rounded-xl border border-border bg-card p-4"
             >
                 <div className="flex flex-col gap-1 text-left">
-                    <div className="text-base font-semibold text-text">Transaction Settings</div>
+                    <div className="text-base font-medium text-text">Transaction Settings</div>
                     <p className="text-sm text-text-muted">Adjust trade safety and routing behavior.</p>
                 </div>
                 <Separator orientation={"horizontal"} className="bg-border" />
@@ -96,7 +96,7 @@ const SlippageTolerance = () => {
                             setSlippageInput("");
                             setSlippageError(false);
                         }}
-                        className="h-11 min-w-[70px] rounded-none border-none bg-transparent text-left text-sm font-semibold ring-0!"
+                        className="h-11 min-w-[70px] rounded-none border-none bg-transparent text-left text-sm font-medium ring-0!"
                         placeholder={"0.0"}
                     />
                     <div className="flex items-center border-l border-border px-4 text-sm font-medium text-text-muted">%</div>
@@ -157,7 +157,7 @@ const TransactionDeadline = () => {
                         setDeadlineInput("");
                         setDeadlineError(false);
                     }}
-                    className="h-11 rounded-none border-none bg-transparent text-left text-sm font-semibold ring-0!"
+                    className="h-11 rounded-none border-none bg-transparent text-left text-sm font-medium ring-0!"
                 />
                 <div className="flex items-center border-l border-border px-4 text-sm font-medium text-text-muted select-none">minutes</div>
             </div>
@@ -219,7 +219,7 @@ const SplitTrade = () => {
 const SettingGroup = ({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) => (
     <section className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left">
         <div className="flex flex-col gap-1">
-            <h3 className="text-sm font-semibold text-text">{title}</h3>
+            <h3 className="text-sm font-medium text-text">{title}</h3>
             {description ? <p className="text-sm text-text-muted">{description}</p> : null}
         </div>
         {children}
@@ -258,7 +258,7 @@ const ToggleRow = ({
 }) => (
     <section className="flex items-start justify-between gap-4 rounded-xl border border-border bg-card p-4 text-left">
         <div className="flex min-w-0 flex-col gap-1">
-            <label htmlFor={id} className="text-sm font-semibold text-text">
+            <label htmlFor={id} className="text-sm font-medium text-text">
                 {title}
             </label>
             <p className="text-sm text-text-muted">{description}</p>

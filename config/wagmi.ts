@@ -1,5 +1,5 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork } from "@reown/appkit/networks";
+import { AppKitNetwork, mainnet } from "@reown/appkit/networks";
 import {
     algebraBasePluginV1ABI,
     algebraCustomPoolEntryPointABI,
@@ -32,42 +32,41 @@ import {
     VOTER,
     VOTING_ESCROW,
 } from "./contract-addresses";
-import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrls: {
-        default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
-        },
-        public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
-        },
-    },
-    blockExplorers: {
-        default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
-        },
-        etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
-        },
-    },
-    contracts: {
-        multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
-        },
-    },
-});
+// const baseSepoliaChain = /*#__PURE__*/ defineChain({
+//     id: 84532,
+//     network: "baseSepolia",
+//     name: "Base Sepolia",
+//     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+//     rpcUrls: {
+//         default: {
+//             http: ["https://base-sepolia-rpc.publicnode.com"],
+//         },
+//         public: {
+//             http: ["https://base-sepolia-rpc.publicnode.com"],
+//         },
+//     },
+//     blockExplorers: {
+//         default: {
+//             name: "Basescan",
+//             url: "https://sepolia.basescan.org",
+//         },
+//         etherscan: {
+//             name: "Basescan",
+//             url: "https://sepolia.basescan.org",
+//         },
+//     },
+//     contracts: {
+//         multicall3: {
+//             address: "0xca11bde05977b3631167028862be2a173976ca11",
+//             blockCreated: 1059647,
+//         },
+//     },
+// });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [mainnet];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },

@@ -5,17 +5,17 @@ export type PoolDeployerType = "BASE_DYNAMIC" | "BASE_03" | "BASE_1" | "ALL_INCL
 
 export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | null>> = {
     BASE_DYNAMIC: {
-        [ChainId.BaseSepolia]: ADDRESS_ZERO,
+        [ChainId.Ethereum]: ADDRESS_ZERO,
     },
     BASE_03: {
-        [ChainId.BaseSepolia]: '0xa972B8650e5c4Db00Cb78c8E208AC7B38Ac1c189'
+        [ChainId.Ethereum]: null,
     },
     BASE_1: {
-        [ChainId.BaseSepolia]: '0x5f3b3cff2dD159c3A28402527cfE72BC175A0bb4'
+        [ChainId.Ethereum]: null,
     },
     /* Replace with `null` to use as a stub */
     ALL_INCLUSIVE: {
-        [ChainId.BaseSepolia]: "0x80968dCD8e9bFA7E4c0332E4a3220C69C2F244D8",
+        [ChainId.Ethereum]: null,
     },
 } as const;
 
@@ -31,6 +31,6 @@ export const customPoolDeployerTitleByAddress: Record<Address, string> = Object.
         Object.values(chainMap).map((address) => [
             address?.toLowerCase(),
             CUSTOM_POOL_DEPLOYER_TITLES[key as keyof typeof CUSTOM_POOL_DEPLOYER_TITLES],
-        ])
-    )
+        ]),
+    ),
 );

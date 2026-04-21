@@ -1,6 +1,6 @@
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { ChainId, Currency, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import React from "react";
-import BTCLogo from "@/assets/tokens/wbtc.svg";
+import USDTLogo from "@/assets/tokens/usdt.png";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
 import TOKENLogo from "@/assets/algebra-logo.png";
@@ -16,21 +16,29 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0x4200000000000000000000000000000000000006"]: {
+    [WNATIVE[ChainId.Ethereum].wrapped.address.toLowerCase()]: {
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    ["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48".toLowerCase()]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
-        symbol: "BTC",
-        logo: BTCLogo,
+    ["0xdAC17F958D2ee523a2206206994597C13D831ec7".toLowerCase()]: {
+        symbol: "USDT",
+        logo: USDTLogo,
     },
     ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
         symbol: "TOKEN",
         logo: TOKENLogo,
+    },
+    ["0x6fA0BE17e4beA2fCfA22ef89BF8ac9aab0AB0fc9".toLowerCase()]: {
+        symbol: "A7A5",
+        logo: "https://etherscan.io/token/images/a7a5_32.svg",
+    },
+    ["0x0D57436F2d39c0664C6f0f2E349229483f87EA38".toLowerCase()]: {
+        symbol: "wA7A5",
+        logo: "https://etherscan.io/token/images/wrapa7a5_64.png",
     },
 };
 
