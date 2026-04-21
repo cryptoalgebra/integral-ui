@@ -9,7 +9,7 @@ import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { tryParseAmount, BoostedRouteStepType } from "@cryptoalgebra/integral-sdk";
+import { tryParseAmount, BoostedRouteStepType, Currency } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
@@ -66,15 +66,14 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         return null;
     }, [trade, isSmartTrade]);
 
+    const tradeInputCurrency = trade?.inputAmount?.currency as Currency | undefined;
+    const tradeOutputCurrency = trade?.outputAmount?.currency as Currency | undefined;
+
     const parsedAmountA =
-        independentField === SwapField.INPUT
-            ? parsedAmount
-            : tryParseAmount(trade?.inputAmount?.toSignificant(), trade?.inputAmount?.currency);
+        independentField === SwapField.INPUT ? parsedAmount : tryParseAmount(trade?.inputAmount?.toSignificant(), tradeInputCurrency);
 
     const parsedAmountB =
-        independentField === SwapField.OUTPUT
-            ? parsedAmount
-            : tryParseAmount(trade?.outputAmount?.toSignificant(), trade?.outputAmount?.currency);
+        independentField === SwapField.OUTPUT ? parsedAmount : tryParseAmount(trade?.outputAmount?.toSignificant(), tradeOutputCurrency);
 
     const parsedAmounts = useMemo(
         () => ({
@@ -159,8 +158,8 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
     const { callback: smartSwapCallback, isLoading: smartSwapLoading } = useSmartRouterCallback(
-        trade?.inputAmount?.currency,
-        trade?.outputAmount?.currency,
+        tradeInputCurrency,
+        tradeOutputCurrency,
         trade?.inputAmount?.toFixed(),
         smartTradeCallOptions.calldata,
         smartTradeCallOptions.value,
@@ -193,7 +192,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             } else if (shouldUseOmegaRouter) {
                 await omegaSwapCallback?.();
                 if (permit2Allowance.state === AllowanceState.ALLOWED) {
-                    permit2Allowance.removePermitSign()
+                    permit2Allowance.removePermitSign();
                 }
             } else {
                 await swapCallback?.();
@@ -221,7 +220,11 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         );
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>
+                {`Connect to ${DEFAULT_CHAIN_NAME}`}
+            </Button>
+        );
 
     if (showWrap && wrapInputError) return <Button disabled>{wrapInputError}</Button>;
 

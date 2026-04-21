@@ -16,7 +16,7 @@ import { useMemo, useState } from "react";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { HeaderItem } from "@/components/common/Table/common";
 import { getTimeUntilTimestamp } from "../../utils";
-import TOKENLogo from "@/assets/algebra-logo.svg";
+import TOKENLogo from "@/assets/algebra-logo.png";
 import { formatUnits } from "viem";
 import { ManageLockModal } from "../ManageLockModal";
 import { ClaimVotingRewardsModal } from "../ClaimVotingRewardsModal";
@@ -101,7 +101,7 @@ export const LocksTable = ({ data, loading, refetch }: DataTableProps) => {
                 ),
             },
         ],
-        [refetch]
+        [refetch],
     );
 
     const table = useReactTable({

@@ -8,6 +8,10 @@ export function computeRegularRoutes(currencyIn: Currency, currencyOut: Currency
     const tokenOut = currencyOut.wrapped;
     const normalRoutes: Route<Currency, Currency>[] = [];
 
+    if (tokenIn.equals(tokenOut)) {
+        return normalRoutes;
+    }
+
     // 1 hop
     for (const pool of pools) {
         try {

@@ -1,10 +1,10 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { Currency, CurrencyAmount, maxAmountSpend, ZERO } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, Percent, maxAmountSpend, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
-import { ChevronsUpDownIcon } from "lucide-react";
+import { ArrowDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { TOKENS } from "config";
 import { useChainId } from "wagmi";
@@ -47,27 +47,27 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         (inputCurrency: Currency) => {
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleTypeInput = useCallback(
         (value: string) => {
             onUserInput(SwapField.INPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
     const handleTypeOutput = useCallback(
         (value: string) => {
             onUserInput(SwapField.OUTPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
 
     const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[SwapField.INPUT]);
@@ -76,6 +76,16 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const handleMaxInput = useCallback(() => {
         maxInputAmount && onUserInput(SwapField.INPUT, maxInputAmount.toExact());
     }, [maxInputAmount, onUserInput]);
+
+    const handleInputPercentage = useCallback(
+        (percent: 25 | 50 | 75) => {
+            if (!maxInputAmount) return;
+
+            const presetAmount = maxInputAmount.multiply(new Percent(percent, 100));
+            onUserInput(SwapField.INPUT, presetAmount.toExact());
+        },
+        [maxInputAmount, onUserInput],
+    );
 
     const { formatted: usdValueA } = useUSDCValue(parsedAmounts[SwapField.INPUT]);
     const { formatted: usdValueB } = useUSDCValue(parsedAmounts[SwapField.OUTPUT]);
@@ -104,26 +114,31 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [chainId, handleOutputSelect]);
 
     return (
-        <div className="flex flex-col gap-1 relative ">
+        <div className="relative flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
             <TokenCard
+                label="Sell"
                 value={formattedAmounts[SwapField.INPUT]}
                 currency={baseCurrency}
                 otherCurrency={quoteCurrency}
                 handleTokenSelection={handleInputSelect}
                 handleValueChange={handleTypeInput}
                 handleMaxValue={handleMaxInput}
+                onPercentAmountSelect={handleInputPercentage}
                 usdValue={usdValueA ?? undefined}
                 showMaxButton={showMaxButton}
-                showBalance={true}
                 isLoading={independentField === SwapField.OUTPUT && isTradeLoading}
+                showBalance
+                showPercentButtons
             />
             <button
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card-border hover:bg-card-hover duration-200"
+                type="button"
+                className="group absolute left-1/2 top-[calc(50%+4px)] z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform-gpu items-center justify-center rounded-full border border-border bg-background text-text shadow-sm transition-all duration-300 ease-out hover:scale-105 hover:border-primary hover:text-primary hover:shadow-md active:scale-95"
                 onClick={onSwitchTokens}
             >
-                <ChevronsUpDownIcon size={16} />
+                <ArrowDownIcon size={18} className="transition-transform duration-300 group-hover:rotate-180" />
             </button>
             <TokenCard
+                label="Buy"
                 value={formattedAmounts[SwapField.OUTPUT]}
                 currency={quoteCurrency}
                 otherCurrency={baseCurrency}
@@ -131,8 +146,8 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                 handleValueChange={handleTypeOutput}
                 usdValue={usdValueB ?? undefined}
                 percentDifference={percentDifference}
-                showBalance={true}
                 isLoading={independentField === SwapField.INPUT && isTradeLoading}
+                showBalance
             />
         </div>
     );

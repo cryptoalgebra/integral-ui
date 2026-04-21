@@ -109,7 +109,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                 amountOut: null,
                 fee: null,
                 priceAfterSwap: null,
-            }
+            },
         );
 
         if (!bestRoute || !amountOut) {
@@ -124,6 +124,14 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
 
         const priceImpact = priceAfterSwap ? calculatePriceImpact(bestRoute, priceAfterSwap) : null;
 
+        console.log("Best Trade Exact In:", {
+            route: bestRoute,
+            amountIn: amountIn.toExact(),
+            amountOut: CurrencyAmount.fromRawAmount(currencyOut, amountOut.toString()).toExact(),
+            fee,
+            priceAfterSwap,
+            priceImpact: priceImpact ? priceImpact.toSignificant(4) + "%" : null,
+        });
         return {
             state: TradeState.VALID,
             fee,
@@ -241,7 +249,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 amountIn: null,
                 fee: null,
                 priceAfterSwap: null,
-            }
+            },
         );
 
         if (!bestRoute || !amountIn) {

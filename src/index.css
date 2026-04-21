@@ -12,13 +12,11 @@ html {
 html,
 body {
     height: 100%;
-    background: var(--color-app-background);
-    color: var(--text-100);
-}
-
-body {
-    grid-template-columns: 1fr;
-    max-width: 100vw;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: "Poppins", sans-serif;
+    /* letter-spacing: 0.8px; */
+    font-weight: 300;
 }
 
 @layer base {
@@ -28,17 +26,9 @@ body {
 }
 
 #root {
-    max-width: 1280px;
+    width: min(100%, 1280px);
     height: 100%;
     margin: 0 auto;
-    padding: 0 2rem;
-    text-align: center;
-}
-
-@media (max-width: 480px) {
-    #root {
-        padding: 0 1rem;
-    }
 }
 
 ::-webkit-scrollbar {
@@ -66,13 +56,7 @@ button {
 
 .soft-div {
     position: relative;
-    mask-image: linear-gradient(
-        to right,
-        transparent 0%,
-        black 15%,
-        black 50%,
-        transparent 100%
-    );
+    mask-image: linear-gradient(to right, transparent 0%, black 15%, black 50%, transparent 100%);
     mask-size: 100% 100%;
     mask-repeat: no-repeat;
     transition: mask-image 0.3s ease;

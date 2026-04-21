@@ -4,7 +4,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useUserState } from "@/state/userStore";
+import { cn } from "@/utils";
 import { Percent } from "@cryptoalgebra/integral-sdk";
+import { enabledModules } from "config";
 import { SettingsIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -12,20 +14,24 @@ const Settings = () => {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant={"icon"} size={"md"} className="border border-card-border">
-                    <SettingsIcon />
+                <Button variant={"icon"} size={"sm"}>
+                    <SettingsIcon size={20} />
                 </Button>
             </PopoverTrigger>
             <PopoverContent
                 align={"end"}
-                className="flex flex-col gap-4 p-6 w-full max-w-[360px] bg-card-dark shadow-popover rounded-xl border border-card-border"
+                sideOffset={10}
+                className="flex w-[min(92vw,380px)] flex-col gap-4 rounded-xl border border-border bg-card p-4"
             >
-                <div className="text-md font-bold">Transaction Settings</div>
+                <div className="flex flex-col gap-1 text-left">
+                    <div className="text-base font-semibold text-text">Transaction Settings</div>
+                    <p className="text-sm text-text-muted">Adjust trade safety and routing behavior.</p>
+                </div>
                 <Separator orientation={"horizontal"} className="bg-border" />
                 <SlippageTolerance />
                 <TransactionDeadline />
                 <Multihop />
-                <SplitTrade />
+                {enabledModules.SmartRouterModule && <SplitTrade />}
                 <ExpertMode />
             </PopoverContent>
         </Popover>
@@ -68,30 +74,21 @@ const SlippageTolerance = () => {
     const slippageString = slippage !== "auto" ? slippage.toFixed(2) : "auto";
 
     return (
-        <div className="flex flex-col gap-2">
-            <div className="text-md font-semibold">Slippage Tolerance</div>
-            <div className="grid grid-cols-4 gap-4">
-                <Button variant={slippageString === "auto" ? "iconActive" : "outline"} size={"sm"} onClick={() => parseSlippageInput("")}>
+        <SettingGroup title="Slippage Tolerance" description="Choose a preset or enter a custom percentage.">
+            <div className="grid grid-cols-4 gap-2">
+                <PresetButton active={slippageString === "auto"} onClick={() => parseSlippageInput("")}>
                     Auto
-                </Button>
-                <Button
-                    variant={slippageString === "0.10" ? "iconActive" : "outline"}
-                    size={"sm"}
-                    onClick={() => parseSlippageInput("0.10")}
-                >
+                </PresetButton>
+                <PresetButton active={slippageString === "0.10"} onClick={() => parseSlippageInput("0.10")}>
                     0.1%
-                </Button>
-                <Button
-                    variant={slippageString === "0.50" ? "iconActive" : "outline"}
-                    size={"sm"}
-                    onClick={() => parseSlippageInput("0.5")}
-                >
+                </PresetButton>
+                <PresetButton active={slippageString === "0.50"} onClick={() => parseSlippageInput("0.5")}>
                     0.5%
-                </Button>
-                <Button variant={slippageString === "1.00" ? "iconActive" : "outline"} size={"sm"} onClick={() => parseSlippageInput("1")}>
+                </PresetButton>
+                <PresetButton active={slippageString === "1.00"} onClick={() => parseSlippageInput("1")}>
                     1%
-                </Button>
-                <div className="flex col-span-4">
+                </PresetButton>
+                <div className="col-span-4 flex overflow-hidden rounded-lg border border-border bg-panel">
                     <Input
                         value={slippageInput.length > 0 ? slippageInput : slippage === "auto" ? "" : slippage.toFixed(2)}
                         onChange={(e) => parseSlippageInput(e.target.value)}
@@ -99,26 +96,24 @@ const SlippageTolerance = () => {
                             setSlippageInput("");
                             setSlippageError(false);
                         }}
-                        className={`text-left border-none text-md font-semibold bg-card-hover rounded-l-lg rounded-r-none w-full min-w-[70px] ring-0!`}
+                        className="h-11 min-w-[70px] rounded-none border-none bg-transparent text-left text-sm font-semibold ring-0!"
                         placeholder={"0.0"}
                     />
-                    <div className="bg-card-hover text-sm p-2 pt-2.5 rounded-r-lg select-none">%</div>
+                    <div className="flex items-center border-l border-border px-4 text-sm font-medium text-text-muted">%</div>
                 </div>
             </div>
             {slippageError || tooLow || tooHigh ? (
-                <div>
+                <div className="pt-1">
                     {slippageError ? (
-                        <div className="bg-red-900 text-red-200 border border-red-500 px-2 py-1 rounded-lg">
-                            Enter a valid slippage percentage
-                        </div>
+                        <InlineNotice tone="accent">Enter a valid slippage percentage</InlineNotice>
                     ) : (
-                        <div className="bg-yellow-900 text-yellow-200 border border-yellow-500 px-2 py-1 rounded-lg">
+                        <InlineNotice tone="primary">
                             {tooLow ? "Your transaction may fail" : "Your transaction may be frontrun"}
-                        </div>
+                        </InlineNotice>
                     )}
                 </div>
             ) : null}
-        </div>
+        </SettingGroup>
     );
 };
 
@@ -152,9 +147,8 @@ const TransactionDeadline = () => {
     }
 
     return (
-        <div className="flex flex-col gap-2">
-            <div className="text-md font-semibold">Transaction Deadline</div>
-            <div className="flex">
+        <SettingGroup title="Transaction Deadline" description="Define how long a pending trade can stay valid.">
+            <div className="flex overflow-hidden rounded-lg border border-border bg-panel">
                 <Input
                     placeholder={"30"}
                     value={deadlineInput.length > 0 ? deadlineInput : txDeadline === 180 ? "" : (txDeadline / 60).toString()}
@@ -163,12 +157,12 @@ const TransactionDeadline = () => {
                         setDeadlineInput("");
                         setDeadlineError(false);
                     }}
-                    color={deadlineError ? "red" : ""}
-                    className={`text-left border-none text-md font-semibold bg-card-hover rounded-l-lg rounded-r-none w-full ring-0!`}
+                    className="h-11 rounded-none border-none bg-transparent text-left text-sm font-semibold ring-0!"
                 />
-                <div className="bg-card-hover text-sm p-2 pt-2.5 rounded-r-lg select-none">minutes</div>
+                <div className="flex items-center border-l border-border px-4 text-sm font-medium text-text-muted select-none">minutes</div>
             </div>
-        </div>
+            {deadlineError ? <InlineNotice tone="accent">Enter a value between 1 and 180 minutes.</InlineNotice> : null}
+        </SettingGroup>
     );
 };
 const ExpertMode = () => {
@@ -178,13 +172,13 @@ const ExpertMode = () => {
     } = useUserState();
 
     return (
-        <div className="flex flex-col gap-2 max-w-[332px]">
-            <div className="flex justify-between items-center gap-2 text-md font-semibold">
-                <label htmlFor="expert-mode">Expert mode</label>
-                <Switch id="expert-mode" checked={isExpertMode} onCheckedChange={setIsExpertMode} />
-            </div>
-            <p className="whitespace-break-spaces">Allows high slippage trades. Use at your own risk.</p>
-        </div>
+        <ToggleRow
+            id="expert-mode"
+            title="Expert mode"
+            description="Allows high slippage trades. Use at your own risk."
+            checked={isExpertMode}
+            onCheckedChange={setIsExpertMode}
+        />
     );
 };
 
@@ -195,13 +189,13 @@ const Multihop = () => {
     } = useUserState();
 
     return (
-        <div className="flex flex-col gap-2 max-w-[332px]">
-            <div className="flex justify-between items-center gap-2 text-md font-semibold">
-                <label htmlFor="multihop">Multihop</label>
-                <Switch id="multihop" checked={isMultihop} onCheckedChange={setIsMultihop} />
-            </div>
-            <p className="whitespace-break-spaces">Optimized trades across multiple liquidity pools.</p>
-        </div>
+        <ToggleRow
+            id="multihop"
+            title="Multihop"
+            description="Optimized trades across multiple liquidity pools."
+            checked={isMultihop}
+            onCheckedChange={setIsMultihop}
+        />
     );
 };
 
@@ -212,14 +206,65 @@ const SplitTrade = () => {
     } = useUserState();
 
     return (
-        <div className="flex flex-col gap-2 max-w-[332px]">
-            <div className="flex justify-between items-center gap-2 text-md font-semibold">
-                <label htmlFor="split">Split trade</label>
-                <Switch id="split" checked={isSplit} onCheckedChange={setIsSplit} />
-            </div>
-            <p className="whitespace-break-spaces">Split trades across identical pools with different plugins.</p>
-        </div>
+        <ToggleRow
+            id="split"
+            title="Split trade"
+            description="Split trades across identical pools with different plugins."
+            checked={isSplit}
+            onCheckedChange={setIsSplit}
+        />
     );
 };
+
+const SettingGroup = ({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) => (
+    <section className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left">
+        <div className="flex flex-col gap-1">
+            <h3 className="text-sm font-semibold text-text">{title}</h3>
+            {description ? <p className="text-sm text-text-muted">{description}</p> : null}
+        </div>
+        {children}
+    </section>
+);
+
+const PresetButton = ({ active, children, onClick }: { active: boolean; children: React.ReactNode; onClick: () => void }) => (
+    <Button className="border" type="button" variant={active ? "secondary" : "outline"} size={"sm"} onClick={onClick}>
+        {children}
+    </Button>
+);
+
+const InlineNotice = ({ tone, children }: { tone: "primary" | "accent"; children: React.ReactNode }) => (
+    <div
+        className={cn(
+            "rounded-xl border px-3 py-2 text-sm",
+            tone === "accent" ? "border-accent/25 bg-accent-soft text-primary-foreground" : "border-primary/25 bg-primary-soft text-text",
+        )}
+    >
+        {children}
+    </div>
+);
+
+const ToggleRow = ({
+    id,
+    title,
+    description,
+    checked,
+    onCheckedChange,
+}: {
+    id: string;
+    title: string;
+    description: string;
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+}) => (
+    <section className="flex items-start justify-between gap-4 rounded-xl border border-border bg-card p-4 text-left">
+        <div className="flex min-w-0 flex-col gap-1">
+            <label htmlFor={id} className="text-sm font-semibold text-text">
+                {title}
+            </label>
+            <p className="text-sm text-text-muted">{description}</p>
+        </div>
+        <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+    </section>
+);
 
 export default Settings;

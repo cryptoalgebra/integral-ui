@@ -1,9 +1,16 @@
+import { cn } from "@/utils";
+
 interface PageContainerProps {
     children: React.ReactNode;
+    className?: string;
 }
 
-const PageContainer = ({ children }: PageContainerProps) => {
-    return <div className="flex flex-col w-full items-start max-md:py-4 max-md:pb-24 py-20 animate-fade-in duration-200">{children}</div>;
+const PageContainer = ({ children, className }: PageContainerProps) => {
+    return (
+        <section className={cn("flex flex-col gap-8 m-auto px-4 max-w-[1200px] h-full max-md:pt-4 max-md:pb-20 py-8", className)}>
+            {children}
+        </section>
+    );
 };
 
 export default PageContainer;

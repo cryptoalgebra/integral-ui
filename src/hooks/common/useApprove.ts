@@ -45,7 +45,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 
     useEffect(() => {
         setShouldPolling(true);
-    }, [amountToApprove])
+    }, [amountToApprove?.quotient.toString()]);
 
     useEffect(() => {
         if (!needAllowance && shouldPolling) {
@@ -73,7 +73,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
 
 export function useApproveCallbackFromTrade(
     trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | null | undefined,
-    allowedSlippage: Percent
+    allowedSlippage: Percent,
 ) {
     const isSmartTrade = trade && "routes" in trade;
 
@@ -84,9 +84,9 @@ export function useApproveCallbackFromTrade(
                     ? SmartRouter.maximumAmountIn(trade, allowedSlippage)
                     : trade.maximumAmountIn(allowedSlippage)
                 : undefined,
-        [trade, allowedSlippage, isSmartTrade]
+        [trade, allowedSlippage.quotient.toString(), isSmartTrade],
     );
-    return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
+    return useApprove(amountToApprove?.quotient.toString(), SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
 }
 
 export function useRevokeApprove(token: Currency | undefined, spender: Address) {

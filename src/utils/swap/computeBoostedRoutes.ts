@@ -100,6 +100,10 @@ export function computeBoostedRoutes(currencyIn: Currency, currencyOut: Currency
     const tokenOut = currencyOut.wrapped;
     const boostedRoutes: BoostedRoute<Currency, Currency>[] = [];
 
+    if (tokenIn.equals(tokenOut)) {
+        return boostedRoutes;
+    }
+
     // Filter only pools where BOTH tokens are boosted
     const boostedPools = pools;
 

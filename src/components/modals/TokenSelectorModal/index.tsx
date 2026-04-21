@@ -2,9 +2,9 @@ import { TokenSelector } from "@/components/common/TokenSelector";
 import {
     Credenza,
     CredenzaBody,
-    CredenzaClose,
     CredenzaContent,
     CredenzaHeader,
+    CredenzaDescription,
     CredenzaTitle,
     CredenzaTrigger,
 } from "@/components/ui/credenza";
@@ -21,42 +21,20 @@ interface ITokenSelectorModal {
 
 const TokenSelectorModal = ({ isOpen, setIsOpen, onSelect, otherCurrency, children, showNativeToken }: ITokenSelectorModal) => {
     return (
-        <Credenza open={isOpen}>
+        <Credenza open={isOpen} onOpenChange={setIsOpen}>
             <CredenzaTrigger asChild>{children}</CredenzaTrigger>
             <CredenzaContent
-                className="bg-card-dark !rounded-xl"
+                className="overflow-hidden border border-border bg-card p-0 shadow-sm md:max-w-lg"
                 onInteractOutside={() => setIsOpen(false)}
                 onEscapeKeyDown={() => setIsOpen(false)}
             >
-                <CredenzaHeader>
-                    <CredenzaTitle>Select a token</CredenzaTitle>
+                <CredenzaHeader className="border-b border-border px-4 py-4 md:px-5">
+                    <CredenzaTitle className="text-xl font-medium tracking-tight text-text">Select a token</CredenzaTitle>
+                    <CredenzaDescription className="text-sm text-text-muted">Search by symbol, name, or token address.</CredenzaDescription>
                 </CredenzaHeader>
-                <CredenzaBody>
+                <CredenzaBody className="px-4 pb-4 md:px-5">
                     <TokenSelector showNativeToken={showNativeToken} onSelect={onSelect} otherCurrency={otherCurrency} />
                 </CredenzaBody>
-                <CredenzaClose asChild>
-                    <button
-                        className="absolute right-4 top-4 rounded-sm opacity-70"
-                        onClick={() => setIsOpen(false)}
-                        style={{ zIndex: 999 }}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="h-4 w-4"
-                        >
-                            <path d="M18 6 6 18"></path>
-                            <path d="m6 6 12 12"></path>
-                        </svg>
-                    </button>
-                </CredenzaClose>
             </CredenzaContent>
         </Credenza>
     );

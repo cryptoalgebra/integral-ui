@@ -1,32 +1,29 @@
-import Loader from "@/components/common/Loader";
-import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { useUserState } from "@/state/userStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { Percent, TradeType } from "@cryptoalgebra/integral-sdk";
-import { ChevronDownIcon, ZapIcon } from "lucide-react";
+import { ArrowUpDown, ChevronDownIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Button } from "@/components/ui/button.tsx";
-import { useOverrideFee } from "@/hooks/swap/useOverrideFee";
 import { TradeState } from "@/types/trade-state";
-import { cn } from "@/utils";
-import { SwapRouteModal } from "../SwapRouteModal";
+import { cn, formatAmount } from "@/utils";
 
 const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
-    const [isOpen, setIsOpen] = useState(false);
+    // const [isOpen, setIsOpen] = useState(false);
+    const [isRateInverted, setIsRateInverted] = useState(false);
 
-    const { allowedSlippage, currencies, poolAddress, toggledTrade: trade, tradeState, priceImpact: derivedPriceImpact } = derivedSwap;
+    const { allowedSlippage, currencies, toggledTrade: trade, tradeState, priceImpact: derivedPriceImpact } = derivedSwap;
     const { typedValue } = useSwapState();
+    const { slippage } = useUserState();
 
     const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
     const [isExpanded, toggleExpanded] = useState(false);
 
-    const { dynamicFeePlugin } = usePoolPlugins(poolAddress);
-
-    const { fee, fees } = useOverrideFee(trade);
+    // const { fees } = useOverrideFee(trade);
 
     const isSmartTrade = trade && "routes" in trade;
 
@@ -54,95 +51,123 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         }
     }, [allowedSlippage, isSmartTrade, trade]);
 
+    // const displayRoutes = useMemo(() => {
+    //     if (!trade) return undefined;
+
+    //     return isSmartTrade
+    //         ? trade.routes
+    //         : (trade.swaps.map((swap) => swap.route) as SDKRoute<Currency, Currency>[] | BoostedRoute<Currency, Currency>[]);
+    // }, [isSmartTrade, trade]);
+
+    const rateDisplay = useMemo(() => {
+        if (!trade) return "-";
+
+        if (!isSmartTrade && "executionPrice" in trade) {
+            const executionPrice = isRateInverted ? trade.executionPrice.invert() : trade.executionPrice;
+            const priceValue = Number(executionPrice.toSignificant(12));
+
+            if (!Number.isFinite(priceValue) || priceValue <= 0) {
+                return "-";
+            }
+
+            return `1 ${executionPrice.baseCurrency.symbol} = ${formatAmount(priceValue, 8)} ${executionPrice.quoteCurrency.symbol}`;
+        }
+
+        const baseAmount = isRateInverted ? trade.outputAmount : trade.inputAmount;
+        const quoteAmount = isRateInverted ? trade.inputAmount : trade.outputAmount;
+
+        const inputAmount = Number(baseAmount.toSignificant(12));
+        const outputAmount = Number(quoteAmount.toSignificant(12));
+
+        if (!Number.isFinite(inputAmount) || !Number.isFinite(outputAmount) || inputAmount <= 0) {
+            return "-";
+        }
+
+        const rate = outputAmount / inputAmount;
+
+        return `1 ${baseAmount.currency.symbol} = ${formatAmount(rate, 8)} ${quoteAmount.currency.symbol}`;
+    }, [isRateInverted, isSmartTrade, trade]);
+
+    const summaryLabel = trade?.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent";
+
     const isTradeLoading = tradeState.state === TradeState.LOADING;
 
     if (wrapType !== WrapType.NOT_APPLICABLE) return;
 
-    return trade ? (
-        <div className="rounded">
-            <div className="flex justify-between">
-                <button
-                    className="flex items-center w-full text-md mb-1 text-center bg-card-dark border border-card-border py-1 px-3 rounded-lg"
-                    onClick={() => toggleExpanded(!isExpanded)}
-                >
-                    {fee !== undefined ? (
-                        <div className="rounded select-none pointer px-1.5 py-1 flex items-center relative">
-                            {dynamicFeePlugin && <ZapIcon className="mr-2 fill-text" strokeWidth={1} stroke="white" size={16} />}
-                            <span>{`${fee?.toFixed(4)}% fee`}</span>
-                        </div>
-                    ) : (
-                        <div className="rounded select-none px-1.5 py-1 flex items-center relative">
-                            <Loader size={16} />
-                        </div>
-                    )}
-                    <div className={`ml-auto duration-300 ${isExpanded && "rotate-180"}`}>
-                        <ChevronDownIcon strokeWidth={2} size={16} />
-                    </div>
-                </button>
+    return trade || isTradeLoading ? (
+        <div className="rounded-lg bg-card p-1 transition-all duration-300 ease-out animate-in fade-in-0 slide-in-from-bottom-2">
+            <div className="flex items-center justify-between gap-4 p-3 text-sm">
+                <span className="text-text-muted">{summaryLabel}</span>
+                <span className="text-right font-medium text-text">{trade ? minimumAmountOut : "-"}</span>
             </div>
+
+            <button
+                type="button"
+                className="mx-auto flex items-center gap-1 rounded-full px-3 py-1 text-sm text-text-muted transition-all duration-200 hover:bg-panel hover:text-text"
+                onClick={() => toggleExpanded(!isExpanded)}
+            >
+                <span>{isExpanded ? "Less details" : "More details"}</span>
+                <ChevronDownIcon className={cn("duration-200", isExpanded && "rotate-180")} size={16} strokeWidth={2} />
+            </button>
+
             <div
                 className={cn(
-                    "h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg",
-                    isExpanded && "h-[160px]",
-                    isExpanded && "border border-card-border"
+                    " grid overflow-hidden transition-all duration-300 ease-out",
+                    isExpanded ? "opacity-100 h-[129px]" : " opacity-0 h-0",
                 )}
             >
-                <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Route</span>
-                        <span>
-                            <SwapRouteModal
-                                isOpen={isOpen}
-                                setIsOpen={setIsOpen}
-                                routes={isSmartTrade ? trade?.routes : trade.swaps.map((swap) => swap.route)}
-                                fees={fees}
-                                tradeType={trade?.tradeType}
-                            >
-                                <Button size={"sm"} variant={"outline"} onClick={() => setIsOpen(true)}>
-                                    Show
-                                </Button>
-                            </SwapRouteModal>
-                        </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">
-                            {trade.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent"}
-                        </span>
-                        <span>{minimumAmountOut}</span>
-                    </div>
-                    {/*<div className="flex items-center justify-between">*/}
-                    {/*    <span className="font-semibold">LP Fee</span>*/}
-                    {/*    <span>{LPFeeString}</span>*/}
-                    {/*</div>*/}
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Price impact</span>
-                        <span>
-                            <PriceImpact priceImpact={priceImpact} />
-                        </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Slippage tolerance</span>
-                        <span>{allowedSlippage.toFixed(2)}%</span>
+                <div className="overflow-hidden px-2 pb-2 pt-4">
+                    <div className="border-t border-border pt-4 text-sm text-text">
+                        <ParamsRow
+                            label="Slippage Tolerance"
+                            value={
+                                <div className="flex items-center gap-2 text-right">
+                                    {slippage === "auto" && (
+                                        <span className="rounded-full bg-panel px-2.5 py-0.5 text-xs font-medium text-text-muted">
+                                            Auto
+                                        </span>
+                                    )}
+                                    <span>{allowedSlippage.toFixed(2).replace(/\.00$/, "")}%</span>
+                                </div>
+                            }
+                        />
+                        <ParamsRow label="Price Impact" value={<PriceImpact priceImpact={priceImpact} />} />
+                        <ParamsRow
+                            label="Rate"
+                            value={
+                                <div className="flex items-center justify-end gap-2 text-right">
+                                    <span>{rateDisplay}</span>
+                                    <Button
+                                        type="button"
+                                        size={"sm"}
+                                        variant={"ghost"}
+                                        className="h-6 w-6 rounded-full p-0 text-text-muted hover:bg-panel hover:text-text"
+                                        onClick={() => setIsRateInverted((prevState) => !prevState)}
+                                    >
+                                        <ArrowUpDown size={14} />
+                                    </Button>
+                                </div>
+                            }
+                        />
                     </div>
                 </div>
             </div>
         </div>
-    ) : trade !== undefined && isTradeLoading ? (
-        <div className="flex justify-center mb-1 bg-card-dark border border-card-border py-3 px-3 rounded-lg">
-            <Loader size={17} className="text-text" />
-        </div>
-    ) : (
-        <div className="text-md mb-1 text-center opacity-70 bg-card-dark border border-card-border py-2 px-3 rounded-lg">
-            Select an amount for swap
-        </div>
-    );
+    ) : null;
+    // <div className="rounded-[24px] bg-card p-3 text-center text-sm text-text-muted">Enter an amount to preview route and slippage</div>
 };
+
+const ParamsRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
+    <div className="flex items-center justify-between gap-4 py-1.5 first:pt-0 last:pb-1 text-sm">
+        <span className="text-text-muted">{label}</span>
+        <div className="font-medium text-text">{value}</div>
+    </div>
+);
 
 const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
     const severity = warningSeverity(priceImpact);
 
-    const color = severity === 3 || severity === 4 ? "text-red-400" : severity === 2 ? "text-yellow-400" : "currentColor";
+    const color = severity >= 3 ? "text-accent" : priceImpact ? "text-primary" : "text-text";
 
     return <span className={color}>{priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}</span>;
 };
