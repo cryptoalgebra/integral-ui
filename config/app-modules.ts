@@ -16,13 +16,13 @@ export enum AppFeatureModule {
 export const enabledModules: Record<AppFeatureModule, boolean> = {
     [AppFeatureModule.SmartRouter]: false,
 
-    [AppFeatureModule.CustomPools]: true,
-    [AppFeatureModule.Analytics]: true,
-    [AppFeatureModule.Farming]: true,
-    [AppFeatureModule.LimitOrders]: true,
-    [AppFeatureModule.ALM]: true,
+    [AppFeatureModule.CustomPools]: false,
+    [AppFeatureModule.Analytics]: false,
+    [AppFeatureModule.Farming]: false,
+    [AppFeatureModule.LimitOrders]: false,
+    [AppFeatureModule.ALM]: false,
 
-    [AppFeatureModule.VE_33]: true,
+    [AppFeatureModule.VE_33]: false,
 
-    [AppFeatureModule.BoostedPools]: true,
+    [AppFeatureModule.BoostedPools]: false,
 };

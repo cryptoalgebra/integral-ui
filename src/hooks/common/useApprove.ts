@@ -79,14 +79,14 @@ export function useApproveCallbackFromTrade(
 
     const amountToApprove = useMemo(
         () =>
-            trade && trade.inputAmount.currency.isToken
+            trade
                 ? isSmartTrade
                     ? SmartRouter.maximumAmountIn(trade, allowedSlippage)
                     : trade.maximumAmountIn(allowedSlippage)
                 : undefined,
         [trade, allowedSlippage.quotient.toString(), isSmartTrade],
     );
-    return useApprove(amountToApprove?.quotient.toString(), SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
+    return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
 }
 
 export function useRevokeApprove(token: Currency | undefined, spender: Address) {
