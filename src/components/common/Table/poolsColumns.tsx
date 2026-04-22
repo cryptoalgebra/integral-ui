@@ -19,7 +19,7 @@ import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
 const { BoostedTag, BoostedAPR } = BoostedPoolsModule.components;
 const { useBoostedTokenAPR } = BoostedPoolsModule.hooks;
 
-const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: FormattedPool) => {
+const PoolPair = ({ pair, id, hasALM, hasActiveFarming, fee }: FormattedPool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -27,23 +27,28 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: FormattedPool) => {
     const currencyB = useCurrency(token1, true);
 
     return (
-        <div className="flex items-center gap-4 ml-2">
-            <div className="flex">
-                <CurrencyLogo currency={currencyA} size={30} />
-                <CurrencyLogo currency={currencyB} size={30} className="-ml-2" />
+        <div className="ml-1.5 flex items-center gap-3">
+            <div className="flex shrink-0 items-center">
+                <CurrencyLogo currency={currencyA} size={32} className="ring-2 ring-card" />
+                <CurrencyLogo currency={currencyB} size={32} className="-ml-2 ring-2 ring-card" />
             </div>
 
             {currencyA && currencyB ? (
-                <div>{`${currencyA?.symbol} - ${currencyB?.symbol}`}</div>
-            ) : (
-                <Skeleton className="h-[20px] w-[90px] bg-card" />
-            )}
+                <div className="flex justify-between min-w-0 w-full items-center">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-text">{`${currencyA.symbol} / ${currencyB.symbol}`}</span>
+                        {!enabledModules.CustomPoolsModule && <span className="text-xs text-text-muted">{fee}% fee</span>}
+                    </div>
 
-            <div className="flex items-center gap-2">
-                {hasActiveFarming && <FarmTag poolAddress={id} />}
-                {hasALM && <ALMTag poolAddress={id} />}
-                <BoostedTag currencyA={currencyA} currencyB={currencyB} />
-            </div>
+                    <div className="flex flex-wrap ml-auto items-center gap-2">
+                        {hasActiveFarming && <FarmTag poolAddress={id} />}
+                        {hasALM && <ALMTag poolAddress={id} />}
+                        <BoostedTag currencyA={currencyA} currencyB={currencyB} />
+                    </div>
+                </div>
+            ) : (
+                <Skeleton className="h-5 w-24 rounded-lg bg-panel" />
+            )}
             {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}
             {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}
         </div>
@@ -67,7 +72,7 @@ const AvgAPR = ({
         <div className="flex items-center gap-2">
             <HoverCard>
                 <HoverCardTrigger>
-                    <span>{`${formatAmount(avgApr, 2)}%`}</span>
+                    <span className="font-medium text-text">{`${formatAmount(avgApr, 2)}%`}</span>
                 </HoverCardTrigger>
                 <HoverCardContent>
                     <p>Avg. APR - {avgApr}</p>

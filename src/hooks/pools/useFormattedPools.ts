@@ -23,6 +23,7 @@ export interface FormattedPool {
     fee: number;
     tvlUSD: number;
     volume24USD: number;
+    fees24USD: number;
     poolMaxApr: number;
     poolAvgApr: number;
     avgApr: number;
@@ -89,7 +90,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 const msIn24Hours = 24 * 60 * 60 * 1000;
 
                 const openPositions = positions?.filter(
-                    (position) => position.pool.toLowerCase() === id.toLowerCase() && position.liquidity > 0n
+                    (position) => position.pool.toLowerCase() === id.toLowerCase() && position.liquidity > 0n,
                 );
                 const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
@@ -103,10 +104,10 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 const avgApr = farmApr + poolAvgApr;
 
                 const isBoostedToken0 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
-                    (bt) => bt.address.toLowerCase() === token0.id.toLowerCase()
+                    (bt) => bt.address.toLowerCase() === token0.id.toLowerCase(),
                 );
                 const isBoostedToken1 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
-                    (bt) => bt.address.toLowerCase() === token1.id.toLowerCase()
+                    (bt) => bt.address.toLowerCase() === token1.id.toLowerCase(),
                 );
                 const isBoosted = isBoostedToken0 || isBoostedToken1;
 
@@ -131,7 +132,9 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     isBoostedToken0: Boolean(isBoostedToken0),
                     isBoostedToken1: Boolean(isBoostedToken1),
                     deployer: deployer.toLowerCase(),
-                    isShowcase: token0.id === '0x4200000000000000000000000000000000000006' && token1.id === '0xabac6f23fdf1313fc2e9c9244f666157ccd32990'
+                    isShowcase:
+                        token0.id === "0x4200000000000000000000000000000000000006" &&
+                        token1.id === "0xabac6f23fdf1313fc2e9c9244f666157ccd32990",
                 };
             });
     }, [

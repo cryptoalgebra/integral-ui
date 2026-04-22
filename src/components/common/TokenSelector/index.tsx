@@ -15,6 +15,7 @@ import { Check, Copy, Search as SearchIcon } from "lucide-react";
 import { cn } from "@/utils/common/cn";
 import { formatAmount } from "@/utils";
 import { DEFAULT_CHAIN_ID, TOKENS } from "config";
+import { Input } from "@/components/ui/input";
 
 const TokenSelectorView = {
     DEFAULT_LIST: "DEFAULT_LIST",
@@ -37,7 +38,7 @@ const FEATURED_TOKENS = [
     WNATIVE[DEFAULT_CHAIN_ID].wrapped.address,
     TOKENS[DEFAULT_CHAIN_ID].USDC.address,
     TOKENS[DEFAULT_CHAIN_ID].USDT.address,
-    "0x0D57436F2d39c0664C6f0f2E349229483f87EA38", // A7A5
+    "0x6fA0BE17e4beA2fCfA22ef89BF8ac9aab0AB0fc9", // A7A5
 ];
 
 const isTokenLocked = (tokenAddress: string, otherCurrency: Currency | null | undefined) =>
@@ -45,15 +46,16 @@ const isTokenLocked = (tokenAddress: string, otherCurrency: Currency | null | un
 
 const SearchField = ({ query, onQueryChange }: { query: string; onQueryChange: (value: string) => void }) => {
     return (
-        <div className="flex items-center gap-3 rounded-lg border border-border bg-panel px-4 py-2.5">
-            <SearchIcon className="h-4 w-4 shrink-0 text-text-muted" />
-            <input
+        <div className="flex items-center gap-2 relative">
+            <SearchIcon className="h-4 w-4 left-3 shrink-0 text-text-muted absolute" />
+            <Input
                 type="text"
                 value={query}
                 placeholder="Search by name or address"
                 autoComplete="off"
-                className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
-                onChange={(e) => onQueryChange(e.target.value)}
+                className="pl-9"
+                // className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
+                onUserInput={(e) => onQueryChange(e)}
             />
         </div>
     );

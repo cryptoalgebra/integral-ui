@@ -13,7 +13,7 @@ export const STATUS_DESCRIPTIONS: Record<number, string> = {
 };
 
 export const STATUS_COLORS: Record<number, string> = {
-    [SecurityState.ENABLED]: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    [SecurityState.DISABLED]: "bg-red-900 text-red-200 border-red-600",
-    [SecurityState.BURN_ONLY]: "bg-amber-900 text-amber-200 border-amber-600",
+    [SecurityState.ENABLED]: "border-primary/20 bg-primary-soft text-text",
+    [SecurityState.DISABLED]: "border-accent/25 bg-accent-soft text-text",
+    [SecurityState.BURN_ONLY]: "border-primary/20 bg-panel text-text",
 };

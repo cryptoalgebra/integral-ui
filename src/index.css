@@ -25,12 +25,6 @@ body {
     }
 }
 
-#root {
-    width: min(100%, 1280px);
-    height: 100%;
-    margin: 0 auto;
-}
-
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

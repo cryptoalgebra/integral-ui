@@ -1,5 +1,5 @@
 import { cn } from "@/utils";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Droplets } from "lucide-react";
 import { matchPath, NavLink, useLocation } from "react-router-dom";
 
 const PATHS = {
@@ -19,12 +19,12 @@ const menuItems = [
         active: [PATHS.SWAP, PATHS.LIMIT_ORDERS],
         icon: <ArrowUpDown size={20} />,
     },
-    // {
-    //     title: "Pools",
-    //     link: "/pools",
-    //     active: [PATHS.POOLS, PATHS.POOL],
-    //     icon: <Droplets size={20} />,
-    // },
+    {
+        title: "Pools",
+        link: "/pools",
+        active: [PATHS.POOLS, PATHS.POOL],
+        icon: <Droplets size={20} />,
+    },
     // ...(enabledModules.Ve33Module
     //     ? [
     //           {
@@ -53,7 +53,7 @@ export function NavButtons() {
     const { pathname } = useLocation();
 
     const setNavlinkClasses = (paths: string[]) =>
-        paths.some((path) => matchPath(path, pathname)) ? "text-primary" : "text-text-muted hover:text-text";
+        paths.some((path) => matchPath(path, pathname)) ? "bg-panel" : "text-text-muted hover:text-text hover:bg-panel";
 
     return (
         <>
@@ -62,7 +62,7 @@ export function NavButtons() {
                     key={`nav-item-${item.link}`}
                     to={{ pathname: item.link }}
                     className={cn(
-                        "flex items-center justify-center gap-1.5 w-fit md:min-w-10 rounded-full px-1 py-2 text-[13px] font-medium transition-colors duration-200 md:px-0",
+                        "flex items-center justify-center gap-1.5 w-fit md:min-w-10 rounded-md px-1 py-2 text-xs font-medium transition-colors duration-200 md:px-4 tracking-[2px] uppercase",
                         setNavlinkClasses(item.active),
                     )}
                 >

@@ -36,7 +36,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "A7A5",
         logo: "https://etherscan.io/token/images/a7a5_32.svg",
     },
-    ["0x0D57436F2d39c0664C6f0f2E349229483f87EA38".toLowerCase()]: {
+    ["0xf442ff10b8def89514560a66c0ad28777094636a".toLowerCase()]: {
         symbol: "wA7A5",
         logo: "https://etherscan.io/token/images/wrapa7a5_64.png",
     },
