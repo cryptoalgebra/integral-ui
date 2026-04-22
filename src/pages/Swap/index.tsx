@@ -10,6 +10,7 @@ import { TradeState } from "@/types/trade-state";
 import { cn } from "@/utils";
 import { NavLink } from "react-router-dom";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
+import { Button } from "@/components/ui/button";
 const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
 
 const SwapPage = ({ type }: SwapPageProps) => {
@@ -32,18 +33,24 @@ const SwapPage = ({ type }: SwapPageProps) => {
                 </div>
 
                 <div className="relative w-full max-w-lg">
-                    <div className="mb-4 flex flex-col gap-3 px-1">
-                        <div className="flex items-center gap-5 whitespace-nowrap text-sm font-medium tracking-[2px] uppercase">
+                    <div className="mb-4 flex items-center justify-between gap-3 px-1">
+                        <div className="flex items-center gap-5 whitespace-nowrap text-sm font-medium tracking-wide">
                             <NavLink
                                 className={cn(
                                     "transition-colors duration-200",
-                                    isLimitOrder ? "text-text-muted hover:text-text" : "text-text",
+                                    isLimitOrder ? "text-text-muted hover:text-text" : "text-primary",
                                 )}
                                 to="/swap"
                             >
-                                Trade
+                                Swap
                             </NavLink>
+                            <span className={cn("transition-colors duration-200 opacity-50 pointer-events-none")}>Limit Order</span>
+                            <span className={cn("transition-colors duration-200 opacity-50 pointer-events-none")}>Buy</span>
                         </div>
+
+                        <Button size={"sm"} variant={"outline"} disabled className="rounded-full text-text text-xs border-2 border-border ">
+                            Advanced
+                        </Button>
                     </div>
 
                     <div className="relative overflow-hidden flex flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm transition-all duration-300 ease-out hover:shadow-md animate-in fade-in-0 slide-in-from-bottom-2 duration-500">

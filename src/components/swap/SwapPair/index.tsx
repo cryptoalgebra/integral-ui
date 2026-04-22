@@ -110,7 +110,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleOutputSelect(TOKENS[chainId].USDC);
+        handleOutputSelect(TOKENS[chainId].A7A5);
     }, [chainId, handleOutputSelect]);
 
     return (

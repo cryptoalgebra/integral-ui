@@ -6,7 +6,7 @@ import { computeRegularRoutes } from "@/utils/swap/computeRegularRoutes";
 
 export function useAllRoutes(
     currencyIn?: Currency,
-    currencyOut?: Currency
+    currencyOut?: Currency,
 ): {
     loading: boolean;
     boostedRoutes: BoostedRoute<Currency, Currency>[];
@@ -26,6 +26,12 @@ export function useAllRoutes(
 
         return { normalRoutes, boostedRoutes };
     }, [currencyIn, currencyOut, pools, poolsLoading]);
+
+    console.log({
+        normalRoutes,
+        boostedRoutes,
+        pools,
+    });
 
     return {
         normalRoutes,

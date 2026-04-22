@@ -1,13 +1,10 @@
 import PageContainer from "@/components/common/PageContainer";
 import PoolsList from "@/components/pools/PoolsList";
 import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
-import { Button } from "@/components/ui/button";
 import { useReadSecurityRegistryGlobalStatus } from "@/generated";
 import { SecurityState } from "@/hooks/pools/usePool";
 import { useFormattedPools } from "@/hooks/pools/useFormattedPools";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { Plus } from "lucide-react";
-import { Link } from "react-router-dom";
 import PageTitle from "@/components/common/PageTitle";
 
 const PoolsPage = () => {
@@ -42,20 +39,20 @@ const PoolsPage = () => {
         <PageContainer className="gap-5 md:gap-6">
             <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                 <PageTitle
-                    title="Pools"
+                    title="Liquidity Pools"
                     description="Discover and compare liquidity pools. Analyze performance, track fees, and start earning in seconds."
                 />
 
                 {!enableActions && <SecurityStatusTag status={globalStatus} />}
 
-                {enableActions && (
+                {/* {enableActions && (
                     <Button className="w-fit whitespace-nowrap" asChild variant="primary" size="md">
                         <Link to="create">
                             <Plus size={18} />
                             Create Pool
                         </Link>
                     </Button>
-                )}
+                )} */}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

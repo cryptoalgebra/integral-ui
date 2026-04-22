@@ -1,9 +1,9 @@
 // import AlgebraIntegral from "@/assets/algebra-itegral.svg";
 import AlgebraLogo from "@/assets/algebra-logo.png";
-import NewAlgebraIntegral from "@/assets/new-integral-logo.svg";
-import { NavLink } from "react-router-dom";
+import A7A5Logo from "@/assets/a7a5-logo.svg";
+import NewAlgebraLogo from "@/assets/new-algebra-logo.png";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Clock, WalletIcon } from "lucide-react";
+import { ChevronDown, Clock, WalletIcon, X } from "lucide-react";
 import Loader from "../Loader";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
@@ -15,6 +15,7 @@ import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 import { Navigation } from "../Navigation";
+import { Link } from "react-router-dom";
 
 const Header = () => (
     <header className="sticky top-0 z-20 backdrop-blur-sm ">
@@ -29,14 +30,23 @@ const Header = () => (
 );
 
 export const Algebra = () => (
-    <NavLink to={"/"} className="flex items-center gap-3">
-        <img className="max-md:hidden" src={NewAlgebraIntegral} width={220} />
+    <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+            <Link target="_blank" to={"https://algebra.finance"}>
+                <img className="max-md:hidden" src={NewAlgebraLogo} width={140} />
+            </Link>
+            <X size={16} />
+            <Link target="_blank" to={"https://a7a5.kg"}>
+                <img className="max-md:hidden" src={A7A5Logo} width={72} />
+            </Link>
+            {/* <span className="font-medium leading-wide text-2xl mt-[5px] text-primary">A7A5</span> */}
+        </div>
         <img className="md:hidden" src={AlgebraLogo} width={48} height={48} />
         {/* <div className="flex items-center justify-center min-w-[32px] min-h-[32px]">
             <img src={AlgebraLogo} width={32} height={32} />
         </div>
         <img className="invert min-w-[140px]" src={AlgebraIntegral} width={140} height={25} /> */}
-    </NavLink>
+    </div>
 );
 
 const Account = () => {

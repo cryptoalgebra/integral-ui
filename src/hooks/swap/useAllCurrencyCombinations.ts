@@ -39,6 +39,9 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
                 [tokenB, base],
             ]),
 
+            // Base to base pairs
+            ...bases.flatMap((baseA, i) => bases.slice(i + 1).map((baseB): [AnyToken, AnyToken] => [baseA, baseB])),
+
             // Boosted hop pairs: all boosted tokens through base tokens
             ...boostedTokensA.flatMap((boostedA) => bases.map((base): [AnyToken, AnyToken] => [boostedA, base])),
             ...boostedTokensB.flatMap((boostedB) => bases.map((base): [AnyToken, AnyToken] => [boostedB, base])),
