@@ -17,22 +17,22 @@ export const TOKENS = {
 
 // Boosted tokens whose pools exist on the DEX — used when constructing swap routes through boosted pools
 export const BOOSTED_TOKENS = {
-    // [ChainId.Ethereum]: {
-    //     avUSDC: new BoostedToken(
-    //         ChainId.Ethereum,
-    //         "0x6045450424C527bEe1A2638D822D11BbCA4F2a46",
-    //         18,
-    //         "avUSDC",
-    //         "Algebra Vault USDC",
-    //         UNDERLYING_TOKENS[ChainId.Ethereum].UNDERLYING_USDC,
-    //     ),
-    //     avETH: new BoostedToken(
-    //         ChainId.Ethereum,
-    //         "0xF115d73823B3268AaaA58691a3778c08DeE77A91",
-    //         18,
-    //         "avETH",
-    //         "Algebra Vault ETH",
-    //         UNDERLYING_TOKENS[ChainId.Ethereum].UNDERLYING_WETH,
-    //     ),
-    // },
+    [ChainId.Ethereum]: {
+        // avUSDC: new BoostedToken(
+        //     ChainId.Ethereum,
+        //     "0x6045450424C527bEe1A2638D822D11BbCA4F2a46",
+        //     18,
+        //     "avUSDC",
+        //     "Algebra Vault USDC",
+        //     UNDERLYING_TOKENS[ChainId.Ethereum].UNDERLYING_USDC,
+        // ),
+        // avETH: new BoostedToken(
+        //     ChainId.Ethereum,
+        //     "0xF115d73823B3268AaaA58691a3778c08DeE77A91",
+        //     18,
+        //     "avETH",
+        //     "Algebra Vault ETH",
+        //     UNDERLYING_TOKENS[ChainId.Ethereum].UNDERLYING_WETH,
+        // ),
+    },
 };
