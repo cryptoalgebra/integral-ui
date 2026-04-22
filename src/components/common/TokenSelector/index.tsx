@@ -5,15 +5,16 @@ import useDebounce from "@/hooks/common/useDebounce";
 import { useFuse } from "@/hooks/common/useFuse";
 import { useAllTokens } from "@/hooks/tokens/useAllTokens";
 import { Button } from "@/components/ui/button";
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Address, isAddress } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import CurrencyLogo from "../CurrencyLogo";
-import { ADDRESS_ZERO, Currency, ExtendedNative } from "@cryptoalgebra/integral-sdk";
+import { ADDRESS_ZERO, Currency, ExtendedNative, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import { useTokensState } from "@/state/tokensStore";
 import { Check, Copy, Search as SearchIcon } from "lucide-react";
 import { cn } from "@/utils/common/cn";
 import { formatAmount } from "@/utils";
+import { DEFAULT_CHAIN_ID, TOKENS } from "config";
 
 const TokenSelectorView = {
     DEFAULT_LIST: "DEFAULT_LIST",
@@ -31,20 +32,18 @@ type ImportableToken = Currency & {
     chainId: number;
 };
 
-const FEATURED_SYMBOLS = ["ETH", "WETH", "USDC", "USDT", "WBTC"];
+const FEATURED_TOKENS = [
+    ADDRESS_ZERO,
+    WNATIVE[DEFAULT_CHAIN_ID].wrapped.address,
+    TOKENS[DEFAULT_CHAIN_ID].USDC.address,
+    TOKENS[DEFAULT_CHAIN_ID].USDT.address,
+    "0x0D57436F2d39c0664C6f0f2E349229483f87EA38", // A7A5
+];
 
 const isTokenLocked = (tokenAddress: string, otherCurrency: Currency | null | undefined) =>
-    otherCurrency?.isNative
-        ? tokenAddress === ADDRESS_ZERO
-        : tokenAddress.toLowerCase() === otherCurrency?.wrapped.address.toLowerCase();
+    otherCurrency?.isNative ? tokenAddress === ADDRESS_ZERO : tokenAddress.toLowerCase() === otherCurrency?.wrapped.address.toLowerCase();
 
-const SearchField = ({
-    query,
-    onQueryChange,
-}: {
-    query: string;
-    onQueryChange: (value: string) => void;
-}) => {
+const SearchField = ({ query, onQueryChange }: { query: string; onQueryChange: (value: string) => void }) => {
     return (
         <div className="flex items-center gap-3 rounded-lg border border-border bg-panel px-4 py-2.5">
             <SearchIcon className="h-4 w-4 shrink-0 text-text-muted" />
@@ -90,7 +89,7 @@ const TokenRow = ({
 
     const [isCopied, setIsCopied] = useState(false);
 
-    const handleCopy = (e: MouseEvent<HTMLButtonElement>) => {
+    const handleCopy = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         navigator.clipboard.writeText(token.id).then(() => {
             setIsCopied(true);
@@ -105,7 +104,10 @@ const TokenRow = ({
         <div
             role="button"
             aria-disabled={isDisabled}
-            className={cn("flex w-full items-center cursor-pointer justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition-colors duration-200 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent", isDisabled ? "pointer-events-none opacity-60" : "hover:bg-panel")}
+            className={cn(
+                "flex w-full items-center cursor-pointer justify-between gap-3 rounded-lg px-3 py-2.5 text-left transition-colors duration-200 hover:bg-panel disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent",
+                isDisabled ? "pointer-events-none opacity-60" : "hover:bg-panel",
+            )}
             onClick={() => currency && onSelect(currency)}
         >
             <div className="flex min-w-0 items-center gap-3">
@@ -118,7 +120,7 @@ const TokenRow = ({
                             type="button"
                             className={cn(
                                 "inline-flex h-6 w-6 items-center justify-center rounded-full text-text-muted transition-colors hover:text-text",
-                                isCopied ? "text-primary" : ""
+                                isCopied ? "text-primary" : "",
                             )}
                             onClick={handleCopy}
                         >
@@ -198,10 +200,7 @@ export const TokenSelector = ({
 
     const { tokens, isLoading } = useAllTokens(showNativeToken);
     const debouncedQuery = useDebounce(query, 200);
-    const tokenEntity = useAlgebraToken(
-        debouncedQuery && isAddress(debouncedQuery) ? (debouncedQuery as Address) : undefined,
-        chainId,
-    );
+    const tokenEntity = useAlgebraToken(debouncedQuery && isAddress(debouncedQuery) ? (debouncedQuery as Address) : undefined, chainId);
 
     const fuseOptions = useMemo(
         () => ({
@@ -222,23 +221,26 @@ export const TokenSelector = ({
 
     const normalizedQuery = query.trim();
 
-    const tokenForImport = normalizedQuery && tokenEntity && !(tokenEntity instanceof ExtendedNative) && result.length === 0 ? tokenEntity : undefined;
+    const tokenForImport =
+        normalizedQuery && tokenEntity && !(tokenEntity instanceof ExtendedNative) && result.length === 0 ? tokenEntity : undefined;
 
     const selectorView: TokenSelectorViewType = normalizedQuery
         ? result.length > 0
             ? TokenSelectorView.DEFAULT_LIST
             : tokenForImport
-              ? TokenSelectorView.IMPORT_TOKEN
-              : !isLoading
-                ? TokenSelectorView.NOT_FOUND
-                : TokenSelectorView.DEFAULT_LIST
+            ? TokenSelectorView.IMPORT_TOKEN
+            : !isLoading
+            ? TokenSelectorView.NOT_FOUND
+            : TokenSelectorView.DEFAULT_LIST
         : TokenSelectorView.DEFAULT_LIST;
 
     const filteredTokens = useMemo(() => (normalizedQuery ? result : tokens), [normalizedQuery, result, tokens]);
 
     const featuredTokens = useMemo(() => {
-        const symbolLookup = new Map(tokens.map((token) => [token.symbol?.toUpperCase(), token]));
-        const featured = FEATURED_SYMBOLS.map((symbol) => symbolLookup.get(symbol)).filter((token): token is TokenFieldsFragment => Boolean(token));
+        const addressLookup = new Map(tokens.map((token) => [token.id?.toLowerCase(), token]));
+        const featured = FEATURED_TOKENS.map((address) =>
+            addressLookup.get(address.toLowerCase()),
+        ).filter((token): token is TokenFieldsFragment => Boolean(token));
 
         if (featured.length >= 6) {
             return featured.slice(0, 6);

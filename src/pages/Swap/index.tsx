@@ -8,7 +8,8 @@ import { SwapPageProps, SwapPageView } from "./types";
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 import { TradeState } from "@/types/trade-state";
 import { cn } from "@/utils";
-const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
+import { NavLink } from "react-router-dom";
+const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
 
 const SwapPage = ({ type }: SwapPageProps) => {
     const isLimitOrder = type === SwapPageView.LIMIT_ORDER;
@@ -31,8 +32,16 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
                 <div className="relative w-full max-w-lg">
                     <div className="mb-4 flex flex-col gap-3 px-1">
-                        <div className="flex items-center justify-between gap-4">
-                            <SwapTypeSelector isLimitOrder={isLimitOrder} />
+                        <div className="flex items-center gap-5 whitespace-nowrap text-sm font-medium tracking-[2px] uppercase">
+                            <NavLink
+                                className={cn(
+                                    "transition-colors duration-200",
+                                    isLimitOrder ? "text-text-muted hover:text-text" : "text-text",
+                                )}
+                                to="/swap"
+                            >
+                                Trade
+                            </NavLink>
                         </div>
                     </div>
 
