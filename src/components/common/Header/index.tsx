@@ -17,12 +17,14 @@ import Settings from "../Settings";
 import { Navigation } from "../Navigation";
 
 const Header = () => (
-    <header className="sticky top-0 z-20 p-4 flex items-center justify-between gap-6 md:py-8 backdrop-blur-sm max-w-[1376px] mx-auto w-full">
-        <Algebra />
-        <nav className="flex min-w-0 items-center gap-8 lg:gap-10">
-            <Navigation />
-        </nav>
-        <Account />
+    <header className="sticky top-0 z-20 backdrop-blur-sm ">
+        <div className="max-w-[1280px] mx-auto w-full p-4 flex items-center justify-between gap-6 md:py-8 ">
+            <Algebra />
+            <nav className="flex min-w-0 items-center gap-8 lg:gap-10">
+                <Navigation />
+            </nav>
+            <Account />
+        </div>
     </header>
 );
 

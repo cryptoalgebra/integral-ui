@@ -221,7 +221,7 @@ const PoolsTable = <TData, TValue>({
                     </div>
                 </div>
             )}
-            <div className="">
+            <div className="overflow-x-auto w-full max-w-[calc(100vw-2rem)]">
                 <Table>
                     <TableHeader className="bg-panel [&_tr]:border-border/60 rounded-xl overflow-hidden">
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -243,9 +243,7 @@ const PoolsTable = <TData, TValue>({
                                 <TableCell colSpan={columns.length} className="h-28 px-4 text-center">
                                     <div className="mx-auto max-w-sm space-y-2">
                                         <p className="text-base font-medium text-text">No pools match the current view.</p>
-                                        <p className="text-sm text-text-muted">
-                                            Adjust the search term or clear filters to widen the market set.
-                                        </p>
+                                        <p className="text-sm text-text-muted">Try adjusting your search or filter criteria.</p>
                                     </div>
                                 </TableCell>
                             </TableRow>

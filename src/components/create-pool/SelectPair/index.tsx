@@ -4,7 +4,7 @@ import { IDerivedMintInfo, useMintActionHandlers, useMintState } from "@/state/m
 import { useSwapActionHandlers } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { Currency, tryParseAmount } from "@cryptoalgebra/integral-sdk";
-import { ChevronsUpDownIcon } from "lucide-react";
+import { ArrowDownIcon } from "lucide-react";
 import { useCallback } from "react";
 
 interface ISelectPair {
@@ -27,46 +27,51 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
         (inputCurrency: Currency) => {
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleTypeInput = useCallback(
         (value: string) => {
             onStartPriceInput(value);
         },
-        [onStartPriceInput]
+        [onStartPriceInput],
     );
 
     return (
-        <div className="relative flex flex-col gap-1  items-center">
+        <div className="relative flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
             <TokenCard
+                label="Base asset"
                 disabled
                 value={"1"}
                 currency={currencyA}
                 otherCurrency={currencyB}
                 handleTokenSelection={handleInputSelect}
                 usdValue={usdValueA}
+                showBalance={false}
             />
             <button
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card-border hover:bg-card-hover duration-200"
+                type="button"
+                className="group absolute left-1/2 top-[calc(50%+4px)] z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform-gpu items-center justify-center rounded-full border border-border bg-background text-text shadow-sm transition-all duration-300 ease-out hover:scale-105 hover:border-primary hover:text-primary hover:shadow-md active:scale-95"
                 onClick={onSwitchTokens}
             >
-                <ChevronsUpDownIcon size={16} />
+                <ArrowDownIcon size={18} className="transition-transform duration-300 group-hover:rotate-180" />
             </button>
             <TokenCard
+                label="Initial price"
                 value={startPriceTypedValue}
                 handleTokenSelection={handleOutputSelect}
                 currency={currencyB}
                 otherCurrency={currencyA}
                 handleValueChange={handleTypeInput}
                 usdValue={usdValueB}
+                showBalance={false}
             />
         </div>
     );

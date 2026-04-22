@@ -51,25 +51,32 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
     }, [currencyA, currencyB, singleToken0, singleToken1]);
 
     return (
-        <div className="flex flex-col gap-2 bg-card-dark border border-card-border p-4 rounded-lg">
-            <div className="flex items-center gap-2 justify-between">
-                <div className="flex">
-                    <CurrencyLogo currency={currencyA} size={24} />
-                    <CurrencyLogo currency={currencyB} size={24} className="-ml-2" />
+        <div className="rounded-lg p-2">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="flex shrink-0">
+                        <CurrencyLogo currency={currencyA} size={28} />
+                        <CurrencyLogo currency={currencyB} size={28} className="-ml-2" />
+                    </div>
+
+                    {currencyA && currencyB ? (
+                        <p className="text-sm font-semibold text-text">{`${currencyA.symbol} / ${currencyB.symbol}`}</p>
+                    ) : (
+                        <Skeleton className="h-10 w-28 rounded-md bg-card" />
+                    )}
                 </div>
 
-                {currencyA && currencyB ? (
-                    <div className="mr-auto">{`${currencyA?.symbol} - ${currencyB?.symbol}`}</div>
-                ) : (
-                    <Skeleton className="h-[20px] w-[90px] bg-card" />
-                )}
-
-                <div>{`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${currencyB?.symbol}`}</div>
+                <div className="text-left sm:text-right">
+                    <p className="text-sm font-medium text-text">{`1 ${currencyA?.symbol} = ${startPriceTypedValue || 0} ${
+                        currencyB?.symbol
+                    }`}</p>
+                </div>
             </div>
+
             {suggestedPrice > 0 && (
-                <div className="text-left text-sm flex justify-between">
-                    <p className="opacity-50">Suggested price:</p>
-                    <p className="opacity-50">{` 1 ${currencyA?.symbol} = ${suggestedPrice} ${currencyB?.symbol}`}</p>
+                <div className="mt-4 flex flex-col gap-1 border-t border-border pt-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-text-muted">Market</p>
+                    <p className="font-medium text-text">{`1 ${currencyA?.symbol} = ${suggestedPrice} ${currencyB?.symbol}`}</p>
                 </div>
             )}
         </div>

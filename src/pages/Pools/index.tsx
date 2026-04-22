@@ -43,7 +43,7 @@ const PoolsPage = () => {
             <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                 <PageTitle
                     title="Pools"
-                    description="Discover and compare liquidity pools. Track performance, monitor fees, and deploy capital in seconds."
+                    description="Discover and compare liquidity pools. Analyze performance, track fees, and start earning in seconds."
                 />
 
                 {!enableActions && <SecurityStatusTag status={globalStatus} />}
@@ -67,9 +67,7 @@ const PoolsPage = () => {
                 ))}
             </div>
 
-            <div className="w-full">
-                <PoolsList pools={pools} isLoading={isLoading} />
-            </div>
+            <PoolsList pools={pools} isLoading={isLoading} />
         </PageContainer>
     );
 };

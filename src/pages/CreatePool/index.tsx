@@ -8,17 +8,20 @@ import { NavLink } from "react-router-dom";
 const CreatePoolPage = () => {
     return (
         <PageContainer>
-            <div className="w-full flex items-center justify-between gap-4 mb-8">
-                <NavLink className="flex items-center gap-2" to={"/pools"}>
-                    <ChevronLeft size={28} />
-                    <PageTitle title={"Create Pool"} showSettings={false} />
-                </NavLink>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3 w-full lg:gap-8">
-                <div className="col-span-1 flex flex-col gap-2">
-                    <CreatePoolForm />
-                    <PoweredByAlgebra className="mt-2" />
+            <div className="mx-auto flex w-full max-w-lg flex-col gap-3">
+                <div className="flex flex-col gap-4 mb-3">
+                    <NavLink
+                        className="inline-flex w-fit items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-text-muted transition-colors duration-150 hover:text-text"
+                        to="/pools"
+                    >
+                        <ChevronLeft size={16} />
+                        Back to Pools
+                    </NavLink>
+
+                    <PageTitle title="Create Pool" description="Select a pair and set the initial price." />
                 </div>
+                <CreatePoolForm />
+                <PoweredByAlgebra className="mx-auto w-fit justify-center text-text-muted transition-opacity duration-200 opacity-80 hover:opacity-100" />
             </div>
         </PageContainer>
     );

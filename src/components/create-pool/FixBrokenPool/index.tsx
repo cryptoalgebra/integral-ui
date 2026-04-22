@@ -23,7 +23,9 @@ interface IFixBrokenPool {
 const DEFAULT_SLIPPAGE = new Percent(50, 10_000);
 
 const Notification = ({ tick }: { tick?: number }) => (
-    <div className="py-2 bg-red-200 text-red-500 border border-red-600 rounded-lg">{`Pool is on edge tick: ${tick}`}</div>
+    <div className="rounded-lg border border-accent/20 bg-accent-soft px-4 py-3 text-sm text-text">
+        {`Pool maintenance required. Current edge tick: ${tick}`}
+    </div>
 );
 
 const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) => {
@@ -35,7 +37,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
 
     const currencyAmount = useMemo(
         () => (currencyIn ? CurrencyAmount.fromRawAmount(currencyIn, 10 ** Math.floor(currencyIn.decimals / 2)) : undefined),
-        [currencyIn]
+        [currencyIn],
     );
 
     const exactInSwap = useBestTradeExactIn(currencyAmount, currencyOut);
@@ -92,21 +94,22 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
 
     if (trade && insufficientBalance) {
         return (
-            <>
+            <div className="flex flex-col gap-2">
                 <Notification tick={givenPool?.tickCurrent} />
-                <Button variant={"primary"} disabled>
+                <Button variant={"primary"} className="h-11 rounded-md" disabled>
                     {isSwapLoading ? <Loader /> : `Insufficient ${currencyIn.symbol} amount to fix`}
                 </Button>
-            </>
+            </div>
         );
     }
 
     if (showApproveFlow) {
         return (
-            <>
+            <div className="flex flex-col gap-2">
                 <Notification tick={givenPool?.tickCurrent} />
                 <Button
                     variant={"primary"}
+                    className="h-11 rounded-md"
                     disabled={approvalState !== ApprovalState.NOT_APPROVED}
                     onClick={() => approvalCallback && approvalCallback()}
                 >
@@ -118,17 +121,17 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
                         `Approve ${currencyIn?.symbol}`
                     )}
                 </Button>
-            </>
+            </div>
         );
     }
 
     return (
-        <>
+        <div className="flex flex-col gap-2">
             <Notification tick={givenPool?.tickCurrent} />
-            <Button variant={"primary"} onClick={() => handleSwap()} disabled={isSwapLoading}>
+            <Button variant={"primary"} className="h-11 rounded-md" onClick={() => handleSwap()} disabled={isSwapLoading}>
                 {isSwapLoading ? <Loader /> : "Fix Pool"}
             </Button>
-        </>
+        </div>
     );
 };
 

@@ -14,7 +14,7 @@ const PoolsList = ({
     isLoading: boolean;
 }) => {
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex w-full flex-col gap-2 md:gap-6 ">
             <PoolsTable
                 columns={poolsColumns}
                 data={pools}

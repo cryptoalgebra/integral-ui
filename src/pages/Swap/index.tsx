@@ -9,6 +9,7 @@ import LimitOrdersModule from "@/modules/LimitOrdersModule";
 import { TradeState } from "@/types/trade-state";
 import { cn } from "@/utils";
 import { NavLink } from "react-router-dom";
+import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
 
 const SwapPage = ({ type }: SwapPageProps) => {
@@ -45,15 +46,13 @@ const SwapPage = ({ type }: SwapPageProps) => {
                         </div>
                     </div>
 
-                    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-2 shadow-sm transition-all duration-300 ease-out hover:shadow-md animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
-                        <div className="relative flex flex-col gap-2">
-                            <SwapPair derivedSwap={derivedSwap} />
-                            {!isLimitOrder && <SwapButton derivedSwap={derivedSwap} />}
-                            {isLimitOrder ? <LimitOrder derivedSwap={derivedSwap} /> : <SwapParams derivedSwap={derivedSwap} />}
-                        </div>
+                    <div className="relative overflow-hidden flex flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm transition-all duration-300 ease-out hover:shadow-md animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
+                        <SwapPair derivedSwap={derivedSwap} />
+                        {!isLimitOrder && <SwapButton derivedSwap={derivedSwap} />}
+                        {isLimitOrder ? <LimitOrder derivedSwap={derivedSwap} /> : <SwapParams derivedSwap={derivedSwap} />}
                     </div>
 
-                    {/* <PoweredByAlgebra className="mx-auto mt-3 w-fit justify-center text-text-muted opacity-80 hover:opacity-100" /> */}
+                    <PoweredByAlgebra className="mx-auto mt-3 w-fit justify-center text-text-muted transition-opacity duration-200 opacity-80 hover:opacity-100" />
                 </div>
 
                 {isLimitOrder && (
