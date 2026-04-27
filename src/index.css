@@ -15,7 +15,7 @@ body {
     background: var(--color-background);
     color: var(--color-text);
     font-family: "Poppins", sans-serif;
-    /* letter-spacing: 0.8px; */
+    letter-spacing: 0.6px;
     font-weight: 300;
 }
 

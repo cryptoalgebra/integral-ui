@@ -30,11 +30,11 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
             onFieldAInput("");
             onFieldBInput("");
         };
-    }, []);
+    }, [onFieldAInput, onFieldBInput]);
 
     return (
-        <div className="flex flex-col md:flex-row lg:flex-col gap-2">
-            <div className="flex w-full relative border-b border-card-border pb-2">
+        <div className="flex flex-col gap-2">
+            <div className="relative flex w-full">
                 <EnterAmountCard
                     currency={currencyA}
                     value={formattedAmounts[Field.CURRENCY_A]}
@@ -43,12 +43,12 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
                     field={Field.CURRENCY_A}
                 />
                 {mintInfo.depositADisabled && (
-                    <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-lg">
+                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-background/80 px-6 text-center text-sm font-medium text-text backdrop-blur-sm">
                         For selected range this deposit is disabled
                     </div>
                 )}
             </div>
-            <div className="flex w-full relative">
+            <div className="relative flex w-full">
                 <EnterAmountCard
                     currency={currencyB}
                     value={formattedAmounts[Field.CURRENCY_B]}
@@ -57,7 +57,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
                     field={Field.CURRENCY_B}
                 />
                 {mintInfo.depositBDisabled && (
-                    <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-lg">
+                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-background/80 px-6 text-center text-sm font-medium text-text backdrop-blur-sm">
                         For selected range this deposit is disabled
                     </div>
                 )}

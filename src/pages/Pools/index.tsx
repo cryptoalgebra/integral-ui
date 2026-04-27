@@ -6,6 +6,9 @@ import { SecurityState } from "@/hooks/pools/usePool";
 import { useFormattedPools } from "@/hooks/pools/useFormattedPools";
 import { formatAmount } from "@/utils/common/formatAmount";
 import PageTitle from "@/components/common/PageTitle";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 const PoolsPage = () => {
     const { data: globalStatus } = useReadSecurityRegistryGlobalStatus();
@@ -36,23 +39,23 @@ const PoolsPage = () => {
     ];
 
     return (
-        <PageContainer className="gap-5 md:gap-6">
+        <PageContainer>
             <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                 <PageTitle
-                    title="Liquidity Pools"
-                    description="Discover and compare liquidity pools. Analyze performance, track fees, and start earning in seconds."
+                    title="Explore"
+                    description="Discover and compare liquidity pools. Analyze liquidity, fees, and market activity in one place."
                 />
 
                 {!enableActions && <SecurityStatusTag status={globalStatus} />}
 
-                {/* {enableActions && (
-                    <Button className="w-fit whitespace-nowrap" asChild variant="primary" size="md">
-                        <Link to="create">
+                {enableActions && (
+                    <Button disabled className="w-fit whitespace-nowrap" variant="primary" size="md">
+                        <Link className="flex gap-2 items-center" to="create">
                             <Plus size={18} />
                             Create Pool
                         </Link>
                     </Button>
-                )} */}
+                )}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -64,7 +67,7 @@ const PoolsPage = () => {
                 ))}
             </div>
 
-            <PoolsList pools={pools} isLoading={isLoading} />
+            <PoolsList pools={pools} isLoading={isLoading} isExplore />
         </PageContainer>
     );
 };

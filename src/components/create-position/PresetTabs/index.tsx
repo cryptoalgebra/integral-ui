@@ -186,14 +186,14 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
     }
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 h-fit bg-card gap-3 rounded-xl p-1">
+        <div className="grid grid-cols-2 md:grid-cols-4 h-fit bg-card gap-2 rounded-xl">
             {presets.map((range) => (
                 <Button
                     variant={preset === range.type ? "iconHover" : "icon"}
                     size={"sm"}
                     key={`preset-range-${range.title}`}
                     onClick={() => onPresetSelect(range)}
-                    className="flex-col h-24 gap-4 p-2 border"
+                    className="flex-col h-20 gap-4 p-2 border text-xs"
                 >
                     {range.title}
                     {range.logo}

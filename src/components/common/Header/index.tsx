@@ -4,9 +4,8 @@ import A7A5Logo from "@/assets/a7a5-logo.svg";
 import NewAlgebraLogo from "@/assets/new-algebra-logo.png";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Clock, WalletIcon, X } from "lucide-react";
-import Loader from "../Loader";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
 import { useAccount } from "wagmi";
@@ -16,28 +15,82 @@ import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 import { Navigation } from "../Navigation";
 import { Link } from "react-router-dom";
+import Loader from "../Loader";
 
-const Header = () => (
-    <header className="sticky top-0 z-20 backdrop-blur-sm ">
-        <div className="max-w-[1280px] mx-auto w-full p-4 flex items-center justify-between gap-6 md:py-8 ">
-            <Algebra />
-            <nav className="flex min-w-0 items-center gap-8 lg:gap-10">
-                <Navigation />
-            </nav>
-            <Account />
-        </div>
-    </header>
-);
+const HEADER_SCROLL_RANGE = 20;
+
+const Header = () => {
+    const [scrollProgress, setScrollProgress] = useState(0);
+
+    useEffect(() => {
+        let frameId: number | null = null;
+
+        const updateScrollProgress = () => {
+            const nextProgress = Math.round(Math.min(window.scrollY / HEADER_SCROLL_RANGE, 1) * 100) / 100;
+
+            setScrollProgress((currentProgress) => (currentProgress === nextProgress ? currentProgress : nextProgress));
+            frameId = null;
+        };
+
+        const handleScroll = () => {
+            if (frameId !== null) return;
+
+            frameId = window.requestAnimationFrame(updateScrollProgress);
+        };
+
+        updateScrollProgress();
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            if (frameId !== null) {
+                window.cancelAnimationFrame(frameId);
+            }
+
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
+    const borderOpacity = Math.round(scrollProgress * 70);
+    const desktopPaddingY = `${(2 - scrollProgress).toFixed(2)}rem`;
+
+    const headerStyle: CSSProperties = {
+        borderBottomColor:
+            borderOpacity > 0 ? `color-mix(in srgb, var(--bg-300) ${borderOpacity}%, transparent)` : "transparent",
+    };
+
+    const headerContentStyle = {
+        "--header-padding-y-mobile": "1rem",
+        "--header-padding-y-desktop": desktopPaddingY,
+    } as CSSProperties;
+
+    return (
+        <header
+            className="fixed w-full top-0 z-20 border-b transition-all duration-150 ease-out backdrop-blur-xl"
+            style={headerStyle}
+        >
+            <div
+                className="max-w-[1280px] relative mx-auto flex w-full items-center justify-between gap-2 px-4 py-[var(--header-padding-y-mobile)] transition-[padding] duration-150 ease-out md:py-[var(--header-padding-y-desktop)]"
+                style={headerContentStyle}
+            >
+                <Algebra />
+                <nav className="flex absolute left-1/2 min-w-0 -translate-x-1/2 items-center gap-8 lg:gap-10">
+                    <Navigation />
+                </nav>
+                <Account />
+            </div>
+        </header>
+    );
+};
 
 export const Algebra = () => (
     <div className="flex items-center gap-3">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 max-md:hidden">
             <Link target="_blank" to={"https://algebra.finance"}>
-                <img className="max-md:hidden" src={NewAlgebraLogo} width={140} />
+                <img src={NewAlgebraLogo} width={140} />
             </Link>
             <X size={16} />
             <Link target="_blank" to={"https://a7a5.kg"}>
-                <img className="max-md:hidden" src={A7A5Logo} width={72} />
+                <img src={A7A5Logo} width={72} />
             </Link>
             {/* <span className="font-medium leading-wide text-2xl mt-[5px] text-primary">A7A5</span> */}
         </div>
@@ -88,7 +141,7 @@ const Account = () => {
                         )}
                     </TransactionHistoryPopover>
                 )}
-                <Settings />
+                {account && <Settings />}
                 <Button className="h-8 px-3" variant={"icon"} size={"sm"} onClick={() => open({ view: "Networks" })}>
                     <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
                 </Button>

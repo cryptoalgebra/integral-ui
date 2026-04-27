@@ -126,6 +126,7 @@ export const POOLS_DAY_DATAS = gql`
                 totalValueLockedToken0
                 totalValueLockedToken1
                 txCount
+                createdAtTimestamp
             }
             ...PoolDayDataFields
         }
@@ -145,6 +146,7 @@ export const POOLS_HOUR_DATAS = gql`
                 totalValueLockedToken0
                 totalValueLockedToken1
                 txCount
+                createdAtTimestamp
             }
             ...PoolHourDataFields
         }

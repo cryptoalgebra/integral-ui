@@ -30,7 +30,6 @@ const RangeSelectorPart = ({
     disabled,
     title,
 }: RangeSelectorPartProps) => {
-    const [localUSDValue, setLocalUSDValue] = useState("");
     const [localTokenValue, setLocalTokenValue] = useState("");
 
     const {
@@ -40,7 +39,7 @@ const RangeSelectorPart = ({
 
     const handleOnBlur = useCallback(() => {
         onUserInput(localTokenValue);
-    }, [localTokenValue, localUSDValue, onUserInput]);
+    }, [localTokenValue, onUserInput]);
 
     const handleDecrement = useCallback(() => {
         onUserInput(decrement());
@@ -53,13 +52,8 @@ const RangeSelectorPart = ({
     useEffect(() => {
         if (value) {
             setLocalTokenValue(value);
-            if (value === "∞") {
-                setLocalUSDValue(value);
-                return;
-            }
         } else if (value === "") {
             setLocalTokenValue("");
-            setLocalUSDValue("");
         }
     }, [initialTokenPrice, value]);
 
@@ -68,15 +62,16 @@ const RangeSelectorPart = ({
     }, []);
 
     return (
-        <div>
-            <div className="font-bold text-xs mb-3 text-text-100/75">{title.toUpperCase()}</div>
-            <div className="flex relative">
+        <div className="">
+            <div className="text-xs text-text ">{title}</div>
+
+            <div className="mt-1 flex items-center gap-0">
                 <Button
-                    variant={"ghost"}
-                    size={"sm"}
+                    variant={"outline"}
+                    size={"icon"}
                     onClick={handleDecrement}
                     disabled={decrementDisabled || disabled}
-                    className="border rounded-xl rounded-r-none"
+                    className="h-10 w-10 border-border border-r-0 bg-card rounded-none rounded-l-md"
                 >
                     -
                 </Button>
@@ -92,15 +87,15 @@ const RangeSelectorPart = ({
                         updateSelectedPreset(null);
                     }}
                     placeholder={"0.00"}
-                    className="w-full bg-card-hover border-y border-card-border border-x-0 rounded-none text-sm h-[36px]"
+                    className="h-10 flex-1 border-border z-10 rounded-none text-center font-medium text-text text-sm"
                 />
 
                 <Button
-                    variant={"ghost"}
-                    size={"sm"}
+                    variant={"outline"}
+                    size={"icon"}
                     onClick={handleIncrement}
                     disabled={incrementDisabled || disabled}
-                    className="border rounded-xl rounded-l-none"
+                    className="h-10 w-10 border-border bg-card border-l-0 rounded-none rounded-r-md"
                 >
                     +
                 </Button>

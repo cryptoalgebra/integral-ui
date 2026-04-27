@@ -63,8 +63,8 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
             chartType === POOL_CHART_TYPE.PRICE && isSorted
                 ? "token1Price"
                 : chartType === POOL_CHART_TYPE.PRICE && !isSorted
-                  ? "token0Price"
-                  : value;
+                ? "token0Price"
+                : value;
 
         const formattedData = poolDatas.filter(isDefined).map((v) => {
             return {
@@ -73,7 +73,7 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
             };
         });
 
-        return formattedData.slice(1);
+        return formattedData;
     }, [span, poolHourDatas, poolDayDatas, chartType, isSorted]);
 
     return {

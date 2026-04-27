@@ -40,7 +40,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         amount,
-        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId] as Address
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId] as Address,
     );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
@@ -67,7 +67,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    Number(slippage.toSignificant(4))
+                    Number(slippage.toSignificant(4)),
                 );
             } else {
                 tx = await deposit(
@@ -76,7 +76,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    Number(slippage.toSignificant(4))
+                    Number(slippage.toSignificant(4)),
                 );
             }
 
@@ -95,7 +95,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
             tokenA: currency?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        poolId ? `/pool/${poolId}` : undefined
+        poolId ? `/pool/${poolId}` : undefined,
     );
 
     useEffect(() => {
@@ -108,13 +108,17 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     if (!account)
         return (
-            <Button variant={"primary"} onClick={() => open()}>
+            <Button variant={"primary"} className="w-full" onClick={() => open()}>
                 Connect Wallet
             </Button>
         );
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button variant={"destructive"} className="w-full" onClick={() => open({ view: "Networks" })}>
+                {`Connect to ${DEFAULT_CHAIN_NAME}`}
+            </Button>
+        );
 
     // if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 
@@ -130,7 +134,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
         );
 
     return (
-        <Button variant={"primary"} disabled={!isReady || isPending || isAddingLiquidityLoading} onClick={callback}>
+        <Button variant={"primary"} className="w-full" disabled={!isReady || isPending || isAddingLiquidityLoading} onClick={callback}>
             {isAddingLiquidityLoading || isPending ? <Loader /> : "Create Position"}
         </Button>
     );

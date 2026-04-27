@@ -121,7 +121,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
         mintInfo.position,
         mintOptions,
         poolAddress,
-        handleCloseModal
+        handleCloseModal,
     );
 
     // Check if we need approval or permit for token0
@@ -141,7 +141,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
             (mintInfo.depositADisabled ? true : !needsToken0ApprovalOrPermit) &&
                 (mintInfo.depositBDisabled ? true : !needsToken1ApprovalOrPermit) &&
                 !mintInfo.errorMessage &&
-                !mintInfo.invalidRange
+                !mintInfo.invalidRange,
         );
     }, [mintInfo, needsToken0ApprovalOrPermit, needsToken1ApprovalOrPermit]);
 
@@ -149,17 +149,21 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
     if (!account)
         return (
-            <Button variant={"primary"} onClick={() => open()}>
+            <Button variant={"primary"} className="w-full" onClick={() => open()}>
                 Connect Wallet
             </Button>
         );
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button variant={"destructive"} className="w-full" onClick={() => open({ view: "Networks" })}>
+                {`Connect to ${DEFAULT_CHAIN_NAME}`}
+            </Button>
+        );
 
     if (mintInfo.errorMessage)
         return (
-            <Button variant={"primary"} disabled>
+            <Button variant={"primary"} className="w-full" disabled>
                 {mintInfo.errorMessage}
             </Button>
         );
@@ -170,7 +174,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
         if (needsSetupApproval && needsPermitSignature) {
             return (
-                <Button variant={"primary"} onClick={approveAndPermit} disabled={isLoading}>
+                <Button variant={"primary"} className="w-full" onClick={approveAndPermit} disabled={isLoading}>
                     {isLoading ? <Loader /> : `Approve & Sign Permit for ${token.symbol}`}
                 </Button>
             );
@@ -178,7 +182,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
         if (needsSetupApproval) {
             return (
-                <Button variant={"primary"} onClick={permit2Token0.approve} disabled={isLoading}>
+                <Button variant={"primary"} className="w-full" onClick={permit2Token0.approve} disabled={isLoading}>
                     {isLoading ? <Loader /> : `Approve ${token.symbol}`}
                 </Button>
             );
@@ -186,7 +190,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
         if (needsPermitSignature) {
             return (
-                <Button variant={"primary"} onClick={permit2Token0.permit} disabled={isLoading}>
+                <Button variant={"primary"} className="w-full" onClick={permit2Token0.permit} disabled={isLoading}>
                     {isLoading ? <Loader /> : `Sign Permit for ${token.symbol}`}
                 </Button>
             );
@@ -199,7 +203,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
         if (needsSetupApproval && needsPermitSignature) {
             return (
-                <Button variant={"primary"} onClick={approveAndPermit} disabled={isLoading}>
+                <Button variant={"primary"} className="w-full" onClick={approveAndPermit} disabled={isLoading}>
                     {isLoading ? <Loader /> : `Approve & Sign Permit for ${token.symbol}`}
                 </Button>
             );
@@ -207,7 +211,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
         if (needsSetupApproval) {
             return (
-                <Button variant={"primary"} onClick={permit2Token1.approve} disabled={isLoading}>
+                <Button variant={"primary"} className="w-full" onClick={permit2Token1.approve} disabled={isLoading}>
                     {isLoading ? <Loader /> : `Approve ${token.symbol}`}
                 </Button>
             );
@@ -215,7 +219,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
         if (needsPermitSignature) {
             return (
-                <Button variant={"primary"} onClick={permit2Token1.permit} disabled={isLoading}>
+                <Button variant={"primary"} className="w-full" onClick={permit2Token1.permit} disabled={isLoading}>
                     {isLoading ? <Loader /> : `Sign Permit for ${token.symbol}`}
                 </Button>
             );
@@ -224,7 +228,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
 
     if (mintError)
         return (
-            <Button variant={"primary"} disabled>
+            <Button variant={"primary"} className="w-full" disabled>
                 {mintError}
             </Button>
         );
@@ -232,6 +236,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
     return (
         <Button
             variant={"primary"}
+            className="w-full"
             disabled={!isReady || isAddingLiquidityLoading || !addLiquidity}
             onClick={() => {
                 try {

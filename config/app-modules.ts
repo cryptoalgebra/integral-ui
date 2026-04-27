@@ -17,7 +17,7 @@ export const enabledModules: Record<AppFeatureModule, boolean> = {
     [AppFeatureModule.SmartRouter]: false,
 
     [AppFeatureModule.CustomPools]: false,
-    [AppFeatureModule.Analytics]: false,
+    [AppFeatureModule.Analytics]: true,
     [AppFeatureModule.Farming]: false,
     [AppFeatureModule.LimitOrders]: false,
     [AppFeatureModule.ALM]: false,

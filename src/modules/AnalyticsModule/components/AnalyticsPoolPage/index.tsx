@@ -1,138 +1,48 @@
 import { useLayoutEffect, useMemo, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { CHART_SPAN, POOL_CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
 import { SecurityState, usePool } from "@/hooks/pools/usePool";
-import { Address, parseUnits } from "viem";
+import { Address } from "viem";
 import { Chart } from "@/components/common/Chart";
-import PageTitle from "@/components/common/PageTitle";
-import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
-import { formatAmount, formatPercent } from "@/utils";
-import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
-import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { useUSDCValue } from "@/hooks/common/useUSDCValue";
-import { Button } from "@/components/ui/button";
-import { ArrowDownUp, Plus } from "lucide-react";
+import { formatAmount } from "@/utils";
 import { TransactionsList } from "../TransactionsList";
 import { getPercentChange } from "@/utils/common/getPercentChange";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { usePoolChartData } from "@/hooks/analytics";
 import PageContainer from "@/components/common/PageContainer";
+import { useAppKitNetwork } from "@reown/appkit/react";
+import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
+import { truncateHash } from "@/utils/common/truncateHash";
+import { cn } from "@/utils";
+import useSWR from "swr";
+import { getPoolAPR } from "@/utils/pool/getPoolAPR";
+import { PoolHeroSection } from "./PoolHeroSection";
+import { PoolMetricsGrid } from "./PoolMetricsGrid";
+import { PoolOverviewSection } from "./PoolOverviewSection";
+import { PoolAnalyticsStatistics, PoolPriceDetails } from "./types";
 
-const LiquidityStats = ({
-    token0,
-    token1,
-    statistics,
-}: {
-    token0: Currency | undefined;
-    token1: Currency | undefined;
-    statistics:
-        | {
-              volume24H: string;
-              fees24H: string;
-              tvlUSD: string;
-              tvlToken0: string;
-              tvlToken1: string;
-              tvlPercentChange: number;
-              volumePercentChange: number;
-              feesPercentChange: number;
-              txCount: string;
-          }
-        | undefined;
-}) => {
-    const { formatted: tvlToken0USD } = useUSDCValue(
-        token0 && statistics?.tvlToken0
-            ? CurrencyAmount.fromRawAmount(token0, parseUnits(statistics.tvlToken0, token0.decimals).toString())
-            : undefined
-    );
-    const { formatted: tvlToken1USD } = useUSDCValue(
-        token1 && statistics?.tvlToken1
-            ? CurrencyAmount.fromRawAmount(token1.wrapped, parseUnits(statistics.tvlToken1, token1.decimals).toString())
-            : undefined
-    );
-
-    return (
-        <div className="flex flex-col gap-3 h-fit">
-            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-4 h-fit">
-                <h2 className="font-semibold mb-2">Pool Liquidity</h2>
-                <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.tvlUSD || 0, 4)}</p>
-                <div className="flex flex-col gap-3 items-start w-full">
-                    <h3 className="text-text-100/50">Tokens</h3>
-                    <div className="flex items-center w-full justify-between">
-                        <div className="flex items-center gap-2">
-                            <CurrencyLogo currency={token0} size={24} />
-                            <span>{token0?.symbol}</span>
-                        </div>
-                        <span className="font-semibold">
-                            {formatAmount(statistics?.tvlToken0 || 0, 4)}{" "}
-                            <span className="text-text-100/50 font-medium text-xs">${formatAmount(tvlToken0USD || 0, 2)}</span>
-                        </span>
-                    </div>
-                    <div className="flex items-center w-full justify-between">
-                        <div className="flex items-center gap-2">
-                            <CurrencyLogo currency={token1} size={24} />
-                            <span>{token1?.symbol}</span>
-                        </div>
-                        <span className="font-semibold">
-                            {formatAmount(statistics?.tvlToken1 || 0, 4)}{" "}
-                            <span className="text-text-100/50 font-medium text-xs">${formatAmount(tvlToken1USD || 0, 2)}</span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-4 h-fit">
-                <h2 className="font-semibold mb-4">Statistics</h2>
-                <div className="flex flex-col gap-3 w-full">
-                    <div className="flex justify-between">
-                        <span className="text-text-100/50">Liquidity</span>
-                        <span className="font-semibold">
-                            ${formatAmount(statistics?.tvlUSD || 0, 2)}{" "}
-                            <span className={`text-xs ${(statistics?.tvlPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
-                                <span>{(statistics?.tvlPercentChange || 0) > 0 ? "+" : ""}</span>
-                                <span>{formatPercent.format((statistics?.tvlPercentChange || 0) / 100)}</span>
-                            </span>
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-text-100/50">Volume (24h)</span>
-                        <span className="font-semibold">
-                            ${formatAmount(statistics?.volume24H || 0, 2)}{" "}
-                            <span className={`text-xs ${(statistics?.volumePercentChange || 0) > 0 ? "text-green-400" : "text-red-400"}`}>
-                                <span>{(statistics?.volumePercentChange || 0) > 0 ? "+" : ""}</span>
-                                <span>{formatPercent.format((statistics?.volumePercentChange || 0) / 100)}</span>
-                            </span>
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-text-100/50">Fees (24h)</span>
-                        <span className="font-semibold">
-                            ${formatAmount(statistics?.fees24H || 0, 2)}{" "}
-                            <span
-                                className={`text-xs font-medium ${
-                                    (statistics?.feesPercentChange || 0) > 0 ? "text-green-400" : "text-red-400"
-                                }`}
-                            >
-                                <span>{(statistics?.feesPercentChange || 0) > 0 ? "+" : ""}</span>
-                                <span>{formatPercent.format((statistics?.feesPercentChange || 0) / 100)}</span>
-                            </span>
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-text-100/50">Transactions</span>
-                        <span className="font-semibold">{formatAmount(statistics?.txCount || 0, 2)} </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+const SectionTab = ({ active, children, onClick }: { active: boolean; children: React.ReactNode; onClick: () => void }) => (
+    <button
+        type="button"
+        onClick={onClick}
+        className={cn(
+            "border-b px-1 pb-3 text-sm font-medium transition-colors duration-150",
+            active ? "border-text text-text" : "border-transparent text-text-muted hover:text-text",
+        )}
+    >
+        {children}
+    </button>
+);
 
 export function AnalyticsPoolPage() {
     const { poolId } = useParams();
     const { pathname } = useLocation();
+    const { caipNetwork } = useAppKitNetwork();
+    const blockExplorerUrl = useBlockExplorerURL();
 
     const [type, setType] = useState<PoolChartTypeType>(POOL_CHART_TYPE.TVL);
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
+    const [activeSection, setActiveSection] = useState<"overview" | "activity">("overview");
 
     const [, pool, poolSecurityStatus] = usePool(poolId as Address);
 
@@ -145,9 +55,22 @@ export function AnalyticsPoolPage() {
           }
         : {};
 
-    const { poolDayDatas, chartData, loading: isChartDataLoading } = usePoolChartData(poolId, span, type);
+    const currentPrice = useMemo(() => {
+        if (!pool || !token0 || !token1) return undefined;
 
-    const statistics = useMemo(() => {
+        try {
+            return pool.priceOf(pool.token0);
+        } catch {
+            return undefined;
+        }
+    }, [pool, token0, token1]);
+
+    const { poolDayDatas, chartData, loading: isChartDataLoading } = usePoolChartData(poolId, span, type);
+    const { data: apr } = useSWR(poolId ? ["analyticsPoolApr", poolId] : null, () => getPoolAPR(poolId as Address), {
+        keepPreviousData: true,
+    });
+
+    const statistics = useMemo<PoolAnalyticsStatistics | undefined>(() => {
         if (!poolDayDatas[0]) return undefined;
 
         const currentPoolData = poolDayDatas[poolDayDatas.length - 1];
@@ -163,8 +86,31 @@ export function AnalyticsPoolPage() {
             volumePercentChange: getPercentChange(Number(currentPoolData.volumeUSD), Number(prevPoolData?.volumeUSD || 0)),
             feesPercentChange: getPercentChange(Number(currentPoolData.feesUSD), Number(prevPoolData?.feesUSD || 0)),
             txCount: currentPoolData.pool.txCount,
+            createdOn: currentPoolData.pool.createdAtTimestamp,
         };
     }, [poolDayDatas]);
+
+    const priceDetails = useMemo<PoolPriceDetails | null>(() => {
+        if (!currentPrice || !token0 || !token1) return null;
+
+        return {
+            direct: {
+                baseSymbol: token0.symbol || "Token 0",
+                quoteSymbol: token1.symbol || "Token 1",
+                value: formatAmount(currentPrice.toSignificant(8), 8),
+            },
+            inverse: {
+                baseSymbol: token1.symbol || "Token 1",
+                quoteSymbol: token0.symbol || "Token 0",
+                value: formatAmount(currentPrice.invert().toSignificant(8), 8),
+            },
+        };
+    }, [currentPrice, token0, token1]);
+
+    const handleSelectChartType = (nextType: PoolChartTypeType) => {
+        setType(nextType);
+        setActiveSection("overview");
+    };
 
     const chartView = useMemo(() => {
         switch (type) {
@@ -187,17 +133,50 @@ export function AnalyticsPoolPage() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
+    const poolAddress = poolId as Address | undefined;
+    const poolExplorerUrl = poolAddress ? `${blockExplorerUrl}/address/${poolAddress}` : undefined;
+    const poolAddressLabel = poolAddress ? truncateHash(poolAddress) : "-";
+    const feeTier = pool ? `${(pool.fee / 10000).toFixed(2)}%` : "-";
+    const sectionTabs = [
+        { id: "overview" as const, label: "Overview" },
+        { id: "activity" as const, label: "Activity" },
+    ];
+
     return (
         <PageContainer>
-            <div className="mb-8">
-                <PageTitle title="Explore pool" showSettings={false} />
-            </div>
-            <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-3">
-                <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
-                    <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
-                        <CurrenciesInfoHeader tokenA={token0} tokenB={token1} />
-                    </div>
+            <PoolHeroSection
+                token0={token0}
+                token1={token1}
+                feeTier={feeTier}
+                enableActions={enableActions}
+                poolId={poolId}
+                poolSecurityStatus={poolSecurityStatus}
+                poolAddressLabel={poolAddressLabel}
+                poolExplorerUrl={poolExplorerUrl}
+                networkName={caipNetwork?.name}
+            />
 
+            <PoolMetricsGrid
+                activeChartType={type}
+                apr={typeof apr === "number" ? Math.abs(apr) : undefined}
+                onSelectChartType={handleSelectChartType}
+                statistics={statistics}
+            />
+
+            <div className="flex items-center gap-6 border-b border-border">
+                {sectionTabs.map((sectionTab) => (
+                    <SectionTab
+                        key={sectionTab.id}
+                        active={activeSection === sectionTab.id}
+                        onClick={() => setActiveSection(sectionTab.id)}
+                    >
+                        {sectionTab.label}
+                    </SectionTab>
+                ))}
+            </div>
+
+            {activeSection === "overview" ? (
+                <>
                     <Chart
                         chartData={chartData}
                         chartSpan={span}
@@ -206,35 +185,28 @@ export function AnalyticsPoolPage() {
                         chartType={type}
                         setChartType={setType}
                         setChartSpan={setSpan}
-                        showTypeSelector
-                        height={260}
+                        showTypeSelector={false}
+                        height={340}
                         tokenA={token0?.symbol}
                         tokenB={token1?.symbol}
                         isChartDataLoading={isChartDataLoading}
                     />
-                </div>
-                <div className="flex flex-col gap-3">
-                    { enableActions && <div className="grid grid-cols-2 gap-3">
-                        <Link className="col-span-1 w-full " to={"/swap"}>
-                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
-                                <ArrowDownUp size={20} />
-                                Trade
-                            </Button>
-                        </Link>
-                        <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
-                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
-                                <Plus size={20} />
-                                Create Position
-                            </Button>
-                        </Link>
-                    </div> }
-                    <LiquidityStats token0={token0} token1={token1} statistics={statistics} />
-                </div>
-            </div>
+                    <PoolOverviewSection
+                        token0={token0}
+                        token1={token1}
+                        statistics={statistics}
+                        priceDetails={priceDetails}
+                        createdAtTimestamp={statistics?.createdOn}
+                    />
+                </>
+            ) : null}
 
-            <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full mt-4">
-                <TransactionsList poolId={poolId} />
-            </div>
+            {activeSection === "activity" ? (
+                <section className="space-y-5">
+                    <h2 className="text-xl font-medium text-text">Transactions</h2>
+                    <TransactionsList poolId={poolId} />
+                </section>
+            ) : null}
         </PageContainer>
     );
 }

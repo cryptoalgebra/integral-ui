@@ -115,8 +115,8 @@ const TokenRow = ({
             <div className="flex min-w-0 items-center gap-3">
                 <CurrencyLogo currency={currency} size={36} />
                 <div className="min-w-0">
-                    <div className="truncate text-base font-medium text-text">{token.name}</div>
-                    <div className="flex items-center gap-1.5 text-sm text-text-muted">
+                    <div className="truncate text-sm font-medium text-text">{token.name}</div>
+                    <div className="flex items-center gap-1.5 text-xs text-text-muted">
                         <span className="truncate">{subtitle}</span>
                         <button
                             type="button"

@@ -20,7 +20,7 @@ const menuItems = [
         icon: <ArrowUpDown size={14} />,
     },
     {
-        title: "Liquidity",
+        title: "Explore",
         link: "/pools",
         active: [PATHS.POOLS, PATHS.POOL],
         icon: <Droplets size={14} />,
@@ -33,8 +33,8 @@ const menuItems = [
         disabled: true,
     },
     {
-        title: "Analytics",
-        link: "/analytics",
+        title: "Vote",
+        link: "/vote",
         active: [],
         icon: <LucideLineChart size={14} />,
         disabled: true,

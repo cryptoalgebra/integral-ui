@@ -8,6 +8,7 @@ import { useAccount, useBalance } from "wagmi";
 import { useMintState } from "@/state/mintStore";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+import { Button } from "@/components/ui/button";
 
 const { BoostedTokenWrapToggle } = BoostedPoolsModule.components;
 
@@ -49,7 +50,7 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd, field }: Ent
             if (value === ".") value = "0.";
             handleChange(value);
         },
-        [handleChange]
+        [handleChange],
     );
 
     function setMax() {
@@ -57,46 +58,40 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd, field }: Ent
     }
 
     return (
-        <div className="flex w-full bg-card-dark p-3 rounded-lg flex-col gap-3">
-            <div className="flex w-full">
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-4 min-h-10">
-                        <div className="relative w-12 h-12">
-                            <CurrencyLogo currency={displayCurrency} size={48} />
-                        </div>
-
-                        <div>
-                            <div className="text-sm text-text-200">{displayCurrency ? displayCurrency.name : ""}</div>
-                            <div className="flex items-center gap-2">
-                                <span className="font-bold text-lg">{displayCurrency ? displayCurrency.symbol : "Select a token"}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {displayCurrency && (
-                        <div className={"flex text-sm whitespace-nowrap"}>
-                            <div>
-                                <span className="font-semibold">Balance: </span>
-                                <span>{balanceString}</span>
-                            </div>
-                            <button className="ml-2 text-primary-50 underline underline-offset-4 hover:text-primary-50/70" onClick={setMax}>
-                                Max
-                            </button>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex flex-col items-end w-full gap-2">
+        <div className="flex w-full border p-2 rounded-lg flex-col gap-20 px-3">
+            <div className="flex flex-col w-full">
+                <div className="flex items-end gap-2">
                     <Input
                         value={value}
                         id={`amount-${displayCurrency?.symbol}`}
                         onUserInput={(v) => handleInput(v)}
-                        className={`text-right border-none text-xl font-bold w-9/12 p-0 ring-0!`}
+                        className={`text-left border-none text-xl font-bold w-9/12 p-0 ring-0!`}
                         placeholder={"0.0"}
                         maxDecimals={displayCurrency?.decimals}
                     />
+
+                    <div className="flex items-center ml-auto gap-2 min-h-10">
+                        <CurrencyLogo currency={displayCurrency} size={24} />
+                        <span className="font-bold text-sm">{displayCurrency ? displayCurrency.symbol : "Select a token"}</span>
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-between w-full gap-2">
                     {valueUsd && (
-                        <div className="text-sm">
+                        <div className="text-xs text-text-muted">
                             <div>${formatAmount(valueUsd, 2)}</div>
+                        </div>
+                    )}
+
+                    {displayCurrency && (
+                        <div className={"flex items-center text-sm whitespace-nowrap ml-auto"}>
+                            <div>
+                                <span className="font-medium text-xs">Balance: </span>
+                                <span>{balanceString}</span>
+                            </div>
+                            <Button variant={"icon"} size={"icon"} className="text-primary-200 h-5 text-xs ml-1" onClick={setMax}>
+                                Max
+                            </Button>
                         </div>
                     )}
                 </div>

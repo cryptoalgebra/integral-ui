@@ -10,17 +10,17 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 primary: "bg-primary text-primary-foreground hover:bg-primary/80 tracking-[2px] uppercase",
-                primaryLink: "border border-border bg-card hover:bg-panel",
+                primaryLink: "border border-border bg-card hover:bg-panel tracking-[2px] uppercase",
                 default: "bg-primary text-primary-foreground hover:bg-primary-hover",
-                action: "bg-primary text-primary-foreground font-semibold hover:bg-primary-hover",
+                action: "bg-primary text-primary-foreground font-medium hover:bg-primary-hover",
                 destructive: "bg-accent text-primary-foreground hover:opacity-90",
                 outline: "border border-border bg-card hover:bg-panel",
                 secondary: "bg-panel text-secondary-foreground hover:bg-panel",
                 ghost: "hover:bg-panel",
                 link: "text-primary underline-offset-4 hover:text-primary-hover hover:underline",
-                icon: "bg-card font-semibold hover:bg-panel",
-                iconActive: "border border-border bg-panel font-semibold text-text",
-                iconHover: "border border-border bg-panel font-semibold text-text hover:bg-panel",
+                icon: "bg-card font-medium hover:bg-panel",
+                iconActive: "border border-border bg-panel font-medium text-text",
+                iconHover: "bg-panel font-medium text-text hover:bg-panel",
                 ghostActive: "border border-border bg-primary-soft text-text",
             },
             size: {

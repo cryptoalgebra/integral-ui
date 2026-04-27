@@ -1,6 +1,5 @@
 import { CHART_SPAN, ChartSpanType } from "@/types/swap-chart";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/utils";
 
 interface IChartSpanSelector {
     chartSpan: ChartSpanType;
@@ -17,18 +16,14 @@ const titles = {
 
 export function ChartSpanSelector({ chartSpan, handleChangeChartSpan }: IChartSpanSelector) {
     return (
-        <div className="flex items-center gap-1 rounded-xl bg-card-dark border border-card-border p-1">
+        <div className="flex items-center gap-1 rounded-lg  p-1">
             {Object.entries(titles).map(([span, label]) => (
                 <Button
                     size={"sm"}
                     key={span}
                     onClick={() => handleChangeChartSpan(span as ChartSpanType)}
-                    variant={"icon"}
-                    disabled={chartSpan === span}
-                    className={cn(
-                        "border rounded-xl disabled:opacity-100 hover:bg-text-100/5",
-                        chartSpan === span ? "bg-text-100/5 border-text-100/20" : "border-none"
-                    )}
+                    variant={chartSpan === span ? "secondary" : "ghost"}
+                    // disabled={chartSpan === span}
                 >
                     {label}
                 </Button>

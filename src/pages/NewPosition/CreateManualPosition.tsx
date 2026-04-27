@@ -1,20 +1,22 @@
+import LiquidityChartRangeInput from "@/components/common/LiquidityChartRangeInput";
 import AmountsSection from "@/components/create-position/AmountsSection";
-import LiquidityChart from "@/components/create-position/LiquidityChart";
 import PresetTabs from "@/components/create-position/PresetTabs";
 import RangeSelector from "@/components/create-position/RangeSelector";
-import { Button } from "@/components/ui/button";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
+import { formatAmount } from "@/utils";
 import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/integral-sdk";
+import { ArrowUpDown } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 
 interface ManualProps {
     poolAddress?: Address;
+    handleCloseModal?: () => void;
 }
 
-export function CreateManualPosition({ poolAddress }: ManualProps) {
+export function CreateManualPosition({ poolAddress, handleCloseModal }: ManualProps) {
     const { data: token0 } = useReadAlgebraPoolToken0({
         address: poolAddress,
     });
@@ -42,7 +44,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         poolAddress,
         INITIAL_POOL_FEE,
         currencyA ?? undefined,
-        undefined
+        undefined,
     );
 
     const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = mintInfo.pricesAtTicks;
@@ -55,18 +57,8 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
     const price = useMemo(() => {
         if (!mintInfo.price) return;
 
-        return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5);
+        return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(24) : mintInfo.price.toSignificant(24);
     }, [mintInfo]);
-
-    const currentPrice = useMemo(() => {
-        if (!mintInfo.price) return;
-
-        if (Number(price) <= 0.0001) {
-            return `< 0.0001 ${currencyB?.symbol}`;
-        } else {
-            return `${price} ${currencyB?.symbol}`;
-        }
-    }, [mintInfo.price, price]);
 
     const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
         return mintInfo.ticks;
@@ -78,7 +70,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         mintInfo.tickSpacing,
         tickLower,
         tickUpper,
-        mintInfo.pool
+        mintInfo.pool,
     );
 
     const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
@@ -98,70 +90,101 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
             onLeftRangeInput("");
             onRightRangeInput("");
         };
-    }, []);
+    }, [onLeftRangeInput, onRightRangeInput]);
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full text-left">
-            <div className="col-span-2">
-                <div className="flex flex-col w-full">
-                    <div className="w-full p-3 md:p-6 bg-card flex flex-col gap-3 text-left rounded-xl border border-card-border">
-                        <div className="flex items-center justify-between w-full">
-                            <h2 className="font-semibold text-lg md:text-2xl text-left">Select Range</h2>
-                            <div className="flex h-fit w-fit gap-0.5 rounded-xl border border-lighter p-0.5">
-                                <Button
-                                    className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
-                                    variant={wasManuallyToggled ? "iconActive" : "icon"}
-                                    onClick={handleCurrencyToggle}
-                                >
-                                    {currency0?.symbol}
-                                </Button>
-                                <Button
-                                    className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
-                                    variant={!wasManuallyToggled ? "iconActive" : "icon"}
-                                    onClick={handleCurrencyToggle}
-                                >
-                                    {currency1?.symbol}
-                                </Button>
-                            </div>
-                        </div>
-                        {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
-                        <div className="flex w-full flex-col md:flex-row gap-4">
-                            <RangeSelector
-                                priceLower={priceLower}
-                                priceUpper={priceUpper}
-                                getDecrementLower={getDecrementLower}
-                                getIncrementLower={getIncrementLower}
-                                getDecrementUpper={getDecrementUpper}
-                                getIncrementUpper={getIncrementUpper}
-                                onLeftRangeInput={onLeftRangeInput}
-                                onRightRangeInput={onRightRangeInput}
-                                currencyA={currencyA}
-                                currencyB={currencyB}
-                                mintInfo={mintInfo}
-                                disabled={!startPriceTypedValue && !mintInfo.price}
-                            />
-                            <div className="md:ml-auto md:text-right">
-                                <div className="font-bold text-xs mb-3 text-text-100/75">CURRENT PRICE</div>
-                                <div className="font-bold text-xl">{`${currentPrice}`}</div>
-                            </div>
+        <div className="flex w-full flex-col gap-4 text-left">
+            <LiquidityChartRangeInput
+                pool={mintInfo.pool}
+                priceLower={priceLower}
+                priceUpper={priceUpper}
+                ticksAtLimit={mintInfo.ticksAtLimit}
+                price={price ? parseFloat(price) : undefined}
+                onLeftRangeInput={onLeftRangeInput}
+                onRightRangeInput={onRightRangeInput}
+                width={window.innerWidth > 768 ? 900 : 380}
+                isSorted={!wasManuallyToggled}
+                // minPrice24h={minPrice24h}
+                // maxPrice24h={maxPrice24h}
+                // marketPrice={isPoolOnBoundary ? Number(marketPrice?.toSignificant(24)) : undefined}
+                // isStable={isStablecoinPair(currency0?.wrapped, currency1?.wrapped)}
+            />
+
+            <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-panel text-sm font-medium text-text">
+                            1
                         </div>
 
-                        <LiquidityChart
-                            currencyA={currencyA}
-                            currencyB={currencyB}
-                            pool={mintInfo.pool}
-                            currentPrice={price ? parseFloat(price) : undefined}
-                            priceLower={priceLower}
-                            priceUpper={priceUpper}
-                        />
+                        <h2 className="font-medium text-text text-xs uppercase tracking-[2px]">Select Price Range</h2>
                     </div>
-                </div>
-            </div>
 
-            <div className="flex flex-col">
-                {/* <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2> */}
-                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
-                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
+                    {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
+
+                    {/* <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                        <div>
+                            <div className="text-xs font-medium uppercase tracking-[2px] text-text-muted">Current Price</div>
+                            <div className="mt-1 text-xs font-medium text-text md:text-lg">
+                                {price ? `1 ${currencyA?.symbol} = ${formatAmount(price || 0, 8)} ${currencyB?.symbol}` : "Not available"}
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 self-start rounded-lg border p-1">
+                            <Button
+                                className="text-xs"
+                                size={"sm"}
+                                variant={wasManuallyToggled ? "icon" : "iconHover"}
+                                onClick={handleCurrencyToggle}
+                            >
+                                {currency0?.symbol}
+                            </Button>
+                            <Button
+                                className="text-xs"
+                                size={"sm"}
+                                variant={!wasManuallyToggled ? "icon" : "iconHover"}
+                                onClick={handleCurrencyToggle}
+                            >
+                                {currency1?.symbol}
+                            </Button>
+                        </div>
+                    </div> */}
+
+                    <div className="flex items-center justify-between gap-1 text-sm border p-2 rounded-md">
+                        <span className="text-xs">Current Price:</span>
+                        <button className="flex items-center gap-1 text-accent hover:text-accent/80" onClick={handleCurrencyToggle}>
+                            <span className="font-medium ">
+                                {price ? `1 ${currencyA?.symbol} = ${formatAmount(price || 0, 8)} ${currencyB?.symbol}` : "-"}
+                            </span>
+                            <ArrowUpDown size={12} />
+                        </button>
+                    </div>
+
+                    <RangeSelector
+                        priceLower={priceLower}
+                        priceUpper={priceUpper}
+                        getDecrementLower={getDecrementLower}
+                        getIncrementLower={getIncrementLower}
+                        getDecrementUpper={getDecrementUpper}
+                        getIncrementUpper={getIncrementUpper}
+                        onLeftRangeInput={onLeftRangeInput}
+                        onRightRangeInput={onRightRangeInput}
+                        currencyA={currencyA}
+                        currencyB={currencyB}
+                        mintInfo={mintInfo}
+                        disabled={!startPriceTypedValue && !mintInfo.price}
+                    />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-panel text-sm font-medium text-text">
+                            2
+                        </div>
+
+                        <h2 className="font-medium text-text text-xs uppercase tracking-[2px]">Enter Amounts</h2>
+                    </div>
+                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} handleCloseModal={handleCloseModal} />
                 </div>
             </div>
         </div>

@@ -48,35 +48,33 @@ const RangeSelector = ({
     }, [isSorted, priceUpper, priceLower]);
 
     return (
-        <>
-            <div className="flex gap-4">
-                <RangeSelectorPart
-                    value={mintInfo.ticksAtLimit[Bound.LOWER] ? "0" : leftPrice?.toSignificant(5) ?? ""}
-                    onUserInput={onLeftRangeInput}
-                    width="100%"
-                    decrement={isSorted ? getDecrementLower : getIncrementUpper}
-                    increment={isSorted ? getIncrementLower : getDecrementUpper}
-                    decrementDisabled={mintInfo.ticksAtLimit[Bound.LOWER]}
-                    incrementDisabled={mintInfo.ticksAtLimit[Bound.LOWER]}
-                    label={leftPrice ? `${currencyB?.symbol}` : "-"}
-                    initialPrice={mintInfo.price}
-                    disabled={disabled}
-                    title={"Min price"}
-                />
-                <RangeSelectorPart
-                    value={mintInfo.ticksAtLimit[Bound.UPPER] ? "∞" : rightPrice?.toSignificant(5) ?? ""}
-                    onUserInput={onRightRangeInput}
-                    decrement={isSorted ? getDecrementUpper : getIncrementLower}
-                    increment={isSorted ? getIncrementUpper : getDecrementLower}
-                    incrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-                    decrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
-                    label={rightPrice ? `${currencyB?.symbol}` : "-"}
-                    initialPrice={mintInfo.price}
-                    disabled={disabled}
-                    title={`Max price`}
-                />
-            </div>
-        </>
+        <div className="grid gap-3 md:grid-cols-2">
+            <RangeSelectorPart
+                value={mintInfo.ticksAtLimit[Bound.LOWER] ? "0" : leftPrice?.toSignificant(5) ?? ""}
+                onUserInput={onLeftRangeInput}
+                width="100%"
+                decrement={isSorted ? getDecrementLower : getIncrementUpper}
+                increment={isSorted ? getIncrementLower : getDecrementUpper}
+                decrementDisabled={mintInfo.ticksAtLimit[Bound.LOWER]}
+                incrementDisabled={mintInfo.ticksAtLimit[Bound.LOWER]}
+                label={leftPrice ? `${currencyB?.symbol}` : "-"}
+                initialPrice={mintInfo.price}
+                disabled={disabled}
+                title={"Min Price"}
+            />
+            <RangeSelectorPart
+                value={mintInfo.ticksAtLimit[Bound.UPPER] ? "∞" : rightPrice?.toSignificant(5) ?? ""}
+                onUserInput={onRightRangeInput}
+                decrement={isSorted ? getDecrementUpper : getIncrementLower}
+                increment={isSorted ? getIncrementUpper : getDecrementLower}
+                incrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
+                decrementDisabled={mintInfo.ticksAtLimit[Bound.UPPER]}
+                label={rightPrice ? `${currencyB?.symbol}` : "-"}
+                initialPrice={mintInfo.price}
+                disabled={disabled}
+                title={"Max Price"}
+            />
+        </div>
     );
 };
 

@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-
-import { cn } from "@/utils/common/cn";
 import { useMediaQuery } from "@/hooks/common/useMediaQuery";
 import {
     Dialog,
@@ -120,7 +118,7 @@ const CredenzaTitle = ({ className, children, ...props }: CredenzaProps) => {
 
 const CredenzaBody = ({ className, children, ...props }: CredenzaProps) => {
     return (
-        <div className={cn("px-4 md:px-0", className)} {...props}>
+        <div className={className} {...props}>
             {children}
         </div>
     );

@@ -1,5 +1,3 @@
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import TokenRatio from "../TokenRatio";
 import { Currency } from "@cryptoalgebra/integral-sdk";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { usePositionAPR } from "@/hooks/positions/usePositionAPR";
@@ -28,10 +26,8 @@ interface AmountsSectionProps {
 }
 
 type NewPositionPageParams = Record<"pool", Address>;
-
 const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseModal }: AmountsSectionProps) => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
-
     const [poolAPR, setPoolAPR] = useState<number>();
     const apr = usePositionAPR(poolAddress, mintInfo.position);
 
@@ -48,39 +44,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
     return (
         <>
             <EnterAmounts currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
-            <HoverCard>
-                <HoverCardTrigger className="px-2">
-                    <TokenRatio mintInfo={mintInfo} />
-                </HoverCardTrigger>
-                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-xl border border-card-border text-text-100 w-fit">
-                    <div className="flex items-center">
-                        <span className="font-bold">Token Ratio</span>
-                    </div>
-                </HoverCardContent>
-            </HoverCard>
-            <div className="flex justify-between py-3 border-t border-card-border">
-                <div>
-                    <div className="text-xs font-bold">ESTIMATED POSITION APR</div>
-                    <div className="text-lg font-bold text-green-300">{apr ? `${apr.toFixed(2)}%` : 0}</div>
-                </div>
-                <div className="text-right">
-                    <div className="text-xs font-bold">POOL APR</div>
-                    <div className="flex gap-2 items-center text-left">
-                        {shouldUseOmegaRouter ? (
-                            <BoostedAPR
-                                baseAPR={poolAPR}
-                                token0Apr={token0Apr}
-                                token1Apr={token1Apr}
-                                token0Name={currencyA?.wrapped.name}
-                                token1Name={currencyB?.wrapped.name}
-                            />
-                        ) : null}
-                        <span className="text-lg font-bold text-cyan-300">
-                            {poolAPR !== undefined ? `${formatAmount(poolAPR, 2)}%` : null}{" "}
-                        </span>
-                    </div>
-                </div>
-            </div>
+
             {shouldUseOmegaRouter ? (
                 <AddOmegaLiquidityButton
                     mintInfo={mintInfo}
@@ -98,6 +62,39 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
                     handleCloseModal={handleCloseModal}
                 />
             )}
+
+            <div className="flex items-center justify-between gap-2">
+                {poolAPR ? (
+                    <span className="rounded-full bg-panel text-text px-2 py-1 text-[11px] font-medium uppercase tracking-[0.14em]">
+                        Pool APR: {formatAmount(poolAPR, 2)}%
+                    </span>
+                ) : null}
+                {apr ? (
+                    <span className="rounded-full bg-primary/50 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-text">
+                        Estimated APR: {formatAmount(apr, 2)}%
+                    </span>
+                ) : null}
+                {shouldUseOmegaRouter ? (
+                    <BoostedAPR
+                        baseAPR={poolAPR}
+                        token0Apr={token0Apr}
+                        token1Apr={token1Apr}
+                        token0Name={currencyA?.wrapped.name}
+                        token1Name={currencyB?.wrapped.name}
+                    />
+                ) : null}
+            </div>
+
+            {/* <HoverCard>
+                <HoverCardTrigger>
+                    <TokenRatio mintInfo={mintInfo} />
+                </HoverCardTrigger>
+                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-xl border border-card-border text-text-100 w-fit">
+                    <div className="flex items-center">
+                        <span className="font-bold">Token Ratio</span>
+                    </div>
+                </HoverCardContent>
+            </HoverCard> */}
         </>
     );
 };

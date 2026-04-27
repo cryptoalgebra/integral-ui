@@ -67,7 +67,7 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
                                   t.liquidityActive.toString(),
                                   t.tickIdx,
                                   ticksResult.tickSpacing,
-                                  mockTicks
+                                  mockTicks,
                               )
                             : undefined;
 
@@ -93,7 +93,7 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
                         tvlToken0: amount0,
                         tvlToken1: amount1,
                     };
-                })
+                }),
             );
             setProcessedData(_data);
         }
@@ -210,7 +210,7 @@ const LiquidityChartLoader = () => {
     return (
         <div className="flex items-end gap-2 pb-4 w-full h-[250px]">
             {heights.map((h, i) => (
-                <Skeleton style={{ height: `${h}px` }} key={i} className="w-[20px] bg-card-dark" />
+                <Skeleton style={{ height: `${h}px` }} key={i} className="w-[20px] bg-panel" />
             ))}
         </div>
     );

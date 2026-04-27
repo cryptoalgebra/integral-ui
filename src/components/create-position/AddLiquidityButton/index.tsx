@@ -89,11 +89,11 @@ export const AddLiquidityButton = ({
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
-        NONFUNGIBLE_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId],
     );
     const { approvalState: approvalStateB, approvalCallback: approvalCallbackB } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_B],
-        NONFUNGIBLE_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId],
     );
 
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING;
@@ -105,7 +105,7 @@ export const AddLiquidityButton = ({
             (mintInfo.depositADisabled ? true : approvalStateA === ApprovalState.APPROVED) &&
                 (mintInfo.depositBDisabled ? true : approvalStateB === ApprovalState.APPROVED) &&
                 !mintInfo.errorMessage &&
-                !mintInfo.invalidRange
+                !mintInfo.invalidRange,
         );
     }, [mintInfo, approvalStateA, approvalStateB]);
 
@@ -128,7 +128,7 @@ export const AddLiquidityButton = ({
             tokenB: quoteCurrency?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        isIncreaseMode ? undefined : `/pool/${poolAddress}`
+        isIncreaseMode ? undefined : `/pool/${poolAddress}`,
     );
 
     useEffect(() => {
@@ -142,15 +142,24 @@ export const AddLiquidityButton = ({
 
     if (!account)
         return (
-            <Button variant={"primary"} onClick={() => open()}>
+            <Button variant={"primary"} className="w-full" onClick={() => open()}>
                 Connect Wallet
             </Button>
         );
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button variant={"destructive"} className="w-full" onClick={() => open({ view: "Networks" })}>
+                {`Connect to ${DEFAULT_CHAIN_NAME}`}
+            </Button>
+        );
 
-    if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
+    if (mintInfo.errorMessage)
+        return (
+            <Button variant="primary" className="w-full" disabled>
+                {mintInfo.errorMessage}
+            </Button>
+        );
 
     if (showApproveA || showApproveB)
         return (
@@ -183,6 +192,7 @@ export const AddLiquidityButton = ({
             disabled={!isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
             variant={"primary"}
+            className="w-full"
         >
             {isAddingLiquidityLoading || isPending ? <Loader /> : isIncreaseMode ? "Add Liquidity" : "Create Position"}
         </Button>

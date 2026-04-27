@@ -50,35 +50,26 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
 
     if (!token0Ratio && !token1Ratio) return null;
 
+    const token0Value = Number(token0Ratio || 0);
+    const token1Value = Number(token1Ratio || 0);
+
     return (
-        <div className="relative flex h-[50px] min-h-[50px]">
-            <div className="flex h-full w-full font-semibold">
-                {Number(token0Ratio) > 0 && (
-                    <div
-                        className={`flex h-2 items-center justify-end bg-primary duration-300 ${
-                            Number(token0Ratio) === 100 ? "rounded-xl" : "rounded-l-xl"
-                        }`}
-                        style={{ width: `${token0Ratio}%` }}
-                    />
-                )}
-                <div className="absolute left-2 top-5 flex gap-2">
-                    <CurrencyLogo currency={currencyA} size={24} />
-                    {Number(token0Ratio) > 0 ? <span>{`${Number(token0Ratio).toFixed()}%`}</span> : <span>0%</span>}
+        <div className="flex flex-col gap-3">
+            <div className="overflow-hidden rounded-full bg-card">
+                <div className="flex h-2.5 gap-1.5 w-full overflow-hidden">
+                    <div className="bg-primary transition-[width] duration-300" style={{ width: `${token0Value}%` }} />
+                    <div className="bg-accent transition-[width] duration-300" style={{ width: `${token1Value}%` }} />
                 </div>
+            </div>
 
-                {Number(token0Ratio) > 0 && Number(token1Ratio) > 0 ? <div className="h-full w-1" /> : null}
-
-                {Number(token1Ratio) > 0 && (
-                    <div
-                        className={`flex h-2 items-center justify-end bg-accent duration-300 ${
-                            Number(token1Ratio) === 100 ? "rounded-xl" : "rounded-r-xl"
-                        }`}
-                        style={{ width: `${token1Ratio}%` }}
-                    />
-                )}
-                <div className="absolute right-2 top-5 flex gap-2">
-                    <CurrencyLogo currency={currencyB} size={24} />
-                    {Number(token1Ratio) > 0 ? <span>{`${Number(token1Ratio).toFixed()}%`}</span> : <span>0%</span>}
+            <div className="flex items-center justify-between gap-3 text-sm font-medium text-text">
+                <div className="flex items-center gap-2">
+                    <CurrencyLogo currency={currencyA} size={20} />
+                    <span>{`${currencyA?.symbol ?? "-"} (${token0Value.toFixed()}%)`}</span>
+                </div>
+                <div className="flex items-center gap-2 text-right">
+                    <span>{`${currencyB?.symbol ?? "-"} (${token1Value.toFixed()}%)`}</span>
+                    <CurrencyLogo currency={currencyB} size={20} />
                 </div>
             </div>
         </div>
