@@ -2,13 +2,13 @@ import { useReadNonfungiblePositionManagerTokenUri } from "@/generated";
 import { cn } from "@/utils/common/cn";
 import { useEffect, useRef } from "react";
 
-export const FarmingPositionImg = ({
+export const PositionImage = ({
     positionId,
     size,
     className,
     isALM,
 }: {
-    positionId: string;
+    positionId: number;
     size: number;
     className?: string;
     isALM?: boolean;

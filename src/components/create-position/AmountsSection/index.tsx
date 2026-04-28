@@ -22,11 +22,11 @@ interface AmountsSectionProps {
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
-    handleCloseModal?: () => void;
+    onSuccess?: () => void;
 }
 
 type NewPositionPageParams = Record<"pool", Address>;
-const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseModal }: AmountsSectionProps) => {
+const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, onSuccess }: AmountsSectionProps) => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
     const [poolAPR, setPoolAPR] = useState<number>();
     const apr = usePositionAPR(poolAddress, mintInfo.position);
@@ -46,12 +46,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
             <EnterAmounts currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
 
             {shouldUseOmegaRouter ? (
-                <AddOmegaLiquidityButton
-                    mintInfo={mintInfo}
-                    poolAddress={poolAddress}
-                    tokenId={tokenId}
-                    handleCloseModal={handleCloseModal}
-                />
+                <AddOmegaLiquidityButton mintInfo={mintInfo} poolAddress={poolAddress} tokenId={tokenId} onSuccess={onSuccess} />
             ) : (
                 <AddLiquidityButton
                     baseCurrency={currencyA}
@@ -59,7 +54,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
                     mintInfo={mintInfo}
                     poolAddress={poolAddress}
                     tokenId={tokenId}
-                    handleCloseModal={handleCloseModal}
+                    onSuccess={onSuccess}
                 />
             )}
 

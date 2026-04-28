@@ -2,6 +2,7 @@ import App from "@/App";
 import PoolsList from "@/components/pools/PoolsList";
 import AnalyticsPage from "@/pages/Analytics";
 import CreatePoolPage from "@/pages/CreatePool";
+import EarnPage from "@/pages/Earn";
 import NewPositionPage from "@/pages/NewPosition";
 import Page404 from "@/pages/Page404";
 import PoolPage from "@/pages/Pool";
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
             {
                 path: "pools/create",
                 element: <CreatePoolPage />,
+            },
+            {
+                path: "earn",
+                element: <EarnPage />,
             },
             {
                 path: "pool/:pool",

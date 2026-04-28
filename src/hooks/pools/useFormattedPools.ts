@@ -10,6 +10,7 @@ import ALMModule from "@/modules/ALMModule";
 import { Address } from "viem";
 import { BOOSTED_TOKENS } from "config/tokens";
 import { DEFAULT_CHAIN_ID } from "config";
+import { useNativePriceUSD } from "../common/useNativePriceUSD";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
 interface Pair {
@@ -24,6 +25,9 @@ export interface FormattedPool {
     tvlUSD: number;
     volume24USD: number;
     fees24USD: number;
+    token0PriceUSD: number;
+    token1PriceUSD: number;
+    userAlmLiquidityUSD: number;
     poolMaxApr: number;
     poolAvgApr: number;
     avgApr: number;
@@ -42,6 +46,8 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
     const { address: account, chainId } = useAccount();
 
     const { infoClient, farmingClient } = useClients();
+
+    const { nativePriceUSD, isLoading: isNativePriceLoading } = useNativePriceUSD();
 
     const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery({
         client: infoClient,
@@ -65,7 +71,8 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
         isPoolsAvgAprLoading ||
         isPositionsLoading ||
         isFarmingsLoading ||
-        isFarmingsAPRLoading;
+        isFarmingsAPRLoading ||
+        isNativePriceLoading;
 
     const formattedPools = useMemo(() => {
         if (isLoading || !pools) return [];
@@ -97,6 +104,19 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 const openVaults = almVaults?.filter((vault) => vault.pool === id.toLowerCase());
                 const openAlmPositions = almPositions?.filter((position) => position.poolAddress.toLowerCase() === id.toLowerCase());
 
+                const token0PriceUSD = Number(token0.derivedMatic || 0) * nativePriceUSD;
+                const token1PriceUSD = Number(token1.derivedMatic || 0) * nativePriceUSD;
+
+                const userAlmLiquidityUSD = (openAlmPositions || []).reduce((sum, position: any) => {
+                    const [amount0Raw, amount1Raw] = position?.userAmounts || [];
+
+                    const amount0 = Number(amount0Raw || 0);
+                    const amount1 = Number(amount1Raw || 0);
+
+                    const positionUsd = amount0 * token0PriceUSD + amount1 * token1PriceUSD;
+                    return Number.isFinite(positionUsd) ? sum + positionUsd : sum;
+                }, 0);
+
                 const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
                 const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
                 const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
@@ -121,6 +141,9 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     tvlUSD: Number(totalValueLockedUSD),
                     volume24USD: timeDifference <= msIn24Hours ? Number(currentPool.volumeUSD) : 0,
                     fees24USD: timeDifference <= msIn24Hours ? Number(currentPool.feesUSD) : 0,
+                    token0PriceUSD,
+                    token1PriceUSD,
+                    userAlmLiquidityUSD,
                     poolMaxApr,
                     poolAvgApr,
                     farmApr,
@@ -148,6 +171,8 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
         poolsMaxApr,
         poolsAvgApr,
         farmingsAPR,
+        chainId,
+        nativePriceUSD,
     ]);
 
     return { pools: formattedPools, isLoading };

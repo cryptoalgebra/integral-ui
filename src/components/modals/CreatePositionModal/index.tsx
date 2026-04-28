@@ -2,7 +2,9 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Button } from "@/components/ui/button";
 import { Credenza, CredenzaBody, CredenzaContent, CredenzaHeader, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
 import { useToast } from "@/components/ui/use-toast";
+import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
 import { CreateManualPosition } from "@/pages/NewPosition/CreateManualPosition";
+import { truncateHash } from "@/utils";
 import { Currency } from "@cryptoalgebra/integral-sdk";
 import { Copy, ExternalLink } from "lucide-react";
 import { useState } from "react";
@@ -10,25 +12,19 @@ import { Address } from "viem";
 
 interface CreatePositionModalProps {
     poolAddress?: Address;
-    token0?: Currency;
-    token1?: Currency;
-    feeTier?: string;
-    poolAddressLabel?: string;
-    poolExplorerUrl?: string;
+    fee: number | undefined;
+    token0: Currency | undefined;
+    token1: Currency | undefined;
     children: React.ReactNode;
 }
 
-const CreatePositionModal = ({
-    poolAddress,
-    token0,
-    token1,
-    feeTier,
-    poolAddressLabel,
-    poolExplorerUrl,
-    children,
-}: CreatePositionModalProps) => {
+const CreatePositionModal = ({ poolAddress, fee, token0, token1, children }: CreatePositionModalProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
+
+    const blockExplorerUrl = useBlockExplorerURL();
+
+    const poolExplorerUrl = poolAddress ? `${blockExplorerUrl}/address/${poolAddress}` : null;
 
     const handleCopy = () => {
         if (!poolAddress) return;
@@ -60,13 +56,15 @@ const CreatePositionModal = ({
                                 <h1 className="font-bold text-lg leading-tight text-text">
                                     {token0?.symbol && token1?.symbol ? `${token0.symbol} / ${token1.symbol}` : ""}
                                 </h1>
-                                <span className="rounded-full bg-panel text-text px-2 py-1 text-[11px] font-medium uppercase tracking-[0.14em]">
-                                    {feeTier}
-                                </span>
+                                {fee ? (
+                                    <span className="rounded-full bg-panel text-text px-2 py-1 text-[11px] font-medium uppercase tracking-[0.14em]">
+                                        {fee / 10_000}%
+                                    </span>
+                                ) : null}
                             </div>
 
                             <div className="flex flex-wrap items-center gap-2 text-sm text-text-muted">
-                                <span>{poolAddressLabel}</span>
+                                <span>{truncateHash(poolAddress || "0x")}</span>
                                 {poolExplorerUrl ? (
                                     <>
                                         <Button
@@ -94,7 +92,7 @@ const CreatePositionModal = ({
                 </CredenzaHeader>
 
                 <CredenzaBody className="overflow-y-auto p-4 w-full">
-                    <CreateManualPosition poolAddress={poolAddress} handleCloseModal={() => setIsOpen(false)} />
+                    <CreateManualPosition poolAddress={poolAddress} token0={token0} token1={token1} onSuccess={() => setIsOpen(false)} />
                 </CredenzaBody>
             </CredenzaContent>
         </Credenza>

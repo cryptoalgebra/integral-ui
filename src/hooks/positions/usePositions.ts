@@ -6,7 +6,7 @@ import { Address } from "viem";
 import { useReadNonfungiblePositionManagerBalanceOf } from "@/generated";
 
 export interface PositionFromTokenId {
-    tokenId: number;
+    tokenId: bigint;
     feeGrowthInside0LastX128: bigint;
     feeGrowthInside1LastX128: bigint;
     liquidity: bigint;
@@ -23,7 +23,7 @@ export interface PositionFromTokenId {
 }
 
 function usePositionsFromTokenIds(
-    tokenIds: any[] | undefined
+    tokenIds: any[] | undefined,
 ): {
     isLoading: boolean;
     positions: PositionFromTokenId[] | undefined;
@@ -144,7 +144,7 @@ export function usePositions() {
 }
 
 export function usePosition(
-    tokenId: string | number | undefined
+    tokenId: string | number | undefined,
 ): {
     loading: boolean;
     position: PositionFromTokenId | undefined;

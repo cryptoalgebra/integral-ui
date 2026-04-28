@@ -17,13 +17,13 @@ interface AddOmegaLiquidityButtonProps {
     mintInfo: IDerivedMintInfo;
     poolAddress?: Address;
     tokenId?: number;
-    handleCloseModal?: () => void;
+    onSuccess?: () => void;
 }
 
 const ZERO_PERCENT = new Percent("0");
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handleCloseModal }: AddOmegaLiquidityButtonProps) => {
+export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, onSuccess }: AddOmegaLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -121,7 +121,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
         mintInfo.position,
         mintOptions,
         poolAddress,
-        handleCloseModal,
+        onSuccess,
     );
 
     // Check if we need approval or permit for token0

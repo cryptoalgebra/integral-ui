@@ -2,41 +2,30 @@ import LiquidityChartRangeInput from "@/components/common/LiquidityChartRangeInp
 import AmountsSection from "@/components/create-position/AmountsSection";
 import PresetTabs from "@/components/create-position/PresetTabs";
 import RangeSelector from "@/components/create-position/RangeSelector";
-import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
-import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { formatAmount } from "@/utils";
-import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/integral-sdk";
+import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath, Currency } from "@cryptoalgebra/integral-sdk";
 import { ArrowUpDown } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 
 interface ManualProps {
     poolAddress?: Address;
-    handleCloseModal?: () => void;
+    token0: Currency | undefined;
+    token1: Currency | undefined;
+    onSuccess?: () => void;
 }
 
-export function CreateManualPosition({ poolAddress, handleCloseModal }: ManualProps) {
-    const { data: token0 } = useReadAlgebraPoolToken0({
-        address: poolAddress,
-    });
-
-    const { data: token1 } = useReadAlgebraPoolToken1({
-        address: poolAddress,
-    });
-
-    const currency0 = useCurrency(token0, true);
-    const currency1 = useCurrency(token1, true);
-
+export function CreateManualPosition({ poolAddress, token0, token1, onSuccess }: ManualProps) {
     const [wasManuallyToggled, setWasManuallyToggled] = useState(false);
 
     const [currencyA, currencyB] = useMemo(() => {
         if (wasManuallyToggled) {
-            return [currency1, currency0];
+            return [token1, token0];
         } else {
-            return [currency0, currency1];
+            return [token0, token1];
         }
-    }, [currency0, currency1, wasManuallyToggled]);
+    }, [token0, token1, wasManuallyToggled]);
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -112,7 +101,7 @@ export function CreateManualPosition({ poolAddress, handleCloseModal }: ManualPr
 
             <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
                 <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-panel text-sm font-medium text-text">
                             1
                         </div>
@@ -121,34 +110,6 @@ export function CreateManualPosition({ poolAddress, handleCloseModal }: ManualPr
                     </div>
 
                     {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
-
-                    {/* <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                        <div>
-                            <div className="text-xs font-medium uppercase tracking-[2px] text-text-muted">Current Price</div>
-                            <div className="mt-1 text-xs font-medium text-text md:text-lg">
-                                {price ? `1 ${currencyA?.symbol} = ${formatAmount(price || 0, 8)} ${currencyB?.symbol}` : "Not available"}
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-1 self-start rounded-lg border p-1">
-                            <Button
-                                className="text-xs"
-                                size={"sm"}
-                                variant={wasManuallyToggled ? "icon" : "iconHover"}
-                                onClick={handleCurrencyToggle}
-                            >
-                                {currency0?.symbol}
-                            </Button>
-                            <Button
-                                className="text-xs"
-                                size={"sm"}
-                                variant={!wasManuallyToggled ? "icon" : "iconHover"}
-                                onClick={handleCurrencyToggle}
-                            >
-                                {currency1?.symbol}
-                            </Button>
-                        </div>
-                    </div> */}
 
                     <div className="flex items-center justify-between gap-1 text-sm border p-2 rounded-md">
                         <span className="text-xs">Current Price:</span>
@@ -177,14 +138,14 @@ export function CreateManualPosition({ poolAddress, handleCloseModal }: ManualPr
                 </div>
 
                 <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-panel text-sm font-medium text-text">
                             2
                         </div>
 
                         <h2 className="font-medium text-text text-xs uppercase tracking-[2px]">Enter Amounts</h2>
                     </div>
-                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} handleCloseModal={handleCloseModal} />
+                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} onSuccess={onSuccess} />
                 </div>
             </div>
         </div>

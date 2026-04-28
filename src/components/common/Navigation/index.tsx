@@ -7,6 +7,7 @@ const PATHS = {
     LIMIT_ORDERS: "limit-order",
     POOLS: "/pools",
     POOL: "/pool/*",
+    EARN: "/earn",
     ANALYTICS: "/analytics/*",
     VE_TOKEN: "/vetoken/*",
     VOTE: "/vote/*",
@@ -20,17 +21,16 @@ const menuItems = [
         icon: <ArrowUpDown size={14} />,
     },
     {
+        title: "Earn",
+        link: "/earn",
+        active: [PATHS.EARN],
+        icon: <LucideLineChart size={14} />,
+    },
+    {
         title: "Explore",
         link: "/pools",
         active: [PATHS.POOLS, PATHS.POOL],
         icon: <Droplets size={14} />,
-    },
-    {
-        title: "Earn",
-        link: "/earn",
-        active: [],
-        icon: <LucideLineChart size={14} />,
-        disabled: true,
     },
     {
         title: "Vote",

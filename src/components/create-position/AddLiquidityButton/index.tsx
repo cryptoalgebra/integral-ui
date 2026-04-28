@@ -22,20 +22,13 @@ interface AddLiquidityButtonProps {
     mintInfo: IDerivedMintInfo;
     poolAddress?: Address;
     tokenId?: number;
-    handleCloseModal?: () => void;
+    onSuccess?: () => void;
 }
 
 const ZERO_PERCENT = new Percent("0");
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddLiquidityButton = ({
-    baseCurrency,
-    quoteCurrency,
-    mintInfo,
-    poolAddress,
-    tokenId,
-    handleCloseModal,
-}: AddLiquidityButtonProps) => {
+export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress, tokenId, onSuccess }: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -134,9 +127,9 @@ export const AddLiquidityButton = ({
     useEffect(() => {
         if (!isSuccess) return;
         if (isIncreaseMode) {
-            Promise.all([refetchPosition(), refetchAllPositions()]).then(() => handleCloseModal?.());
+            Promise.all([refetchPosition(), refetchAllPositions()]).then(() => onSuccess?.());
         }
-    }, [isSuccess, isIncreaseMode, refetchPosition, refetchAllPositions, handleCloseModal]);
+    }, [isSuccess, isIncreaseMode, refetchPosition, refetchAllPositions, onSuccess]);
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 
