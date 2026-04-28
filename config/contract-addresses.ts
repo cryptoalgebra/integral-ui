@@ -25,7 +25,7 @@ export const FARMING_CENTER: Record<number, Address> = {
 
 /* Limit Orders */
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
-    [ChainId.BSC]: "0xdA9c1AF6498583Ae548CAd31c47eFde061569789",
+    [ChainId.BSC]: "0x1afd3e533278f627891c3D21997514e82B327fEC",
 };
 
 /* Ve 3.3 */
