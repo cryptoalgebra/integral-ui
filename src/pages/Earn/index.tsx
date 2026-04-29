@@ -1,8 +1,8 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
+import ClaimAllFeesButton from "@/components/earn/ClaimAllFeesButton.tsx";
 import EarnPoolsList, { EarnPoolListItem } from "@/components/earn/EarnPoolsList";
 import PositionManagerModal from "@/components/modals/PositionManagerModal";
-import { Button } from "@/components/ui/button";
 import { ExtendedPosition, useExtendedPositions } from "@/hooks/earn/useExtendedPositions";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useMemo, useState } from "react";
@@ -14,7 +14,6 @@ const EarnPage = () => {
 
     const [selectedPosition, setSelectedPosition] = useState<ExtendedPosition | null>(null);
 
-    // const hasPositions = positions.length > 0;
     const totalClaimableFeesUSD = positions.reduce((acc, position) => acc + position.feesUSD, 0);
 
     const earnPools = useMemo<EarnPoolListItem[]>(() => {
@@ -74,20 +73,18 @@ const EarnPage = () => {
                             </p>
                         </div>
 
-                        <Button disabled variant="primary" size="md" className="whitespace-nowrap">
-                            Collect Fees
-                        </Button>
-                        {/* <CollectFeesAllModal positions={positions}>
-                            <Button variant="primary" size="md" className="whitespace-nowrap" disabled={!account || !hasPositions}>
-                                Collect Fees
-                            </Button>
-                        </CollectFeesAllModal> */}
+                        <ClaimAllFeesButton
+                            positions={positions}
+                            isPageLoading={isLoading}
+                            onSuccess={refetch}
+                            className="whitespace-nowrap"
+                        />
                     </div>
                 </div>
             </div>
 
             <div className="flex w-full flex-col gap-2 md:gap-6">
-                <EarnPoolsList pools={earnPools} loading={isLoading} onManagePosition={setSelectedPosition} />
+                <EarnPoolsList pools={earnPools} loading={isLoading} onManagePosition={setSelectedPosition} onRefetch={refetch} />
             </div>
 
             <PositionManagerModal selectedPosition={selectedPosition} onClose={() => setSelectedPosition(null)} refetch={refetch} />

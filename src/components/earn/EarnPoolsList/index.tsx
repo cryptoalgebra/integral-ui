@@ -26,6 +26,7 @@ interface EarnPoolsListProps {
     pools: EarnPoolListItem[];
     loading?: boolean;
     onManagePosition: (position: ExtendedPosition) => void;
+    onRefetch?: () => void;
 }
 
 const EarnPoolPair = ({ pool }: { pool: ExtendedPool }) => {
@@ -76,7 +77,7 @@ const PositionStatusBadge = ({ status }: { status: PositionStatus }) => {
     );
 };
 
-const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps) => {
+const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPoolsListProps) => {
     const [expandedPoolId, setExpandedPoolId] = useState<string | null>(null);
     const [searchValue, setSearchValue] = useState("");
 
@@ -212,72 +213,96 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                             </TableCell>
                                         </TableRow>
 
-                                        {hasPositions &&
-                                            isExpanded &&
-                                            item.positions.map((position) => (
-                                                <TableRow
-                                                    key={`earn-position-${poolId}-${position.id}`}
-                                                    className={cn(
-                                                        "bg-panel/40 border-none hover:bg-panel/50",
-                                                        // index === item.positions.length - 1 ? "border-border/60 " : "border-none",
-                                                    )}
-                                                >
-                                                    <TableCell className="min-w-56 px-4 py-3.5 text-left">
-                                                        <div className="flex items-center gap-2 pl-12">
-                                                            <PositionImage positionId={position.id} size={8} />
-                                                            <span className="text-sm text-text font-medium">Position #{position.id}</span>
-                                                            <PositionStatusBadge status={position.status} />
+                                        {hasPositions && (
+                                            <TableRow className="border-none bg-transparent hover:bg-transparent">
+                                                <TableCell colSpan={6} className="p-0">
+                                                    <div
+                                                        className={cn(
+                                                            "grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out",
+                                                            isExpanded
+                                                                ? "grid-rows-[1fr] opacity-100"
+                                                                : "pointer-events-none grid-rows-[0fr] opacity-0",
+                                                        )}
+                                                    >
+                                                        <div className="min-h-0 overflow-hidden">
+                                                            <Table>
+                                                                <TableBody>
+                                                                    {item.positions.map((position) => (
+                                                                        <TableRow
+                                                                            key={`earn-position-${poolId}-${position.id}`}
+                                                                            className={cn("bg-panel/40 border-none hover:bg-panel/50")}
+                                                                        >
+                                                                            <TableCell className="min-w-56 px-4 py-3.5 text-left">
+                                                                                <div className="flex items-center gap-2 pl-12">
+                                                                                    <PositionImage positionId={position.id} size={8} />
+                                                                                    <span className="text-sm text-text font-medium">
+                                                                                        Position #{position.id}
+                                                                                    </span>
+                                                                                    <PositionStatusBadge status={position.status} />
+                                                                                </div>
+                                                                            </TableCell>
+
+                                                                            <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
+                                                                            <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                                            <TableCell className="min-w-32 px-4 py-3.5 text-left">
+                                                                                ${formatAmount(position.amountUSD, 4)}
+                                                                            </TableCell>
+                                                                            <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text">
+                                                                                ${formatAmount(position.feesUSD, 4)}
+                                                                            </TableCell>
+
+                                                                            <TableCell className="w-[140px] px-4 py-3.5 text-right">
+                                                                                <Button
+                                                                                    size="sm"
+                                                                                    variant="primaryLink"
+                                                                                    className="whitespace-nowrap"
+                                                                                    onClick={(event) => {
+                                                                                        event.stopPropagation();
+                                                                                        onManagePosition(position);
+                                                                                    }}
+                                                                                >
+                                                                                    Manage
+                                                                                </Button>
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    ))}
+
+                                                                    <TableRow className="border-border/60 bg-panel/40">
+                                                                        <TableCell className="min-w-56 px-4 py-3.5 text-left">
+                                                                            <div className="flex items-center gap-2 pl-12">
+                                                                                <CreatePositionModal
+                                                                                    poolAddress={item.pool.id}
+                                                                                    token0={item.pool.pool.token0}
+                                                                                    token1={item.pool.pool.token1}
+                                                                                    fee={item.pool.pool.fee}
+                                                                                    onSuccess={onRefetch}
+                                                                                >
+                                                                                    <Button
+                                                                                        size="sm"
+                                                                                        variant="primary"
+                                                                                        className="whitespace-nowrap"
+                                                                                        onClick={(event) => {
+                                                                                            event.stopPropagation();
+                                                                                        }}
+                                                                                    >
+                                                                                        + New position
+                                                                                    </Button>
+                                                                                </CreatePositionModal>
+                                                                            </div>
+                                                                        </TableCell>
+
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text"></TableCell>
+
+                                                                        <TableCell className="w-[140px] px-4 py-3.5 text-right"></TableCell>
+                                                                    </TableRow>
+                                                                </TableBody>
+                                                            </Table>
                                                         </div>
-                                                    </TableCell>
-
-                                                    <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
-                                                    <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
-                                                    <TableCell className="min-w-32 px-4 py-3.5 text-left">
-                                                        ${formatAmount(position.amountUSD, 4)}
-                                                    </TableCell>
-                                                    <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text">
-                                                        ${formatAmount(position.feesUSD, 4)}
-                                                    </TableCell>
-
-                                                    <TableCell className="w-[140px] px-4 py-3.5 text-right">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="primaryLink"
-                                                            className="whitespace-nowrap"
-                                                            onClick={(event) => {
-                                                                event.stopPropagation();
-                                                                onManagePosition(position);
-                                                            }}
-                                                        >
-                                                            Manage
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-
-                                        {hasPositions && isExpanded && (
-                                            <TableRow className="border-border/60 bg-panel/40">
-                                                <TableCell className="min-w-56 px-4 py-3.5 text-left">
-                                                    <div className="flex items-center gap-2 pl-12">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="primary"
-                                                            className="whitespace-nowrap"
-                                                            onClick={(event) => {
-                                                                event.stopPropagation();
-                                                            }}
-                                                        >
-                                                            + New position
-                                                        </Button>
                                                     </div>
                                                 </TableCell>
-
-                                                <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
-                                                <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
-                                                <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
-                                                <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text"></TableCell>
-
-                                                <TableCell className="w-[140px] px-4 py-3.5 text-right"></TableCell>
                                             </TableRow>
                                         )}
                                     </Fragment>

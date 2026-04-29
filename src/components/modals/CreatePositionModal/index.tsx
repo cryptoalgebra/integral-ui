@@ -18,9 +18,10 @@ interface CreatePositionModalProps {
     token0: Currency | undefined;
     token1: Currency | undefined;
     children: React.ReactNode;
+    onSuccess?: () => void;
 }
 
-const CreatePositionModal = ({ poolAddress, fee, token0, token1, children }: CreatePositionModalProps) => {
+const CreatePositionModal = ({ poolAddress, fee, token0, token1, children, onSuccess }: CreatePositionModalProps) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
@@ -41,6 +42,7 @@ const CreatePositionModal = ({ poolAddress, fee, token0, token1, children }: Cre
 
     const handleSuccess = async () => {
         await delay(500);
+        onSuccess?.();
         setIsOpen(false);
         navigate("/earn");
     };
