@@ -62,7 +62,7 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between gap-3 text-sm font-medium text-text">
+            <div className="flex items-center justify-between gap-3 text-xs font-medium text-text">
                 <div className="flex items-center gap-2">
                     <CurrencyLogo currency={currencyA} size={20} />
                     <span>{`${currencyA?.symbol ?? "-"} (${token0Value.toFixed()}%)`}</span>

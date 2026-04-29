@@ -4,11 +4,15 @@ import { HoverCardPortal } from "@radix-ui/react-hover-card";
 import { PositionAnalytics } from "@/hooks/positions/usePositionAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { useMediaQuery } from "@/hooks/common/useMediaQuery";
 import { formatAmount } from "@/utils";
 
 interface PositionAgeInfoProps {
     positionAnalytics: PositionAnalytics | undefined;
 }
+
+const metricCardClass =
+    "group flex w-full cursor-pointer flex-col gap-1 rounded-lg bg-panel p-2 transition-colors duration-150 hover:bg-panel-hover";
 
 function getCreationDate(positionAgeDays: number): string {
     const ms = positionAgeDays * 24 * 60 * 60 * 1000;
@@ -49,7 +53,7 @@ function formatPositionAge(days: number | undefined | null): string {
 export function PositionAgeInfo({ positionAnalytics }: PositionAgeInfoProps) {
     const [isOpen, setIsOpen] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
-    const isMobile = window.innerWidth < 768;
+    const isMobile = useMediaQuery("(max-width: 767px)");
 
     useEffect(() => {
         if (!isMobile) return;
@@ -65,12 +69,12 @@ export function PositionAgeInfo({ positionAnalytics }: PositionAgeInfoProps) {
 
     if (!positionAnalytics)
         return (
-            <div className="flex flex-col gap-1 rounded-lg group p-3 hover:bg-card-hover/60 cursor-pointer transition-all duration-200 bg-card-hover/50 border border-card-border">
+            <div className={metricCardClass}>
                 <div className="flex items-center justify-between">
-                    <span className="text-text/50 uppercase tracking-wider text-xs">Active for</span>
-                    <Clock className="w-3.5 h-3.5 text-text/40" />
+                    <span className="text-[10px] uppercase tracking-[0.14em] text-text-muted">Active for</span>
+                    <Clock className="h-3 w-3 text-text-muted" />
                 </div>
-                <Skeleton className="h-6 w-16 rounded-md bg-card-hover" />
+                <Skeleton className="h-5 w-16 rounded-md bg-card" />
             </div>
         );
 
@@ -86,41 +90,44 @@ export function PositionAgeInfo({ positionAnalytics }: PositionAgeInfoProps) {
         <HoverCard
             open={isMobile ? isOpen : undefined}
             onOpenChange={(open) => !isMobile && setIsOpen(open)}
-            openDelay={200}
-            closeDelay={200}
+            openDelay={120}
+            closeDelay={120}
         >
             <div ref={cardRef}>
                 <HoverCardTrigger onClick={() => isMobile && setIsOpen(!isOpen)} asChild>
-                    <div className="flex flex-col gap-1 rounded-lg group p-3 hover:bg-card-hover/60 cursor-pointer transition-all duration-200 bg-card-hover/50 border border-card-border">
+                    <div className={metricCardClass}>
                         <div className="flex items-center justify-between">
-                            <span className="text-text/50 uppercase tracking-wider text-xs">Active for</span>
-                            <Clock className="w-3.5 h-3.5 text-text/40" />
+                            <span className="text-[10px] uppercase tracking-[0.14em] text-text-muted">Active for</span>
+                            <Clock className="h-3 w-3 text-text-muted" />
                         </div>
-                        <span className="text-lg font-medium">{formatPositionAge(positionAge)}</span>
+                        <span className="text-base font-medium text-text">{formatPositionAge(positionAge)}</span>
                     </div>
                 </HoverCardTrigger>
                 <HoverCardPortal>
-                    <HoverCardContent side="bottom" className="w-60 text-sm">
-                        <p className="text-left text-xs opacity-50">Timeline summary for this liquidity position.</p>
-                        <div className="flex flex-col gap-1 rounded-lg bg-card-dark/50  p-2 text-xs">
+                    <HoverCardContent
+                        side="bottom"
+                        className="w-[250px] max-w-[90vw] gap-2 rounded-xl border border-border bg-card p-3 text-xs shadow-sm"
+                    >
+                        <p className="text-left text-[11px] text-text-muted">Timeline summary for this liquidity position.</p>
+                        <div className="flex flex-col gap-1 rounded-lg border border-border bg-panel p-2.5 text-[11px]">
                             <div className="flex justify-between">
-                                <span className="opacity-50">Opened on</span>
+                                <span className="text-text-muted">Opened on</span>
                                 <span>{createdOn}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="opacity-50">Duration</span>
+                                <span className="text-text-muted">Duration</span>
                                 <span>{formatPositionAge(positionAge)}</span>
                             </div>
 
-                            <hr className="mt-1 border-card-border" />
+                            <hr className="my-1 border-border" />
 
                             <div className="flex justify-between">
-                                <span className="opacity-50">Initial deposit</span>
+                                <span className="text-text-muted">Initial deposit</span>
                                 <span>${formatAmount(initialAmount.usdValue, 4)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="opacity-50">Current value</span>
-                                <span className={valueChangeUsd >= 0 ? "text-green-400" : "text-text/60"}>
+                                <span className="text-text-muted">Current value</span>
+                                <span className={valueChangeUsd >= 0 ? "text-emerald-600" : "text-text-muted"}>
                                     ${formatAmount(currentAmount.usdValue, 4)}
                                     <span className="ml-1 text-[10px]">
                                         ({valueChangeSign}${formatAmount(Math.abs(valueChangeUsd), 2)})
@@ -128,14 +135,14 @@ export function PositionAgeInfo({ positionAnalytics }: PositionAgeInfoProps) {
                                 </span>
                             </div>
 
-                            <hr className="mt-1 border-card-border" />
+                            <hr className="my-1 border-border" />
 
                             <div className="flex justify-between">
-                                <span className="text-primary">Earned fees</span>
+                                <span className="text-primary-hover">Earned fees</span>
                                 <span>${formatAmount(totalFeesUsd, 4)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="opacity-50">Avg daily fees</span>
+                                <span className="text-text-muted">Avg daily fees</span>
                                 <span>${formatAmount(avgDailyFeesUsd, 4)}</span>
                             </div>
                         </div>

@@ -5,7 +5,6 @@ import CreatePoolPage from "@/pages/CreatePool";
 import EarnPage from "@/pages/Earn";
 import NewPositionPage from "@/pages/NewPosition";
 import Page404 from "@/pages/Page404";
-import PoolPage from "@/pages/Pool";
 import PoolsPage from "@/pages/Pools";
 import SwapPage from "@/pages/Swap";
 import { SwapPageView } from "@/pages/Swap/types";
@@ -47,8 +46,8 @@ const router = createBrowserRouter([
                 element: <EarnPage />,
             },
             {
-                path: "pool/:pool",
-                element: <PoolPage />,
+                path: "pool/:poolId",
+                element: <AnalyticsPoolPage />,
             },
             {
                 path: "pool/:pool/new-position",

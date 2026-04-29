@@ -79,7 +79,7 @@ export function Chart({
   // }, [zoomLevels]);
 
   const [columnHeight0, columnHeight1] = useMemo(() => {
-    if (!brushDomain) return [150, 110];
+    if (!brushDomain || !series.length) return [150, 110];
 
     const targetData = brushDomain.map((price) => {
       const closestEntry = series.reduce((prev, curr) =>

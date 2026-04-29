@@ -5,9 +5,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
 import { CreateManualPosition } from "@/pages/NewPosition/CreateManualPosition";
 import { truncateHash } from "@/utils";
+import { delay } from "@/utils/common/delay";
 import { Currency } from "@cryptoalgebra/integral-sdk";
 import { Copy, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Address } from "viem";
 
 interface CreatePositionModalProps {
@@ -19,6 +21,7 @@ interface CreatePositionModalProps {
 }
 
 const CreatePositionModal = ({ poolAddress, fee, token0, token1, children }: CreatePositionModalProps) => {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
 
@@ -34,6 +37,12 @@ const CreatePositionModal = ({ poolAddress, fee, token0, token1, children }: Cre
             title: "Copied",
             description: "Address copied to clipboard",
         });
+    };
+
+    const handleSuccess = async () => {
+        await delay(500);
+        setIsOpen(false);
+        navigate("/earn");
     };
 
     return (
@@ -92,7 +101,7 @@ const CreatePositionModal = ({ poolAddress, fee, token0, token1, children }: Cre
                 </CredenzaHeader>
 
                 <CredenzaBody className="overflow-y-auto p-4 w-full">
-                    <CreateManualPosition poolAddress={poolAddress} token0={token0} token1={token1} onSuccess={() => setIsOpen(false)} />
+                    <CreateManualPosition poolAddress={poolAddress} token0={token0} token1={token1} onSuccess={handleSuccess} />
                 </CredenzaBody>
             </CredenzaContent>
         </Credenza>

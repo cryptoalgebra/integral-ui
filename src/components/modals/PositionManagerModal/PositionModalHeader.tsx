@@ -27,13 +27,13 @@ export function PositionModalHeader({
   const explorerUrl = useBlockExplorerURL();
 
   return (
-    <div className='flex items-center justify-between pb-4 border-b border-card-border'>
+    <div className='flex items-center justify-between'>
       {/* Left side - Token pair and position info */}
       <div className='flex items-center gap-4'>
         {/* Token pair logos */}
         <div className='relative'>
           <div className='flex items-center'>
-            <CurrencyLogo currency={token0} size={40} className='ring-4 ring-card' />
+            <CurrencyLogo currency={token0} size={40} className='ring-4 z-10 ring-card' />
             <CurrencyLogo currency={token1} size={40} className='-ml-3 ring-4 ring-card' />
           </div>
           {/* Range status dot */}
@@ -51,8 +51,8 @@ export function PositionModalHeader({
             <h2 className='text-xl font-bold text-text'>
               {token0?.symbol}/{token1?.symbol}
             </h2>
-            <span className='px-2 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-md'>
-              {(poolFee / 10000).toFixed(2)}%
+            <span className='px-2 py-0.5 text-xs font-medium bg-panel text-text rounded-md'>
+              {(poolFee / 10_000).toFixed(2)}%
             </span>
           </div>
           <div className='flex items-center gap-3'>
@@ -62,7 +62,7 @@ export function PositionModalHeader({
             <div className='flex items-center gap-1.5'>
               {/* <CopyToClipboard value={positionId}> */}
                 <button type='button' className='p-1 rounded hover:bg-card-hover transition-colors'>
-                  <Copy className='w-3.5 h-3.5 text-text/40 hover:text-primary' />
+                  <Copy className='w-3.5 h-3.5 text-text/40' />
                 </button>
               {/* </CopyToClipboard> */}
               <a
@@ -71,7 +71,7 @@ export function PositionModalHeader({
                 rel='noreferrer'
                 className='p-1 rounded hover:bg-card-hover transition-colors'
               >
-                <ExternalLink className='w-3.5 h-3.5 text-text/40 hover:text-primary' />
+                <ExternalLink className='w-3.5 h-3.5 text-text/40' />
               </a>
             </div>
           </div>
@@ -83,7 +83,7 @@ export function PositionModalHeader({
         {/* Range status badge */}
         <div
           className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium',
+            'flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium',
             status === PositionStatus.OUT_OF_RANGE
               ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
               : 'bg-green-500/10 text-green-400 border border-green-500/30',

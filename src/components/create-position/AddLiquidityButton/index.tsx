@@ -135,7 +135,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     if (!account)
         return (
-            <Button variant={"primary"} className="w-full" onClick={() => open()}>
+            <Button size={"md"} variant={"primary"} className="w-full" onClick={() => open()}>
                 Connect Wallet
             </Button>
         );
@@ -149,7 +149,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     if (mintInfo.errorMessage)
         return (
-            <Button variant="primary" className="w-full" disabled>
+            <Button size={"md"} variant="primary" className="w-full" disabled>
                 {mintInfo.errorMessage}
             </Button>
         );
@@ -161,6 +161,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
                     <Button
                         disabled={approvalStateA === ApprovalState.PENDING}
                         className="w-full"
+                        size={"md"}
                         variant="primary"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
                     >
@@ -171,6 +172,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
                     <Button
                         disabled={approvalStateB === ApprovalState.PENDING}
                         className="w-full"
+                        size={"md"}
                         variant="primary"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
                     >
@@ -184,6 +186,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         <Button
             disabled={!isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
+            size={"md"}
             variant={"primary"}
             className="w-full"
         >

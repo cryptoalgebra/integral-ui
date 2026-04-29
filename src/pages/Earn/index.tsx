@@ -1,7 +1,6 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import EarnPoolsList, { EarnPoolListItem } from "@/components/earn/EarnPoolsList";
-import CollectFeesAllModal from "@/components/modals/CollectFeesAllModal";
 import PositionManagerModal from "@/components/modals/PositionManagerModal";
 import { Button } from "@/components/ui/button";
 import { ExtendedPosition, useExtendedPositions } from "@/hooks/earn/useExtendedPositions";
@@ -15,7 +14,7 @@ const EarnPage = () => {
 
     const [selectedPosition, setSelectedPosition] = useState<ExtendedPosition | null>(null);
 
-    const hasPositions = positions.length > 0;
+    // const hasPositions = positions.length > 0;
     const totalClaimableFeesUSD = positions.reduce((acc, position) => acc + position.feesUSD, 0);
 
     const earnPools = useMemo<EarnPoolListItem[]>(() => {
@@ -67,18 +66,23 @@ const EarnPage = () => {
                 />
 
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-stretch">
-                    <div className="rounded-lg bg-panel px-4 py-3 sm:min-w-[220px]">
-                        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-text-muted">Claimable Fees</p>
-                        <p className="mt-2 text-2xl font-semibold tracking-tight text-text">
-                            {account ? `$${formatAmount(totalClaimableFeesUSD, 2)}` : "-"}
-                        </p>
-                    </div>
+                    <div className="flex items-center justify-between rounded-lg bg-panel px-4 py-3">
+                        <div className="sm:min-w-[220px]">
+                            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-text-muted">Claimable Fees</p>
+                            <p className="mt-2 text-2xl font-medium tracking-tight text-text">
+                                {account ? `$${formatAmount(totalClaimableFeesUSD, 2)}` : "-"}
+                            </p>
+                        </div>
 
-                    <CollectFeesAllModal positions={positions}>
-                        <Button variant="primary" size="md" className="whitespace-nowrap" disabled={!account || !hasPositions}>
+                        <Button disabled variant="primary" size="md" className="whitespace-nowrap">
                             Collect Fees
                         </Button>
-                    </CollectFeesAllModal>
+                        {/* <CollectFeesAllModal positions={positions}>
+                            <Button variant="primary" size="md" className="whitespace-nowrap" disabled={!account || !hasPositions}>
+                                Collect Fees
+                            </Button>
+                        </CollectFeesAllModal> */}
+                    </div>
                 </div>
             </div>
 

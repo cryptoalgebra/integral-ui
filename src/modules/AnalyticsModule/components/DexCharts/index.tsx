@@ -6,6 +6,13 @@ import TotalStats from "../TotalStats";
 import PageTitle from "@/components/common/PageTitle";
 import { useDexChartData } from "@/hooks/analytics";
 
+interface DexChartsGridProps {
+    containerClassName?: string;
+    cardClassName?: string;
+    height?: number;
+    volumeTitle?: string;
+}
+
 function ChartComponent({
     title,
     selector,
@@ -39,6 +46,30 @@ function ChartComponent({
             height={height}
             isChartDataLoading={isChartDataLoading}
         />
+    );
+}
+
+export function DexChartsGrid({
+    containerClassName = "grid grid-rows-2 gap-3 lg:grid-cols-2 lg:grid-rows-1",
+    cardClassName = "rounded-xl border border-card-border bg-card pt-4",
+    height = 180,
+    volumeTitle = "Volume",
+}: DexChartsGridProps) {
+    return (
+        <div className={containerClassName}>
+            <div className={cardClassName}>
+                <ChartComponent selector={"tvlUSD"} title={"TVL"} chartView={CHART_VIEW.AREA} chartType={CHART_TYPE.TVL} height={height} />
+            </div>
+            <div className={cardClassName}>
+                <ChartComponent
+                    selector={"volumeUSD"}
+                    title={volumeTitle}
+                    chartView={CHART_VIEW.AREA}
+                    chartType={CHART_TYPE.VOLUME}
+                    height={height}
+                />
+            </div>
+        </div>
     );
 }
 
@@ -100,23 +131,10 @@ export function DexCharts() {
     return (
         <div className="flex flex-col gap-3 w-full">
             <div className="flex items-center justify-between mb-8">
-                <PageTitle title="Analytics" showSettings={false} />
+                <PageTitle title="Analytics" />
             </div>
             <TotalStats isLoading={loading} currentTVL={currentTVL} currentVolume={currentVolume24H} currentFees={currentFees24H} />
-            <div className="grid grid-rows-2 gap-3 lg:grid-cols-2 lg:grid-rows-1">
-                <div className="rounded-xl border border-card-border bg-card pt-4">
-                    <ChartComponent selector={"tvlUSD"} title={"TVL"} chartView={CHART_VIEW.AREA} chartType={CHART_TYPE.TVL} height={180} />
-                </div>
-                <div className="rounded-xl border border-card-border bg-card pt-4">
-                    <ChartComponent
-                        selector={"volumeUSD"}
-                        title={"Volume"}
-                        chartView={CHART_VIEW.AREA}
-                        chartType={CHART_TYPE.VOLUME}
-                        height={180}
-                    />
-                </div>
-            </div>
+            <DexChartsGrid />
         </div>
     );
 }

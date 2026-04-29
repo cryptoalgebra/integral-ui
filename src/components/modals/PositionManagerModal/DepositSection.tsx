@@ -22,43 +22,40 @@ export function DepositSection({ position, token0, token1, mintInfo }: DepositSe
   const totalUsd = (amount0Usd || 0) + (amount1Usd || 0);
 
   return (
-    <div className='p-4 border border-card-border rounded-xl'>
-      <div className='flex items-center justify-between mb-4'>
+    <section className='border rounded-lg p-3'>
+      <div className='mb-3 flex items-center justify-between gap-3'>
         <div>
-          <h4 className='text-sm font-medium text-text'>Liquidity</h4>
-          <p className='text-xs text-text/50'>Deposited assets</p>
+          <h4 className='text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted'>Liquidity</h4>
+          {/* <p className='text-xs text-text-muted'>Deposited assets</p> */}
         </div>
-        <div className='text-right'>
-          <span className='text-lg font-medium'>${formatAmount(totalUsd || 0, 4)}</span>
-        </div>
+        <span className='text-base font-medium text-text'>${formatAmount(totalUsd || 0, 4)}</span>
       </div>
-      <div className='grid grid-cols-2 gap-3 mb-3'>
-        {/* Token A */}
-        <div className='flex items-center gap-3 p-3 rounded-lg bg-card-hover/50'>
+
+      <div className='mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2'>
+        <div className='flex items-center gap-3 rounded-lg bg-panel p-2'>
           <CurrencyLogo currency={token0} size={32} className='shrink-0' />
           <div className='flex flex-col min-w-0'>
-            <span className='text-base font-medium text-text truncate'>
+            <span className='truncate text-sm font-medium text-text'>
               {formatAmount(amount0 || 0, 6)} {token0?.symbol}
             </span>
-            <span className='text-xs text-text/50'>${formatAmount(amount0Usd || 0, 4)}</span>
+            <span className='text-xs text-text-muted'>${formatAmount(amount0Usd || 0, 4)}</span>
           </div>
         </div>
 
-        {/* Token B */}
-        <div className='flex items-center gap-3 p-3 rounded-lg bg-card-hover/50'>
+        <div className='flex items-center gap-3 rounded-lg bg-panel p-2'>
           <CurrencyLogo currency={token1} size={32} className='shrink-0' />
           <div className='flex flex-col min-w-0'>
-            <span className='text-base font-medium text-text truncate'>
+            <span className='truncate text-sm font-medium text-text'>
               {formatAmount(amount1 || 0, 6)} {token1?.symbol}
             </span>
-            <span className='text-xs text-text/50'>${formatAmount(amount1Usd || 0, 4)}</span>
+            <span className='text-xs text-text-muted'>${formatAmount(amount1Usd || 0, 4)}</span>
           </div>
         </div>
       </div>
 
-      <div className='p-2 rounded-lg bg-card-hover/50'>
+      <div className=''>
         <TokenRatio mintInfo={mintInfo} />
       </div>
-    </div>
+    </section>
   );
 }

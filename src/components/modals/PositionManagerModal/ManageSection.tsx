@@ -3,6 +3,7 @@ import { Settings2 } from "lucide-react";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { IncreaseLiquidityModal } from "../IncreaseLiquidityModal";
 import RemoveLiquidityModal from "../RemoveLiquidityModal";
+import { cn } from "@/utils";
 
 interface ManageSectionProps {
     positionId: number;
@@ -15,13 +16,13 @@ interface ManageSectionProps {
 
 export function ManageSection({ positionId, currencyA, currencyB, mintInfo, hasLiquidity, onRefetch }: ManageSectionProps) {
     return (
-        <div className="rounded-xl p-4 border border-card-border">
-            <div className="flex items-center gap-2 mb-3">
-                <Settings2 className="w-4 h-4 text-text/50" />
-                <span className="text-xs text-text/50 uppercase tracking-wider">Manage Position</span>
+        <section className="rounded-lg border border-border mt-auto p-3">
+            <div className="mb-3 flex items-center gap-2">
+                <Settings2 className="h-4 w-4 text-text-muted" />
+                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">Manage position</span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className={cn("grid gap-2", hasLiquidity ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
                 <IncreaseLiquidityModal
                     tokenId={positionId}
                     currencyA={currencyA}
@@ -29,14 +30,8 @@ export function ManageSection({ positionId, currencyA, currencyB, mintInfo, hasL
                     mintInfo={mintInfo}
                     onSuccess={onRefetch}
                 />
-                {hasLiquidity && (
-                    <RemoveLiquidityModal
-                        positionId={positionId}
-                        enableActions
-                        // onSuccess={onRefetch}
-                    />
-                )}
+                {hasLiquidity && <RemoveLiquidityModal positionId={positionId} enableActions onSuccess={onRefetch} />}
             </div>
-        </div>
+        </section>
     );
 }

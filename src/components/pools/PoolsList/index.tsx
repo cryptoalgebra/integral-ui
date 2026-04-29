@@ -11,14 +11,14 @@ interface PoolsListProps {
     isLoading?: boolean;
 }
 
-const PoolsListContent = ({ pools, isLoading, isExplore = false }: { pools: FormattedPool[]; isLoading: boolean; isExplore?: boolean }) => {
+const PoolsListContent = ({ pools, isLoading }: { pools: FormattedPool[]; isLoading: boolean; isExplore?: boolean }) => {
     return (
         <div className="flex w-full flex-col gap-2 md:gap-6 ">
             <PoolsTable
                 columns={poolsColumns}
                 data={pools}
                 defaultSortingID={"tvlUSD"}
-                link={isExplore ? "analytics/pools" : "pool"}
+                link={"pool"}
                 showPagination={true}
                 loading={isLoading}
             />

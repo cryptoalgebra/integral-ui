@@ -8,7 +8,6 @@ import { FeesSection } from "./FeesSection";
 import { ChartSection } from "./ChartSection";
 import { ManageSection } from "./ManageSection";
 import { MetrcisSection } from "./MetricsSction";
-
 import FarmingModule from "@/modules/FarmingModule";
 import { ExtendedPosition } from "@/hooks/earn/useExtendedPositions";
 import { Farming } from "@/types/farming-info";
@@ -62,8 +61,11 @@ const PositionManagerModal = ({ selectedPosition, farming, closedFarmings, onClo
 
     return (
         <Dialog open={!!selectedPosition} onOpenChange={(open) => !open && handleClose()}>
-            <DialogContent className="p-0 gap-0">
-                <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-xl p-6 ">
+            <DialogContent
+                size="xl"
+                className="max-h-[94vh] overflow-hidden border border-border bg-card p-0 gap-0 shadow-sm md:max-w-[900px]"
+            >
+                <div className="border-b border-border p-4">
                     <PositionModalHeader
                         token0={token0}
                         token1={token1}
@@ -74,43 +76,44 @@ const PositionManagerModal = ({ selectedPosition, farming, closedFarmings, onClo
                     />
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 pb-6">
-                    <div className="flex flex-col gap-4">
-                        <MetrcisSection token0={token0} token1={token1} positionAnalytics={positionAnalytics} />
+                <div className="max-h-[calc(94vh-92px)] overflow-y-auto p-4">
+                    <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)]">
+                        <div className="flex flex-col gap-3">
+                            <MetrcisSection token0={token0} token1={token1} positionAnalytics={positionAnalytics} />
 
-                        <DepositSection mintInfo={mintInfo} position={position} token0={token0} token1={token1} />
+                            <DepositSection mintInfo={mintInfo} position={position} token0={token0} token1={token1} />
 
-                        <FeesSection pool={pool} positionId={Number(selectedPosition.id)} onRefetch={handleRefetch} />
+                            <FeesSection pool={pool} positionId={Number(selectedPosition.id)} onRefetch={handleRefetch} />
 
-                        {positionInFarming && activeFarming && !endedFarming && (
-                            <HarvestAndExitFarmingCard
-                                eternalFarming={activeFarming}
-                                selectedPosition={positionInFarming as Deposit}
-                                isEnded={false}
+                            {positionInFarming && activeFarming && !endedFarming && (
+                                <HarvestAndExitFarmingCard
+                                    eternalFarming={activeFarming}
+                                    selectedPosition={positionInFarming as Deposit}
+                                    isEnded={false}
+                                />
+                            )}
+
+                            {positionInFarming && endedFarming && (
+                                <HarvestAndExitFarmingCard
+                                    eternalFarming={endedFarming}
+                                    selectedPosition={positionInFarming as Deposit}
+                                    isEnded
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-3">
+                            <ChartSection mintInfo={mintInfo} position={position} />
+
+                            <ManageSection
+                                positionId={Number(selectedPosition.id)}
+                                currencyA={token0}
+                                currencyB={token1}
+                                mintInfo={mintInfo}
+                                hasLiquidity={!!hasLiquidity}
+                                onRefetch={handleRefetch}
                             />
-                        )}
-
-                        {positionInFarming && endedFarming && (
-                            <HarvestAndExitFarmingCard
-                                eternalFarming={endedFarming}
-                                selectedPosition={positionInFarming as Deposit}
-                                isEnded
-                            />
-                        )}
-                    </div>
-
-                    {/* RIGHT COLUMN */}
-                    <div className="flex flex-col gap-4">
-                        <ChartSection mintInfo={mintInfo} position={position} />
-
-                        <ManageSection
-                            positionId={Number(selectedPosition.id)}
-                            currencyA={token0}
-                            currencyB={token1}
-                            mintInfo={mintInfo}
-                            hasLiquidity={!!hasLiquidity}
-                            onRefetch={handleRefetch}
-                        />
+                        </div>
                     </div>
                 </div>
             </DialogContent>

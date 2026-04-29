@@ -5,11 +5,13 @@ import CreatePositionModal from "@/components/modals/CreatePositionModal";
 import { PositionImage } from "@/components/position/PoisitionImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ExtendedPosition, PositionStatus } from "@/hooks/earn/useExtendedPositions";
 import { ExtendedPool } from "@/hooks/pools/useExtendedPools";
 import { cn } from "@/utils";
 import { formatAmount } from "@/utils/common/formatAmount";
+import { enabledModules } from "config";
 import { ChevronDown, Search } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 
@@ -36,7 +38,22 @@ const EarnPoolPair = ({ pool }: { pool: ExtendedPool }) => {
                 <CurrencyLogo currency={token1} size={32} className="-ml-2 ring-2 ring-card" />
             </div>
 
-            <span className="text-sm font-semibold text-text">{`${token0.symbol} / ${token1.symbol}`}</span>
+            {token0 && token1 ? (
+                <div className="flex justify-between min-w-0 w-full items-center">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-text">{`${token0.symbol} / ${token1.symbol}`}</span>
+                        {!enabledModules.CustomPoolsModule && (
+                            <span className="text-xs text-text-muted">{pool.pool.fee / 10_000}% fee</span>
+                        )}
+                    </div>
+
+                    <div className="flex flex-wrap ml-auto items-center gap-2" />
+                </div>
+            ) : (
+                <Skeleton className="h-5 w-24 rounded-lg bg-panel" />
+            )}
+            {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}
+            {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}
         </div>
     );
 };
@@ -117,7 +134,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                 <HeaderItem>Your Rewards</HeaderItem>
                             </TableHead>
                             <TableHead className="h-12 px-4 text-[11px] font-medium uppercase tracking-[0.16em] text-text-muted text-right">
-                                <HeaderItem className="ml-auto">Actions</HeaderItem>
+                                <HeaderItem className="ml-auto"></HeaderItem>
                             </TableHead>
                         </TableRow>
                     </TableHeader>
@@ -141,6 +158,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                             className={cn(
                                                 "border-border/60 bg-card transition-colors duration-150",
                                                 hasPositions ? "cursor-pointer hover:bg-panel/50" : "hover:bg-card",
+                                                isExpanded ? "bg-panel/50 border-none" : "",
                                             )}
                                             onClick={() => togglePool(poolId, hasPositions)}
                                         >
@@ -149,16 +167,16 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                             </TableCell>
 
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left">
-                                                ${formatAmount(item.pool.tvlUSD, 2)}
+                                                ${formatAmount(item.pool.tvlUSD, 4)}
                                             </TableCell>
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left">
                                                 {formatAmount(item.pool.apr, 2)}%
                                             </TableCell>
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left">
-                                                ${formatAmount(item.amountUSD, 2)}
+                                                ${formatAmount(item.amountUSD, 4)}
                                             </TableCell>
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text">
-                                                ${formatAmount(item.feesUSD, 2)}
+                                                ${formatAmount(item.feesUSD, 4)}
                                             </TableCell>
 
                                             <TableCell className="w-[140px] px-4 py-3.5 text-right">
@@ -177,6 +195,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                                         poolAddress={item.pool.id}
                                                         token0={item.pool.pool.token0}
                                                         token1={item.pool.pool.token1}
+                                                        fee={item.pool.pool.fee}
                                                     >
                                                         <Button
                                                             size="sm"
@@ -198,7 +217,10 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                             item.positions.map((position) => (
                                                 <TableRow
                                                     key={`earn-position-${poolId}-${position.id}`}
-                                                    className="border-border/60 bg-panel/40 hover:bg-panel/50"
+                                                    className={cn(
+                                                        "bg-panel/40 border-none hover:bg-panel/50",
+                                                        // index === item.positions.length - 1 ? "border-border/60 " : "border-none",
+                                                    )}
                                                 >
                                                     <TableCell className="min-w-56 px-4 py-3.5 text-left">
                                                         <div className="flex items-center gap-2 pl-12">
@@ -211,10 +233,10 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                                     <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
                                                     <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
                                                     <TableCell className="min-w-32 px-4 py-3.5 text-left">
-                                                        ${formatAmount(position.amountUSD, 2)}
+                                                        ${formatAmount(position.amountUSD, 4)}
                                                     </TableCell>
                                                     <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text">
-                                                        ${formatAmount(position.feesUSD, 2)}
+                                                        ${formatAmount(position.feesUSD, 4)}
                                                     </TableCell>
 
                                                     <TableCell className="w-[140px] px-4 py-3.5 text-right">
@@ -232,6 +254,32 @@ const EarnPoolsList = ({ pools, loading, onManagePosition }: EarnPoolsListProps)
                                                     </TableCell>
                                                 </TableRow>
                                             ))}
+
+                                        {hasPositions && isExpanded && (
+                                            <TableRow className="border-border/60 bg-panel/40">
+                                                <TableCell className="min-w-56 px-4 py-3.5 text-left">
+                                                    <div className="flex items-center gap-2 pl-12">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="primary"
+                                                            className="whitespace-nowrap"
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                            }}
+                                                        >
+                                                            + New position
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+
+                                                <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
+                                                <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
+                                                <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text"></TableCell>
+
+                                                <TableCell className="w-[140px] px-4 py-3.5 text-right"></TableCell>
+                                            </TableRow>
+                                        )}
                                     </Fragment>
                                 );
                             })

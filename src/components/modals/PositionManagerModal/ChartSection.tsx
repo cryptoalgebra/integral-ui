@@ -1,8 +1,8 @@
 import LiquidityChartRangeInput from "@/components/common/LiquidityChartRangeInput";
+import { useMediaQuery } from "@/hooks/common/useMediaQuery";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { formatAmount } from "@/utils";
 import { Position } from "@cryptoalgebra/integral-sdk";
-import { useState } from "react";
 
 interface ChartSectionProps {
     position: Position | undefined;
@@ -10,63 +10,60 @@ interface ChartSectionProps {
 }
 
 export function ChartSection({ position, mintInfo }: ChartSectionProps) {
-    const [wasManuallyToggled, setWasManuallyToggled] = useState(false);
+    const wasManuallyToggled = false;
+    const isDesktop = useMediaQuery("(min-width: 1024px)");
     const { pool } = mintInfo;
 
     const price = wasManuallyToggled ? mintInfo.price?.invert().toSignificant(24) : mintInfo.price?.toSignificant(24);
 
     const priceLower = position?.token0PriceLower;
     const priceUpper = position?.token0PriceUpper;
-
-    const handleCurrencyToggle = () => {
-        setWasManuallyToggled(!wasManuallyToggled);
-    };
+    const chartWidth = isDesktop ? 380 : 330;
 
     return (
-        <div className="p-4 h-fit flex flex-col border border-card-border rounded-xl">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
+        <section className="flex flex-col rounded-lg p-3 border h-full">
+            <div className="mb-3 flex items-center justify-between">
                 <div>
-                    <h4 className="text-sm font-medium text-text">Price Range</h4>
-                    <p className="text-xs text-text/50">Liquidity distribution</p>
+                    <h4 className="text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">Price range</h4>
+                    {/* <p className="text-xs text-text-muted">Liquidity distribution</p> */}
                 </div>
             </div>
 
-            {/* Price bounds */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-                <div className="p-2 rounded-lg bg-card-hover/50 text-center">
-                    <span className="text-xs text-text/50 block">Min</span>
+            <div className="mb-3 grid grid-cols-3 gap-2">
+                <div className="rounded-lg bg-panel p-2 text-center">
+                    <span className="block text-[10px] uppercase tracking-[0.14em] text-text-muted">Min</span>
                     <span className="text-sm font-medium text-text">
                         {formatAmount((wasManuallyToggled ? priceUpper?.invert() : priceLower)?.toSignificant(24) || 0, 6)}
                     </span>
                 </div>
-                <div className="p-2 rounded-lg bg-accent-200/10 border border-accent-200/30 text-center">
-                    <span className="text-xs text-text/50 block">Current</span>
-                    <span className="text-sm font-medium text-accent-200">{price ? formatAmount(price, 6) : "-"}</span>
+                <div className="rounded-lg bg-accent/10 p-2 text-center">
+                    <span className="block text-[10px] uppercase tracking-[0.14em] text-text-muted">Current</span>
+                    <span className="text-sm font-semibold text-accent">{price ? formatAmount(price, 6) : "-"}</span>
                 </div>
-                <div className="p-2 rounded-lg bg-card-hover/50 text-center">
-                    <span className="text-xs text-text/50 block">Max</span>
+                <div className="rounded-lg bg-panel p-2 text-center">
+                    <span className="block text-[10px] uppercase tracking-[0.14em] text-text-muted">Max</span>
                     <span className="text-sm font-medium text-text">
                         {formatAmount((wasManuallyToggled ? priceLower?.invert() : priceUpper)?.toSignificant(24) || 0, 6)}
                     </span>
                 </div>
             </div>
 
-            {/* Chart */}
-            <LiquidityChartRangeInput
-                pool={pool}
-                priceLower={priceLower}
-                priceUpper={priceUpper}
-                ticksAtLimit={mintInfo.ticksAtLimit}
-                price={price ? parseFloat(price) : undefined}
-                onLeftRangeInput={() => null}
-                onRightRangeInput={() => null}
-                width={430}
-                isSorted={!wasManuallyToggled}
-                interactive={false}
-                isOnlyView={false}
-                // isStable={isStablecoinPair(pool?.token0, pool?.token1)}
-            />
-        </div>
+            <div className="mt-auto">
+                <LiquidityChartRangeInput
+                    pool={pool}
+                    priceLower={priceLower}
+                    priceUpper={priceUpper}
+                    ticksAtLimit={mintInfo.ticksAtLimit}
+                    price={price ? parseFloat(price) : undefined}
+                    onLeftRangeInput={() => null}
+                    onRightRangeInput={() => null}
+                    width={chartWidth}
+                    height={190}
+                    isSorted={!wasManuallyToggled}
+                    interactive={false}
+                    isOnlyView={false}
+                />
+            </div>
+        </section>
     );
 }
