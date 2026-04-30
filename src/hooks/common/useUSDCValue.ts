@@ -30,9 +30,9 @@ export function useUSDCPrice(currency: Currency | undefined) {
         }
 
         // USDC itself — 1:1 price
-        if (STABLECOINS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
+        if (STABLECOINS[chainId].USDR.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
             return {
-                price: new Price(STABLECOINS[chainId].USDC, STABLECOINS[chainId].USDC, "1", "1"),
+                price: new Price(STABLECOINS[chainId].USDR, STABLECOINS[chainId].USDR, "1", "1"),
                 formatted: 1,
             };
         }
@@ -63,7 +63,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
         if (usdAmount) {
             return {
-                price: new Price(currency, STABLECOINS[chainId].USDC, usdAmount.denominator, usdAmount.numerator),
+                price: new Price(currency, STABLECOINS[chainId].USDR, usdAmount.denominator, usdAmount.numerator),
                 formatted: Number(usdAmount.toSignificant()),
             };
         }

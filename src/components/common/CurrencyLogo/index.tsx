@@ -7,6 +7,8 @@ import TOKENLogo from "@/assets/algebra-logo.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
+import { STABLECOINS } from "config/tokens";
+import { DEFAULT_CHAIN_ID } from "config/index";
 
 interface CurrencyLogoProps {
     currency: Currency | undefined | null;
@@ -18,6 +20,10 @@ interface CurrencyLogoProps {
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
     ["0x0000000000000000000000000000000000000400"]: {
         symbol: "USDr",
+        logo: USDRLogo,
+    },
+    [STABLECOINS[DEFAULT_CHAIN_ID].RLS.address.toLowerCase() as Address]: {
+        symbol: "RLS",
         logo: USDRLogo,
     },
     ["0x9f068c81ab7743ea7b2d48c0feceadafcad2c95c"]: {

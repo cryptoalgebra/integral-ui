@@ -61,7 +61,7 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
         }),
-        [chainid]
+        [chainid],
     );
 
     const poolAddress =
@@ -80,7 +80,7 @@ const CreatePoolForm = () => {
                           tokenA: currencyA.wrapped,
                           tokenB: currencyB.wrapped,
                           customPoolDeployer,
-                      }) as Address
+                      }) as Address,
               )
             : [];
 
@@ -100,7 +100,7 @@ const CreatePoolForm = () => {
         poolAddress ?? undefined,
         INITIAL_POOL_FEE,
         currencyA ?? undefined,
-        undefined
+        undefined,
     );
 
     const { calldata, value } = useMemo(() => {
@@ -132,7 +132,7 @@ const CreatePoolForm = () => {
             tokenB: currencyB?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        "/pools"
+        "/pools",
     );
 
     const isCustomPoolDeployerReady = account && mintInfo.pool && poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE;
@@ -169,7 +169,7 @@ const CreatePoolForm = () => {
 
         return () => {
             selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-            selectCurrency(SwapField.OUTPUT, STABLECOINS[chainid].USDC.address as Address);
+            selectCurrency(SwapField.OUTPUT, STABLECOINS[chainid].USDR.address as Address);
             typeStartPriceInput("");
         };
     }, []);
@@ -194,7 +194,7 @@ const CreatePoolForm = () => {
             !areCurrenciesSelected ||
             isSameToken ||
             isPending ||
-            !mintInfo?.pool
+            !mintInfo?.pool,
     );
 
     return (

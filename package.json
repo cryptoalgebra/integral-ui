@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite",
         "wagmi-generate": "wagmi generate",
-        "build": "yarn codegen && yarn wagmi-generate && vite build",
+        "build": "yarn wagmi-generate && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
         "codegen": "graphql-codegen --config codegen.ts",
@@ -15,7 +15,7 @@
     "dependencies": {
         "@apollo/client": "^3.8.4",
         "@cryptoalgebra/alm-sdk": "^1.0.14",
-        "@cryptoalgebra/custom-pools-sdk": "npm:@cryptoalgebra/rayls-sdk@1.2.0",
+        "@cryptoalgebra/custom-pools-sdk": "npm:@cryptoalgebra/rayls-mainnet-sdk@1.0.0",
         "@cryptoalgebra/router-custom-pools-and-sliding-fee": "npm:@cryptoalgebra/router-custom-pools@2.0.5",
         "@radix-ui/react-avatar": "^1.0.4",
         "@radix-ui/react-dialog": "^1.0.5",

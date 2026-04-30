@@ -1475,10 +1475,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/rayls-sdk@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/rayls-sdk/-/rayls-sdk-1.2.0.tgz#9a48651f8ddaeffad48d4464b61f5fe40486a294"
-  integrity sha512-lqfQk/kJYe+2XfhACjOEroJrkHdeizhTtf9iJOaACrmjJABXXSUQcEKNlMrWG2wchiwIu9hZC+ndqPON6+SFeQ==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/rayls-mainnet-sdk@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/rayls-mainnet-sdk/-/rayls-mainnet-sdk-1.0.0.tgz#92e6a575075bc56a819989edf9a073e3a8573912"
+  integrity sha512-ifPEYYoytzGgcEsI/1Ba+2BKg2QBrV8qjDHmxaGJm3Qh30SCOZr3Hanf2undzybZoVmBLQsmcjCRR3CQctPN8Q==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
