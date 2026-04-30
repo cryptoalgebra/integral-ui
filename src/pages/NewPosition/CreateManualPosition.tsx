@@ -145,7 +145,13 @@ export function CreateManualPosition({ poolAddress, token0, token1, onSuccess }:
 
                         <h2 className="font-medium text-text text-xs uppercase tracking-[2px]">Enter Amounts</h2>
                     </div>
-                    <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} onSuccess={onSuccess} />
+                    <AmountsSection
+                        currencyA={currencyA}
+                        currencyB={currencyB}
+                        mintInfo={mintInfo}
+                        poolAddress={poolAddress}
+                        onSuccess={onSuccess}
+                    />
                 </div>
             </div>
         </div>

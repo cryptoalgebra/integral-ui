@@ -1,5 +1,5 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork, mainnet } from "@reown/appkit/networks";
+import { AppKitNetwork } from "@reown/appkit/networks";
 import {
     algebraBasePluginV1ABI,
     algebraCustomPoolEntryPointABI,
@@ -33,37 +33,38 @@ import {
     VOTING_ESCROW,
 } from "./contract-addresses";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
+import { defineChain } from "viem";
 
-// const baseSepoliaChain = /*#__PURE__*/ defineChain({
-//     id: 84532,
-//     network: "baseSepolia",
-//     name: "Base Sepolia",
-//     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-//     rpcUrls: {
-//         default: {
-//             http: ["https://base-sepolia-rpc.publicnode.com"],
-//         },
-//         public: {
-//             http: ["https://base-sepolia-rpc.publicnode.com"],
-//         },
-//     },
-//     blockExplorers: {
-//         default: {
-//             name: "Basescan",
-//             url: "https://sepolia.basescan.org",
-//         },
-//         etherscan: {
-//             name: "Basescan",
-//             url: "https://sepolia.basescan.org",
-//         },
-//     },
-//     contracts: {
-//         multicall3: {
-//             address: "0xca11bde05977b3631167028862be2a173976ca11",
-//             blockCreated: 1059647,
-//         },
-//     },
-// });
+const mainnet = /*#__PURE__*/ defineChain({
+    id: 1,
+    name: "Ethereum",
+    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: {
+        default: {
+            http: ["https://ethereum-rpc.publicnode.com"],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: "Etherscan",
+            url: "https://etherscan.io",
+            apiUrl: "https://api.etherscan.io/api",
+        },
+    },
+    contracts: {
+        ensRegistry: {
+            address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
+        },
+        ensUniversalResolver: {
+            address: "0xce01f8eee7E479C928F8919abD53E553a36CeF67",
+            blockCreated: 19_258_213,
+        },
+        multicall3: {
+            address: "0xca11bde05977b3631167028862be2a173976ca11",
+            blockCreated: 14_353_601,
+        },
+    },
+});
 
 /* configure supported networks here */
 export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [mainnet];

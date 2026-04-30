@@ -4,12 +4,14 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader } from "@/components
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { Currency } from "@cryptoalgebra/integral-sdk";
 import { useState } from "react";
+import { Address } from "viem";
 
 interface IncreaseLiquidityModalProps {
     tokenId: number;
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
+    poolAddress: Address | undefined;
     onSuccess?: () => void;
 }
 
@@ -19,6 +21,7 @@ export function IncreaseLiquidityModal({
     currencyB,
     mintInfo,
     onSuccess,
+    poolAddress,
 }: //   onSuccess,
 IncreaseLiquidityModalProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -43,6 +46,7 @@ IncreaseLiquidityModalProps) {
                         currencyA={currencyA}
                         currencyB={currencyB}
                         mintInfo={mintInfo}
+                        poolAddress={poolAddress}
                         onSuccess={handleSuccess}
                     />
                 </div>

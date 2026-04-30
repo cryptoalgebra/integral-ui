@@ -37,7 +37,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
     const { data: approvalData, writeContract: approve, isPending } = useWriteContract();
 
     const { isLoading, isSuccess } = useTransactionAwait(approvalData, {
-        title: `Approve ${formatAmount(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
+        title: `Approve ${formatAmount(amountToApprove?.toSignificant(24) as string)} ${amountToApprove?.currency.symbol}`,
         tokenA: token?.address as Address,
         type: TransactionType.SWAP,
         callback: refetchAllowance,

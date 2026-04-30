@@ -202,6 +202,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                                         token0={item.pool.pool.token0}
                                                         token1={item.pool.pool.token1}
                                                         fee={item.pool.pool.fee}
+                                                        onSuccess={onRefetch}
                                                     >
                                                         <Button
                                                             size="sm"

@@ -5,7 +5,6 @@ import { getPoolAPR } from "@/utils/pool/getPoolAPR";
 import { Address } from "viem";
 import { useEffect, useState } from "react";
 import EnterAmounts from "../EnterAmounts";
-import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
 import { isBoostedPool } from "@/utils/pool/isBoostedPool";
 import AddLiquidityButton from "../AddLiquidityButton";
@@ -22,12 +21,11 @@ interface AmountsSectionProps {
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
+    poolAddress: Address | undefined;
     onSuccess?: () => void;
 }
 
-type NewPositionPageParams = Record<"pool", Address>;
-const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, onSuccess }: AmountsSectionProps) => {
-    const { pool: poolAddress } = useParams<NewPositionPageParams>();
+const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, onSuccess, poolAddress }: AmountsSectionProps) => {
     const [poolAPR, setPoolAPR] = useState<number>();
     const apr = usePositionAPR(poolAddress, mintInfo.position);
 

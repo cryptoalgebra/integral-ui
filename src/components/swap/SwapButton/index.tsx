@@ -176,9 +176,10 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     // Use regular SwapRouter callback for normal routes without Permit2
     const { callback: swapCallback, isLoading: swapLoading, error: swapError } = useSwapCallback(
-        !isSmartTrade && !shouldUseOmegaRouter ? (approvalState === ApprovalState.APPROVED ? trade : null) : null,
+        !isSmartTrade && !shouldUseOmegaRouter ? trade : null,
         allowedSlippage,
         onTransactionSuccess,
+        approvalState !== ApprovalState.APPROVED,
     );
 
     const isSwapLoading = swapLoading || smartSwapLoading || omegaSwapLoading;

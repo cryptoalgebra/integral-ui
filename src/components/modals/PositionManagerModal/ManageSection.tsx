@@ -4,9 +4,11 @@ import { IDerivedMintInfo } from "@/state/mintStore";
 import { IncreaseLiquidityModal } from "../IncreaseLiquidityModal";
 import RemoveLiquidityModal from "../RemoveLiquidityModal";
 import { cn } from "@/utils";
+import { Address } from "viem";
 
 interface ManageSectionProps {
     positionId: number;
+    poolAddress: Address | undefined;
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     mintInfo: IDerivedMintInfo;
@@ -14,7 +16,7 @@ interface ManageSectionProps {
     onRefetch?: () => void;
 }
 
-export function ManageSection({ positionId, currencyA, currencyB, mintInfo, hasLiquidity, onRefetch }: ManageSectionProps) {
+export function ManageSection({ positionId, poolAddress, currencyA, currencyB, mintInfo, hasLiquidity, onRefetch }: ManageSectionProps) {
     return (
         <section className="rounded-lg border border-border mt-auto p-3">
             <div className="mb-3 flex items-center gap-2">
@@ -28,6 +30,7 @@ export function ManageSection({ positionId, currencyA, currencyB, mintInfo, hasL
                     currencyA={currencyA}
                     currencyB={currencyB}
                     mintInfo={mintInfo}
+                    poolAddress={poolAddress}
                     onSuccess={onRefetch}
                 />
                 {hasLiquidity && <RemoveLiquidityModal positionId={positionId} enableActions onSuccess={onRefetch} />}

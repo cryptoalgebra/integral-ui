@@ -2,7 +2,6 @@ import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { usePosition, usePositions } from "@/hooks/positions/usePositions";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
@@ -10,7 +9,7 @@ import { ApprovalState } from "@/types/approve-state";
 import { Percent, Currency, Field, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,7 @@ interface AddLiquidityButtonProps {
 const ZERO_PERCENT = new Percent(1, 1_000);
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress, tokenId, onSuccess }: AddLiquidityButtonProps) => {
+export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, tokenId, onSuccess }: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -39,10 +38,6 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     const { chainId: userChainId } = useAppKitNetwork();
 
     const { txDeadline } = useUserState();
-
-    const { refetch: refetchAllPositions } = usePositions();
-
-    const { refetch: refetchPosition } = usePosition(tokenId);
 
     const isIncreaseMode = tokenId !== undefined;
 
@@ -114,23 +109,13 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const { data: addLiquidityData, writeContract: addLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
-    const { isLoading: isAddingLiquidityLoading, isSuccess } = useTransactionAwait(
-        addLiquidityData,
-        {
-            title: isIncreaseMode ? `Add Liquidity to #${tokenId}` : "Add liquidity",
-            tokenA: baseCurrency?.wrapped.address as Address,
-            tokenB: quoteCurrency?.wrapped.address as Address,
-            type: TransactionType.POOL,
-        },
-        isIncreaseMode ? undefined : `/pool/${poolAddress}`,
-    );
-
-    useEffect(() => {
-        if (!isSuccess) return;
-        if (isIncreaseMode) {
-            Promise.all([refetchPosition(), refetchAllPositions()]).then(() => onSuccess?.());
-        }
-    }, [isSuccess, isIncreaseMode, refetchPosition, refetchAllPositions, onSuccess]);
+    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(addLiquidityData, {
+        title: isIncreaseMode ? `Add Liquidity to #${tokenId}` : "Add liquidity",
+        tokenA: baseCurrency?.wrapped.address as Address,
+        tokenB: quoteCurrency?.wrapped.address as Address,
+        type: TransactionType.POOL,
+        callback: onSuccess,
+    });
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
 

@@ -118,6 +118,7 @@ const PositionManagerModal = ({ selectedPosition, farming, closedFarmings, onClo
                                 mintInfo={mintInfo}
                                 hasLiquidity={!!hasLiquidity}
                                 onRefetch={handleRefetch}
+                                poolAddress={selectedPosition.pool.id}
                             />
                         </div>
                     </div>
