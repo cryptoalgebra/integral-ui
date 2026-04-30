@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Credenza, CredenzaBody, CredenzaContent, CredenzaHeader, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
 import { useToast } from "@/components/ui/use-toast";
 import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
+import { useCurrency } from "@/hooks/common/useCurrency";
 import { CreateManualPosition } from "@/pages/NewPosition/CreateManualPosition";
 import { truncateHash } from "@/utils";
 import { delay } from "@/utils/common/delay";
@@ -21,10 +22,14 @@ interface CreatePositionModalProps {
     onSuccess?: () => void;
 }
 
-const CreatePositionModal = ({ poolAddress, fee, token0, token1, children, onSuccess }: CreatePositionModalProps) => {
+const CreatePositionModal = ({ poolAddress, fee, token0: _token0, token1: _token1, children, onSuccess }: CreatePositionModalProps) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
+
+    // hack
+    const token0 = useCurrency(_token0?.wrapped.address as Address, true);
+    const token1 = useCurrency(_token1?.wrapped.address as Address, true);
 
     const blockExplorerUrl = useBlockExplorerURL();
 

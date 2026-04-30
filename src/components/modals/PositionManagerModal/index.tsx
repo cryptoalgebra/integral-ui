@@ -13,6 +13,8 @@ import { ExtendedPosition } from "@/hooks/earn/useExtendedPositions";
 import { Farming } from "@/types/farming-info";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import { usePositionAnalytics } from "@/hooks/positions/usePositionAnalytics";
+import { Address } from "viem";
+import { useCurrency } from "@/hooks/common/useCurrency";
 const { HarvestAndExitFarmingCard } = FarmingModule.components;
 const { usePositionInFarming } = FarmingModule.hooks;
 
@@ -26,7 +28,11 @@ interface PositionCardProps {
 
 const PositionManagerModal = ({ selectedPosition, farming, closedFarmings, onClose, refetch }: PositionCardProps) => {
     const { pool } = selectedPosition?.pool || {};
-    const { token0, token1 } = pool || {};
+
+    // hack
+    const token0 = useCurrency(pool?.token0?.wrapped.address as Address, true);
+    const token1 = useCurrency(pool?.token1?.wrapped.address as Address, true);
+
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
 
     const activeFarming = farming?.farming;

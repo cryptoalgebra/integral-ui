@@ -110,8 +110,9 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleOutputSelect(TOKENS[chainId].A7A5);
-    }, [chainId, handleOutputSelect]);
+        handleInputSelect(TOKENS[chainId].A7A5);
+        handleOutputSelect(TOKENS[chainId].USDT);
+    }, [chainId, handleOutputSelect, handleInputSelect]);
 
     return (
         <div className="relative flex flex-col gap-2 animate-in fade-in-0 slide-in-from-bottom-2 duration-500">

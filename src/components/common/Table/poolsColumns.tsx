@@ -29,7 +29,7 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming, fee }: FormattedPool) =>
     return (
         <div className="ml-1.5 flex items-center gap-3">
             <div className="flex shrink-0 items-center">
-                <CurrencyLogo currency={currencyA} size={32} className="ring-2 ring-card" />
+                <CurrencyLogo currency={currencyA} size={32} className="ring-2 z-10 ring-card" />
                 <CurrencyLogo currency={currencyB} size={32} className="-ml-2 ring-2 ring-card" />
             </div>
 

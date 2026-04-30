@@ -18,14 +18,15 @@ export function IncreaseLiquidityModal({
     currencyA,
     currencyB,
     mintInfo,
+    onSuccess,
 }: //   onSuccess,
 IncreaseLiquidityModalProps) {
     const [isOpen, setIsOpen] = useState(false);
 
-    //   const handleSuccess = () => {
-    //     setIsOpen(false);
-    //     onSuccess?.();
-    //   };
+    const handleSuccess = () => {
+        onSuccess?.();
+        setIsOpen(false);
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -42,7 +43,7 @@ IncreaseLiquidityModalProps) {
                         currencyA={currencyA}
                         currencyB={currencyB}
                         mintInfo={mintInfo}
-                        // onSuccess={handleSuccess}
+                        onSuccess={handleSuccess}
                     />
                 </div>
             </DialogContent>

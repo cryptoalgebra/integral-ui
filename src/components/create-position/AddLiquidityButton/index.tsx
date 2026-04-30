@@ -7,7 +7,7 @@ import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
-import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/integral-sdk";
+import { Percent, Currency, Field, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useEffect, useMemo } from "react";
@@ -15,6 +15,7 @@ import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
+import { NonfungiblePositionManager } from "@/utils/mint/nfpm";
 
 interface AddLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -25,7 +26,7 @@ interface AddLiquidityButtonProps {
     onSuccess?: () => void;
 }
 
-const ZERO_PERCENT = new Percent("0");
+const ZERO_PERCENT = new Percent(1, 1_000);
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
 export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress, tokenId, onSuccess }: AddLiquidityButtonProps) => {

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useCurrency } from "@/hooks/common/useCurrency";
 import { ExtendedPosition, PositionStatus } from "@/hooks/earn/useExtendedPositions";
 import { ExtendedPool } from "@/hooks/pools/useExtendedPools";
 import { cn } from "@/utils";
@@ -14,6 +15,7 @@ import { formatAmount } from "@/utils/common/formatAmount";
 import { enabledModules } from "config";
 import { ChevronDown, Search } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
+import { Address } from "viem";
 
 export interface EarnPoolListItem {
     pool: ExtendedPool;
@@ -32,17 +34,20 @@ interface EarnPoolsListProps {
 const EarnPoolPair = ({ pool }: { pool: ExtendedPool }) => {
     const { token0, token1 } = pool.pool;
 
+    const currencyA = useCurrency(token0.address as Address, true);
+    const currencyB = useCurrency(token1.address as Address, true);
+
     return (
         <div className="ml-1.5 flex items-center gap-3">
             <div className="flex shrink-0 items-center">
-                <CurrencyLogo currency={token0} size={32} className="ring-2 ring-card" />
-                <CurrencyLogo currency={token1} size={32} className="-ml-2 ring-2 ring-card" />
+                <CurrencyLogo currency={currencyA} size={32} className="ring-2 z-10 ring-card" />
+                <CurrencyLogo currency={currencyB} size={32} className="-ml-2 ring-2 z-0 ring-card" />
             </div>
 
-            {token0 && token1 ? (
+            {currencyA && currencyB ? (
                 <div className="flex justify-between min-w-0 w-full items-center">
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-semibold text-text">{`${token0.symbol} / ${token1.symbol}`}</span>
+                        <span className="text-sm font-semibold text-text">{`${currencyA?.symbol} / ${currencyB?.symbol}`}</span>
                         {!enabledModules.CustomPoolsModule && (
                             <span className="text-xs text-text-muted">{pool.pool.fee / 10_000}% fee</span>
                         )}
