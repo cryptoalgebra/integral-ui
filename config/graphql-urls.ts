@@ -5,11 +5,11 @@ export const USE_UNISWAP_PLACEHOLDER_DATA = false;
 export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // actually it's Thena Fusion BSC Mainnet
 
 export const INFO_GRAPH_URL = {
-    [ChainId.RaylsMainnet]: "https://rayls-graph.algebra.finance/subgraphs/name/analytics",
+    [ChainId.RaylsMainnet]: "https://rayls-graph.algebra.finance/subgraphs/name/mainnet-analytics",
 };
 
 export const FARMING_GRAPH_URL = {
-    [ChainId.RaylsMainnet]: "https://rayls-graph.algebra.finance/subgraphs/name/farmings",
+    [ChainId.RaylsMainnet]: "https://rayls-graph.algebra.finance/subgraphs/name/mainnet-farmings",
 };
 
 export const LIMIT_ORDERS_GRAPH_URL = {
