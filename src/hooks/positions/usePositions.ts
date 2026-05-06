@@ -1,6 +1,6 @@
 import { nonfungiblePositionManagerABI, NONFUNGIBLE_POSITION_MANAGER } from "config";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/integral-sdk";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useAccount, useChainId, useReadContracts } from "wagmi";
 import { Address } from "viem";
 import { useReadNonfungiblePositionManagerBalanceOf } from "@/generated";
@@ -96,7 +96,7 @@ export function usePositions() {
     const { address: account } = useAccount();
     const chainId = useChainId();
 
-    const { data: balanceResult, isLoading: balanceLoading } = useReadNonfungiblePositionManagerBalanceOf({
+    const { data: balanceResult, isLoading: balanceLoading, refetch: refetchBalance } = useReadNonfungiblePositionManagerBalanceOf({
         args: account ? [account] : undefined,
         query: {
             enabled: !!account,
@@ -115,7 +115,9 @@ export function usePositions() {
         return tokenRequests;
     }, [account, balanceResult]);
 
-    const { data: tokenIdResults, isLoading: someTokenIdsLoading } = useReadContracts<readonly { result: any; error: any }[]>({
+    const { data: tokenIdResults, isLoading: someTokenIdsLoading, refetch: refetchTokenIds } = useReadContracts<
+        readonly { result: any; error: any }[]
+    >({
         contracts: tokenIdsArgs.map((args) => ({
             address: NONFUNGIBLE_POSITION_MANAGER[chainId],
             abi: nonfungiblePositionManagerABI,
@@ -134,7 +136,13 @@ export function usePositions() {
         return [];
     }, [account, tokenIdResults]);
 
-    const { positions, isLoading: positionsLoading, refetch } = usePositionsFromTokenIds(tokenIds);
+    const { positions, isLoading: positionsLoading, refetch: refetchPositions } = usePositionsFromTokenIds(tokenIds);
+
+    const refetch = useCallback(async () => {
+        await refetchBalance();
+        await refetchTokenIds();
+        await refetchPositions();
+    }, [refetchBalance, refetchTokenIds, refetchPositions]);
 
     return {
         loading: someTokenIdsLoading || balanceLoading || positionsLoading,

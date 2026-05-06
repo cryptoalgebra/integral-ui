@@ -12,7 +12,12 @@ const PoolsPage = () => {
     const { address: account } = useAccount();
     const { data: positions, pools, isLoading, refetch } = useExtendedPositions();
 
-    const [selectedPosition, setSelectedPosition] = useState<ExtendedPosition | null>(null);
+    const [selectedPositionId, setSelectedPositionId] = useState<number | null>(null);
+
+    const selectedPosition = useMemo(
+        () => (selectedPositionId === null ? null : positions.find((position) => position.id === selectedPositionId) || null),
+        [positions, selectedPositionId],
+    );
 
     const totalClaimableFeesUSD = positions.reduce((acc, position) => acc + position.feesUSD, 0);
 
@@ -84,10 +89,15 @@ const PoolsPage = () => {
             </div>
 
             <div className="flex w-full flex-col gap-2 md:gap-6">
-                <EarnPoolsList pools={earnPools} loading={isLoading} onManagePosition={setSelectedPosition} onRefetch={refetch} />
+                <EarnPoolsList
+                    pools={earnPools}
+                    loading={isLoading}
+                    onManagePosition={(position: ExtendedPosition) => setSelectedPositionId(position.id)}
+                    onRefetch={refetch}
+                />
             </div>
 
-            <PositionManagerModal selectedPosition={selectedPosition} onClose={() => setSelectedPosition(null)} refetch={refetch} />
+            <PositionManagerModal selectedPosition={selectedPosition} onClose={() => setSelectedPositionId(null)} refetch={refetch} />
         </PageContainer>
     );
 };

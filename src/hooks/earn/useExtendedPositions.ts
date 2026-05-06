@@ -28,7 +28,7 @@ export function useExtendedPositions(): {
     data: ExtendedPosition[];
     pools: ExtendedPool[];
     isLoading: boolean;
-    refetch: () => void;
+    refetch: () => Promise<void>;
 } {
     const { address: account } = useAccount();
 
@@ -119,12 +119,11 @@ export function useExtendedPositions(): {
 
     const isLoading = isPoolsLoading || isPositionsLoading || Boolean(account && openPositions.length > 0 && isPositionFeesLoading);
 
-    const refetch = useCallback(() => {
-        refetchPositions();
-        void mutateExtendedPositions();
+    const refetch = useCallback(async () => {
+        await refetchPositions();
+        await mutateExtendedPositions();
     }, [refetchPositions, mutateExtendedPositions]);
 
-    console.log("extendedPositions", extendedPositions);
     return {
         data: extendedPositions || [],
         pools: formattedPools,

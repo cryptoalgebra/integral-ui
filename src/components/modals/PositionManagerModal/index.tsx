@@ -40,21 +40,14 @@ const PositionManagerModal = ({ selectedPosition, farming, closedFarmings, onClo
 
     const position = selectedPosition?.position;
 
-    const mintInfo = useDerivedMintInfo(
-        token0,
-        token1,
-        selectedPosition?.pool.id,
-        pool?.fee || INITIAL_POOL_FEE,
-        token0,
-        position || undefined,
-    );
+    const mintInfo = useDerivedMintInfo(token0, token1, selectedPosition?.pool.id, pool?.fee || INITIAL_POOL_FEE, token0, position);
 
     const { data: positionAnalytics, refetch: refetchAnalytics } = usePositionAnalytics(selectedPosition?.id || "", position);
 
     // Refetch callback for use by child components
-    const handleRefetch = useCallback(() => {
-        refetch();
-        refetchAnalytics();
+    const handleRefetch = useCallback(async () => {
+        await refetch();
+        await refetchAnalytics();
     }, [refetch, refetchAnalytics]);
 
     if (!selectedPosition) return null;

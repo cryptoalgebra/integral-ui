@@ -111,8 +111,8 @@ export const useSwapState = create<SwapState>((set, get) => ({
         },
         switchCurrencies: () =>
             set({
-                independentField: get().independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT,
-                lastFocusedField: get().independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT,
+                independentField: SwapField.INPUT,
+                lastFocusedField: SwapField.INPUT,
                 [SwapField.INPUT]: { currencyId: get()[SwapField.OUTPUT].currencyId },
                 [SwapField.OUTPUT]: { currencyId: get()[SwapField.INPUT].currencyId },
             }),

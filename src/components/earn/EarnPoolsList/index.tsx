@@ -244,13 +244,15 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                                                             key={`earn-position-${poolId}-${position.id}`}
                                                                             className={cn("bg-panel/40 border-none hover:bg-panel/50")}
                                                                         >
-                                                                            <TableCell className="min-w-56 max-w-[332px] px-4 py-3.5 text-left">
-                                                                                <div className="flex items-center gap-2 pl-12">
+                                                                            <TableCell className="min-w-56 md:max-w-[332px] px-4 py-3.5 text-left">
+                                                                                <div className="flex items-center gap-2 md:pl-12 pl-2">
                                                                                     <PositionImage positionId={position.id} size={8} />
-                                                                                    <span className="text-sm text-text font-medium">
-                                                                                        Position #{position.id}
-                                                                                    </span>
-                                                                                    <PositionStatusBadge status={position.status} />
+                                                                                    <div className="flex max-md:flex-col items-start md:gap-2">
+                                                                                        <span className="text-sm text-text font-medium">
+                                                                                            Position #{position.id}
+                                                                                        </span>
+                                                                                        <PositionStatusBadge status={position.status} />
+                                                                                    </div>
                                                                                 </div>
                                                                             </TableCell>
 
