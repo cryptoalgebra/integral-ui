@@ -8,6 +8,7 @@ import { truncateHash } from "@/utils/common/truncateHash";
 import { Currency, CurrencyAmount } from "@cryptoalgebra/integral-sdk";
 import { ArrowUpDown, Copy, ExternalLink } from "lucide-react";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Address, parseUnits } from "viem";
 import { PoolAnalyticsStatistics, PoolPriceDetails } from "./types";
 
@@ -27,6 +28,7 @@ function AssetValue({ token }: { token: Currency | undefined }) {
     if (!token) return <span>-</span>;
 
     const address = token.wrapped.address as Address;
+    const tokenExplorePath = `/explore/token/${address}`;
     const explorerUrl = `${blockExplorerUrl}/address/${address}`;
 
     const handleCopy = () => {
@@ -41,7 +43,9 @@ function AssetValue({ token }: { token: Currency | undefined }) {
         <div className="flex flex-wrap items-center justify-end gap-2 sm:max-w-[360px]">
             <span className="inline-flex items-center gap-2">
                 <CurrencyLogo currency={token} size={18} />
-                <span>{token.symbol}</span>
+                <Link className="transition-colors duration-150 hover:text-primary" to={tokenExplorePath}>
+                    {token.symbol}
+                </Link>
                 <span className="text-xs text-text-muted">{truncateHash(address)}</span>
             </span>
             <Button type="button" variant="icon" size="icon" className="h-6 w-6 rounded-md" onClick={handleCopy}>
@@ -101,7 +105,7 @@ function ReserveRatioBar({
                     <span className="font-medium text-text">{formatAmount(token0Share, 2)}%</span>
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-lg">
-                    <CurrencyLogo currency={token1} size={24} />s
+                    <CurrencyLogo currency={token1} size={24} />
                     <span className="font-medium text-text">{formatAmount(token1Share, 2)}%</span>
                 </div>
             </div>
@@ -118,6 +122,9 @@ function ReservesPanel({
     token1: Currency | undefined;
     statistics: PoolAnalyticsStatistics | undefined;
 }) {
+    const token0ExplorePath = token0?.wrapped?.address ? `/explore/token/${token0.wrapped.address}` : undefined;
+    const token1ExplorePath = token1?.wrapped?.address ? `/explore/token/${token1.wrapped.address}` : undefined;
+
     const { formatted: tvlToken0USD } = useUSDCValue(
         token0 && statistics?.tvlToken0
             ? CurrencyAmount.fromRawAmount(token0, parseUnits(statistics.tvlToken0, token0.decimals).toString())
@@ -158,7 +165,16 @@ function ReservesPanel({
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                         <CurrencyLogo currency={token0} size={24} />
-                        <span className="text-sm font-medium text-text">{token0?.symbol}</span>
+                        {token0ExplorePath ? (
+                            <Link
+                                className="text-sm font-medium text-text transition-colors duration-150 hover:text-primary"
+                                to={token0ExplorePath}
+                            >
+                                {token0?.symbol}
+                            </Link>
+                        ) : (
+                            <span className="text-sm font-medium text-text">{token0?.symbol}</span>
+                        )}
                     </div>
                     <span className="text-sm font-medium text-text">
                         {formatAmount(statistics?.tvlToken0 || 0, 4)}{" "}
@@ -168,7 +184,16 @@ function ReservesPanel({
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                         <CurrencyLogo currency={token1} size={24} />
-                        <span className="text-sm font-medium text-text">{token1?.symbol}</span>
+                        {token1ExplorePath ? (
+                            <Link
+                                className="text-sm font-medium text-text transition-colors duration-150 hover:text-primary"
+                                to={token1ExplorePath}
+                            >
+                                {token1?.symbol}
+                            </Link>
+                        ) : (
+                            <span className="text-sm font-medium text-text">{token1?.symbol}</span>
+                        )}
                     </div>
                     <span className="text-sm font-medium text-text">
                         {formatAmount(statistics?.tvlToken1 || 0, 4)}{" "}

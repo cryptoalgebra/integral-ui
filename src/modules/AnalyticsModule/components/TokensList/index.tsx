@@ -6,7 +6,11 @@ import { useClients } from "@/hooks/graphql/useClients";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import { useChainId } from "wagmi";
 
-export function TokensList() {
+interface TokensListProps {
+    link?: string;
+}
+
+export function TokensList({ link = "analytics/tokens" }: TokensListProps = {}) {
     const { infoClient } = useClients();
     const chainId = useChainId();
     const { data, loading } = useAllTokensQuery({ client: infoClient });
@@ -49,12 +53,12 @@ export function TokensList() {
         : [];
 
     return (
-        <div className="flex w-full flex-col gap-4">
+        <div className="flex w-full flex-col gap-2 md:gap-6">
             <TokensTable
                 columns={tokensColumns}
                 data={formattedTokens}
                 defaultSortingID={"tvl"}
-                link={"analytics/tokens"}
+                link={link}
                 showPagination
                 loading={loading}
                 searchID={"id"}

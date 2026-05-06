@@ -21,7 +21,7 @@ const Settings = () => {
             <PopoverContent
                 align={"end"}
                 sideOffset={10}
-                className="flex w-[min(92vw,380px)] flex-col gap-4 rounded-xl border border-border bg-card p-4"
+                className="flex w-[min(92vw,380px)] max-h-[90vh] overflow-y-auto flex-col gap-4 rounded-xl border border-border bg-card p-4"
             >
                 <div className="flex flex-col gap-1 text-left">
                     <div className="text-base font-medium text-text">Transaction Settings</div>
@@ -46,6 +46,10 @@ const SlippageTolerance = () => {
 
     const [slippageInput, setSlippageInput] = useState("");
     const [slippageError, setSlippageError] = useState<boolean>(false);
+    const [isCustom, setIsCustom] = useState<boolean>(() => {
+        const currentValue = slippage !== "auto" ? slippage.toFixed(2) : "auto";
+        return !["auto", "0.10", "0.50", "1.00"].includes(currentValue);
+    });
 
     function parseSlippageInput(value: string) {
         // populate what the user typed and clear the error
@@ -68,6 +72,18 @@ const SlippageTolerance = () => {
         }
     }
 
+    function selectPreset(value: "" | "0.10" | "0.5" | "1") {
+        setIsCustom(false);
+        parseSlippageInput(value);
+        setSlippageInput("");
+    }
+
+    function selectCustom() {
+        setIsCustom(true);
+        setSlippageError(false);
+        setSlippageInput(slippage === "auto" ? "" : slippage.toFixed(2));
+    }
+
     const tooLow = slippage !== "auto" && slippage.lessThan(new Percent(5, 10_000));
     const tooHigh = slippage !== "auto" && slippage.greaterThan(new Percent(1, 100));
 
@@ -76,33 +92,39 @@ const SlippageTolerance = () => {
     return (
         <SettingGroup title="Slippage Tolerance" description="Choose a preset or enter a custom percentage.">
             <div className="grid grid-cols-4 gap-2">
-                <PresetButton active={slippageString === "auto"} onClick={() => parseSlippageInput("")}>
+                <PresetButton active={!isCustom && slippageString === "auto"} onClick={() => selectPreset("")}>
                     Auto
                 </PresetButton>
-                <PresetButton active={slippageString === "0.10"} onClick={() => parseSlippageInput("0.10")}>
+                <PresetButton active={!isCustom && slippageString === "0.10"} onClick={() => selectPreset("0.10")}>
                     0.1%
                 </PresetButton>
-                <PresetButton active={slippageString === "0.50"} onClick={() => parseSlippageInput("0.5")}>
+                {/* <PresetButton active={!isCustom && slippageString === "0.50"} onClick={() => selectPreset("0.5")}>
                     0.5%
-                </PresetButton>
-                <PresetButton active={slippageString === "1.00"} onClick={() => parseSlippageInput("1")}>
+                </PresetButton> */}
+                <PresetButton active={!isCustom && slippageString === "1.00"} onClick={() => selectPreset("1")}>
                     1%
                 </PresetButton>
-                <div className="col-span-4 flex overflow-hidden rounded-lg border border-border bg-panel">
-                    <Input
-                        value={slippageInput.length > 0 ? slippageInput : slippage === "auto" ? "" : slippage.toFixed(2)}
-                        onChange={(e) => parseSlippageInput(e.target.value)}
-                        onBlur={() => {
-                            setSlippageInput("");
-                            setSlippageError(false);
-                        }}
-                        className="h-11 min-w-[70px] rounded-none border-none bg-transparent text-left text-sm font-medium ring-0!"
-                        placeholder={"0.0"}
-                    />
-                    <div className="flex items-center border-l border-border px-4 text-sm font-medium text-text-muted">%</div>
-                </div>
+                <PresetButton active={isCustom} onClick={selectCustom}>
+                    Custom
+                </PresetButton>
+
+                {isCustom ? (
+                    <div className="col-span-4 flex overflow-hidden rounded-lg border border-border bg-panel">
+                        <Input
+                            value={slippageInput.length > 0 ? slippageInput : slippage === "auto" ? "" : slippage.toFixed(2)}
+                            onChange={(e) => parseSlippageInput(e.target.value)}
+                            onBlur={() => {
+                                setSlippageInput("");
+                                setSlippageError(false);
+                            }}
+                            className="h-11 min-w-[70px] rounded-none border-none bg-transparent text-left text-sm font-medium ring-0!"
+                            placeholder={"0.0"}
+                        />
+                        <div className="flex items-center border-l border-border px-4 text-sm font-medium text-text-muted">%</div>
+                    </div>
+                ) : null}
             </div>
-            {slippageError || tooLow || tooHigh ? (
+            {isCustom && (slippageError || tooLow || tooHigh) ? (
                 <div className="pt-1">
                     {slippageError ? (
                         <InlineNotice tone="accent">Enter a valid slippage percentage</InlineNotice>

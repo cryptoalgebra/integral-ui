@@ -2,10 +2,7 @@ import App from "@/App";
 import PoolsList from "@/components/pools/PoolsList";
 import AnalyticsPage from "@/pages/Analytics";
 import CreatePoolPage from "@/pages/CreatePool";
-import EarnPage from "@/pages/Earn";
-import NewPositionPage from "@/pages/NewPosition";
 import Page404 from "@/pages/Page404";
-import PoolsPage from "@/pages/Pools";
 import SwapPage from "@/pages/Swap";
 import { SwapPageView } from "@/pages/Swap/types";
 import { enabledModules } from "config/app-modules";
@@ -14,7 +11,9 @@ import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider, Route
 import AnalyticsModule from "@/modules/AnalyticsModule";
 import VeTOKENPage from "@/pages/VeTOKEN";
 import VotePage from "@/pages/Vote";
-const { AnalyticsPoolPage, TransactionsList, TokensList, AnalyticsTokenPage } = AnalyticsModule.components;
+import ExplorePage from "@/pages/Explore";
+import PoolsPage from "@/pages/Pools";
+const { ExplorePoolPage, TransactionsList, TokensList, AnalyticsTokenPage } = AnalyticsModule.components;
 
 const router = createBrowserRouter([
     {
@@ -34,24 +33,32 @@ const router = createBrowserRouter([
                 element: <SwapPage type={SwapPageView.LIMIT_ORDER} />,
             },
             {
+                path: "explore",
+                element: <ExplorePage />,
+            },
+            {
+                path: "explore/tokens",
+                element: <ExplorePage />,
+            },
+            {
+                path: "explore/transactions",
+                element: <ExplorePage />,
+            },
+            {
+                path: "create-pool",
+                element: <CreatePoolPage />,
+            },
+            {
                 path: "pools",
                 element: <PoolsPage />,
             },
             {
-                path: "pools/create",
-                element: <CreatePoolPage />,
+                path: "explore/pool/:poolId",
+                element: <ExplorePoolPage />,
             },
             {
-                path: "earn",
-                element: <EarnPage />,
-            },
-            {
-                path: "pool/:poolId",
-                element: <AnalyticsPoolPage />,
-            },
-            {
-                path: "pool/:pool/new-position",
-                element: <NewPositionPage />,
+                path: "explore/token/:tokenId",
+                element: <AnalyticsTokenPage />,
             },
 
             ...(enabledModules.AnalyticsModule
@@ -84,10 +91,10 @@ const router = createBrowserRouter([
                           path: "/analytics/tokens/:tokenId",
                           element: <AnalyticsTokenPage />,
                       },
-                      {
-                          path: "/analytics/pools/:poolId",
-                          element: <AnalyticsPoolPage />,
-                      },
+                      //   {
+                      //       path: "/analytics/pools/:poolId",
+                      //       element: <AnalyticsPoolPage />,
+                      //   },
                   ]
                 : []),
 

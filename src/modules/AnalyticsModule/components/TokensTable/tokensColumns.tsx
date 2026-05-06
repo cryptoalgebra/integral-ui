@@ -18,9 +18,12 @@ export interface TokenColumn {
 
 function TokenName({ tokenSDK }: TokenColumn) {
     return (
-        <div className="flex items-center gap-4 ml-2">
-            <CurrencyLogo currency={tokenSDK} size={30} />
-            <span>{tokenSDK?.symbol}</span>
+        <div className="ml-1.5 flex items-center gap-3">
+            <CurrencyLogo currency={tokenSDK} size={32} className="ring-2 ring-card" />
+            <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-text">{tokenSDK?.symbol}</p>
+                <p className="truncate text-xs text-text-muted">{tokenSDK?.name}</p>
+            </div>
         </div>
     );
 }
@@ -43,12 +46,7 @@ export const tokensColumns: ColumnDef<TokenColumn>[] = [
                 Price
             </HeaderItem>
         ),
-        cell: ({ getValue }) => (
-            <div className="flex flex-col items-start gap-1">
-                <p className="opacity-50 sm:hidden">Price</p>
-                <span>${formatAmount(getValue() as number, 4)}</span>
-            </div>
-        ),
+        cell: ({ getValue }) => <span className="font-medium text-text">${formatAmount(getValue() as number, 4)}</span>,
     },
     // {
     //   accessorKey: 'change',
@@ -74,12 +72,7 @@ export const tokensColumns: ColumnDef<TokenColumn>[] = [
                 Volume
             </HeaderItem>
         ),
-        cell: ({ getValue }) => (
-            <div className="flex flex-col items-start gap-1">
-                <p className="opacity-50 sm:hidden">Volume</p>
-                <span>${formatAmount(getValue() as number, 4)}</span>
-            </div>
-        ),
+        cell: ({ getValue }) => <span className="font-medium text-text">${formatAmount(getValue() as number, 2)}</span>,
     },
     {
         accessorKey: "tvl",
@@ -88,11 +81,6 @@ export const tokensColumns: ColumnDef<TokenColumn>[] = [
                 TVL
             </HeaderItem>
         ),
-        cell: ({ getValue }) => (
-            <div className="flex flex-col items-start gap-1">
-                <p className="opacity-50 sm:hidden">TVL</p>
-                <span>${formatAmount(getValue() as number, 4)}</span>
-            </div>
-        ),
+        cell: ({ getValue }) => <span className="font-medium text-text">${formatAmount(getValue() as number, 2)}</span>,
     },
 ];

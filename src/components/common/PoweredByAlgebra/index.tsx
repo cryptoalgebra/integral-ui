@@ -6,7 +6,7 @@ import { cn } from "@/utils/common/cn";
 const PoweredByAlgebra = ({ className }: { className?: string }) => {
     return (
         <a href={"https://algebra.finance"} className={cn("flex items-center gap-2 p-2", className)}>
-            <span className="text-sm font-semibold">Powered by</span>
+            <span className="text-sm font-semibold mt-0.5">Powered by</span>
             <img className="" src={NewAlgebraIntegral} width={160} />
             {/* <div className="flex items-center gap-1">
                 <div className="flex items-center justify-center w-[18px] h-[18px] rounded-full">

@@ -35,7 +35,7 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming, fee }: FormattedPool) =>
 
             {currencyA && currencyB ? (
                 <div className="flex justify-between min-w-0 w-full items-center">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-col items-start">
                         <span className="text-sm font-semibold text-text">{`${currencyA.symbol} / ${currencyB.symbol}`}</span>
                         {!enabledModules.CustomPoolsModule && <span className="text-xs text-text-muted">{fee}% fee</span>}
                     </div>

@@ -1,18 +1,20 @@
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
+import { useOverrideFee } from "@/hooks/swap/useOverrideFee";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { useUserState } from "@/state/userStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { Percent, TradeType } from "@cryptoalgebra/integral-sdk";
+import { BoostedRoute, Currency, Percent, Route as SDKRoute, TradeType } from "@cryptoalgebra/integral-sdk";
 import { ArrowUpDown, ChevronDownIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Route as SmartRoute, SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Button } from "@/components/ui/button.tsx";
 import { TradeState } from "@/types/trade-state";
 import { cn, formatAmount } from "@/utils";
+import { SwapRouteModal } from "../SwapRouteModal";
 
 const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
-    // const [isOpen, setIsOpen] = useState(false);
+    const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
     const [isRateInverted, setIsRateInverted] = useState(false);
 
     const { allowedSlippage, currencies, toggledTrade: trade, tradeState, priceImpact: derivedPriceImpact } = derivedSwap;
@@ -23,7 +25,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const [isExpanded, toggleExpanded] = useState(false);
 
-    // const { fees } = useOverrideFee(trade);
+    const { fees } = useOverrideFee(trade);
 
     const isSmartTrade = trade && "routes" in trade;
 
@@ -51,13 +53,13 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         }
     }, [allowedSlippage, isSmartTrade, trade]);
 
-    // const displayRoutes = useMemo(() => {
-    //     if (!trade) return undefined;
+    const displayRoutes = useMemo<SmartRoute[] | SDKRoute<Currency, Currency>[] | BoostedRoute<Currency, Currency>[] | undefined>(() => {
+        if (!trade) return undefined;
 
-    //     return isSmartTrade
-    //         ? trade.routes
-    //         : (trade.swaps.map((swap) => swap.route) as SDKRoute<Currency, Currency>[] | BoostedRoute<Currency, Currency>[]);
-    // }, [isSmartTrade, trade]);
+        return isSmartTrade
+            ? trade.routes
+            : (trade.swaps.map((swap) => swap.route) as SDKRoute<Currency, Currency>[] | BoostedRoute<Currency, Currency>[]);
+    }, [isSmartTrade, trade]);
 
     const rateDisplay = useMemo(() => {
         if (!trade) return "-";
@@ -113,25 +115,11 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             <div
                 className={cn(
                     " grid overflow-hidden transition-all duration-300 ease-out",
-                    isExpanded ? "opacity-100 h-[129px]" : " opacity-0 h-0",
+                    isExpanded ? "opacity-100 h-[165px]" : " opacity-0 h-0",
                 )}
             >
                 <div className="overflow-hidden px-2 pb-2 pt-4">
                     <div className="border-t border-border pt-4 text-sm text-text">
-                        <ParamsRow
-                            label="Slippage Tolerance"
-                            value={
-                                <div className="flex items-center gap-2 text-right">
-                                    {slippage === "auto" && (
-                                        <span className="rounded-full bg-panel px-2.5 py-0.5 text-xs font-medium text-text-muted">
-                                            Auto
-                                        </span>
-                                    )}
-                                    <span>{allowedSlippage.toFixed(2).replace(/\.00$/, "")}%</span>
-                                </div>
-                            }
-                        />
-                        <ParamsRow label="Price Impact" value={<PriceImpact priceImpact={priceImpact} />} />
                         <ParamsRow
                             label="Rate"
                             value={
@@ -147,6 +135,47 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                                         <ArrowUpDown size={14} />
                                     </Button>
                                 </div>
+                            }
+                        />
+                        <ParamsRow
+                            label="Slippage Tolerance"
+                            value={
+                                <div className="flex items-center gap-2 text-right">
+                                    {slippage === "auto" && (
+                                        <span className="rounded-full bg-panel px-2.5 py-0.5 text-xs font-medium text-text-muted">
+                                            Auto
+                                        </span>
+                                    )}
+                                    <span>{allowedSlippage.toFixed(2).replace(/\.00$/, "")}%</span>
+                                </div>
+                            }
+                        />
+                        <ParamsRow label="Price Impact" value={<PriceImpact priceImpact={priceImpact} />} />
+                        <ParamsRow
+                            label="Route"
+                            value={
+                                trade && displayRoutes ? (
+                                    <div className="flex items-center justify-end gap-2 text-right">
+                                        <SwapRouteModal
+                                            isOpen={isRouteModalOpen}
+                                            setIsOpen={setIsRouteModalOpen}
+                                            routes={displayRoutes}
+                                            fees={fees}
+                                            tradeType={trade.tradeType}
+                                        >
+                                            <Button
+                                                type="button"
+                                                size={"sm"}
+                                                variant={"outline"}
+                                                className="h-6 px-2 text-xs hover:bg-panel"
+                                            >
+                                                View
+                                            </Button>
+                                        </SwapRouteModal>
+                                    </div>
+                                ) : (
+                                    "-"
+                                )
                             }
                         />
                     </div>

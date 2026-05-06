@@ -1,83 +1,93 @@
 import PageContainer from "@/components/common/PageContainer";
-import PoolsList from "@/components/pools/PoolsList";
-import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
-import { useReadSecurityRegistryGlobalStatus } from "@/generated";
-import { SecurityState } from "@/hooks/pools/usePool";
-import { useFormattedPools } from "@/hooks/pools/useFormattedPools";
 import PageTitle from "@/components/common/PageTitle";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
-import AnalyticsModule from "@/modules/AnalyticsModule";
-
-const { DexChartsGrid } = AnalyticsModule.components;
+import ClaimAllFeesButton from "@/components/earn/ClaimAllFeesButton.tsx";
+import EarnPoolsList, { EarnPoolListItem } from "@/components/earn/EarnPoolsList";
+import PositionManagerModal from "@/components/modals/PositionManagerModal";
+import { ExtendedPosition, useExtendedPositions } from "@/hooks/earn/useExtendedPositions";
+import { formatAmount } from "@/utils/common/formatAmount";
+import { useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 
 const PoolsPage = () => {
-    const { data: globalStatus } = useReadSecurityRegistryGlobalStatus();
-    const { pools, isLoading } = useFormattedPools();
+    const { address: account } = useAccount();
+    const { data: positions, pools, isLoading, refetch } = useExtendedPositions();
 
-    const enableActions = globalStatus === SecurityState.ENABLED;
-    // const totalTVL = pools.reduce((sum, pool) => sum + pool.tvlUSD, 0);
-    // const totalVolume = pools.reduce((sum, pool) => sum + pool.volume24USD, 0);
-    // const totalFees = pools.reduce((sum, pool) => sum + pool.fees24USD, 0);
+    const [selectedPosition, setSelectedPosition] = useState<ExtendedPosition | null>(null);
 
-    // const heroStats = [
-    //     {
-    //         label: "Pools",
-    //         value: isLoading ? "..." : pools.length,
-    //     },
-    //     {
-    //         label: "Total TVL",
-    //         value: isLoading ? "..." : `$${formatAmount(totalTVL, 0)}`,
-    //     },
-    //     {
-    //         label: "24H volume",
-    //         value: isLoading ? "..." : `$${formatAmount(totalVolume, 0)}`,
-    //     },
-    //     {
-    //         label: "24H fees",
-    //         value: isLoading ? "..." : `$${formatAmount(totalFees, 0)}`,
-    //     },
-    // ];
+    const totalClaimableFeesUSD = positions.reduce((acc, position) => acc + position.feesUSD, 0);
+
+    const earnPools = useMemo<EarnPoolListItem[]>(() => {
+        const positionsByPool = new Map<string, ExtendedPosition[]>();
+
+        positions.forEach((position) => {
+            const poolId = position.pool.id.toLowerCase();
+            const currentPositions = positionsByPool.get(poolId) || [];
+
+            currentPositions.push(position);
+            positionsByPool.set(poolId, currentPositions);
+        });
+
+        return pools
+            .map((pool) => {
+                const poolPositions = positionsByPool.get(pool.id.toLowerCase()) || [];
+                const amountUSD = poolPositions.reduce((sum, position) => sum + position.amountUSD, 0);
+                const feesUSD = poolPositions.reduce((sum, position) => sum + position.feesUSD, 0);
+
+                return {
+                    pool,
+                    amountUSD,
+                    feesUSD,
+                    positions: poolPositions,
+                };
+            })
+            .sort((poolA, poolB) => {
+                const hasUserPositionsA = poolA.positions.length > 0 ? 1 : 0;
+                const hasUserPositionsB = poolB.positions.length > 0 ? 1 : 0;
+
+                if (hasUserPositionsA !== hasUserPositionsB) {
+                    return hasUserPositionsB - hasUserPositionsA;
+                }
+
+                if (poolA.amountUSD !== poolB.amountUSD) {
+                    return poolB.amountUSD - poolA.amountUSD;
+                }
+
+                return poolB.pool.tvlUSD - poolA.pool.tvlUSD;
+            });
+    }, [pools, positions]);
 
     return (
-        <PageContainer className="gap-6">
+        <PageContainer>
             <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
                 <PageTitle
-                    title="Explore"
-                    description="Discover and compare liquidity pools. Analyze liquidity, fees, and market activity in one place."
+                    title="Pools"
+                    description="Track pool APR, monitor your stake, and manage position rewards across all liquidity pools."
                 />
 
-                {!enableActions && <SecurityStatusTag status={globalStatus} />}
-
-                {enableActions && (
-                    <Button disabled className="w-fit whitespace-nowrap" variant="primary" size="md">
-                        <Link className="flex gap-2 items-center" to="create">
-                            <Plus size={18} />
-                            Create Pool
-                        </Link>
-                    </Button>
-                )}
-            </div>
-
-            <div className="flex flex-col gap-6">
-                {/* <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    {heroStats.map((stat) => (
-                        <div key={stat.label} className="rounded-lg  bg-panel px-4 py-4 ">
-                            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
-                            <p className="mt-3 text-2xl font-medium tracking-tight text-text">{stat.value}</p>
+                <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-stretch">
+                    <div className="flex items-center justify-between rounded-lg bg-panel px-4 py-3">
+                        <div className="sm:min-w-[220px]">
+                            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-text-muted">Claimable Fees</p>
+                            <p className="mt-2 text-2xl font-medium tracking-tight text-text">
+                                {account ? `$${formatAmount(totalClaimableFeesUSD, 2)}` : "-"}
+                            </p>
                         </div>
-                    ))}
-                </div> */}
-                <DexChartsGrid
-                    containerClassName="grid gap-4 lg:grid-cols-2"
-                    cardClassName="rounded-lg bg-card"
-                    height={200}
-                    volumeTitle="Volume"
-                />
+
+                        <ClaimAllFeesButton
+                            positions={positions}
+                            isPageLoading={isLoading}
+                            onSuccess={refetch}
+                            className="whitespace-nowrap"
+                        />
+                    </div>
+                </div>
             </div>
 
-            <PoolsList pools={pools} isLoading={isLoading} isExplore />
+            <div className="flex w-full flex-col gap-2 md:gap-6">
+                <EarnPoolsList pools={earnPools} loading={isLoading} onManagePosition={setSelectedPosition} onRefetch={refetch} />
+            </div>
+
+            <PositionManagerModal selectedPosition={selectedPosition} onClose={() => setSelectedPosition(null)} refetch={refetch} />
         </PageContainer>
     );
 };

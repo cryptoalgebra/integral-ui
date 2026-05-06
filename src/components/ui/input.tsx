@@ -21,7 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
                 "focus-visible:ring-1 focus-visible:ring-ring",
                 "focus-visible:border-card-border-focus",
 
-                "disabled:cursor-not-allowed disabled:opacity-50",
+                "disabled:cursor-not-allowed",
                 className,
             )}
             ref={ref}

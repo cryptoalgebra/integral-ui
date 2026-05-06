@@ -5,10 +5,9 @@ import { matchPath, NavLink, useLocation } from "react-router-dom";
 const PATHS = {
     SWAP: "/swap",
     LIMIT_ORDERS: "limit-order",
-    POOLS: "/pools",
     POOL: "/pool/*",
-    EARN: "/earn",
-    ANALYTICS: "/analytics/*",
+    POOLS: "/pools",
+    EXPLORE: "/explore/*",
     VE_TOKEN: "/vetoken/*",
     VOTE: "/vote/*",
 };
@@ -21,15 +20,15 @@ const menuItems = [
         icon: <ArrowUpDown size={14} />,
     },
     {
-        title: "Earn",
-        link: "/earn",
-        active: [PATHS.EARN],
+        title: "Pools",
+        link: "/pools",
+        active: [PATHS.POOLS],
         icon: <LucideLineChart size={14} />,
     },
     {
         title: "Explore",
-        link: "/pools",
-        active: [PATHS.POOLS, PATHS.POOL],
+        link: "/explore",
+        active: [PATHS.EXPLORE],
         icon: <Droplets size={14} />,
     },
     {

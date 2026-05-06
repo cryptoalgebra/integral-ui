@@ -18,7 +18,7 @@ const PoolsListContent = ({ pools, isLoading }: { pools: FormattedPool[]; isLoad
                 columns={poolsColumns}
                 data={pools}
                 defaultSortingID={"tvlUSD"}
-                link={"pool"}
+                link={"explore/pool"}
                 showPagination={true}
                 loading={isLoading}
             />

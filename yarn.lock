@@ -1487,10 +1487,10 @@
     "@uniswap/v3-sdk" "^3.26.0"
     viem "^2.31.3"
 
-"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/a7a5-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/a7a5-sdk/-/a7a5-sdk-1.0.0.tgz#1951279df9a3882f9d735b458a7a86c9c4d42b9c"
-  integrity sha512-eWYgZ7kU6DZkj1oNHuo5qzNO6fh/scMd4G3B3mnWujediii0+Heqj3L412tn911OVJ4k0R79M9j8nairvd+/1Q==
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/a7a5-sdk@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/a7a5-sdk/-/a7a5-sdk-1.0.1.tgz#244c3b1ba44cda47ec54ba22d8eccfdcd48d0603"
+  integrity sha512-5cSopoG+A7lOXxZZvHSc1jWdVdcKd8AuUeMk0WO/vFPB664QX46RpPXvQ9yDJyzMM7gbaqTC9ToZ8+ASIX1YEQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

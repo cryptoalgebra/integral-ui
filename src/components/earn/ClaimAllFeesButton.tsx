@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { nonfungiblePositionManagerAbi, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
+import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { ExtendedPosition } from "@/hooks/earn/useExtendedPositions";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
+import { NonfungiblePositionManager } from "@/utils/mint/nfpm";
 import { cn } from "@/utils";
 import { useMemo } from "react";
-import { encodeFunctionData, maxUint128 } from "viem";
 import { useAccount } from "wagmi";
 
 interface ClaimAllFeesButtonProps {
@@ -25,29 +26,23 @@ const ClaimAllFeesButton = ({ positions, isPageLoading = false, onSuccess, class
 
     const collectablePositions = useMemo(() => positions.filter((position) => position.feesUSD > 0), [positions]);
 
-    const collectAllCalldata = useMemo(() => {
-        if (!account || collectablePositions.length === 0) return undefined;
+    const { calldata: collectAllCalldata, value: collectAllValue } = useMemo(() => {
+        if (!account || collectablePositions.length === 0) return { calldata: undefined, value: undefined };
 
-        return collectablePositions.map((position) =>
-            encodeFunctionData({
-                abi: nonfungiblePositionManagerAbi,
-                functionName: "collect",
-                args: [
-                    {
-                        tokenId: BigInt(position.id),
-                        recipient: account,
-                        amount0Max: maxUint128,
-                        amount1Max: maxUint128,
-                    },
-                ],
-            }),
+        return NonfungiblePositionManager.collectAllCallParameters(
+            collectablePositions.map((position) => ({
+                tokenId: position.id.toString(),
+                recipient: account,
+                currency0: unwrappedToken(position.pool.pool.token0),
+                currency1: unwrappedToken(position.pool.pool.token1),
+            })),
         );
     }, [account, collectablePositions]);
 
     const collectAllConfig = collectAllCalldata
         ? {
-              args: [collectAllCalldata] as const,
-              value: 0n,
+              args: [collectAllCalldata as `0x${string}`[]] as const,
+              value: BigInt(collectAllValue || 0),
           }
         : undefined;
 

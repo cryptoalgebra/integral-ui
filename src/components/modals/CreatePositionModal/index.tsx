@@ -49,7 +49,7 @@ const CreatePositionModal = ({ poolAddress, fee, token0: _token0, token1: _token
         await delay(500);
         onSuccess?.();
         setIsOpen(false);
-        navigate("/earn");
+        navigate("/pools");
     };
 
     return (

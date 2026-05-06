@@ -46,7 +46,7 @@ const EarnPoolPair = ({ pool }: { pool: ExtendedPool }) => {
 
             {currencyA && currencyB ? (
                 <div className="flex justify-between min-w-0 w-full items-center">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-col items-start">
                         <span className="text-sm font-semibold text-text">{`${currencyA?.symbol} / ${currencyB?.symbol}`}</span>
                         {!enabledModules.CustomPoolsModule && (
                             <span className="text-xs text-text-muted">{pool.pool.fee / 10_000}% fee</span>
@@ -131,6 +131,9 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                 <HeaderItem>TVL</HeaderItem>
                             </TableHead>
                             <TableHead className="h-12 px-4 text-[11px] font-medium uppercase tracking-[0.16em] text-text-muted">
+                                <HeaderItem>Volume</HeaderItem>
+                            </TableHead>
+                            <TableHead className="h-12 px-4 text-[11px] font-medium uppercase tracking-[0.16em] text-text-muted">
                                 <HeaderItem>APR</HeaderItem>
                             </TableHead>
                             <TableHead className="h-12 px-4 text-[11px] font-medium uppercase tracking-[0.16em] text-text-muted">
@@ -176,9 +179,12 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                                 ${formatAmount(item.pool.tvlUSD, 4)}
                                             </TableCell>
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left">
-                                                {formatAmount(item.pool.apr, 2)}%
+                                                ${formatAmount(item.pool.volume24USD, 4)}
                                             </TableCell>
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left">
+                                                {formatAmount(item.pool.apr, 2)}%
+                                            </TableCell>
+                                            <TableCell className="min-w-32 px-4 py-3.5 text-left ">
                                                 ${formatAmount(item.amountUSD, 4)}
                                             </TableCell>
                                             <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text">
@@ -188,7 +194,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                             <TableCell className="w-[140px] px-4 py-3.5 text-right">
                                                 {hasPositions ? (
                                                     <span className="inline-flex items-center gap-2 text-sm text-text">
-                                                        {item.positions.length}
+                                                        {item.positions.length} positions
                                                         <ChevronDown
                                                             className={cn(
                                                                 "size-4 transition-transform",
@@ -221,7 +227,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
 
                                         {hasPositions && (
                                             <TableRow className="border-none bg-transparent hover:bg-transparent">
-                                                <TableCell colSpan={6} className="p-0">
+                                                <TableCell colSpan={7} className="p-0">
                                                     <div
                                                         className={cn(
                                                             "grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-out",
@@ -238,7 +244,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                                                             key={`earn-position-${poolId}-${position.id}`}
                                                                             className={cn("bg-panel/40 border-none hover:bg-panel/50")}
                                                                         >
-                                                                            <TableCell className="min-w-56 px-4 py-3.5 text-left">
+                                                                            <TableCell className="min-w-56 max-w-[332px] px-4 py-3.5 text-left">
                                                                                 <div className="flex items-center gap-2 pl-12">
                                                                                     <PositionImage positionId={position.id} size={8} />
                                                                                     <span className="text-sm text-text font-medium">
@@ -248,6 +254,7 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                                                                 </div>
                                                                             </TableCell>
 
+                                                                            <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
                                                                             <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
                                                                             <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
                                                                             <TableCell className="min-w-32 px-4 py-3.5 text-left">
@@ -296,13 +303,12 @@ const EarnPoolsList = ({ pools, loading, onManagePosition, onRefetch }: EarnPool
                                                                                 </CreatePositionModal>
                                                                             </div>
                                                                         </TableCell>
-
-                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
                                                                         <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
-                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left"></TableCell>
-                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left font-medium text-text"></TableCell>
-
-                                                                        <TableCell className="w-[140px] px-4 py-3.5 text-right"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
+                                                                        <TableCell className="min-w-32 px-4 py-3.5 text-left text-text-muted"></TableCell>
                                                                     </TableRow>
                                                                 </TableBody>
                                                             </Table>

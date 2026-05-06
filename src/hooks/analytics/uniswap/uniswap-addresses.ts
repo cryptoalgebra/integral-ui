@@ -5,8 +5,10 @@ type UniswapPoolAddress = string;
 type IntegralPoolAddress = string;
 
 export const uniswapPlaceholderTokens: Record<IntegralTokenAddress, UniswapTokenAddress> = {
-    "0x4200000000000000000000000000000000000006": "0x2170ed0880ac9a755fd29b2688956bd959f933f8", // ETH
-    "0xabac6f23fdf1313fc2e9c9244f666157ccd32990": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC
+    ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()]: "0x2170ed0880ac9a755fd29b2688956bd959f933f8", // ETH
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC
+    "0xdac17f958d2ee523a2206206994597c13d831ec7": "0x55d398326f99059ff775485246999027b3197955", // USDT
+    ["0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2".toLowerCase()]: "0x2170ed0880ac9a755fd29b2688956bd959f933f8", // ETH
 };
 
 export const uniswapPlaceholderPools: Record<IntegralPoolAddress, UniswapPoolAddress> = {

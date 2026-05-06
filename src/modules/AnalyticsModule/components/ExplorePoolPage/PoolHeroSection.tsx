@@ -11,26 +11,30 @@ import { Address } from "viem";
 interface PoolHeroSectionProps {
     token0: Currency | undefined;
     token1: Currency | undefined;
-    feeTier: string;
+    fee: number | undefined;
     enableActions: boolean;
     poolId: string | undefined;
     poolSecurityStatus: number | null | undefined;
     poolAddressLabel: string;
     poolExplorerUrl: string | undefined;
-    networkName: string | undefined;
+    onSuccess: () => void;
 }
 
 export function PoolHeroSection({
     token0,
     token1,
-    feeTier,
+    fee,
     enableActions,
     poolId,
     poolSecurityStatus,
     poolAddressLabel,
     poolExplorerUrl,
+    onSuccess,
 }: PoolHeroSectionProps) {
     const { toast } = useToast();
+
+    const token0ExplorePath = token0?.wrapped?.address ? `/explore/token/${token0.wrapped.address}` : undefined;
+    const token1ExplorePath = token1?.wrapped?.address ? `/explore/token/${token1.wrapped.address}` : undefined;
 
     const handleCopy = () => {
         if (!poolId) return;
@@ -44,7 +48,7 @@ export function PoolHeroSection({
         <div className="flex flex-col gap-4">
             <Link
                 className="inline-flex w-fit items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-text-muted transition-colors duration-150 hover:text-text"
-                to="/pools"
+                to="/explore"
             >
                 <ChevronLeft size={16} />
                 Back to Explore
@@ -60,10 +64,30 @@ export function PoolHeroSection({
                     <div className="flex flex-col gap-0">
                         <div className="flex flex-wrap items-center gap-3">
                             <h1 className="font-bold text-4xl text-text">
-                                {token0?.symbol && token1?.symbol ? `${token0.symbol} / ${token1.symbol}` : ""}
+                                {token0?.symbol && token1?.symbol ? (
+                                    <span className="inline-flex items-center gap-2">
+                                        {token0ExplorePath ? (
+                                            <Link className="transition-colors duration-150 hover:text-primary" to={token0ExplorePath}>
+                                                {token0.symbol}
+                                            </Link>
+                                        ) : (
+                                            <span>{token0.symbol}</span>
+                                        )}
+                                        <span className="text-text-muted">/</span>
+                                        {token1ExplorePath ? (
+                                            <Link className="transition-colors duration-150 hover:text-primary" to={token1ExplorePath}>
+                                                {token1.symbol}
+                                            </Link>
+                                        ) : (
+                                            <span>{token1.symbol}</span>
+                                        )}
+                                    </span>
+                                ) : (
+                                    ""
+                                )}
                             </h1>
                             <span className="rounded-full bg-panel px-2 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-text-muted">
-                                {feeTier}
+                                {fee !== undefined ? `${fee / 10_000}% fee` : "-"}
                             </span>
                             {!enableActions && <SecurityStatusTag status={poolSecurityStatus} />}
                         </div>
@@ -101,9 +125,8 @@ export function PoolHeroSection({
                             poolAddress={poolId as Address | undefined}
                             token0={token0}
                             token1={token1}
-                            feeTier={feeTier}
-                            poolAddressLabel={poolAddressLabel}
-                            poolExplorerUrl={poolExplorerUrl}
+                            fee={fee}
+                            onSuccess={onSuccess}
                         >
                             <Button variant="primaryLink" size="md">
                                 <Plus size={18} />

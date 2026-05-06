@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { CHART_SPAN, POOL_CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
 import { SecurityState, usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
@@ -10,7 +10,6 @@ import { getPercentChange } from "@/utils/common/getPercentChange";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import { usePoolChartData } from "@/hooks/analytics";
 import PageContainer from "@/components/common/PageContainer";
-import { useAppKitNetwork } from "@reown/appkit/react";
 import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
 import { truncateHash } from "@/utils/common/truncateHash";
 import { cn } from "@/utils";
@@ -34,10 +33,10 @@ const SectionTab = ({ active, children, onClick }: { active: boolean; children: 
     </button>
 );
 
-export function AnalyticsPoolPage() {
+export function ExplorePoolPage() {
     const { poolId } = useParams();
     const { pathname } = useLocation();
-    const { caipNetwork } = useAppKitNetwork();
+    const navigate = useNavigate();
     const blockExplorerUrl = useBlockExplorerURL();
 
     const [type, setType] = useState<PoolChartTypeType>(POOL_CHART_TYPE.TVL);
@@ -136,7 +135,6 @@ export function AnalyticsPoolPage() {
     const poolAddress = poolId as Address | undefined;
     const poolExplorerUrl = poolAddress ? `${blockExplorerUrl}/address/${poolAddress}` : undefined;
     const poolAddressLabel = poolAddress ? truncateHash(poolAddress) : "-";
-    const feeTier = pool ? `${(pool.fee / 10000).toFixed(2)}%` : "-";
     const sectionTabs = [
         { id: "overview" as const, label: "Overview" },
         { id: "activity" as const, label: "Activity" },
@@ -147,13 +145,13 @@ export function AnalyticsPoolPage() {
             <PoolHeroSection
                 token0={token0}
                 token1={token1}
-                feeTier={feeTier}
+                fee={pool?.fee}
                 enableActions={enableActions}
                 poolId={poolId}
                 poolSecurityStatus={poolSecurityStatus}
                 poolAddressLabel={poolAddressLabel}
                 poolExplorerUrl={poolExplorerUrl}
-                networkName={caipNetwork?.name}
+                onSuccess={() => navigate("/pools")}
             />
 
             <PoolMetricsGrid

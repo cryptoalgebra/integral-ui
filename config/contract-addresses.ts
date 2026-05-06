@@ -9,7 +9,7 @@ export const QUOTER_V2: Record<number, Address> = {
     [ChainId.Ethereum]: "0xB4F9b6b019E75CBe51af4425b2Fc12797e2Ee2a1",
 };
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.Ethereum]: "0x50FCbF85d23aF7C91f94842FeCd83d16665d27bA",
+    [ChainId.Ethereum]: "0x888B035e6f64b1C1Aebcd6DDf0C9fd7aEBeA39ED",
 };
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
     [ChainId.Ethereum]: "0x28DeD2af752655Df5Ee92450DC259F92a5ABe449",

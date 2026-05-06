@@ -149,6 +149,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                 percentDifference={percentDifference}
                 isLoading={independentField === SwapField.INPUT && isTradeLoading}
                 showBalance
+                disabled
             />
         </div>
     );

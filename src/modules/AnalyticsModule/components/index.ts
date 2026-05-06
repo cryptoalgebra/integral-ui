@@ -10,5 +10,6 @@ export * from "./TransactionsTable";
 export * from "./TokensList";
 export * from "./TokensTable";
 
-export * from "./AnalyticsPoolPage";
+export * from "./ExplorePoolPage";
+export * from "./ExploreTokenPage";
 export * from "./AnalyticsTokenPage";
