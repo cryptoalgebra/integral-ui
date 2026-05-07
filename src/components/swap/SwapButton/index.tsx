@@ -206,7 +206,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const isValid = !swapInputError && !activeSwapError;
 
-    const hasLargePriceDifference = priceImpactSeverity > 3;
+    const hasLargePriceDifference = priceImpactSeverity > 2;
 
     const largePriceDifferencePercent = useMemo(() => {
         if (!priceImpact) return "0.00";
