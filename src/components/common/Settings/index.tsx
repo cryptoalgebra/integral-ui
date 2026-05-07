@@ -32,7 +32,7 @@ const Settings = () => {
                 <TransactionDeadline />
                 <Multihop />
                 {enabledModules.SmartRouterModule && <SplitTrade />}
-                <ExpertMode />
+                {/* <ExpertMode /> */}
             </PopoverContent>
         </Popover>
     );
@@ -187,22 +187,22 @@ const TransactionDeadline = () => {
         </SettingGroup>
     );
 };
-const ExpertMode = () => {
-    const {
-        isExpertMode,
-        actions: { setIsExpertMode },
-    } = useUserState();
+// const ExpertMode = () => {
+//     const {
+//         isExpertMode,
+//         actions: { setIsExpertMode },
+//     } = useUserState();
 
-    return (
-        <ToggleRow
-            id="expert-mode"
-            title="Expert mode"
-            description="Allows high slippage trades. Use at your own risk."
-            checked={isExpertMode}
-            onCheckedChange={setIsExpertMode}
-        />
-    );
-};
+//     return (
+//         <ToggleRow
+//             id="expert-mode"
+//             title="Expert mode"
+//             description="Allows high slippage trades. Use at your own risk."
+//             checked={isExpertMode}
+//             onCheckedChange={setIsExpertMode}
+//         />
+//     );
+// };
 
 const Multihop = () => {
     const {

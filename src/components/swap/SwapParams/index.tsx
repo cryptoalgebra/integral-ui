@@ -196,7 +196,7 @@ const ParamsRow = ({ label, value }: { label: string; value: React.ReactNode }) 
 const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
     const severity = warningSeverity(priceImpact);
 
-    const color = severity >= 3 ? "text-accent" : priceImpact ? "text-primary" : "text-text";
+    const color = severity >= 3 ? "text-red-400" : priceImpact ? "text-primary" : "text-text";
 
     return <span className={color}>{priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}</span>;
 };

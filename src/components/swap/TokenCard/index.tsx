@@ -121,7 +121,7 @@ const TokenCard = ({
                                 percentDifference > 1
                                     ? "text-primary"
                                     : percentDifference < -1 && percentDifference > -100
-                                    ? "text-accent"
+                                    ? "text-red-400"
                                     : "text-text"
                             }
                         >

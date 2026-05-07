@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME, enabledModules, OMEGA_ROUTER } from "config";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
-import { useUserState } from "@/state/userStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
@@ -15,6 +14,7 @@ import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { TradeState } from "@/types/trade-state";
+import { AlertTriangle } from "lucide-react";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 const { useSmartRouterCallback } = SmartRouterModule.hooks;
@@ -37,8 +37,6 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const { address: account } = useAccount();
 
-    const { isExpertMode } = useUserState();
-
     const { independentField, typedValue } = useSwapState();
     const {
         allowedSlippage,
@@ -50,6 +48,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         tradeState,
         smartTradeCallOptions,
         refetchBalances,
+        priceImpact: derivedPriceImpact,
     } = derivedSwap;
 
     const isSmartTrade = trade && "routes" in trade;
@@ -123,7 +122,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         if (isSmartTrade) {
             return SmartRouter.getPriceImpact(trade);
         } else {
-            return trade.priceImpact;
+            return derivedPriceImpact;
         }
     }, [trade, isSmartTrade]);
 
@@ -201,11 +200,20 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         } catch (error) {
             return new Error(`Swap Failed ${error}`);
         }
-    }, [swapCallback, smartSwapCallback, omegaSwapCallback, isSmartTrade, shouldUseOmegaRouter]);
+    }, [swapCallback, smartSwapCallback, omegaSwapCallback, isSmartTrade, shouldUseOmegaRouter, permit2Allowance]);
 
     const isValid = !swapInputError && !activeSwapError;
 
-    const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
+    const hasLargePriceDifference = priceImpactSeverity > 3;
+
+    const largePriceDifferencePercent = useMemo(() => {
+        if (!priceImpact) return "0.00";
+
+        const priceDifferenceValue = Number(priceImpact.toFixed(2));
+        if (!Number.isFinite(priceDifferenceValue)) return "0.00";
+
+        return Math.abs(priceDifferenceValue).toFixed(2);
+    }, [priceImpact]);
 
     // Check if we need standard ERC20 approval (for native/smart router)
     const needsClassicApproval = !shouldUseOmegaRouter && approvalState === ApprovalState.NOT_APPROVED;
@@ -297,17 +305,21 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     return (
         <>
+            {hasLargePriceDifference && (
+                <div className="flex items-start gap-3 rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                    <p>High price impact: {largePriceDifferencePercent}%. You may receive significantly fewer tokens than expected.</p>
+                </div>
+            )}
             <Button
-                variant={"primary"}
+                variant={hasLargePriceDifference ? "destructive" : "primary"}
                 onClick={() => handleSwap()}
-                disabled={
-                    !isValid || priceImpactTooHigh || isSwapLoading || isLoadingRoute || needsApprovalOrPermit || needsClassicApproval
-                }
+                disabled={!isValid || isSwapLoading || isLoadingRoute || needsApprovalOrPermit || needsClassicApproval}
             >
                 {isSwapLoading ? (
                     <Loader />
-                ) : priceImpactTooHigh ? (
-                    "Price Impact Too High"
+                ) : hasLargePriceDifference ? (
+                    "Proceed with trade"
                 ) : priceImpactSeverity > 2 ? (
                     "Swap Anyway"
                 ) : swapInputError || activeSwapError ? (
