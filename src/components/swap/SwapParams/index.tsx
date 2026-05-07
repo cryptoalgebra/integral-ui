@@ -141,7 +141,7 @@ const SwapDetailRow = ({ label, value }: { label: string; value: React.ReactNode
 const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
     const severity = warningSeverity(priceImpact);
 
-    const color = severity === 3 || severity === 4 ? "text-red-400" : severity === 2 ? "text-orange-400" : "text-white";
+    const color = severity >= 3 ? "text-red-400" : priceImpact ? "text-orange-400" : "text-text";
 
     return <span className={color}>{priceImpact ? `${priceImpact.multiply(-1).toFixed(2)}%` : "-"}</span>;
 };

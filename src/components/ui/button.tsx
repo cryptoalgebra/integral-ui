@@ -13,7 +13,7 @@ const buttonVariants = cva(
                 primaryLink: "bg-primary-800 border border-primary-200 hover:opacity-65",
                 default: "bg-primary text-primary-foreground hover:bg-primary/90",
                 action: "bg-primary-button text-primary-foreground font-bold hover:bg-primary-button/80",
-                destructive: "bg-destructive-gradient text-destructive-foreground hover:bg-destructive/80 font-semibold hover:opacity-85",
+                destructive: "bg-red-400 text-black hover:opacity-90",
                 outline: "border hover:bg-card-hover",
                 secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
                 ghost: "hover:bg-card-hover",

@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useUserState } from "@/state/userStore";
 import { Percent } from "@cryptoalgebra/integral-sdk";
+import { enabledModules } from "config";
 import { SettingsIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -25,8 +26,8 @@ const Settings = () => {
                 <SlippageTolerance />
                 <TransactionDeadline />
                 <Multihop />
-                <SplitTrade />
-                <ExpertMode />
+                {enabledModules.SmartRouterModule && <SplitTrade />}
+                {/* <ExpertMode /> */}
             </PopoverContent>
         </Popover>
     );
@@ -171,22 +172,22 @@ const TransactionDeadline = () => {
         </div>
     );
 };
-const ExpertMode = () => {
-    const {
-        isExpertMode,
-        actions: { setIsExpertMode },
-    } = useUserState();
+// const ExpertMode = () => {
+//     const {
+//         isExpertMode,
+//         actions: { setIsExpertMode },
+//     } = useUserState();
 
-    return (
-        <div className="flex flex-col gap-2 max-w-[332px]">
-            <div className="flex justify-between items-center gap-2 text-md font-semibold">
-                <label htmlFor="expert-mode">Expert mode</label>
-                <Switch id="expert-mode" checked={isExpertMode} onCheckedChange={setIsExpertMode} />
-            </div>
-            <p className="whitespace-break-spaces">Allows high slippage trades. Use at your own risk.</p>
-        </div>
-    );
-};
+//     return (
+//         <ToggleRow
+//             id="expert-mode"
+//             title="Expert mode"
+//             description="Allows high slippage trades. Use at your own risk."
+//             checked={isExpertMode}
+//             onCheckedChange={setIsExpertMode}
+//         />
+//     );
+// };
 
 const Multihop = () => {
     const {
