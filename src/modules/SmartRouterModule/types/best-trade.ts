@@ -4,7 +4,7 @@ import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding
 import { Address } from "viem";
 
 export interface SmartRouterBestTrade {
-    refresh: () => Promise<void>;
+    refetch: () => Promise<void>;
     trade:
         | {
               bestTrade: SmartRouterTrade<TradeType>;

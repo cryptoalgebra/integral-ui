@@ -29,7 +29,7 @@ export function useSmartRouterBestTrade(
     amount: CurrencyAmount<Currency> | undefined,
     outputCurrency: Currency | undefined,
     isExactIn: boolean,
-    isEnabled: boolean
+    isEnabled: boolean,
 ): SmartRouterBestTrade {
     const queryClient = useQueryClient();
 
@@ -58,7 +58,7 @@ export function useSmartRouterBestTrade(
             blockNumber: Number(blockNumber),
             allowInconsistentBlock: true,
             enabled: true,
-        }
+        },
     );
 
     const poolProvider = useMemo(() => SmartRouter.createStaticPoolProvider(candidatePools), [candidatePools]);
@@ -66,7 +66,7 @@ export function useSmartRouterBestTrade(
     const deferQuotientRaw = useDeferredValue(amount?.quotient?.toString());
     const deferQuotient = useDebounce(deferQuotientRaw, 500);
 
-    const { data: trade, isLoading: isLoadingTrade, fetchStatus, isPlaceholderData, error, refetch } = useQuery({
+    const { data: trade, isLoading: isLoadingTrade, fetchStatus, isPlaceholderData, error, refetch: refetchTrade } = useQuery({
         queryKey: [
             "getBestRoute",
             outputCurrency?.chainId,
@@ -102,7 +102,7 @@ export function useSmartRouterBestTrade(
                         quoterOptimization: true,
                         distributionPercent: 10,
                         signal,
-                    }
+                    },
                 );
 
                 if (!bestTrade) {
@@ -152,14 +152,14 @@ export function useSmartRouterBestTrade(
     const isValidating = fetchStatus === "fetching";
     const isLoading = isLoadingTrade || isPlaceholderData || loading;
 
-    const refresh = useCallback(async () => {
+    const refetch = useCallback(async () => {
         await refreshPools();
         await queryClient.invalidateQueries({
             queryKey: ["getBestRoute"],
             refetchType: "none",
         });
-        refetch();
-    }, [refreshPools, queryClient, refetch]);
+        refetchTrade();
+    }, [refreshPools, queryClient, refetchTrade]);
 
     const state: TradeStateType = useMemo(() => {
         const isSyncing = syncing || isValidating || (amount?.quotient?.toString() !== deferQuotient && deferQuotient !== undefined);
@@ -179,7 +179,7 @@ export function useSmartRouterBestTrade(
     }, [amount?.quotient, deferQuotient, error, isLoading, isValidating, syncing, trade?.bestTrade]);
 
     return {
-        refresh,
+        refetch,
         trade,
         state,
     };

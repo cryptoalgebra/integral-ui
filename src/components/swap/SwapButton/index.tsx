@@ -124,7 +124,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         } else {
             return derivedPriceImpact;
         }
-    }, [trade, isSmartTrade]);
+    }, [trade, isSmartTrade, derivedPriceImpact]);
 
     const priceImpactSeverity = useMemo(() => {
         if (!priceImpact) return 0;
@@ -142,10 +142,12 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const onTransactionSuccess = useCallback(() => {
         refetchBalances();
+        tradeState.refetch();
+
         if (shouldUseOmegaRouter) {
             refetchPermit2Data?.();
         }
-    }, [refetchBalances, refetchPermit2Data, shouldUseOmegaRouter]);
+    }, [refetchBalances, tradeState, refetchPermit2Data, shouldUseOmegaRouter]);
 
     const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
         currencies[SwapField.INPUT],
