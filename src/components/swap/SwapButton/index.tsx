@@ -149,12 +149,16 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         }
     }, [refetchBalances, tradeState, refetchPermit2Data, shouldUseOmegaRouter]);
 
-    const { wrapType, execute: onWrap, loading: isWrapLoading, inputError: wrapInputError } = useWrapCallback(
-        currencies[SwapField.INPUT],
-        currencies[SwapField.OUTPUT],
-        typedValue,
-        onTransactionSuccess,
-    );
+    const {
+        wrapType,
+        execute: onWrap,
+        loading: isWrapLoading,
+        inputError: wrapInputError,
+        approvalRequired: isWrapApprovalRequired,
+        approve: approveWrap,
+        approvalLoading: isWrapApprovalLoading,
+        approvalTokenSymbol: wrapApprovalTokenSymbol,
+    } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue, onTransactionSuccess);
 
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
@@ -239,9 +243,20 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     if (showWrap && wrapInputError) return <Button disabled>{wrapInputError}</Button>;
 
+    if (showWrap && (isWrapApprovalRequired || isWrapApprovalLoading))
+        return (
+            <Button variant={"primary"} onClick={() => approveWrap?.()} disabled={isWrapApprovalLoading || !approveWrap}>
+                {isWrapApprovalLoading ? (
+                    <Loader />
+                ) : (
+                    `Approve ${wrapApprovalTokenSymbol ?? currencies[SwapField.INPUT]?.symbol ?? "token"}`
+                )}
+            </Button>
+        );
+
     if (showWrap)
         return (
-            <Button variant={"primary"} onClick={() => onWrap && onWrap()}>
+            <Button variant={"primary"} onClick={() => onWrap?.()} disabled={!onWrap}>
                 {isWrapLoading ? <Loader /> : wrapType === WrapType.WRAP ? "Wrap" : "Unwrap"}
             </Button>
         );

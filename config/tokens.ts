@@ -10,10 +10,6 @@ export const TOKENS = {
     },
 };
 
-export const FEE_ON_TRANSFER_TOKENS = {
-    [ChainId.Ethereum]: [TOKENS[ChainId.Ethereum].A7A5, TOKENS[ChainId.Ethereum].WA7A5],
-};
-
 // const UNDERLYING_TOKENS = {
 //     [ChainId.Ethereum]: {
 //         UNDERLYING_USDC: new Token(ChainId.Ethereum, "0xdc8eB684CA4bCD58CAFEacdBBF5A9fA628F81DF3", 18, "USDC", "USD Coin"),

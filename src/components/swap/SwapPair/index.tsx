@@ -5,7 +5,7 @@ import { Currency, CurrencyAmount, Percent, maxAmountSpend, ZERO } from "@crypto
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ArrowDownIcon } from "lucide-react";
-import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
+// import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { TOKENS } from "config";
 import { useChainId } from "wagmi";
 import { TradeState } from "@/types/trade-state";
@@ -22,9 +22,9 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
 
-    const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+    // const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
 
-    const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
+    // const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
     // const limitOrderPoolAddress =
     //     enabledModules.limitOrders && baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
@@ -92,10 +92,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const formattedAmounts = {
         [independentField]: typedValue,
-        [dependentField]:
-            showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
-                ? parsedAmounts[independentField]?.toExact() ?? ""
-                : parsedAmounts[dependentField]?.toExact() ?? "",
+        [dependentField]: parsedAmounts[dependentField]?.toExact() ?? "",
     };
 
     const percentDifference = useMemo(() => {

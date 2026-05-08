@@ -18,6 +18,7 @@ import {
     rebaseRewardAbi,
     votingEscrowABI,
     securityRegistryAbi,
+    wa7a5Abi,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -33,7 +34,8 @@ import {
     VOTING_ESCROW,
 } from "./contract-addresses";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
-import { defineChain } from "viem";
+import { Address, defineChain } from "viem";
+import { TOKENS } from "./tokens";
 
 const mainnet = /*#__PURE__*/ defineChain({
     id: 1,
@@ -87,6 +89,7 @@ const rawContracts = [
     { name: "RebaseReward", abi: rebaseRewardAbi },
     { name: "VotingEscrow", abi: votingEscrowABI },
     { name: "SecurityRegistry", abi: securityRegistryAbi },
+    { name: "WA7A5", abi: wa7a5Abi },
 ];
 
 const contractAddresses = {
@@ -101,6 +104,7 @@ const contractAddresses = {
     RebaseReward: REBASE_REWARD,
     VotingEscrow: VOTING_ESCROW,
     SecurityRegistry: SECURITY_REGISTRY,
+    WA7A5: TOKENS[DEFAULT_CHAIN_ID].WA7A5.address as Address,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts

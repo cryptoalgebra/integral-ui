@@ -1,5 +1,10 @@
 import { DEFAULT_CHAIN_ID, enabledModules, TOKENS } from "config";
-import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
+import {
+    useReadAlgebraPoolGlobalState,
+    useReadAlgebraPoolTickSpacing,
+    useReadWa7A5GetA7A5BywA7A5,
+    useReadWa7A5GetwA7A5ByA7A5,
+} from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { BestTradeExactIn, BestTradeExactOut, useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance";
@@ -21,6 +26,7 @@ import { create } from "zustand";
 import { delay } from "@/utils/common/delay";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { getWa7A5WrapDirection, Wa7A5WrapDirection } from "@/utils/swap/wa7a5";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
@@ -308,6 +314,39 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
+    const wa7A5WrapDirection = useMemo(() => getWa7A5WrapDirection(inputCurrency ?? undefined, outputCurrency ?? undefined), [
+        inputCurrency,
+        outputCurrency,
+    ]);
+
+    const wrapQuoteAmount = parsedAmount ? BigInt(parsedAmount.quotient.toString()) : undefined;
+
+    const shouldUseGetwA7A5ByA7A5 = Boolean(
+        wrapQuoteAmount !== undefined &&
+            ((independentField === SwapField.INPUT && wa7A5WrapDirection === Wa7A5WrapDirection.A7A5_TO_WA7A5) ||
+                (independentField === SwapField.OUTPUT && wa7A5WrapDirection === Wa7A5WrapDirection.WA7A5_TO_A7A5)),
+    );
+
+    const shouldUseGetA7A5BywA7A5 = Boolean(
+        wrapQuoteAmount !== undefined &&
+            ((independentField === SwapField.INPUT && wa7A5WrapDirection === Wa7A5WrapDirection.WA7A5_TO_A7A5) ||
+                (independentField === SwapField.OUTPUT && wa7A5WrapDirection === Wa7A5WrapDirection.A7A5_TO_WA7A5)),
+    );
+
+    const { data: wa7A5QuoteFromA7A5 } = useReadWa7A5GetwA7A5ByA7A5({
+        args: wrapQuoteAmount !== undefined && shouldUseGetwA7A5ByA7A5 ? [wrapQuoteAmount] : undefined,
+        query: {
+            enabled: wrapQuoteAmount !== undefined && shouldUseGetwA7A5ByA7A5,
+        },
+    });
+
+    const { data: wa7A5QuoteFromwA7A5 } = useReadWa7A5GetA7A5BywA7A5({
+        args: wrapQuoteAmount !== undefined && shouldUseGetA7A5BywA7A5 ? [wrapQuoteAmount] : undefined,
+        query: {
+            enabled: wrapQuoteAmount !== undefined && shouldUseGetA7A5BywA7A5,
+        },
+    });
+
     const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
         if (!limitOrderPrice || !parsedAmount || !outputCurrency || !inputCurrency) return {};
 
@@ -336,36 +375,81 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     }, [limitOrderPrice, parsedAmount, outputCurrency, inputCurrency, independentField, wasInverted]);
 
     const parsedAmounts = useMemo(() => {
-        return showWrap
-            ? {
-                  [SwapField.INPUT]: parsedAmount,
-                  [SwapField.OUTPUT]: parsedAmount,
-              }
-            : {
-                  [SwapField.INPUT]:
-                      independentField === SwapField.INPUT
-                          ? parsedAmount
-                          : limitOrderPrice
-                          ? parsedLimitOrderInput
-                          : toggledTrade?.inputAmount,
-                  [SwapField.OUTPUT]:
-                      independentField === SwapField.OUTPUT
-                          ? limitOrderPrice
-                              ? outputCurrency && parsedAmount
-                                  ? !limitOrderPriceFocused && lastFocusedField === SwapField.LIMIT_ORDER_PRICE
-                                      ? parsedLimitOrderOutput
-                                      : parsedAmount
-                                  : undefined
-                              : parsedAmount
-                          : limitOrderPrice
-                          ? outputCurrency && parsedAmount
-                              ? parsedLimitOrderOutput
-                              : undefined
-                          : toggledTrade?.outputAmount,
-              };
+        if (showWrap) {
+            if (!parsedAmount) {
+                return {
+                    [SwapField.INPUT]: undefined,
+                    [SwapField.OUTPUT]: undefined,
+                };
+            }
+
+            if (!wa7A5WrapDirection) {
+                return {
+                    [SwapField.INPUT]: parsedAmount,
+                    [SwapField.OUTPUT]: parsedAmount,
+                };
+            }
+
+            const simulatedRawAmount =
+                shouldUseGetwA7A5ByA7A5 && typeof wa7A5QuoteFromA7A5 === "bigint"
+                    ? wa7A5QuoteFromA7A5
+                    : shouldUseGetA7A5BywA7A5 && typeof wa7A5QuoteFromwA7A5 === "bigint"
+                    ? wa7A5QuoteFromwA7A5
+                    : undefined;
+
+            if (independentField === SwapField.INPUT) {
+                return {
+                    [SwapField.INPUT]: parsedAmount,
+                    [SwapField.OUTPUT]:
+                        outputCurrency && simulatedRawAmount !== undefined
+                            ? CurrencyAmount.fromRawAmount(outputCurrency, simulatedRawAmount.toString())
+                            : undefined,
+                };
+            }
+
+            if (independentField === SwapField.OUTPUT) {
+                return {
+                    [SwapField.INPUT]:
+                        inputCurrency && simulatedRawAmount !== undefined
+                            ? CurrencyAmount.fromRawAmount(inputCurrency, simulatedRawAmount.toString())
+                            : undefined,
+                    [SwapField.OUTPUT]: parsedAmount,
+                };
+            }
+
+            return {
+                [SwapField.INPUT]: parsedAmount,
+                [SwapField.OUTPUT]: parsedAmount,
+            };
+        }
+
+        return {
+            [SwapField.INPUT]:
+                independentField === SwapField.INPUT ? parsedAmount : limitOrderPrice ? parsedLimitOrderInput : toggledTrade?.inputAmount,
+            [SwapField.OUTPUT]:
+                independentField === SwapField.OUTPUT
+                    ? limitOrderPrice
+                        ? outputCurrency && parsedAmount
+                            ? !limitOrderPriceFocused && lastFocusedField === SwapField.LIMIT_ORDER_PRICE
+                                ? parsedLimitOrderOutput
+                                : parsedAmount
+                            : undefined
+                        : parsedAmount
+                    : limitOrderPrice
+                    ? outputCurrency && parsedAmount
+                        ? parsedLimitOrderOutput
+                        : undefined
+                    : toggledTrade?.outputAmount,
+        };
     }, [
         showWrap,
+        wa7A5WrapDirection,
+        shouldUseGetwA7A5ByA7A5,
+        shouldUseGetA7A5BywA7A5,
+        wa7A5QuoteFromA7A5,
+        wa7A5QuoteFromwA7A5,
         independentField,
+        inputCurrency,
         parsedAmount,
         limitOrderPrice,
         parsedLimitOrderInput,
