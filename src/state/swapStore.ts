@@ -53,7 +53,7 @@ interface SwapState {
     readonly lastFocusedField: SwapFieldType;
     actions: {
         selectCurrency: (field: SwapFieldType, currencyId: string | undefined) => void;
-        switchCurrencies: () => void;
+        switchCurrencies: (typedValue: string) => void;
         typeInput: (field: SwapFieldType, typedValue: string) => void;
         typeLimitOrderPrice: (limitOrderPrice: string) => void;
         limitOrderPriceWasInverted: (wasInverted: boolean) => void;
@@ -115,12 +115,13 @@ export const useSwapState = create<SwapState>((set, get) => ({
                 });
             }
         },
-        switchCurrencies: () =>
+        switchCurrencies: (typedValue: string) =>
             set({
                 independentField: SwapField.INPUT,
                 lastFocusedField: SwapField.INPUT,
                 [SwapField.INPUT]: { currencyId: get()[SwapField.OUTPUT].currencyId },
                 [SwapField.OUTPUT]: { currencyId: get()[SwapField.INPUT].currencyId },
+                typedValue,
             }),
         typeInput: (field, typedValue) =>
             set({
@@ -155,7 +156,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
 
 export function useSwapActionHandlers(): {
     onCurrencySelection: (field: SwapFieldType, currency: Currency) => void;
-    onSwitchTokens: () => void;
+    onSwitchTokens: (typedValue: string) => void;
     onUserInput: (field: SwapFieldType, typedValue: string) => void;
 } {
     const {
@@ -168,8 +169,8 @@ export function useSwapActionHandlers(): {
         [],
     );
 
-    const onSwitchTokens = useCallback(() => {
-        switchCurrencies();
+    const onSwitchTokens = useCallback((typedValue: string) => {
+        switchCurrencies(typedValue);
     }, []);
 
     const onUserInput = useCallback((field: SwapFieldType, typedValue: string) => {

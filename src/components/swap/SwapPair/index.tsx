@@ -131,7 +131,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             <button
                 type="button"
                 className="group absolute left-1/2 top-[calc(50%+4px)] z-10 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform-gpu items-center justify-center rounded-full border border-border bg-background text-text shadow-sm transition-all duration-300 ease-out hover:scale-105 hover:border-primary hover:text-primary hover:shadow-md active:scale-95"
-                onClick={onSwitchTokens}
+                onClick={() => onSwitchTokens(formattedAmounts[SwapField.OUTPUT])}
             >
                 <ArrowDownIcon size={18} className="transition-transform duration-300 group-hover:rotate-180" />
             </button>

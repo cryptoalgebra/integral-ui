@@ -39,15 +39,15 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address; transact
                     <img className="brightness-150" src={EtherScanLogo} width={40} height={40} />
                 )}
                 <div className="flex flex-col mr-auto">
-                    <span className="text-xs opacity-60">{transaction.data.title}</span>
+                    <span className="text-xs">{transaction.data.title}</span>
                     {currencyB && currencyA ? (
-                        <span className="text-sm">
+                        <span className="text-xs opacity-60">
                             {currencyA.symbol} / {currencyB.symbol}
                         </span>
                     ) : currencyA ? (
-                        <span className="text-sm">{currencyA.symbol}</span>
+                        <span className="text-xs opacity-60">{currencyA.symbol}</span>
                     ) : (
-                        <span>{truncateHash(hash as Address)}</span>
+                        <span className="text-xs opacity-60">{truncateHash(hash as Address)}</span>
                     )}
                 </div>
                 {transaction.loading ? (

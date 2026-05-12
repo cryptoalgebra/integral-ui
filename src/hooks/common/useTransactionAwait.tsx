@@ -1,5 +1,6 @@
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
+import { TransactionToastContent } from "@/components/common/TransactionToastContent";
 import { TransactionInfo, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { useAppKitNetwork } from "@reown/appkit/react";
 import { ExternalLinkIcon } from "lucide-react";
@@ -16,9 +17,9 @@ export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) => {
             <Link
                 to={`${chain?.blockExplorers?.default.url}/tx/${hash}`}
                 target={"_blank"}
-                className="border-none gap-2 hover:bg-transparent hover:text-blue-400"
+                className="h-auto border-none p-0 hover:bg-transparent hover:text-blue-400"
             >
-                View on explorer
+                <span className="sr-only">View on explorer</span>
                 <ExternalLinkIcon size={16} />
             </Link>
         </ToastAction>
@@ -45,9 +46,7 @@ export function useTransactionAwait(hash: Address | undefined, transactionInfo: 
     useEffect(() => {
         if (isLoading && hash && account) {
             toast({
-                title: transactionInfo.title,
-                description: transactionInfo.description || "Transaction was sent",
-                action: <ViewTxOnExplorer hash={hash} />,
+                toastContent: <TransactionToastContent hash={hash} transactionInfo={transactionInfo} status="pending" />,
             });
             addPendingTransaction(account, hash);
             updatePendingTransaction(account, hash, { data: transactionInfo, loading: true, success: null, error: null });
@@ -57,9 +56,7 @@ export function useTransactionAwait(hash: Address | undefined, transactionInfo: 
     useEffect(() => {
         if (isError && hash) {
             toast({
-                title: transactionInfo.title,
-                description: transactionInfo.description || "Transaction failed",
-                action: <ViewTxOnExplorer hash={hash} />,
+                toastContent: <TransactionToastContent hash={hash} transactionInfo={transactionInfo} status="error" />,
             });
         }
     }, [isError]);
@@ -67,9 +64,7 @@ export function useTransactionAwait(hash: Address | undefined, transactionInfo: 
     useEffect(() => {
         if (isSuccess && hash) {
             toast({
-                title: transactionInfo.title,
-                description: transactionInfo.description || "Transaction confirmed",
-                action: <ViewTxOnExplorer hash={hash} />,
+                toastContent: <TransactionToastContent hash={hash} transactionInfo={transactionInfo} status="success" />,
             });
             if (transactionInfo.callback) {
                 transactionInfo.callback();
