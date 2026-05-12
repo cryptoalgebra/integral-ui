@@ -90,7 +90,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         return `1 ${baseAmount.currency.symbol} = ${formatAmount(rate, 8)} ${quoteAmount.currency.symbol}`;
     }, [isRateInverted, isSmartTrade, trade]);
 
-    const summaryLabel = trade?.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent";
+    const summaryLabel = trade?.tradeType === TradeType.EXACT_OUTPUT ? "Maximum sent" : "Minimum received";
 
     const isTradeLoading = tradeState.state === TradeState.LOADING;
 
