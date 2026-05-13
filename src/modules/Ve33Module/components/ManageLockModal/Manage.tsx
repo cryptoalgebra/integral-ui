@@ -44,7 +44,11 @@ export const Manage = ({ veTOKEN, refetch }: ManageLockModalProps) => {
     }, [lockToken, amount]);
 
     const { approvalState, approvalCallback } = useApprove(amountToApprove, VOTING_ESCROW[DEFAULT_CHAIN_ID]);
-    const needsApproval = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
+    const isResetApprovalRequired = approvalState === ApprovalState.RESET_REQUIRED;
+    const needsApproval =
+        approvalState === ApprovalState.NOT_APPROVED ||
+        approvalState === ApprovalState.RESET_REQUIRED ||
+        approvalState === ApprovalState.PENDING;
 
     const { formatted: amountUSD } = useUSDCValue(amountToApprove);
 
@@ -144,7 +148,11 @@ export const Manage = ({ veTOKEN, refetch }: ManageLockModalProps) => {
                             disabled={approvalState === ApprovalState.PENDING || isIncreaseAmountPending}
                         >
                             {approvalState === ApprovalState.PENDING && <Loader2 size={18} className="animate-spin" />}
-                            {approvalState === ApprovalState.PENDING ? "Approving…" : "Approve TOKEN"}
+                            {approvalState === ApprovalState.PENDING
+                                ? "Approving…"
+                                : isResetApprovalRequired
+                                ? "Reset TOKEN approval"
+                                : "Approve TOKEN"}
                         </Button>
                     ) : (
                         <Button

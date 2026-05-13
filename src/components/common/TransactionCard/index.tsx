@@ -30,13 +30,13 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address; transact
                     <FarmingPositionImg positionId={BigInt(transaction.data.tokenId)} size={10} />
                 ) : currencyB && currencyA ? (
                     <div className="w-[36px] relative">
-                        <CurrencyLogo className="absolute bottom-0 translate-y-1/4" currency={currencyA} size={28} />
-                        <CurrencyLogo className="absolute top-0 left-3 -translate-y-1/4" currency={currencyB} size={28} />
+                        <CurrencyLogo className="absolute bottom-0 translate-y-1/4" currency={currencyA} size={24} />
+                        <CurrencyLogo className="absolute top-0 left-3 -translate-y-1/4" currency={currencyB} size={24} />
                     </div>
                 ) : currencyA ? (
-                    <CurrencyLogo currency={currencyA} size={40} />
+                    <CurrencyLogo currency={currencyA} size={32} />
                 ) : (
-                    <img className="brightness-150" src={EtherScanLogo} width={40} height={40} />
+                    <img className="brightness-150" src={EtherScanLogo} width={32} height={32} />
                 )}
                 <div className="flex flex-col mr-auto">
                     <span className="text-xs">{transaction.data.title}</span>
@@ -53,7 +53,7 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address; transact
                 {transaction.loading ? (
                     <Loader className="group-hover:hidden" size={20} />
                 ) : transaction.success ? (
-                    <Check className="text-blue-300 group-hover:hidden" size={18} />
+                    <Check className="text-primary group-hover:hidden" size={18} />
                 ) : (
                     transaction.error && <X className="text-red-500 group-hover:hidden" size={18} />
                 )}

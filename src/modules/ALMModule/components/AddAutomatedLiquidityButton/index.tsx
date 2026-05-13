@@ -45,7 +45,8 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
 
-    const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
+    const isResetApprovalRequired = approvalStateA === ApprovalState.RESET_REQUIRED;
+    const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isResetApprovalRequired || isApprovePending;
 
     const isReady = approvalStateA === ApprovalState.APPROVED;
 
@@ -127,7 +128,13 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
             <div className="flex w-full gap-2">
                 {showApproveA && (
                     <Button variant={"primary"} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
-                        {isApprovePending ? <Loader /> : `Approve ${currency?.symbol}`}
+                        {isApprovePending ? (
+                            <Loader />
+                        ) : isResetApprovalRequired ? (
+                            `Reset ${currency?.symbol ?? "token"} approval`
+                        ) : (
+                            `Approve ${currency?.symbol}`
+                        )}
                     </Button>
                 )}
             </div>

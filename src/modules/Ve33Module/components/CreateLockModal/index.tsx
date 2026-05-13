@@ -42,7 +42,11 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
 
     const { approvalState, approvalCallback } = useApprove(amountToApprove, VOTING_ESCROW[chainId]);
 
-    const needsApproval = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
+    const isResetApprovalRequired = approvalState === ApprovalState.RESET_REQUIRED;
+    const needsApproval =
+        approvalState === ApprovalState.NOT_APPROVED ||
+        approvalState === ApprovalState.RESET_REQUIRED ||
+        approvalState === ApprovalState.PENDING;
 
     const { writeContract: createLock, data: txHash, isPending: txPending } = useWriteVotingEscrowCreateLock();
 
@@ -113,7 +117,13 @@ export const CreateLockModal = ({ children }: { children: React.ReactNode }) => 
                         onClick={approvalCallback}
                         disabled={approvalState === ApprovalState.PENDING || txLoading || txPending}
                     >
-                        {approvalState === ApprovalState.PENDING ? <Loader /> : "Approve TOKEN"}
+                        {approvalState === ApprovalState.PENDING ? (
+                            <Loader />
+                        ) : isResetApprovalRequired ? (
+                            "Reset TOKEN approval"
+                        ) : (
+                            "Approve TOKEN"
+                        )}
                     </Button>
                 ) : (
                     <Button

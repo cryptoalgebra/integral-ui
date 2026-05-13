@@ -58,11 +58,12 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress, enableActions 
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         lpShareToWithdraw,
-        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId] as Address
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId] as Address,
     );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
-    const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
+    const isResetApprovalRequired = approvalStateA === ApprovalState.RESET_REQUIRED;
+    const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isResetApprovalRequired || isApprovePending;
 
     const provider = useEthersProvider();
 
@@ -129,32 +130,36 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress, enableActions 
                 <div className="flex flex-col gap-6">
                     <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
 
-                    { enableActions && <div className="flex gap-2">
-                        {[25, 50, 75, 100].map((v) => (
-                            <Button
-                                key={`liquidity-percent-${v}`}
-                                disabled={isRemoveLoading}
-                                variant={sliderValue[0] === v ? "iconHover" : "icon"}
-                                className="border border-card-border"
-                                size={"sm"}
-                                onClick={() => setSliderValue([v])}
-                            >
-                                {v}%
-                            </Button>
-                        ))}
-                    </div> }
+                    {enableActions && (
+                        <div className="flex gap-2">
+                            {[25, 50, 75, 100].map((v) => (
+                                <Button
+                                    key={`liquidity-percent-${v}`}
+                                    disabled={isRemoveLoading}
+                                    variant={sliderValue[0] === v ? "iconHover" : "icon"}
+                                    className="border border-card-border"
+                                    size={"sm"}
+                                    onClick={() => setSliderValue([v])}
+                                >
+                                    {v}%
+                                </Button>
+                            ))}
+                        </div>
+                    )}
 
-                    { enableActions && <Slider
-                        value={sliderValue}
-                        id="liquidity-percent"
-                        max={100}
-                        defaultValue={sliderValue}
-                        step={1}
-                        onValueChange={(v) => setSliderValue(v)}
-                        className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                        aria-label="Liquidity Percent"
-                        disabled={isRemoveLoading || isPending}
-                    /> }
+                    {enableActions && (
+                        <Slider
+                            value={sliderValue}
+                            id="liquidity-percent"
+                            max={100}
+                            defaultValue={sliderValue}
+                            step={1}
+                            onValueChange={(v) => setSliderValue(v)}
+                            className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                            aria-label="Liquidity Percent"
+                            disabled={isRemoveLoading || isPending}
+                        />
+                    )}
 
                     <CurrencyAmounts
                         amount0Parsed={userVault?.amount0 && (Number(userVault.amount0) * percentMultiplier).toString()}
@@ -165,7 +170,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress, enableActions 
 
                     {showApproveA ? (
                         <Button variant={"primary"} disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
-                            {isApprovePending ? <Loader /> : `Approve ALM LP Token`}
+                            {isApprovePending ? <Loader /> : isResetApprovalRequired ? "Reset ALM LP approval" : "Approve ALM LP Token"}
                         </Button>
                     ) : (
                         <Button variant={"primary"} disabled={isDisabled} onClick={callback}>

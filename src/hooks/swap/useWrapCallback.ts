@@ -50,7 +50,8 @@ export default function useWrapCallback(
         wa7A5Token?.address as Address,
     );
 
-    const needsWa7A5Approval = isWa7A5WrapOperation && wa7A5ApprovalState === ApprovalState.NOT_APPROVED;
+    const needsWa7A5Approval =
+        isWa7A5WrapOperation && (wa7A5ApprovalState === ApprovalState.NOT_APPROVED || wa7A5ApprovalState === ApprovalState.RESET_REQUIRED);
     const isWa7A5ApprovalLoading = isWa7A5WrapOperation && wa7A5ApprovalState === ApprovalState.PENDING;
 
     const { data: wrapData, writeContract: wrap } = useWriteWrappedNativeDeposit();

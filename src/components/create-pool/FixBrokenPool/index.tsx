@@ -69,7 +69,11 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
 
     const { approvalState, approvalCallback } = useApproveCallbackFromTrade(trade, DEFAULT_SLIPPAGE);
 
-    const showApproveFlow = approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING;
+    const showApproveFlow =
+        approvalState === ApprovalState.NOT_APPROVED ||
+        approvalState === ApprovalState.RESET_REQUIRED ||
+        approvalState === ApprovalState.PENDING;
+    const isResetApprovalRequired = approvalState === ApprovalState.RESET_REQUIRED;
 
     const swapCallback = useSwapCallback(trade, DEFAULT_SLIPPAGE);
 
@@ -110,13 +114,15 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
                 <Button
                     variant={"primary"}
                     className="h-11 rounded-md"
-                    disabled={approvalState !== ApprovalState.NOT_APPROVED}
+                    disabled={approvalState === ApprovalState.PENDING}
                     onClick={() => approvalCallback && approvalCallback()}
                 >
                     {approvalState === ApprovalState.PENDING ? (
                         <Loader />
                     ) : approvalState === ApprovalState.APPROVED ? (
                         "Approved"
+                    ) : isResetApprovalRequired ? (
+                        `Reset ${currencyIn?.symbol ?? "token"} approval`
                     ) : (
                         `Approve ${currencyIn?.symbol}`
                     )}

@@ -85,9 +85,18 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, toke
         NONFUNGIBLE_POSITION_MANAGER[chainId],
     );
 
-    const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING;
+    const showApproveA =
+        approvalStateA === ApprovalState.NOT_APPROVED ||
+        approvalStateA === ApprovalState.RESET_REQUIRED ||
+        approvalStateA === ApprovalState.PENDING;
 
-    const showApproveB = approvalStateB === ApprovalState.NOT_APPROVED || approvalStateB === ApprovalState.PENDING;
+    const showApproveB =
+        approvalStateB === ApprovalState.NOT_APPROVED ||
+        approvalStateB === ApprovalState.RESET_REQUIRED ||
+        approvalStateB === ApprovalState.PENDING;
+
+    const isResetApprovalRequiredA = approvalStateA === ApprovalState.RESET_REQUIRED;
+    const isResetApprovalRequiredB = approvalStateB === ApprovalState.RESET_REQUIRED;
 
     const isReady = useMemo(() => {
         return Boolean(
@@ -151,7 +160,13 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, toke
                         variant="primary"
                         onClick={() => approvalCallbackA && approvalCallbackA()}
                     >
-                        {approvalStateA === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`}
+                        {approvalStateA === ApprovalState.PENDING ? (
+                            <Loader />
+                        ) : isResetApprovalRequiredA ? (
+                            `Reset ${mintInfo.currencies.CURRENCY_A?.symbol ?? "token"} approval`
+                        ) : (
+                            `Approve ${mintInfo.currencies.CURRENCY_A?.symbol}`
+                        )}
                     </Button>
                 )}
                 {showApproveB && (
@@ -162,7 +177,13 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, toke
                         variant="primary"
                         onClick={() => approvalCallbackB && approvalCallbackB()}
                     >
-                        {approvalStateB === ApprovalState.PENDING ? <Loader /> : `Approve ${mintInfo.currencies.CURRENCY_B?.symbol}`}
+                        {approvalStateB === ApprovalState.PENDING ? (
+                            <Loader />
+                        ) : isResetApprovalRequiredB ? (
+                            `Reset ${mintInfo.currencies.CURRENCY_B?.symbol ?? "token"} approval`
+                        ) : (
+                            `Approve ${mintInfo.currencies.CURRENCY_B?.symbol}`
+                        )}
                     </Button>
                 )}
             </div>

@@ -212,6 +212,8 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const hasLargePriceDifference = priceImpactSeverity > 2;
 
+    const approvalTokenSymbol = trade?.inputAmount.currency.symbol ?? "token";
+
     const largePriceDifferencePercent = useMemo(() => {
         if (!priceImpact) return "0.00";
 
@@ -222,7 +224,9 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [priceImpact]);
 
     // Check if we need standard ERC20 approval (for native/smart router)
-    const needsClassicApproval = !shouldUseOmegaRouter && approvalState === ApprovalState.NOT_APPROVED;
+    const isResetApprovalRequired = approvalState === ApprovalState.RESET_REQUIRED;
+    const needsClassicApproval =
+        !shouldUseOmegaRouter && (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.RESET_REQUIRED);
     const isApproving = approvalState === ApprovalState.PENDING;
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
@@ -280,7 +284,13 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     if (needsClassicApproval || isApproving) {
         return (
             <Button variant={"primary"} onClick={approvalCallback} disabled={isApproving}>
-                {isApproving ? <Loader /> : `Approve ${trade?.inputAmount.currency.symbol}`}
+                {isApproving ? (
+                    <Loader />
+                ) : isResetApprovalRequired ? (
+                    `Reset ${approvalTokenSymbol} approval`
+                ) : (
+                    `Approve ${approvalTokenSymbol}`
+                )}
             </Button>
         );
     }

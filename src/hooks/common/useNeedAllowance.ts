@@ -6,7 +6,7 @@ export function useNeedAllowance(
     currency: Currency | null | undefined,
     amount: CurrencyAmount<Currency> | undefined,
     spender: Address | undefined,
-    fastPolling: boolean = false
+    fastPolling: boolean = false,
 ) {
     const { address: account } = useAccount();
 
@@ -21,8 +21,8 @@ export function useNeedAllowance(
     });
 
     const needAllowance = Boolean(
-        !currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString())
+        !currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString()),
     );
 
-    return { needAllowance, refetchAllowance: refetch };
+    return { needAllowance, allowance, refetchAllowance: refetch };
 }
