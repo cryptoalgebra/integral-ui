@@ -73,7 +73,7 @@ const PoolPage = () => {
                     poolEntity,
                     position.liquidity.toString(),
                     Number(position.tickLower),
-                    Number(position.tickUpper)
+                    Number(position.tickUpper),
                 ),
             }));
     }, [positions, poolEntity, poolId]);
@@ -92,14 +92,16 @@ const PoolPage = () => {
                         ];
 
                     return getPositionFees(position.pool, positionId, account);
-                })
+                }),
             );
         },
         {
             refreshInterval: 10000,
             keepPreviousData: true,
-        }
+        },
     );
+
+    console.log(positionsFees);
 
     const [getSinglePosition] = useSinglePositionLazyQuery();
     const { data: positionsAPRs, isLoading: positionsAPRsLoading } = useSWR(
@@ -126,13 +128,13 @@ const PoolPage = () => {
                         CurrencyAmount.fromRawAmount(token0, parseUnits(collectedFeesToken0, token0.decimals).toString()),
                         CurrencyAmount.fromRawAmount(token1, parseUnits(collectedFeesToken1, token1.decimals).toString()),
                         position.pool.token0Price,
-                        new Date(Number(singlePosition.transaction.timestamp) * 1000).getTime()
+                        new Date(Number(singlePosition.transaction.timestamp) * 1000).getTime(),
                     );
-                })
+                }),
             );
 
             return positionsAPRs;
-        }
+        },
     );
 
     const positionsData = useMemo(() => {
@@ -142,7 +144,7 @@ const PoolPage = () => {
             const currentPositionInFarming = deposits?.deposits?.find((deposit) => Number(deposit.id) === Number(positionId));
             const range = `${formatAmount(position.token0PriceLower.toFixed(6), 6)} — ${formatAmount(
                 position.token0PriceUpper.toFixed(6),
-                6
+                6,
             )}`;
             const rangeLength = Number(position.tickUpper) - Number(position.tickLower);
 
@@ -150,8 +152,8 @@ const PoolPage = () => {
             const amount1USD = Number(position.amount1.toSignificant(24)) * token1PriceUSD;
             const liquidityUSD = amount0USD + amount1USD;
 
-            const fees0USD = Number(positionsFees[idx][0].toSignificant()) * token0PriceUSD;
-            const fees1USD = Number(positionsFees[idx][1].toSignificant()) * token1PriceUSD;
+            const fees0USD = Number(positionsFees[idx]?.[0].toSignificant()) * token0PriceUSD;
+            const fees1USD = Number(positionsFees[idx]?.[1].toSignificant()) * token1PriceUSD;
             const feesUSD = fees0USD + fees1USD;
 
             const apr = positionsAPRs[idx];
@@ -190,7 +192,7 @@ const PoolPage = () => {
                         position: null,
                         almShares: vault.shares,
                         almVaultAddress: vault.vault.id,
-                    } as FormattedPosition)
+                    } as FormattedPosition),
             ) || [];
 
         return [...almPositionsData, ...positionsData];
@@ -226,9 +228,9 @@ const PoolPage = () => {
                     ) : isLoading ? (
                         <LoadingState />
                     ) : noPositions ? (
-                        effectiveStatus === SecurityState.ENABLED ?
-                        <NoPositions poolId={poolId} /> :
-                        null
+                        effectiveStatus === SecurityState.ENABLED ? (
+                            <NoPositions poolId={poolId} />
+                        ) : null
                     ) : (
                         <>
                             <MyPositions
@@ -237,9 +239,11 @@ const PoolPage = () => {
                                 selectedPosition={selectedPosition?.id}
                                 selectPosition={(position) => setSelectedPosition(position)}
                             />
-                            {unclaimedRewards && Boolean(unclaimedRewards?.rewards?.length) && effectiveStatus === SecurityState.ENABLED && (
-                                <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
-                            )}
+                            {unclaimedRewards &&
+                                Boolean(unclaimedRewards?.rewards?.length) &&
+                                effectiveStatus === SecurityState.ENABLED && (
+                                    <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
+                                )}
                         </>
                     )}
                     {farmingInfo && !isFarmingLoading && !areDepositsLoading && effectiveStatus === SecurityState.ENABLED && (
@@ -263,7 +267,7 @@ const PoolPage = () => {
                         farming={farmingInfo}
                         poolAddress={poolId}
                         userVault={userVaults?.find(
-                            (v) => v.vault.id === selectedPosition?.almVaultAddress && v.shares === selectedPosition?.almShares
+                            (v) => v.vault.id === selectedPosition?.almVaultAddress && v.shares === selectedPosition?.almShares,
                         )}
                         poolStatus={effectiveStatus}
                     />
