@@ -1487,7 +1487,24 @@
     "@uniswap/v3-sdk" "^3.26.0"
     viem "^2.31.3"
 
-"@cryptoalgebra/integral-sdk@^1.1.1", "@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/integral-sdk@1.1.1":
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/giwa-sdk@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/giwa-sdk/-/giwa-sdk-1.0.0.tgz#c771ec8262636fda46a88a514ec632bdafc128c8"
+  integrity sha512-GGiUFpF/Nvha+AO5wPuSSZYxyNFkSC530YgXJ/dE7HatXoWLl3KYLjHeRu8CgLqurI30xAfH7V/5DrMjL/R6Fw==
+  dependencies:
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/solidity" "^5.7.0"
+    "@ethersproject/units" "^5.7.0"
+    big.js "^6.2.1"
+    decimal.js-light "^2.5.1"
+    jsbi "^3.2.5"
+    numeral "^2.0.6"
+    tiny-invariant "^1.3.1"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/integral-sdk@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.1.1.tgz#e5b915130706eaa0b3eef7c0f68dd45076b4b63e"
   integrity sha512-FrRDYYTQzCxBFdf5rbc6eKijF5/rVxj6U/hNa3N+2ae9RjZXlAsd2K0N65GBWWhI0DW1cLU64EnrF8Xm27HygQ==

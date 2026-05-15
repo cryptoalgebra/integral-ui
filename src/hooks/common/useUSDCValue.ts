@@ -30,9 +30,9 @@ export function useUSDCPrice(currency: Currency | undefined) {
         }
 
         // USDC itself — 1:1 price
-        if (TOKENS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
+        if (TOKENS[chainId].USDA.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
             return {
-                price: new Price(TOKENS[chainId].USDC, TOKENS[chainId].USDC, "1", "1"),
+                price: new Price(TOKENS[chainId].USDA, TOKENS[chainId].USDA, "1", "1"),
                 formatted: 1,
             };
         }
@@ -63,7 +63,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
         if (usdAmount) {
             return {
-                price: new Price(currency, TOKENS[chainId].USDC, usdAmount.denominator, usdAmount.numerator),
+                price: new Price(currency, TOKENS[chainId].USDA, usdAmount.denominator, usdAmount.numerator),
                 formatted: Number(usdAmount.toSignificant()),
             };
         }

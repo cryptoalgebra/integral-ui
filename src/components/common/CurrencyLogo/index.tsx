@@ -20,7 +20,7 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    ["0x6287824d5a6d88c363291d5353cb123693ce65a4"]: {
         symbol: "USDC",
         logo: USDCLogo,
     },

@@ -47,27 +47,27 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         (inputCurrency: Currency) => {
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleTypeInput = useCallback(
         (value: string) => {
             onUserInput(SwapField.INPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
     const handleTypeOutput = useCallback(
         (value: string) => {
             onUserInput(SwapField.OUTPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
 
     const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[SwapField.INPUT]);
@@ -100,7 +100,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleOutputSelect(TOKENS[chainId].USDC);
+        handleOutputSelect(TOKENS[chainId].USDA);
     }, [chainId, handleOutputSelect]);
 
     return (

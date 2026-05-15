@@ -36,32 +36,31 @@ import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
+    id: 91342,
     network: "baseSepolia",
     name: "Base Sepolia",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://sepolia-rpc.giwa.io"],
         },
         public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://sepolia-rpc.giwa.io"],
         },
     },
     blockExplorers: {
         default: {
             name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            url: "https://sepolia-explorer.giwa.io/",
         },
         etherscan: {
             name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            url: "https://sepolia-explorer.giwa.io/",
         },
     },
     contracts: {
         multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
+            address: "0xcA11bde05977b3631167028862bE2a173976CA11",
         },
     },
 });

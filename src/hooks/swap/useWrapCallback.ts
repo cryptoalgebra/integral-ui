@@ -19,7 +19,7 @@ export default function useWrapCallback(
     inputCurrency: Currency | undefined,
     outputCurrency: Currency | undefined,
     typedValue: string | undefined,
-    onTransactionSuccess?: () => void
+    onTransactionSuccess?: () => void,
 ): { wrapType: typeof WrapType[keyof typeof WrapType]; execute?: undefined | (() => void); loading?: boolean; inputError?: string } {
     const chainId = useChainId();
     const { address: account } = useAccount();

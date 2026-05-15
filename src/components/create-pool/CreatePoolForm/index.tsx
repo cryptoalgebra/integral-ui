@@ -57,7 +57,7 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_1]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
         }),
-        [chainid]
+        [chainid],
     );
 
     const poolAddress =
@@ -71,17 +71,19 @@ const CreatePoolForm = () => {
     const customPoolsAddresses =
         enabledModules.CustomPoolsModule && areCurrenciesSelected && !isSameToken
             ? [
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid], 
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid]
-            ].filter(isDefined).map(
-                  (customPoolDeployer) =>
-                      computeCustomPoolAddress({
-                          tokenA: currencyA.wrapped,
-                          tokenB: currencyB.wrapped,
-                          customPoolDeployer,
-                      }) as Address
-              )
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
+              ]
+                  .filter(isDefined)
+                  .map(
+                      (customPoolDeployer) =>
+                          computeCustomPoolAddress({
+                              tokenA: currencyA.wrapped,
+                              tokenB: currencyB.wrapped,
+                              customPoolDeployer,
+                          }) as Address,
+                  )
             : [];
 
     const [poolState] = usePool(poolAddress);
@@ -107,7 +109,7 @@ const CreatePoolForm = () => {
         poolAddress ?? undefined,
         INITIAL_POOL_FEE,
         currencyA ?? undefined,
-        undefined
+        undefined,
     );
 
     const { calldata, value } = useMemo(() => {
@@ -139,7 +141,7 @@ const CreatePoolForm = () => {
             tokenB: currencyB?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        "/pools"
+        "/pools",
     );
 
     const isCustomPoolDeployerReady = account && mintInfo.pool && poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC;
@@ -148,12 +150,7 @@ const CreatePoolForm = () => {
         isCustomPoolDeployerReady && customPoolDeployerAddresses[poolDeployer]
             ? {
                   address: customPoolDeployerAddresses[poolDeployer],
-                  args: [
-                      account,
-                      mintInfo.pool?.token0.address as Address,
-                      mintInfo.pool?.token1.address as Address,
-                      "0x0",
-                  ] as const,
+                  args: [account, mintInfo.pool?.token0.address as Address, mintInfo.pool?.token1.address as Address, "0x0"] as const,
               }
             : undefined;
 
@@ -175,7 +172,7 @@ const CreatePoolForm = () => {
 
         return () => {
             selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-            selectCurrency(SwapField.OUTPUT, TOKENS[chainid].USDC.address as Address);
+            selectCurrency(SwapField.OUTPUT, TOKENS[chainid].USDA.address as Address);
             typeStartPriceInput("");
         };
     }, []);
@@ -200,7 +197,7 @@ const CreatePoolForm = () => {
             !areCurrenciesSelected ||
             isSameToken ||
             isPending ||
-            !mintInfo?.pool
+            !mintInfo?.pool,
     );
 
     return (

@@ -84,7 +84,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: TOKENS[DEFAULT_CHAIN_ID].USDC.address as Address,
+        currencyId: TOKENS[DEFAULT_CHAIN_ID].USDA.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,

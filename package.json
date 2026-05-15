@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@apollo/client": "^3.8.4",
-        "@cryptoalgebra/integral-sdk": "^1.1.1",
+        "@cryptoalgebra/integral-sdk": "npm:@cryptoalgebra/giwa-sdk@1.0.0",
         "@cryptoalgebra/alm-sdk": "^1.0.16",
         "@cryptoalgebra/integral-omega-router-sdk": "^1.0.0",
         "@cryptoalgebra/router-custom-pools-and-sliding-fee": "npm:@cryptoalgebra/router-custom-pools@2.0.5",
