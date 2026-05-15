@@ -101,8 +101,6 @@ const PoolPage = () => {
         },
     );
 
-    console.log(positionsFees);
-
     const [getSinglePosition] = useSinglePositionLazyQuery();
     const { data: positionsAPRs, isLoading: positionsAPRsLoading } = useSWR(
         ["positionsAPRs", filteredPositions, positionsFees, token0PriceUSD, token1PriceUSD, effectiveStatus],
