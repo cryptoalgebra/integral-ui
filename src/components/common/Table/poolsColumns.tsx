@@ -43,8 +43,8 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: Pool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
-    const currencyA = useCurrency(token0, true);
-    const currencyB = useCurrency(token1, true);
+    const currencyA = useCurrency(token0);
+    const currencyB = useCurrency(token1);
 
     return (
         <div className="flex items-center gap-4 ml-2">

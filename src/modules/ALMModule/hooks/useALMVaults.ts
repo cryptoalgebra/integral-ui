@@ -26,7 +26,7 @@ export function useAllALMVaults() {
 }
 
 export function useALMVaultsByPool(
-    poolAddress: Address | undefined
+    poolAddress: Address | undefined,
 ): {
     vaults: ExtendedVault[] | undefined;
     isLoading: boolean;
@@ -40,8 +40,8 @@ export function useALMVaultsByPool(
 
     const chainId = useChainId();
 
-    const currencyA = useCurrency(token0Address, true);
-    const currencyB = useCurrency(token1Address, true);
+    const currencyA = useCurrency(token0Address);
+    const currencyB = useCurrency(token1Address);
 
     const provider = useEthersProvider();
 
@@ -85,7 +85,7 @@ export function useALMVaultsByPool(
                     token1: currencyB,
                     depositToken,
                 };
-            })
+            }),
         );
 
         return vaultsData;

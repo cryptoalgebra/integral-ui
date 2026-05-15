@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-
 import { DEFAULT_CHAIN_ID, SWAP_ROUTER } from "config";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
-
 import { useNeedAllowance } from "./useNeedAllowance";
 import { useTransactionAwait } from "./useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore.ts";
@@ -23,7 +21,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
         if (amountToApprove.currency.isNative) return ApprovalState.APPROVED;
 
         return needAllowance ? ApprovalState.NOT_APPROVED : ApprovalState.APPROVED;
-    }, [amountToApprove, needAllowance, spender]);
+    }, [amountToApprove?.quotient.toString(), needAllowance, spender]);
 
     const config = amountToApprove
         ? {
@@ -60,15 +58,15 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined
             isLoading || isPending
                 ? ApprovalState.PENDING
                 : isSuccess && approvalState === ApprovalState.APPROVED
-                  ? ApprovalState.APPROVED
-                  : approvalState,
+                ? ApprovalState.APPROVED
+                : approvalState,
         approvalCallback,
     };
 }
 
 export function useApproveCallbackFromTrade(
     trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | null | undefined,
-    allowedSlippage: Percent
+    allowedSlippage: Percent,
 ) {
     const isSmartTrade = trade && "routes" in trade;
 
@@ -79,7 +77,7 @@ export function useApproveCallbackFromTrade(
                     ? SmartRouter.maximumAmountIn(trade, allowedSlippage)
                     : trade.maximumAmountIn(allowedSlippage)
                 : undefined,
-        [trade, allowedSlippage, isSmartTrade]
+        [trade, allowedSlippage, isSmartTrade],
     );
     return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
 }

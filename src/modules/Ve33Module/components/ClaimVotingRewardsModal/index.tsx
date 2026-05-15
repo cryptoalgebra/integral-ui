@@ -23,7 +23,7 @@ interface IClaimVotingRewardsModal {
 export const ClaimVotingRewardsModal = ({ rewards, tokenId, refetch }: IClaimVotingRewardsModal) => {
     const totalRewardsUSD = rewards.reduce(
         (acc, reward) => acc + reward.rewardTokenList.reduce((acc, token) => acc + token.amountUsd, 0),
-        0
+        0,
     );
     const { writeContractAsync: writeVotingReward, data: claimData, isPending: isClaimPending } = useWriteContract();
     const { writeContractAsync: claimBatch, data: batchClaimData, isPending: isBatchClaimPending } = useWriteVoterClaimVotingRewardBatch();
@@ -166,7 +166,7 @@ const VotingRewardRow = ({
 };
 
 const TokenRewardRow = ({ reward }: { reward: RewardToken }) => {
-    const currency = useCurrency(reward.address as Address, true);
+    const currency = useCurrency(reward.address as Address);
     const formattedAmount = formatAmount(Number(formatUnits(reward.amount, reward.decimals)), 4);
 
     return (

@@ -28,8 +28,8 @@ interface ISwapRouteModal {
 
 const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deployer: Address; fee: number } }) => {
     const [token0, token1] = [pool.path[0], pool.path[1]];
-    const currencyA = useCurrency(token0.wrapped.address as Address, true);
-    const currencyB = useCurrency(token1.wrapped.address as Address, true);
+    const currencyA = useCurrency(token0.wrapped.address as Address);
+    const currencyB = useCurrency(token1.wrapped.address as Address);
 
     const deployer = customPoolDeployerTitleByAddress[pool.deployer.toLowerCase() as Address];
 
@@ -90,7 +90,7 @@ const RouteSplit = ({
                             deployer: pool.deployer,
                         }}
                     />
-                ) : null
+                ) : null,
             )}
         </div>
     );

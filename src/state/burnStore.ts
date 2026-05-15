@@ -24,7 +24,7 @@ export const useBurnState = create<BurnState>((set) => ({
 
 export function useDerivedBurnInfo(
     position?: PositionFromTokenId,
-    asWNative = false
+    asWNative = false,
 ): {
     position?: Position;
     liquidityPercentage?: Percent;
@@ -39,8 +39,8 @@ export function useDerivedBurnInfo(
 
     const { percent } = useBurnState();
 
-    const currency0 = useCurrency(position?.token0, true);
-    const currency1 = useCurrency(position?.token1, true);
+    const currency0 = useCurrency(position?.token0);
+    const currency1 = useCurrency(position?.token1);
 
     const poolId = position?.pool;
 
@@ -51,7 +51,7 @@ export function useDerivedBurnInfo(
             pool && position?.liquidity && typeof position?.tickLower === "number" && typeof position?.tickUpper === "number"
                 ? createUncheckedPosition(pool, position.liquidity.toString(), Number(position.tickLower), Number(position.tickUpper))
                 : undefined,
-        [pool, position]
+        [pool, position],
     );
 
     const { liquidityPercentage, liquidityValue0, liquidityValue1 } = useMemo(() => {
@@ -100,7 +100,7 @@ export function useDerivedBurnInfo(
             outOfRange,
             error,
         }),
-        [positionSDK, liquidityPercentage, liquidityValue0, liquidityValue1, feeValue0, feeValue1, outOfRange, error]
+        [positionSDK, liquidityPercentage, liquidityValue0, liquidityValue1, feeValue0, feeValue1, outOfRange, error],
     );
 }
 

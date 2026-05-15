@@ -9,10 +9,10 @@ export const WNATIVE_EXTENDED: { [chainId: number]: Token } = {
     ...WNATIVE,
 };
 
-const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(Object.entries(WNATIVE_EXTENDED).map(([key, value]) => [key, [value]]));
+// const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(Object.entries(WNATIVE_EXTENDED).map(([key, value]) => [key, [value]]));
 
 // for native swap router
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-    ...WNATIVE_ONLY,
-    [ChainId.RaylsMainnet]: [STABLECOINS[ChainId.RaylsMainnet].USDR],
+    // ...WNATIVE_ONLY,
+    [ChainId.RaylsMainnet]: [STABLECOINS[ChainId.RaylsMainnet].USDR, STABLECOINS[ChainId.RaylsMainnet].RLS],
 };

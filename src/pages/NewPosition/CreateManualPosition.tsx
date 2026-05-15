@@ -24,8 +24,8 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         address: poolAddress,
     });
 
-    const currency0 = useCurrency(token0, true);
-    const currency1 = useCurrency(token1, true);
+    const currency0 = useCurrency(token0);
+    const currency1 = useCurrency(token1);
 
     const [wasManuallyToggled, setWasManuallyToggled] = useState(false);
 
@@ -43,7 +43,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         poolAddress,
         INITIAL_POOL_FEE,
         currencyA ?? undefined,
-        undefined
+        undefined,
     );
 
     const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = mintInfo.pricesAtTicks;
@@ -79,7 +79,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         mintInfo.tickSpacing,
         tickLower,
         tickUpper,
-        mintInfo.pool
+        mintInfo.pool,
     );
 
     const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
