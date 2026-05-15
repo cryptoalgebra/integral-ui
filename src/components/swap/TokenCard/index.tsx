@@ -37,7 +37,7 @@ const TokenCard = ({
     isLoading,
     showMaxButton,
     showBalance = true,
-    showNativeToken,
+    showNativeToken = false,
     disabled,
 }: TokenSwapCardProps) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -98,12 +98,12 @@ const TokenCard = ({
                                 percentDifference > 1
                                     ? "text-green-500"
                                     : (percentDifference > 0 && percentDifference < 1) || (percentDifference < 0 && percentDifference > -1)
-                                      ? "text-text-100"
-                                      : percentDifference < -1 && percentDifference > -3
-                                        ? "text-orange-300"
-                                        : percentDifference < -3 && percentDifference > -100
-                                          ? "text-red-400"
-                                          : "text-text-100"
+                                    ? "text-text-100"
+                                    : percentDifference < -1 && percentDifference > -3
+                                    ? "text-orange-300"
+                                    : percentDifference < -3 && percentDifference > -100
+                                    ? "text-red-400"
+                                    : "text-text-100"
                             }
                         >
                             {` ${formattedPercentDiff}`}
@@ -142,19 +142,18 @@ const TokenCard = ({
                     >
                         <div className="relative w-12 h-12">
                             <CurrencyLogo currency={currency} size={48} />
-                            { currency && (
-                                <div className="absolute top-0 left-0 w-full h-full rounded-full bg-linear-to-b from-black/0 to-black/70 border border-card-dark shadow-primary/40 group-hover:border-primary group-hover:shadow-lg duration-100" /> 
+                            {currency && (
+                                <div className="absolute top-0 left-0 w-full h-full rounded-full bg-linear-to-b from-black/0 to-black/70 border border-card-dark shadow-primary/40 group-hover:border-primary group-hover:shadow-lg duration-100" />
                             )}
                         </div>
 
                         <div>
-                            <div className="text-sm text-text-200">{currency ? currency.name : ''}</div>
+                            <div className="text-sm text-text-200">{currency ? currency.name : ""}</div>
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
                                 <ChevronRight size={16} className="duration-100 group-hover:rotate-90" />
                             </div>
                         </div>
-    
                     </button>
                 </TokenSelectorModal>
                 {currency && (
@@ -166,7 +165,10 @@ const TokenCard = ({
                             </div>
                         )}
                         {showMaxButton && (
-                            <button className="ml-2 text-primary-50 underline underline-offset-4 hover:text-primary-50/70" onClick={handleMaxValue}>
+                            <button
+                                className="ml-2 text-primary-50 underline underline-offset-4 hover:text-primary-50/70"
+                                onClick={handleMaxValue}
+                            >
                                 Max
                             </button>
                         )}
@@ -183,7 +185,7 @@ const TokenCard = ({
                     onUserInput={(v) => handleInput(v)}
                     className={cn(
                         `text-right border-none text-xl font-bold w-9/12 p-0 mt-2 disabled:cursor-default disabled:text-text/80 ring-0!`,
-                        isLoading ? "animate-pulse" : ""
+                        isLoading ? "animate-pulse" : "",
                     )}
                     placeholder={"0.0"}
                     maxDecimals={currency?.decimals}
@@ -193,7 +195,7 @@ const TokenCard = ({
                 <div
                     className={cn(
                         "relative bottom-0 ml-auto mt-auto flex h-6 min-w-max items-center gap-1 text-sm text-text-200",
-                        isLoading ? "animate-pulse" : ""
+                        isLoading ? "animate-pulse" : "",
                     )}
                 >
                     {prevElement}
