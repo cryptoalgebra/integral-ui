@@ -35,10 +35,10 @@ import {
 import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
+const giwaSepoliaChain = /*#__PURE__*/ defineChain({
     id: 91342,
-    network: "baseSepolia",
-    name: "Base Sepolia",
+    network: "giwaSepolia",
+    name: "Giwa Sepolia",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: {
         default: {
@@ -50,11 +50,11 @@ const baseSepoliaChain = /*#__PURE__*/ defineChain({
     },
     blockExplorers: {
         default: {
-            name: "Basescan",
+            name: "GiwaScan",
             url: "https://sepolia-explorer.giwa.io/",
         },
         etherscan: {
-            name: "Basescan",
+            name: "GiwaScan",
             url: "https://sepolia-explorer.giwa.io/",
         },
     },
@@ -66,7 +66,7 @@ const baseSepoliaChain = /*#__PURE__*/ defineChain({
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [giwaSepoliaChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
