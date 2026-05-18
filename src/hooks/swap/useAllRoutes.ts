@@ -24,7 +24,7 @@ function computeAllRoutes(
     currentPath: Pool[] = [],
     allPaths: Route<Currency, Currency>[] = [],
     startCurrencyIn: Currency = currencyIn,
-    maxHops = 2
+    maxHops = 2,
 ): Route<Currency, Currency>[] {
     const tokenIn = currencyIn?.wrapped;
     const tokenOut = currencyOut?.wrapped;
@@ -53,7 +53,7 @@ function computeAllRoutes(
                     [...currentPath, newPool],
                     allPaths,
                     startCurrencyIn,
-                    maxHops - 1
+                    maxHops - 1,
                 );
             }
         } catch (e) {
@@ -73,7 +73,7 @@ function computeAllRoutes(
 export function useAllRoutes(
     currencyIn?: Currency,
     currencyOut?: Currency,
-    deployer?: Address | null
+    deployer?: Address | null,
 ): { loading: boolean; routes: Route<Currency, Currency>[] } {
     const chainId = useChainId();
 
@@ -89,7 +89,7 @@ export function useAllRoutes(
         // Hack
         // const singleIfWrapped = (currencyIn.isNative || currencyOut.isNative)
 
-        const routes = computeAllRoutes(currencyIn, currencyOut, pools, chainId, [], [], currencyIn, 1);
+        const routes = computeAllRoutes(currencyIn, currencyOut, pools, chainId, [], [], currencyIn, 2);
 
         return { loading: false, routes };
     }, [chainId, currencyIn, currencyOut, pools, poolsLoading]);
