@@ -3,24 +3,24 @@ import { Address } from "viem";
 
 /* Algebra Core */
 export const ALGEBRA_FACTORY: Record<number, Address> = {
-    [ChainId.RaylsMainnet]: "0x10253594A832f967994b44f33411940533302ACb",
+    [ChainId.RaylsMainnet]: "0x3f912b39A89708Db8E10205421d3726e2DF4984D",
 };
 export const QUOTER_V2: Record<number, Address> = {
-    [ChainId.RaylsMainnet]: "0x13fcE0acbe6Fb11641ab753212550574CaD31415",
+    [ChainId.RaylsMainnet]: "0xE63AEf68c9C80C06d241d44B3C21Da4da2E582Bd",
 };
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.RaylsMainnet]: "0x03f8B4b140249Dc7B2503C928E7258CCe1d91F1A",
+    [ChainId.RaylsMainnet]: "0x6d63b39017F379bfd0301293022581C6EF237a19",
 };
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
-    [ChainId.RaylsMainnet]: "0xD637cbc214Bc3dD354aBb309f4fE717ffdD0B28C",
+    [ChainId.RaylsMainnet]: "0x2650e9EFe6D841622aA627cb9e493a8B8b2f9D7A",
 };
 
 /* Farming */
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
-    [ChainId.RaylsMainnet]: "0x69D57B9D705eaD73a5d2f2476C30c55bD755cc2F",
+    [ChainId.RaylsMainnet]: "0x8FFf6402215870Cbb8CB216C7A587Cb17D524B81",
 };
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.RaylsMainnet]: "0xB4F9b6b019E75CBe51af4425b2Fc12797e2Ee2a1",
+    [ChainId.RaylsMainnet]: "0xf2c72D4EA4b3d54652Df182edA49b082678d02e3",
 };
 
 /* Limit Orders */
