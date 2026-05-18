@@ -25,7 +25,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
 
     const pool = mintInfo.pool;
 
-    const { amount0, amount1, amount0Usd, amount1Usd } = usePositionFees(pool ?? undefined, positionId, true);
+    const { amount0, amount1, amount0Usd, amount1Usd } = usePositionFees(pool ?? undefined, positionId, false);
 
     const zeroRewards = amount0?.equalTo("0") && amount1?.equalTo("0");
 

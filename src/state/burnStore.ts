@@ -76,7 +76,7 @@ export function useDerivedBurnInfo(
         };
     }, [percent, positionSDK, currency0, currency1, asWNative]);
 
-    const { amount0: feeValue0, amount1: feeValue1 } = usePositionFees(pool ?? undefined, Number(position?.tokenId), asWNative);
+    const { amount0: feeValue0, amount1: feeValue1 } = usePositionFees(pool ?? undefined, Number(position?.tokenId), !asWNative);
 
     const outOfRange = pool && position ? pool.tickCurrent < position.tickLower || pool.tickCurrent > position.tickUpper : false;
 

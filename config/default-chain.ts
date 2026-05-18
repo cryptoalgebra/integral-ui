@@ -1,7 +1,7 @@
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 export const CHAIN_NAME = {
-    [ChainId.RaylsMainnet]: "RaylsMainnet",
+    [ChainId.RaylsMainnet]: "Rayls",
 };
 
 export const NATIVE_SYMBOL = {
