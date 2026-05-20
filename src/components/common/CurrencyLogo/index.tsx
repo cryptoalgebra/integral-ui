@@ -7,6 +7,7 @@ import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
 import YesLogo from "@/assets/tokens/yes.png";
 import NoLogo from "@/assets/tokens/no.png";
+import BaseLogo from "@/assets/tokens/base.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -46,6 +47,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ["0x2222222222222222222222222222222222222222"]: {
         symbol: "NO",
         logo: NoLogo,
+    },
+    ["0xc414eb715a9644349d6870362703ae119586555e"]: {
+        symbol: "BASE",
+        logo: BaseLogo,
     },
 };
 

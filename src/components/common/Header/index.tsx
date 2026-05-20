@@ -16,7 +16,7 @@ import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
 
 const Header = () => (
-    <header className=" z-10 flex h-full max-h-[64px] mt-4 justify-between md:justify-between items-center gap-4">
+    <header className="md:px-8 px-4 z-50 flex h-full md:backdrop-blur-2xl max-md:border-b border-card-border left-0 top-0 absolute md:fixed w-full max-h-[72px] md:max-h-[82px] justify-between md:justify-between items-center gap-4">
         <nav className="w-fit flex gap-8 h-full py-2">
             <Algebra />
             <Navigation />
@@ -56,7 +56,7 @@ const Account = () => {
 
     return (
         <div className="flex h-full justify-end max-h-[64px] gap-4 whitespace-nowrap items-center">
-            <div className="flex p-2 gap-2 h-full">
+            <div className="flex py-2 gap-2 h-full">
                 {showTxHistory && (
                     <TransactionHistoryPopover>
                         {pendingTxCount > 0 ? (
@@ -90,7 +90,7 @@ const Account = () => {
                     <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
                 </Button>
                 <Button
-                    className={cn("flex gap-2 h-full rounded-full border border-card-border")}
+                    className={cn("flex h-12 w-12 gap-2 md:w-full rounded-full border border-card-border")}
                     onClick={() => open()}
                     variant={account ? "icon" : "primary"}
                     size={"sm"}

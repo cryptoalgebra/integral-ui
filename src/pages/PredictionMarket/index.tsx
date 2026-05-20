@@ -24,7 +24,7 @@ const PredictionMarketPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <div className="mb-8">
+            <div className="mb-6">
                 <PageTitle title={"Trade"} showSettings={false} />
             </div>
 

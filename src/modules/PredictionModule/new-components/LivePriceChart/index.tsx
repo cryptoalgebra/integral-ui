@@ -29,6 +29,7 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
     const targetLineRef = useRef<LightWeightCharts.IPriceLine | null>(null);
     const dotRef = useRef<HTMLDivElement>(null);
     const rafRef = useRef<number | null>(null);
+    const hasInitializedViewportRef = useRef(false);
 
     const [targetOutOfBounds, setTargetOutOfBounds] = useState<"above" | "below" | null>(null);
 
@@ -36,16 +37,6 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
 
     const colorKey = currentPrice === undefined ? "neutral" : isAboveTarget ? "green" : "red";
     const chartColors = COLORS[colorKey];
-
-    const handleResize = useCallback(() => {
-        if (!chartInstance.current || !chartRef.current) return;
-        chartInstance.current.resize(chartRef.current.offsetWidth, chartRef.current.offsetHeight);
-    }, []);
-
-    useEffect(() => {
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, [handleResize]);
 
     useLayoutEffect(() => {
         if (!chartRef.current) return;
@@ -104,12 +95,16 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
                 },
             },
             handleScroll: {
-                mouseWheel: false,
-                pressedMouseMove: false,
+                mouseWheel: true,
+                pressedMouseMove: true,
+                horzTouchDrag: true,
+                vertTouchDrag: true,
             },
             handleScale: {
-                mouseWheel: false,
-                axisPressedMouseMove: false,
+                mouseWheel: true,
+                pinch: true,
+                axisPressedMouseMove: true,
+                axisDoubleClickReset: true,
             },
         });
 
@@ -143,6 +138,7 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
         chartInstance.current = chart;
         seriesRef.current = series;
         targetLineRef.current = targetLine;
+        hasInitializedViewportRef.current = false;
 
         return () => {
             if (rafRef.current) {
@@ -153,7 +149,49 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
             seriesRef.current = null;
             targetLineRef.current = null;
         };
-    }, [height, targetPrice]);
+    }, [height]);
+
+    useEffect(() => {
+        if (!chartRef.current || !chartInstance.current) return;
+
+        let resizeRafId: number | null = null;
+
+        const updateChartSize = () => {
+            if (!chartRef.current || !chartInstance.current) return;
+
+            const { width, height: containerHeight } = chartRef.current.getBoundingClientRect();
+            if (!width || !containerHeight) return;
+
+            chartInstance.current.resize(Math.floor(width), Math.floor(containerHeight));
+        };
+
+        const queueResize = () => {
+            if (resizeRafId !== null) {
+                cancelAnimationFrame(resizeRafId);
+            }
+
+            resizeRafId = requestAnimationFrame(updateChartSize);
+        };
+
+        const resizeObserver = new ResizeObserver(() => {
+            queueResize();
+        });
+
+        resizeObserver.observe(chartRef.current);
+        if (chartRef.current.parentElement) {
+            resizeObserver.observe(chartRef.current.parentElement);
+        }
+
+        queueResize();
+
+        return () => {
+            if (resizeRafId !== null) {
+                cancelAnimationFrame(resizeRafId);
+            }
+
+            resizeObserver.disconnect();
+        };
+    }, [height]);
 
     useEffect(() => {
         if (!seriesRef.current) return;
@@ -205,9 +243,10 @@ export function LivePriceChart({ priceHistory, targetPrice, currentPrice, height
             setTargetOutOfBounds(null);
         }
 
-        // Scroll to latest
-        if (chartInstance.current) {
+        if (!hasInitializedViewportRef.current && chartInstance.current) {
+            chartInstance.current.timeScale().fitContent();
             chartInstance.current.timeScale().scrollToRealTime();
+            hasInitializedViewportRef.current = true;
         }
 
         // Update dot position after data update
