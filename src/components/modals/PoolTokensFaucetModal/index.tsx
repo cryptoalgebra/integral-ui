@@ -5,6 +5,7 @@ import { useAllTokens } from "@/hooks/tokens/useAllTokens";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Token, WNATIVE } from "@cryptoalgebra/integral-sdk";
+import { useAppKit } from "@reown/appkit/react";
 import { Droplets } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
@@ -36,6 +37,8 @@ const getClaimAmount = (decimals: number) => CLAIM_BASE_AMOUNT * 10n ** BigInt(M
 const PoolTokensFaucetModal = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedAddresses, setSelectedAddresses] = useState<Set<string>>(new Set());
+
+    const { open } = useAppKit();
 
     const chainId = useChainId();
     const { address: account } = useAccount();
@@ -141,7 +144,7 @@ const PoolTokensFaucetModal = () => {
 
     const isClaimLoading = isClaimPending || isClaimTxLoading;
     const showLoadingState = (isMintableLoading || isMintableValidating) && !mintableTokens.length;
-    const isClaimDisabled = !account || !multicall3Address || !selectedTokens.length || showLoadingState || isClaimLoading;
+    const isClaimDisabled = !multicall3Address || !selectedTokens.length || showLoadingState || isClaimLoading;
     const isAllSelected = mintableTokens.length > 0 && selectedTokens.length === mintableTokens.length;
 
     const handleToggleToken = (tokenAddress: Address, checked: boolean) => {
@@ -246,15 +249,21 @@ const PoolTokensFaucetModal = () => {
                             ))}
                     </div>
 
-                    <Button
-                        variant={"primary"}
-                        size={"md"}
-                        className="w-full rounded-full"
-                        disabled={isClaimDisabled}
-                        onClick={handleClaimTokens}
-                    >
-                        {isClaimLoading ? <Loader /> : `Claim Tokens${selectedTokens.length ? ` (${selectedTokens.length})` : ""}`}
-                    </Button>
+                    {!account ? (
+                        <Button variant={"primary"} size={"md"} className="w-full rounded-full" onClick={() => open()}>
+                            Connect Wallet
+                        </Button>
+                    ) : (
+                        <Button
+                            variant={"primary"}
+                            size={"md"}
+                            className="w-full rounded-full"
+                            disabled={isClaimDisabled}
+                            onClick={handleClaimTokens}
+                        >
+                            {isClaimLoading ? <Loader /> : `Claim Tokens${selectedTokens.length ? ` (${selectedTokens.length})` : ""}`}
+                        </Button>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>
