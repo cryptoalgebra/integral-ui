@@ -5,7 +5,7 @@ export const USE_UNISWAP_PLACEHOLDER_DATA = false;
 export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/HMuAwufqZ1YCRmzL2SfHTVkzZovC9VL2UAKhjvRqKiR1"; // actually it's Uni Base
 
 export const INFO_GRAPH_URL = {
-    [ChainId.BaseSepolia]: "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-analytics/v1.0.0/gn",
+    [ChainId.BaseSepolia]: "https://api.goldsky.com/api/public/project_cm2cd1yfmmrav01u9b02f69vj/subgraphs/integral-ve-analytics/v1.0.2/gn",
 };
 
 export const FARMING_GRAPH_URL = {

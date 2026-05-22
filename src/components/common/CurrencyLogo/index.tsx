@@ -52,6 +52,14 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "BASE",
         logo: BaseLogo,
     },
+    ["0x6045450424c527bee1a2638d822d11bbca4f2a46"]: {
+        symbol: "AVUSDC",
+        logo: USDCLogo,
+    },
+    ["0xf115d73823b3268aaaa58691a3778c08dee77a91"]: {
+        symbol: "AVETH",
+        logo: EtherLogo,
+    },
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
