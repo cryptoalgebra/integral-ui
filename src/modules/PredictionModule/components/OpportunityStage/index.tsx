@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { PredictionMarket } from "../../types";
 import { FeaturedMarketCard } from "../FeaturedMarketCard";
-import { MarketLadder } from "../MarketLadder";
+import { MarketLadder } from "../../components/MarketLadder";
 import { UserMarkets } from "../UserMarkets";
 import { useNavigate } from "react-router-dom";
 
