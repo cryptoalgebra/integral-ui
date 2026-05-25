@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
 import { useAccount } from "wagmi";
-import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
+import { usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
@@ -21,7 +21,7 @@ const Header = () => (
             <Algebra />
             <Navigation />
         </nav>
-        <Account />
+        <AccountActions />
     </header>
 );
 
@@ -38,96 +38,113 @@ export const Algebra = () => (
     </div>
 );
 
-const Account = () => {
-    const { open } = useAppKit();
-
-    const { caipNetwork: currentNetwork } = useAppKitNetwork();
-
-    const { pendingTransactions } = usePendingTransactionsStore();
-
-    const { address: account } = useAccount();
-
-    const showTxHistory = account && pendingTransactions[account] ? Object.keys(pendingTransactions[account]).length > 0 : false;
-
-    const pendingTxCount =
-        account && pendingTransactions[account]
-            ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length
-            : 0;
-
+const AccountActions = () => {
     return (
         <div className="flex h-full justify-end max-h-[64px] gap-4 whitespace-nowrap items-center">
             <div className="flex py-2 gap-2 h-full">
-                {showTxHistory && (
-                    <TransactionHistoryPopover>
-                        {pendingTxCount > 0 ? (
-                            <Button
-                                className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-full transition-all duration-200"
-                                aria-label="Transaction history"
-                            >
-                                <Loader />
-                                <span>{pendingTxCount}</span>
-                                <span>Pending</span>
-                            </Button>
-                        ) : (
-                            <Button
-                                variant={"icon"}
-                                size={"sm"}
-                                className="flex gap-2 min-h-12 min-w-12 rounded-full border border-card-border"
-                                aria-label="Transaction history"
-                            >
-                                <Clock size={20} />
-                            </Button>
-                        )}
-                    </TransactionHistoryPopover>
-                )}
+                <TransactionHistoryAction />
                 <Settings />
-                <Button
-                    className="flex gap-2 h-full rounded-full border border-card-border"
-                    variant={"icon"}
-                    size={"sm"}
-                    onClick={() => open({ view: "Networks" })}
-                >
-                    <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} /> <ChevronDown size={20} />
-                </Button>
-                <Button
-                    className={cn("flex h-12 w-12 gap-2 md:w-full rounded-full border border-card-border")}
-                    onClick={() => open()}
-                    variant={account ? "icon" : "primary"}
-                    size={"sm"}
-                >
-                    <WalletIcon size={16} className="md:hidden" />
-                    <span className="max-md:hidden">{truncateHash(account as Address) || "Connect Wallet"}</span>
-                </Button>
+                <NetworkSelectorAction />
+                <WalletAction />
             </div>
         </div>
     );
 };
 
-const TransactionHistoryPopover = ({ children }: { children: React.ReactNode }) => {
+const NetworkSelectorAction = () => {
+    const { open } = useAppKit();
+
+    const { caipNetwork: currentNetwork } = useAppKitNetwork();
+
+    return (
+        <Button
+            className="flex gap-2 h-full min-w-fit rounded-full border border-card-border"
+            variant={"icon"}
+            size={"sm"}
+            onClick={() => open({ view: "Networks" })}
+        >
+            <img src={currentNetwork?.assets?.imageUrl} width={20} height={20} />
+            <ChevronDown size={20} />
+        </Button>
+    );
+};
+
+const TransactionHistoryAction = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const pendingTransactions = usePendingTransactions();
+    const { pendingTransactions } = usePendingTransactionsStore();
+
     const { address: account } = useAccount();
 
-    if (account)
-        return (
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
-                <PopoverTrigger asChild>{children}</PopoverTrigger>
-                <PopoverContent
-                    className="w-fit max-h-80 flex flex-col gap-4 -translate-x-28 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4"
-                    sideOffset={6}
-                >
-                    Transaction History
-                    <hr />
-                    <ul className="flex flex-col gap-3 w-64 overflow-auto ">
-                        {Object.entries(pendingTransactions[account])
-                            .reverse()
-                            .map(([hash, transaction]) => (
-                                <TransactionCard key={hash} hash={hash as Address} transaction={transaction} />
-                            ))}
-                    </ul>
-                </PopoverContent>
-            </Popover>
-        );
+    const accountTransactions = account ? pendingTransactions[account] : undefined;
+
+    const showTxHistory = accountTransactions ? Object.keys(accountTransactions).length > 0 : false;
+
+    const pendingTxCount = accountTransactions
+        ? Object.entries(accountTransactions).filter(([, transaction]) => transaction.loading).length
+        : 0;
+
+    if (!showTxHistory || !accountTransactions) {
+        return null;
+    }
+
+    return (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                {pendingTxCount > 0 ? (
+                    <Button
+                        size={"sm"}
+                        className="flex font-normal items-center my-auto h-full px-3 justify-center gap-2 cursor-pointer hover:bg-primary-button/80 border border-card bg-primary-button rounded-full transition-all duration-200"
+                        aria-label="Transaction history"
+                    >
+                        <Loader size={20} />
+                        <span>{pendingTxCount}</span>
+                        <span>Pending</span>
+                    </Button>
+                ) : (
+                    <Button
+                        variant={"icon"}
+                        size={"sm"}
+                        className="flex gap-2 min-h-12 min-w-12 rounded-full border border-card-border"
+                        aria-label="Transaction history"
+                    >
+                        <Clock size={20} />
+                    </Button>
+                )}
+            </PopoverTrigger>
+            <PopoverContent
+                className="w-fit max-h-80 flex flex-col gap-4 -translate-x-28 translate-y-2 max-xl:-translate-x-8 max-xs:-translate-x-4"
+                sideOffset={6}
+            >
+                Transaction History
+                <hr />
+                <ul className="flex flex-col gap-3 w-64 overflow-auto ">
+                    {Object.entries(accountTransactions)
+                        .reverse()
+                        .map(([hash, transaction]) => (
+                            <TransactionCard key={hash} hash={hash as Address} transaction={transaction} />
+                        ))}
+                </ul>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+const WalletAction = () => {
+    const { open } = useAppKit();
+
+    const { address: account } = useAccount();
+
+    return (
+        <Button
+            className={cn("flex h-12 w-12 md:w-full gap-2 rounded-full border border-card-border")}
+            onClick={() => open()}
+            variant={account ? "icon" : "primary"}
+            size={"sm"}
+        >
+            <WalletIcon size={16} className="md:hidden" />
+            <span className="max-md:hidden">{account ? truncateHash(account) : "Connect Wallet"}</span>
+        </Button>
+    );
 };
 
 export default Header;

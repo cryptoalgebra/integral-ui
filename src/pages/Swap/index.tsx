@@ -34,7 +34,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
         token1?.address as Address,
     );
 
-    const isPredictionPool = Boolean(marketsForTokens?.length);
+    const isPredictionPool = type === SwapPageView.PREDICTION && Boolean(marketsForTokens?.length);
 
     const featuredMarket = useMemo(() => {
         if (!marketsForTokens?.length) return;
