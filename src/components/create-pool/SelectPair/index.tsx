@@ -27,26 +27,27 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
         (inputCurrency: Currency) => {
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleTypeInput = useCallback(
         (value: string) => {
             onStartPriceInput(value);
         },
-        [onStartPriceInput]
+        [onStartPriceInput],
     );
 
     return (
-        <div className="relative flex flex-col gap-1  items-center">
+        <div className="flex flex-col gap-1 relative">
             <TokenCard
+                label="Token A"
                 disabled
                 value={"1"}
                 currency={currencyA}
@@ -54,13 +55,18 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
                 handleTokenSelection={handleInputSelect}
                 usdValue={usdValueA}
             />
-            <button
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card-border hover:bg-card-hover duration-200"
-                onClick={onSwitchTokens}
-            >
-                <ChevronsUpDownIcon size={16} />
-            </button>
+
+            <div className="flex justify-center -my-4 relative z-10">
+                <button
+                    className="p-2 bg-card border border-card-border rounded-xl hover:bg-bg-200 transition-all duration-200 hover:rotate-180"
+                    onClick={onSwitchTokens}
+                >
+                    <ChevronsUpDownIcon size={16} className="text-text-200" />
+                </button>
+            </div>
+
             <TokenCard
+                label="Token B"
                 value={startPriceTypedValue}
                 handleTokenSelection={handleOutputSelect}
                 currency={currencyB}

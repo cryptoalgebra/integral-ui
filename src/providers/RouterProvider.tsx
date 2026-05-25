@@ -14,6 +14,8 @@ import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider, Route
 import AnalyticsModule from "@/modules/AnalyticsModule";
 import VeTOKENPage from "@/pages/VeTOKEN";
 import VotePage from "@/pages/Vote";
+import PredictionMarketPage from "@/pages/PredictionMarket";
+import { PredictionsPage } from "@/pages/Predictions";
 const { AnalyticsPoolPage, TransactionsList, TokensList, AnalyticsTokenPage } = AnalyticsModule.components;
 
 const router = createBrowserRouter([
@@ -32,6 +34,18 @@ const router = createBrowserRouter([
             enabledModules.LimitOrdersModule && {
                 path: "limit-order",
                 element: <SwapPage type={SwapPageView.LIMIT_ORDER} />,
+            },
+            {
+                path: "prediction",
+                element: <SwapPage type={SwapPageView.PREDICTION} />,
+            },
+            {
+                path: "prediction/:market",
+                element: <PredictionMarketPage type={SwapPageView.PREDICTION} />,
+            },
+            {
+                path: "predictions",
+                element: <PredictionsPage />,
             },
             {
                 path: "pools",

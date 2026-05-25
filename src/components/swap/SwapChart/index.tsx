@@ -9,7 +9,7 @@ import { Address } from "viem";
 import { BarChart3Icon } from "lucide-react";
 import { usePoolChartData } from "@/hooks/analytics";
 
-const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
+const SwapChart = ({ derivedSwap, prediction }: { derivedSwap: IDerivedSwapInfo; prediction?: { lower?: number; lowerTimestamp?: number; greater?: number; greaterTimestamp?: number } }) => {
     const { currencies } = derivedSwap;
     const [tokenA, tokenB] = [currencies.INPUT, currencies.OUTPUT];
 
@@ -54,6 +54,7 @@ const SwapChart = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                     tokenA={tokenA?.symbol}
                     tokenB={tokenB?.symbol}
                     isChartDataLoading={isLoading}
+                    prediction={prediction}
                     fadeOut
                 />
             ) : (

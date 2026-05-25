@@ -21,7 +21,8 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
 import { useWriteAlgebraCustomPoolEntryPointCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
-import { cn, isDefined } from "@/utils";
+import { isDefined } from "@/utils";
+import { FormContainer } from "@/components/common/FormContainer";
 
 type PoolDeployerType = typeof CUSTOM_POOL_DEPLOYER_TITLES[keyof typeof CUSTOM_POOL_DEPLOYER_TITLES];
 
@@ -57,7 +58,7 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_1]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
         }),
-        [chainid]
+        [chainid],
     );
 
     const poolAddress =
@@ -71,17 +72,19 @@ const CreatePoolForm = () => {
     const customPoolsAddresses =
         enabledModules.CustomPoolsModule && areCurrenciesSelected && !isSameToken
             ? [
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid], 
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid]
-            ].filter(isDefined).map(
-                  (customPoolDeployer) =>
-                      computeCustomPoolAddress({
-                          tokenA: currencyA.wrapped,
-                          tokenB: currencyB.wrapped,
-                          customPoolDeployer,
-                      }) as Address
-              )
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
+              ]
+                  .filter(isDefined)
+                  .map(
+                      (customPoolDeployer) =>
+                          computeCustomPoolAddress({
+                              tokenA: currencyA.wrapped,
+                              tokenB: currencyB.wrapped,
+                              customPoolDeployer,
+                          }) as Address,
+                  )
             : [];
 
     const [poolState] = usePool(poolAddress);
@@ -107,7 +110,7 @@ const CreatePoolForm = () => {
         poolAddress ?? undefined,
         INITIAL_POOL_FEE,
         currencyA ?? undefined,
-        undefined
+        undefined,
     );
 
     const { calldata, value } = useMemo(() => {
@@ -139,7 +142,7 @@ const CreatePoolForm = () => {
             tokenB: currencyB?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        "/pools"
+        "/pools",
     );
 
     const isCustomPoolDeployerReady = account && mintInfo.pool && poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC;
@@ -148,12 +151,7 @@ const CreatePoolForm = () => {
         isCustomPoolDeployerReady && customPoolDeployerAddresses[poolDeployer]
             ? {
                   address: customPoolDeployerAddresses[poolDeployer],
-                  args: [
-                      account,
-                      mintInfo.pool?.token0.address as Address,
-                      mintInfo.pool?.token1.address as Address,
-                      "0x0",
-                  ] as const,
+                  args: [account, mintInfo.pool?.token0.address as Address, mintInfo.pool?.token1.address as Address, "0x0"] as const,
               }
             : undefined;
 
@@ -178,7 +176,7 @@ const CreatePoolForm = () => {
             selectCurrency(SwapField.OUTPUT, TOKENS[chainid].USDC.address as Address);
             typeStartPriceInput("");
         };
-    }, []);
+    }, [chainid, selectCurrency, typeStartPriceInput]);
 
     const handlePoolDeployerChange = (poolDeployer: PoolDeployerType) => {
         setPoolDeployer(poolDeployer);
@@ -200,63 +198,66 @@ const CreatePoolForm = () => {
             !areCurrenciesSelected ||
             isSameToken ||
             isPending ||
-            !mintInfo?.pool
+            !mintInfo?.pool,
     );
 
     return (
-        <div className="flex flex-col gap-1 p-2 bg-dark-gradient border border-card-border rounded-xl">
-            <SelectPair mintInfo={mintInfo} currencyA={currencyA} currencyB={currencyB} />
+        <div className="flex w-full flex-col gap-3">
+            <FormContainer>
+                <SelectPair mintInfo={mintInfo} currencyA={currencyA} currencyB={currencyB} />
 
-            {areCurrenciesSelected && !isSameToken && !isSelectedCustomPoolExists && (
-                <Summary currencyA={currencyA} currencyB={currencyB} />
-            )}
-
-            {enabledModules.CustomPoolsModule ? (
-                <div className="text-left font-semibold bg-card-dark border border-card-border px-4 py-3 rounded-lg">
-                    <div className="mb-3">Plugin</div>
-                    <div className="grid grid-cols-2 w-full gap-4 mt-2">
-                        {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
-                            <Button
-                                variant={poolDeployer === v ? "iconActive" : "outline"}
-                                key={v}
-                                onClick={() => handlePoolDeployerChange(v)}
-                                className={cn("px-3 py-2 rounded-lg")}
-                            >
-                                {v}
-                            </Button>
-                        ))}
+                {enabledModules.CustomPoolsModule ? (
+                    <div className="rounded-xl bg-card-light px-3 py-3">
+                        <div className="mb-2 text-xs uppercase tracking-wide text-text-300 text-left">Plugin</div>
+                        <div className="grid w-full grid-cols-4 gap-2">
+                            {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
+                                <Button
+                                    variant={poolDeployer === v ? "iconActive" : "outline"}
+                                    key={v}
+                                    size={"sm"}
+                                    onClick={() => handlePoolDeployerChange(v)}
+                                >
+                                    {v}
+                                </Button>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            ) : null}
+                ) : null}
 
-            <Button variant={"primary"} className="mt-2" disabled={isDisabled} onClick={handleCreatePool}>
-                {isLoading ? (
-                    <Loader />
-                ) : isSameToken ? (
-                    "Select another pair"
-                ) : !areCurrenciesSelected ? (
-                    "Select currencies"
-                ) : isSelectedCustomPoolExists ? (
-                    "Pool already exists"
-                ) : !startPriceTypedValue ? (
-                    "Enter initial price"
-                ) : (
-                    "Create Pool"
+                {areCurrenciesSelected && !isSameToken && !isSelectedCustomPoolExists && (
+                    <Summary currencyA={currencyA} currencyB={currencyB} />
                 )}
-            </Button>
 
-            {poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC && (
-                <Button
-                    variant={"primary"}
-                    disabled={isDisabled}
-                    onClick={() => createBasePoolConfig && createBasePool(createBasePoolConfig)}
-                    className="mt-2"
-                >
-                    {isCustomPoolLoading ? <Loader /> : "Initialize"}
+                <FixBrokenPool currencyIn={currencyA} currencyOut={currencyB} deployer={customPoolDeployerAddresses[poolDeployer]} />
+            </FormContainer>
+
+            <div className="w-full items-center flex gap-2">
+                {poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC && (
+                    <Button
+                        variant={"outline"}
+                        disabled={isDisabled}
+                        onClick={() => createBasePoolConfig && createBasePool(createBasePoolConfig)}
+                        className="w-full"
+                    >
+                        {isCustomPoolLoading ? <Loader /> : "Initialize"}
+                    </Button>
+                )}
+                <Button variant={"primary"} className="w-full" disabled={isDisabled} onClick={handleCreatePool}>
+                    {isLoading ? (
+                        <Loader />
+                    ) : isSameToken ? (
+                        "Select another pair"
+                    ) : !areCurrenciesSelected ? (
+                        "Select currencies"
+                    ) : isSelectedCustomPoolExists ? (
+                        "Pool already exists"
+                    ) : !startPriceTypedValue ? (
+                        "Enter initial price"
+                    ) : (
+                        "Create Pool"
+                    )}
                 </Button>
-            )}
-
-            <FixBrokenPool currencyIn={currencyA} currencyOut={currencyB} deployer={customPoolDeployerAddresses[poolDeployer]} />
+            </div>
         </div>
     );
 };

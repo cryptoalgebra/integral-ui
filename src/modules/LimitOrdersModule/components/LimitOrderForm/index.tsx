@@ -1,15 +1,19 @@
-import { PoolState, usePool } from "@/hooks/pools/usePool";
+import { FormContainer } from "@/components/common/FormContainer";
+import SwapPair from "@/components/swap/SwapPair";
+import { SwapTypeSelector } from "@/components/swap/SwapTypeSelector";
+import { usePool, PoolState } from "@/hooks/pools/usePool";
+import { SwapPageView } from "@/pages/Swap/types";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/integral-sdk";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Address } from "viem";
+import { WNATIVE, computeCustomPoolAddress, TickMath, getTickToPrice, tryParseTick, tickToPrice } from "@cryptoalgebra/integral-sdk";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useChainId } from "wagmi";
-import { LimitPriceCard } from "../LimitPriceCard";
 import { LimitOrderButton } from "../LimitOrderButton";
-import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
+import { LimitPriceCard } from "../LimitPriceCard";
+import { Address } from "viem";
 
-export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
+export function LimitOrderForm({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) {
     const { currencies } = derivedSwap;
 
     const singleHopOnly = false;
@@ -72,29 +76,7 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
     const tick = limitOrderPool?.tickCurrent;
     const tickSpacing = limitOrderPool?.tickSpacing;
 
-    const tickStep = useCallback(
-        (direction: 1 | -1) => {
-            if (!tickSpacing) return;
-
-            const tick = invertPrice
-                ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-                : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
-
-            if (!token0 || !token1 || tick === undefined) {
-                setSellPrice("");
-                return;
-            }
-
-            const limitOrderPrice = invertPrice
-                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(8)
-                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(8);
-
-            setSellPrice(limitOrderPrice);
-            typeLimitOrderPrice(limitOrderPrice);
-        },
-        [invertPrice, token0, token1, sellPrice, tickSpacing, typeLimitOrderPrice],
-    );
-    const { blockCreation, message } = useMemo(() => {
+    const { blockCreation } = useMemo(() => {
         const missingFields: string[] = [];
 
         if (!currencies.INPUT) missingFields.push("currencies.INPUT");
@@ -148,8 +130,6 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
         return { blockCreation: false, message: "" };
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
 
-    console.log("BLOCK", blockCreation, message);
-
     const [plusDisabled, minusDisabled] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return [true, true];
 
@@ -171,6 +151,36 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
 
         return [false, false];
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
+
+    const currency = currencies[SwapField.INPUT];
+    const otherCurrency = currencies[SwapField.OUTPUT];
+
+    const disabled = showWrap || !isPoolExists || blockCreation;
+    const limitOrderPlugin = isPoolExists;
+    const poolAddress = limitOrderPoolAddress;
+
+    const tickStep = useCallback(
+        (direction: 1 | -1) => {
+            if (!tickSpacing) return;
+
+            const tick = invertPrice
+                ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+                : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+
+            if (!token0 || !token1 || tick === undefined) {
+                setSellPrice("");
+                return;
+            }
+
+            const limitOrderPrice = invertPrice
+                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(8)
+                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(8);
+
+            setSellPrice(limitOrderPrice);
+            typeLimitOrderPrice(limitOrderPrice);
+        },
+        [invertPrice, token0, token1, sellPrice, tickSpacing, typeLimitOrderPrice],
+    );
 
     const handleSetSellPrice = useCallback(
         (value: string, invert = false) => {
@@ -217,36 +227,42 @@ export const LimitOrder = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) =
         };
     }, [initialSingleHop]);
 
+    const invertTick = (value: string) => {
+        handleSetSellPrice(value, true);
+        setWasInverted(!wasInverted);
+        limitOrderPriceWasInverted(!wasInverted);
+    };
+
     return (
-        <div className="flex flex-col gap-2">
-            <LimitPriceCard
-                currency={currencies[SwapField.INPUT]}
-                otherCurrency={currencies[SwapField.OUTPUT]}
-                sellPrice={sellPrice}
-                invertTick={(value: string) => {
-                    handleSetSellPrice(value, true);
-                    setWasInverted(!wasInverted);
-                    limitOrderPriceWasInverted(!wasInverted);
-                }}
-                setSellPrice={handleSetSellPrice}
-                tickStep={tickStep}
-                setToMarketPrice={setToMarketPrice}
-                plusDisabled={plusDisabled}
-                minusDisabled={minusDisabled}
-                disabled={showWrap || !isPoolExists}
-            />
+        <>
+            <FormContainer>
+                <SwapTypeSelector type={SwapPageView.LIMIT_ORDER} />
+                <SwapPair derivedSwap={derivedSwap} />
+                <LimitPriceCard
+                    currency={currency}
+                    otherCurrency={otherCurrency}
+                    sellPrice={sellPrice}
+                    plusDisabled={plusDisabled}
+                    minusDisabled={minusDisabled}
+                    disabled={disabled}
+                    invertTick={invertTick}
+                    setSellPrice={setSellPrice}
+                    tickStep={tickStep}
+                    setToMarketPrice={setToMarketPrice}
+                />
+            </FormContainer>
             <LimitOrderButton
                 derivedSwap={derivedSwap}
-                disabled={blockCreation}
-                limitOrderPlugin={isPoolExists}
+                disabled={disabled}
                 token0={token0}
                 token1={token1}
-                poolAddress={limitOrderPoolAddress}
+                poolAddress={poolAddress}
+                wasInverted={wasInverted}
                 sellPrice={sellPrice}
                 tickSpacing={tickSpacing}
-                wasInverted={wasInverted}
                 zeroToOne={zeroToOne}
+                limitOrderPlugin={limitOrderPlugin}
             />
-        </div>
+        </>
     );
-};
+}

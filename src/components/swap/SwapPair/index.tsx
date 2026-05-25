@@ -1,10 +1,10 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { Currency, CurrencyAmount, maxAmountSpend, ZERO } from "@cryptoalgebra/integral-sdk";
+import { Currency, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
-import { ChevronsUpDownIcon } from "lucide-react";
+import { ArrowDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { TOKENS } from "config";
 import { useChainId } from "wagmi";
@@ -15,7 +15,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const { independentField, typedValue } = useSwapState();
 
-    const { currencyBalances, parsedAmounts, currencies, toggledTrade: trade, tradeState } = derivedSwap;
+    const { parsedAmounts, currencies, toggledTrade: trade, tradeState } = derivedSwap;
 
     const isTradeLoading = tradeState.state === TradeState.LOADING || tradeState.state === TradeState.SYNCING;
 
@@ -26,19 +26,6 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
-    // const limitOrderPoolAddress =
-    //     enabledModules.limitOrders && baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
-    //         ? (computeCustomPoolAddress({
-    //               tokenA: baseCurrency.wrapped,
-    //               tokenB: quoteCurrency.wrapped,
-    //               customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
-    //           }) as Address)
-    //         : undefined;
-
-    // const [, limitOrderPool] = usePool(limitOrderPoolAddress);
-
-    // const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, limitOrderPool?.tickCurrent);
-
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
     const { onSwitchTokens, onCurrencySelection, onUserInput } = useSwapActionHandlers();
@@ -47,35 +34,28 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         (inputCurrency: Currency) => {
             onCurrencySelection(SwapField.INPUT, inputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleOutputSelect = useCallback(
         (outputCurrency: Currency) => {
             onCurrencySelection(SwapField.OUTPUT, outputCurrency);
         },
-        [onCurrencySelection]
+        [onCurrencySelection],
     );
 
     const handleTypeInput = useCallback(
         (value: string) => {
             onUserInput(SwapField.INPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
     const handleTypeOutput = useCallback(
         (value: string) => {
             onUserInput(SwapField.OUTPUT, value);
         },
-        [onUserInput]
+        [onUserInput],
     );
-
-    const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(currencyBalances[SwapField.INPUT]);
-    const showMaxButton = Boolean(maxInputAmount?.greaterThan(0));
-
-    const handleMaxInput = useCallback(() => {
-        maxInputAmount && onUserInput(SwapField.INPUT, maxInputAmount.toExact());
-    }, [maxInputAmount, onUserInput]);
 
     const { formatted: usdValueA } = useUSDCValue(parsedAmounts[SwapField.INPUT]);
     const { formatted: usdValueB } = useUSDCValue(parsedAmounts[SwapField.OUTPUT]);
@@ -104,26 +84,30 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [chainId, handleOutputSelect]);
 
     return (
-        <div className="flex flex-col gap-1 relative ">
+        <div className="flex flex-col gap-1 relative">
             <TokenCard
+                label="Sell"
                 value={formattedAmounts[SwapField.INPUT]}
                 currency={baseCurrency}
                 otherCurrency={quoteCurrency}
                 handleTokenSelection={handleInputSelect}
                 handleValueChange={handleTypeInput}
-                handleMaxValue={handleMaxInput}
                 usdValue={usdValueA ?? undefined}
-                showMaxButton={showMaxButton}
-                showBalance={true}
+                showPercentButtons={true}
                 isLoading={independentField === SwapField.OUTPUT && isTradeLoading}
             />
-            <button
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card-border hover:bg-card-hover duration-200"
-                onClick={onSwitchTokens}
-            >
-                <ChevronsUpDownIcon size={16} />
-            </button>
+
+            <div className="flex justify-center -my-4 relative z-10">
+                <button
+                    className="p-2 bg-card border border-card-border rounded-xl hover:bg-bg-200 transition-all duration-200 hover:rotate-180"
+                    onClick={onSwitchTokens}
+                >
+                    <ArrowDownIcon size={16} className="text-text-200" />
+                </button>
+            </div>
+
             <TokenCard
+                label="Buy"
                 value={formattedAmounts[SwapField.OUTPUT]}
                 currency={quoteCurrency}
                 otherCurrency={baseCurrency}

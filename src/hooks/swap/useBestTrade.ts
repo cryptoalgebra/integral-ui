@@ -17,6 +17,7 @@ export interface BestTradeExactIn {
     fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
     priceImpact?: Percent | null;
+    refetch: () => void;
 }
 
 export interface BestTradeExactOut {
@@ -25,6 +26,7 @@ export interface BestTradeExactOut {
     fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
     priceImpact?: Percent | null;
+    refetch: () => void;
 }
 
 /**
@@ -49,14 +51,18 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
     });
 
     const trade = useMemo(() => {
+        const refetch = () => {
+            if (routerType === RouterType.OMEGA) {
+                refetchBoosted?.();
+            }
+            refetchNormal();
+        };
+
         if (!amountIn || !currencyOut) {
             return {
                 state: TradeState.INVALID,
                 trade: null,
-                refetch: () => {
-                    refetchBoosted();
-                    refetchNormal();
-                },
+                refetch,
             };
         }
 
@@ -64,6 +70,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             return {
                 state: TradeState.LOADING,
                 trade: null,
+                refetch,
             };
         }
 
@@ -119,6 +126,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                 fee: null,
                 priceAfterSwap: null,
                 priceImpact: null,
+                refetch,
             };
         }
 
@@ -135,11 +143,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             }),
             priceAfterSwap,
             priceImpact,
-
-            refetch: () => {
-                refetchBoosted();
-                refetchNormal();
-            },
+            refetch,
         };
     }, [
         amountIn,
@@ -181,14 +185,18 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
     });
 
     const trade = useMemo(() => {
+        const refetch = () => {
+            if (routerType === RouterType.OMEGA) {
+                refetchBoosted?.();
+            }
+            refetchNormal();
+        };
+
         if (!amountOut || !currencyIn) {
             return {
                 state: TradeState.INVALID,
                 trade: null,
-                refetch: () => {
-                    refetchBoosted();
-                    refetchNormal();
-                },
+                refetch,
             };
         }
 
@@ -196,6 +204,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             return {
                 state: TradeState.LOADING,
                 trade: null,
+                refetch,
             };
         }
 
@@ -251,6 +260,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 fee: null,
                 priceAfterSwap,
                 priceImpact: null,
+                refetch,
             };
         }
 
@@ -267,10 +277,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             }),
             priceAfterSwap,
             priceImpact,
-            refetch: () => {
-                refetchBoosted();
-                refetchNormal();
-            },
+            refetch,
         };
     }, [
         amountOut,

@@ -17,7 +17,7 @@ export const CHAIN_ID = {
 };
 
 export const CHAIN_IMAGE = {
-    [ChainId.BaseSepolia]: "https://www.ethereum-ecosystem.com/logos/base_icon.png",
+    [ChainId.BaseSepolia]: "/base-sepolia.webp",
 };
 
 export const DEFAULT_CHAIN_ID = ChainId.BaseSepolia;

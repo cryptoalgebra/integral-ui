@@ -19,7 +19,7 @@ export function useSwapCallArguments(trade: Trade<Currency, Currency, TradeType>
                 recipient: account,
                 slippageTolerance: allowedSlippage,
                 deadline: Date.now() + txDeadline * 1000,
-            })
+            }),
         );
 
         if (trade.tradeType === TradeType.EXACT_INPUT) {
@@ -29,7 +29,7 @@ export function useSwapCallArguments(trade: Trade<Currency, Currency, TradeType>
                     recipient: account,
                     slippageTolerance: allowedSlippage,
                     deadline: Date.now() + txDeadline * 1000,
-                })
+                }),
             );
         }
 
@@ -39,5 +39,14 @@ export function useSwapCallArguments(trade: Trade<Currency, Currency, TradeType>
                 value,
             };
         });
-    }, [trade, account, txDeadline, allowedSlippage]);
+    }, [
+        trade?.inputAmount.quotient.toString(),
+        trade?.outputAmount.quotient.toString(),
+        trade?.inputAmount.currency.wrapped.address,
+        trade?.outputAmount.currency.wrapped.address,
+        trade?.tradeType,
+        account,
+        txDeadline,
+        allowedSlippage.quotient.toString(),
+    ]);
 }

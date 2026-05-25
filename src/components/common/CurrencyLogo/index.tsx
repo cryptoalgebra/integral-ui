@@ -3,7 +3,11 @@ import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
+import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
+import YesLogo from "@/assets/tokens/yes.png";
+import NoLogo from "@/assets/tokens/no.png";
+import BaseLogo from "@/assets/tokens/base.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -24,13 +28,37 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "USDC",
         logo: USDCLogo,
     },
-    ["0xaff9ae92ef4362117d64fe51c20011a6ee456815"]: {
+    ["0x50d22384026efc4b5bd3734a7456bfab35c929a4"]: {
         symbol: "BTC",
         logo: BTCLogo,
     },
     ["0x253f3460bc16074b960f80421d72e6fa6ef786c8"]: {
         symbol: "TOKEN",
         logo: TOKENLogo,
+    },
+    ["0x0ebdc0b736b34207f6e8abe10c282b4003021a22"]: {
+        symbol: "PROJECTX",
+        logo: ProjectXLogo,
+    },
+    ["0x1111111111111111111111111111111111111111"]: {
+        symbol: "YES",
+        logo: YesLogo,
+    },
+    ["0x2222222222222222222222222222222222222222"]: {
+        symbol: "NO",
+        logo: NoLogo,
+    },
+    ["0xc414eb715a9644349d6870362703ae119586555e"]: {
+        symbol: "BASE",
+        logo: BaseLogo,
+    },
+    ["0x6045450424c527bee1a2638d822d11bbca4f2a46"]: {
+        symbol: "AVUSDC",
+        logo: USDCLogo,
+    },
+    ["0xf115d73823b3268aaaa58691a3778c08dee77a91"]: {
+        symbol: "AVETH",
+        logo: EtherLogo,
     },
 };
 

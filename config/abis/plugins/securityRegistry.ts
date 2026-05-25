@@ -1,4 +1,4 @@
-export const securityRegistryAbi = [
+export const securityRegistryABI = [
     {
         inputs: [
             {

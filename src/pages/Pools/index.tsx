@@ -1,5 +1,6 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
+import PoolTokensFaucetModal from "@/components/modals/PoolTokensFaucetModal";
 import PoolsList from "@/components/pools/PoolsList";
 import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
 import { Button } from "@/components/ui/button";
@@ -9,26 +10,27 @@ import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PoolsPage = () => {
-
-    const { data: globalStatus } = useReadSecurityRegistryGlobalStatus()
+    const { data: globalStatus } = useReadSecurityRegistryGlobalStatus();
 
     const enableActions = globalStatus === SecurityState.ENABLED;
 
     return (
         <PageContainer>
-            <div className="w-full flex justify-between mb-8">
+            <div className="w-full flex items-center justify-between gap-3 mb-8">
                 <PageTitle title={"Pools"} showSettings={false} />
-                <SecurityStatusTag status={globalStatus} />
-                { enableActions && <Link to={"create"}>
-                    <Button
-                        variant={'primaryLink'}
-                        size={'md'}
-                        className="whitespace-nowrap rounded-full gap-2 ml-auto"
-                    >
-                        <Plus size={20} className="text-text-100" />
-                        Create a Pool
-                    </Button>
-                </Link> }
+
+                <div className="flex items-center gap-2 ml-auto justify-end flex-wrap min-w-1/3">
+                    <SecurityStatusTag status={globalStatus} />
+                    <PoolTokensFaucetModal />
+                    {enableActions && (
+                        <Link to={"create"}>
+                            <Button variant={"primaryLink"} size={"md"} className="whitespace-nowrap rounded-full gap-2">
+                                <Plus size={20} className="text-text-100" />
+                                Create a Pool
+                            </Button>
+                        </Link>
+                    )}
+                </div>
             </div>
 
             <div className="w-full">

@@ -59,6 +59,7 @@ export interface IChart {
     setChartSpan: (chartSpan: ChartSpanType) => void;
     chartType: ChartTypeType | PoolChartTypeType;
     setChartType: (chartType: ChartTypeType) => void;
+    showSpanSelector?: boolean;
     showTypeSelector?: boolean;
     height: number;
     // showAPR: boolean;
@@ -66,6 +67,8 @@ export interface IChart {
     tokenB?: string;
     isChartDataLoading: boolean;
     fadeOut?: boolean;
+    invert?: boolean;
+    prediction?: { lower?: number; lowerTimestamp?: number; greater?: number; greaterTimestamp?: number };
 }
 
 export type StatsCard = {

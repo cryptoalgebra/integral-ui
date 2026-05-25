@@ -84,3 +84,41 @@ export function formatDate(dateParam: Date | number, now: Date) {
 
   return getFormattedDate(date); // 10. January 2017. at 10:20
 }
+
+export const formatDateDDMM = (ts: string | number) => {
+  const date = new Date(Number(ts) * 1000);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${day}.${month} ${hours}:${minutes}`;
+};
+
+export function formatFutureTime(ms: number) {
+  if (ms <= 0) return "0m";
+
+  const totalSeconds = Math.floor(ms / 1000);
+
+  const days = Math.floor(totalSeconds / (60 * 60 * 24));
+  const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+
+  const parts = [];
+
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0 || days > 0) parts.push(`${hours}h`);
+  parts.push(`${minutes}m`);
+
+  return parts.join(" ");
+}
+
+export const toLocalTimestamp = (utcSeconds: number) => {
+  const date = new Date(utcSeconds * 1000);
+
+  return Math.floor(
+      (date.getTime() - date.getTimezoneOffset() * 60 * 1000) / 1000
+  );
+};

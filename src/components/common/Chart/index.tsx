@@ -6,7 +6,8 @@ import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
 import Loader from "../Loader";
 import { cn } from "@/utils";
-// import { bucketChartData } from "@/utils/chart/bucketChartData";
+import { toLocalTimestamp } from "@/utils/common/formatDate";
+
 
 export function Chart({
     chartData,
@@ -17,11 +18,14 @@ export function Chart({
     chartType,
     setChartType,
     showTypeSelector,
+    showSpanSelector = true,
     height,
     tokenA,
     tokenB,
     isChartDataLoading,
-    fadeOut
+    fadeOut,
+    invert,
+    prediction
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
@@ -83,9 +87,16 @@ export function Chart({
     useLayoutEffect(() => {
         if (!chartRef.current || !previousChartDataRef.current) return;
 
-        const effectiveData = isChartDataLoading ? previousChartDataRef.current : chartData;
+        let effectiveData = isChartDataLoading ? previousChartDataRef.current : chartData;
 
         effectiveData.sort((a, b) => a.time - b.time);
+
+        if (invert) {
+            effectiveData = effectiveData.map((el) => ({
+                ...el,
+                value: 1 / el.value
+            }))
+        }
 
         if (!isChartDataLoading) {
             previousChartDataRef.current = chartData;
@@ -155,18 +166,41 @@ export function Chart({
                 lineWidth: 2,
                 lastValueVisible: false,
                 priceLineVisible: false,
-                priceScaleId: "left",
+                priceScaleId: "right",
                 priceFormat: {
                     type: "custom",
                     formatter: (price: LightWeightCharts.BarPrice) => formatAmount(price),
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.map((v) => v.value)),
-                        maxValue: Math.max(...effectiveData.map((v) => v.value)),
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.concat(prediction?.lower ? [ { value: prediction.lower, time: toLocalTimestamp(Math.floor(Date.now() / 1000)) as LightWeightCharts.UTCTimestamp }] : prediction?.greater ? [{ value: prediction.greater, time: toLocalTimestamp(Math.floor(Date.now() / 1000)) as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.concat(prediction?.greater ? [ { value: prediction.greater, time: toLocalTimestamp(Math.floor(Date.now() / 1000)) as LightWeightCharts.UTCTimestamp }] : [] ).map((v) => v.value)),
                     },
                 }),
             });
+
+            if (prediction?.lower) {
+                series.createPriceLine({
+                    price: prediction.lower,
+                    color: '#ff9fad',
+                    lineWidth: 1,
+                    lineStyle: 2, // solid
+                    axisLabelVisible: true,
+                    title: String(prediction.lower),
+                })
+            }
+
+            if (prediction?.greater) {
+                series.createPriceLine({
+                    price: prediction.greater,
+                    color: '#7bf1a7',
+                    lineWidth: 1,
+                    lineStyle: 2, // solid
+                    axisLabelVisible: true,
+                    title: String(prediction.greater),
+                })
+            }
+            
         } else {
             series = chart?.addHistogramSeries({
                 color: `${primary200}CC`,
@@ -186,17 +220,36 @@ export function Chart({
             });
         }
 
-        // const bucketSize = chartSpan === CHART_SPAN.WEEK ? 3600 : chartSpan === CHART_SPAN.DAY ? 600 : 3600 * 24;
-
-        // const bucketedData = bucketChartData(effectiveData, bucketSize);
-
-        series.setData(effectiveData);
+        series.setData(
+            effectiveData.map((point) => ({
+                ...point,
+                time: toLocalTimestamp(point.time) as LightWeightCharts.UTCTimestamp
+            }))
+        );
 
         chart.timeScale().fitContent();
+        (chart.timeScale() as any).applyOptions({
+            timeVisible: true,
+            secondsVisible: false,
+            tickMarkFormatter: (time: any) => {
+                let date: Date;
+
+                if (typeof time === "number") {
+                    date = new Date(time * 1000);
+                } else {
+                    date = new Date(time.year, time.month - 1, time.day);
+                }
+        
+                return date.toLocaleTimeString(undefined, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            },
+        })
 
         setChart(chart);
         setSeries(series);
-    }, [chartRef, chartData, chartView, isChartDataLoading, height, chartSpan]);
+    }, [chartRef, chartData, chartView, isChartDataLoading, height, chartSpan, prediction]);
 
     useEffect(() => {
         if (!chartCreated) return undefined;
@@ -216,7 +269,7 @@ export function Chart({
                 <div>
                     <div className="mb-2 font-semibold">{chartTitle}</div>
 
-                    <div className="mb-2 text-2xl font-semibold">
+                    <div className="mb-2 text-xl font-semibold">
                         {displayValue !== undefined ? (
                             chartType === POOL_CHART_TYPE.PRICE ? (
                                 tokenA && tokenB ? (
@@ -240,14 +293,14 @@ export function Chart({
                 </div>
 
                 <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
-                    <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />
+                    {showSpanSelector && <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />}
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>
             </div>
-            <div className={cn('relative', fadeOut && 'soft-div' )}>
+            <div className={cn('relative', fadeOut && !prediction && 'soft-div' )}>
                 {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
                     <div className="w-full h-full min-h-[180px] flex items-center justify-center">
-                        <Loader className="w-10 h-10" />
+                        {!prediction && <Loader className="w-10 h-10" />}
                     </div>
                 ) : (
                     <div

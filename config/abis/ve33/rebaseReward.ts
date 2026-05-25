@@ -1,4 +1,4 @@
-export const rebaseRewardAbi = [
+export const rebaseRewardABI = [
     { type: "constructor", inputs: [], stateMutability: "nonpayable" },
     {
         type: "function",

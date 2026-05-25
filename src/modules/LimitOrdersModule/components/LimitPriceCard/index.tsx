@@ -60,7 +60,7 @@ export const LimitPriceCard = ({
     }, [currency, otherCurrency]);
 
     return (
-        <div className={`flex flex-col gap-4 bg-card-dark p-3 border boder-card-border rounded-lg ${disabled ? "disabled" : ""} `}>
+        <div className={`flex flex-col gap-4 bg-card-light p-3 rounded-xl ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
                 <div className="text-sm font-semibold">
                     {currency
@@ -103,7 +103,7 @@ export const LimitPriceCard = ({
                     onInput={handleInput}
                     disabled={disabled}
                     onUserInput={(v) => setLocalPrice(v)}
-                    className={`text-left border-none text-xl font-bold p-0`}
+                    className={`text-left bg-card-light border-none text-xl font-bold p-0`}
                     placeholder={"0.0"}
                     maxDecimals={limitOrderType === LimitOrderDirection.SELL ? otherCurrency?.decimals : currency?.decimals}
                 />
