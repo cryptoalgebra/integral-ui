@@ -96,8 +96,8 @@ export const usePendingTransactionsStore = create(
             merge(persistedState, currentState) {
                 return deepMerge(currentState, persistedState);
             },
-        }
-    )
+        },
+    ),
 );
 
 export function usePendingTransactions() {
@@ -115,21 +115,25 @@ export function usePendingTransactions() {
         const pendingTransactionsList = Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading);
         for (const [txHash] of pendingTransactionsList) {
             waitForTransactionReceipt(config, { confirmations: 1, hash: txHash as Address })
-                .then(() =>
-                    updatePendingTransaction(account, txHash as Address, {
-                        ...pendingTransactions[account][txHash as Address],
-                        loading: false,
-                        success: true,
-                        error: null,
-                    })
-                )
+                .then((data) => {
+                    if (data.status === "success") {
+                        updatePendingTransaction(account, txHash as Address, {
+                            ...pendingTransactions[account][txHash as Address],
+                            loading: false,
+                            success: true,
+                            error: null,
+                        });
+                    } else {
+                        throw new Error(`Transaction ${txHash} failed with status: ${data.status}`);
+                    }
+                })
                 .catch((error) =>
                     updatePendingTransaction(account, txHash as Address, {
                         ...pendingTransactions[account][txHash as Address],
                         loading: false,
                         success: false,
                         error,
-                    })
+                    }),
                 );
         }
     }, [config, pendingTransactions, updatePendingTransaction, account]);

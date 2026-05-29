@@ -2,7 +2,7 @@ import { ContractConfig } from "@wagmi/cli";
 import { AppKitNetwork } from "@reown/appkit/networks";
 import {
     algebraBasePluginV1ABI,
-    algebraCustomPoolEntryPointABI,
+    algebraCustomPluginFactoryABI,
     algebraEternalFarmingABI,
     algebraFactoryABI,
     algebraPoolABI,
@@ -82,7 +82,7 @@ const rawContracts = [
     { name: "FarmingCenter", abi: farmingCenterABI },
     { name: "AlgebraVirtualPool", abi: algebraVirtualPoolABI },
     { name: "LimitOrderManager", abi: limitOrderManagerABI },
-    { name: "AlgebraCustomPoolEntryPoint", abi: algebraCustomPoolEntryPointABI },
+    { name: "AlgebraCustomPluginFactory", abi: algebraCustomPluginFactoryABI },
     { name: "WrappedNative", abi: wNativeABI },
     { name: "Voter", abi: voterABI },
     { name: "VotingReward", abi: votingRewardABI },

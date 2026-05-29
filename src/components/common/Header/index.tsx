@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
 import { useAccount } from "wagmi";
-import { usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
+import { usePendingTransactions } from "@/state/pendingTransactionsStore";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { cn, truncateHash } from "@/utils";
 import Settings from "../Settings";
@@ -71,7 +71,7 @@ const NetworkSelectorAction = () => {
 
 const TransactionHistoryAction = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { pendingTransactions } = usePendingTransactionsStore();
+    const pendingTransactions = usePendingTransactions();
 
     const { address: account } = useAccount();
 
