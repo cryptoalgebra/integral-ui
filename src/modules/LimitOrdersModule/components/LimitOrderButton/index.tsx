@@ -64,7 +64,7 @@ export const LimitOrderButton = ({
 
     const chainId = useChainId();
 
-    const needAllowance = useNeedAllowance(
+    const { needAllowance } = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
         inputAmount,
         LIMIT_ORDER_MANAGER[chainId],
@@ -148,7 +148,7 @@ export const LimitOrderButton = ({
         );
     }
 
-    if (!disabled && needAllowance)
+    if (!disabled && needAllowance) {
         return (
             <Button
                 variant={"primary"}
@@ -158,6 +158,7 @@ export const LimitOrderButton = ({
                 {approvalState === ApprovalState.PENDING ? <Loader /> : `Approve ${inputAmount?.currency.symbol}`}
             </Button>
         );
+    }
 
     return (
         <Button

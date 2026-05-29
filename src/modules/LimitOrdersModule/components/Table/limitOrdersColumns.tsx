@@ -87,7 +87,7 @@ const TokenRates = ({ rates }: { rates: Rates }) => (
 );
 
 const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellToken: Token; buyToken: Token }) => (
-    <div className="relative flex h-[25px] bg-card-dark rounded-xl">
+    <div className="relative w-full flex h-[25px] bg-card-dark rounded-xl">
         <div className="relative flex w-full h-full font-semibold text-sm">
             <div
                 className={`flex items-center justify-end pl-1 pr-2 h-full bg-primary-100 border border-card-border duration-300 ${
@@ -106,7 +106,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
                 <CurrencyLogo currency={buyToken} size={22} className="absolute right-1" />
             </div>
             <span className="absolute left-1/2 top-1/2 transform -translate-y-1/2 -translate-x-1/2">{`${Number(
-                progress
+                progress,
             ).toFixed()}%`}</span>
         </div>
     </div>
@@ -186,29 +186,34 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrderInfo) => {
 export const limitOrderColumns: ColumnDef<LimitOrderInfo>[] = [
     {
         accessorKey: "time",
-        header: () => <HeaderItem className="ml-4">Time</HeaderItem>,
-        cell: ({ getValue }) => <div className="ml-4">{(getValue() as Date).toLocaleString()}</div>,
+        header: () => <HeaderItem className="ml-0">Time</HeaderItem>,
+        cell: ({ getValue }) => <div className="ml-1  whitespace-nowrap">{(getValue() as Date).toLocaleString()}</div>,
         sortingFn: (rowA, rowB) => rowA.original.time.getTime() - rowB.original.time.getTime(),
+        size: 200,
     },
     {
         accessorKey: "amounts.sell",
         header: () => <HeaderItem>You sell</HeaderItem>,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
+        size: 180,
     },
     {
         accessorKey: "amounts.buy",
         header: () => <HeaderItem>You buy</HeaderItem>,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
+        size: 180,
     },
     {
         accessorKey: "rates",
         header: () => <HeaderItem>Rates</HeaderItem>,
         cell: ({ getValue }) => <TokenRates rates={getValue() as Rates} />,
+        size: 240,
     },
     {
         accessorKey: "ticks",
         header: () => <HeaderItem>Status</HeaderItem>,
         cell: ({ getValue, row }) => <LimitOrderStatus ticks={getValue() as Ticks} amounts={row.original.amounts} />,
+        size: 200,
     },
     {
         id: "action",
@@ -217,5 +222,6 @@ export const limitOrderColumns: ColumnDef<LimitOrderInfo>[] = [
                 <Action {...props.row.original} />
             </div>
         ),
+        size: 120,
     },
 ];

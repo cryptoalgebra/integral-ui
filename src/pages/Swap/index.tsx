@@ -50,10 +50,14 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     <PageTitle title={"Trade"} showSettings={false} />
                 </div>
 
-                <div className={cn("mb-3 grid w-full grid-cols-1 items-start gap-3 transition-all duration-200 ease-out lg:grid-cols-5")}>
+                <div
+                    className={cn(
+                        "mb-3 grid w-full grid-cols-1 items-start gap-3 transition-all duration-200 ease-out lg:grid-cols-4 xl:grid-cols-5",
+                    )}
+                >
                     <div
                         className={cn(
-                            "flex h-fit w-full flex-col gap-3 lg:sticky top-58 lg:col-span-2  max-w-[580px]",
+                            "flex z-10 h-fit w-full flex-col gap-3 lg:sticky top-58 lg:col-span-2  max-w-[580px]",
                             hasRightColumn ? "lg:col-span-2 lg:min-w-[492px]" : "lg:col-span-5",
                         )}
                     >
@@ -65,7 +69,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     </div>
 
                     {hasRightColumn && (
-                        <div className="flex min-w-0 flex-col gap-3 overflow-y-auto lg:col-span-3">
+                        <div className="flex min-w-0 flex-col gap-3 overflow-y-auto md:col-span-2 xl:col-span-3">
                             {isLoadingMarkets
                                 ? null
                                 : isPredictionPool && (

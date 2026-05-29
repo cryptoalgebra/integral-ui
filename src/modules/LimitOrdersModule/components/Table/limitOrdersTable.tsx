@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
     ColumnDef,
     ColumnFiltersState,
+    ColumnSizingState,
     SortingState,
     flexRender,
     getCoreRowModel,
@@ -39,6 +40,7 @@ export const LimitOrdersTable = <TData, TValue>({
 }: DataTableProps<TData, TValue>) => {
     const [sorting, setSorting] = useState<SortingState>(defaultSortingID ? [{ id: defaultSortingID, desc: true }] : []);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
     const navigate = useNavigate();
 
@@ -51,9 +53,12 @@ export const LimitOrdersTable = <TData, TValue>({
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
+        onColumnSizingChange: setColumnSizing,
+        columnSizeMode: "manual",
         state: {
             sorting,
             columnFilters,
+            columnSizing,
         },
     });
 
@@ -71,55 +76,69 @@ export const LimitOrdersTable = <TData, TValue>({
           className="max-w-sm"
         />
       </div>} */}
-            <Table>
-                <TableHeader className="[&_tr]:border-b-0">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                            {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl font-semibold">
-                                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody className="hover:bg-transparent text-[16px]">
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row: any) => {
-                            const isSelected = Number(selectedRow) === Number(row.original.id);
 
-                            return (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card-dark"} ${
-                                        (action || link) && "cursor-pointer"
-                                    } ${action || link ? "hover:bg-card-hover" : "hover:bg-card-dark"}`}
-                                    onClick={() => {
-                                        if (action) {
-                                            action(row.original.id);
-                                        } else if (link) {
-                                            navigate(`/${link}/${row.original.id}`);
-                                        }
-                                    }}
-                                >
-                                    {row.getVisibleCells().map((cell: any) => (
-                                        <TableCell key={cell.id} className="rounded-l text-left">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            );
-                        })
-                    ) : (
-                        <TableRow className="hover:bg-card h-full">
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+            <div className="w-full overflow-x-auto">
+                <Table className="w-full border-collapse">
+                    <TableHeader className="[&_tr]:border-b-0">
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id} className="hover:bg-transparent flex">
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead
+                                        key={header.id}
+                                        className="rounded-xl font-semibold flex-shrink-0 flex items-center"
+                                        style={{ width: `${header.getSize()}px` }}
+                                    >
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody className="hover:bg-transparent text-[16px]">
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row: any) => {
+                                const isSelected = Number(selectedRow) === Number(row.original.id);
+
+                                return (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                        className={`flex border-card-border/40 ${
+                                            isSelected ? "bg-muted-primary/60" : "bg-card-dark"
+                                        } ${(action || link) && "cursor-pointer"} ${
+                                            action || link ? "hover:bg-card-hover" : "hover:bg-card-dark"
+                                        }`}
+                                        onClick={() => {
+                                            if (action) {
+                                                action(row.original.id);
+                                            } else if (link) {
+                                                navigate(`/${link}/${row.original.id}`);
+                                            }
+                                        }}
+                                    >
+                                        {row.getVisibleCells().map((cell: any) => (
+                                            <TableCell
+                                                key={cell.id}
+                                                className="rounded-l text-left flex-shrink-0 flex items-center text-sm"
+                                                style={{ width: `${cell.column.columnDef.size}px` }}
+                                            >
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                );
+                            })
+                        ) : (
+                            <TableRow className="hover:bg-card h-full">
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+
             {showPagination && (
                 <div className="flex items-center justify-end space-x-2 pt-4 pb-2 px-4 mt-auto">
                     <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
