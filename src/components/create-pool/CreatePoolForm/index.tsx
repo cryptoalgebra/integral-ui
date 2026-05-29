@@ -199,7 +199,7 @@ const CreatePoolForm = () => {
                 {enabledModules.CustomPoolsModule ? (
                     <div className="rounded-xl bg-card-light px-3 py-3">
                         <div className="mb-2 text-xs uppercase tracking-wide text-text-300 text-left">Plugin</div>
-                        <div className="grid w-full grid-cols-4 gap-2">
+                        <div className="grid w-full grid-cols-3 gap-2">
                             {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
                                 <Button
                                     variant={poolDeployer === v ? "iconActive" : "outline"}

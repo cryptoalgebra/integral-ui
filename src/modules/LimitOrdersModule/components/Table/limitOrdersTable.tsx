@@ -54,7 +54,6 @@ export const LimitOrdersTable = <TData, TValue>({
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         onColumnSizingChange: setColumnSizing,
-        columnSizeMode: "manual",
         state: {
             sorting,
             columnFilters,
