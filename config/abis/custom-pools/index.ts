@@ -1,1 +1,1 @@
-export * from "./algebraCustomPoolEntryPoint";
+export * from "./algebraCustomPluginFactory";

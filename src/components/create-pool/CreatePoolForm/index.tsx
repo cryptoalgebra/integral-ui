@@ -20,7 +20,7 @@ import { TOKENS, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES, NO
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
-import { useWriteAlgebraCustomPoolEntryPointCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
+import { useWriteAlgebraCustomPluginFactoryCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { isDefined } from "@/utils";
 import { FormContainer } from "@/components/common/FormContainer";
 
@@ -56,7 +56,6 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_03]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_1]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
         }),
         [chainid],
     );
@@ -71,38 +70,29 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         enabledModules.CustomPoolsModule && areCurrenciesSelected && !isSameToken
-            ? [
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
-              ]
-                  .filter(isDefined)
-                  .map(
-                      (customPoolDeployer) =>
-                          computeCustomPoolAddress({
-                              tokenA: currencyA.wrapped,
-                              tokenB: currencyB.wrapped,
-                              customPoolDeployer,
-                          }) as Address,
-                  )
+            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid], CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid]].filter(isDefined).map(
+                  (customPoolDeployer) =>
+                      computeCustomPoolAddress({
+                          tokenA: currencyA.wrapped,
+                          tokenB: currencyB.wrapped,
+                          customPoolDeployer,
+                      }) as Address,
+              )
             : [];
 
     const [poolState] = usePool(poolAddress);
 
     // TODO
-    // All Inclusive
-    const [poolState0] = usePool(customPoolsAddresses[0]);
     // Base 0.3%
     const [poolState1] = usePool(customPoolsAddresses[1]);
     // Base 1%
     const [poolState2] = usePool(customPoolsAddresses[2]);
 
     const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC;
-    const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE;
     const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_03;
     const isPool2Exists = poolState2 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_1;
 
-    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists || isPool2Exists;
+    const isSelectedCustomPoolExists = isPoolExists || isPool1Exists || isPool2Exists;
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -155,7 +145,7 @@ const CreatePoolForm = () => {
               }
             : undefined;
 
-    const { data: createCustomPoolData, writeContract: createCustomPool } = useWriteAlgebraCustomPoolEntryPointCreateCustomPool();
+    const { data: createCustomPoolData, writeContract: createCustomPool } = useWriteAlgebraCustomPluginFactoryCreateCustomPool();
 
     const { isLoading: isCustomPoolLoading } = useTransactionAwait(createCustomPoolData, {
         title: "Create Custom Pool",

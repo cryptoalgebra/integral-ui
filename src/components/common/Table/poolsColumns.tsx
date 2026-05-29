@@ -97,7 +97,7 @@ export const poolsColumns: ColumnDef<FormattedPool>[] = ([
             [v.original.pair.token0.symbol, v.original.pair.token1.symbol, v.original.pair.token0.name, v.original.pair.token1.name]
                 .join(" ")
                 .toLowerCase()
-                .includes(value),
+                .includes(value.toLowerCase()),
     },
     enabledModules.CustomPoolsModule && {
         accessorKey: "deployer",

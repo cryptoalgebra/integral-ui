@@ -45,11 +45,11 @@ export function LimitOrderForm({ derivedSwap }: { derivedSwap: IDerivedSwapInfo 
     const [wasInverted, setWasInverted] = useState(false);
 
     const limitOrderPoolAddress =
-        token0 && token1 && !showWrap && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+        token0 && token1 && !showWrap && CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainId]
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainId],
               }) as Address)
             : undefined;
 

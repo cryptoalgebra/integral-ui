@@ -2,6 +2,8 @@ import { Currency } from "@cryptoalgebra/integral-sdk";
 import React from "react";
 import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
+import USDCBlackLogo from "@/assets/tokens/usdc-black.png";
+import USDTBlackLogo from "@/assets/tokens/usdt-black.png";
 import EtherLogo from "@/assets/tokens/ether.svg";
 import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
@@ -55,6 +57,14 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ["0x6045450424c527bee1a2638d822d11bbca4f2a46"]: {
         symbol: "AVUSDC",
         logo: USDCLogo,
+    },
+    ["0x65fe07029aef84048eb01a81b6d2bf86becea77f"]: {
+        symbol: "AUSDT",
+        logo: USDTBlackLogo,
+    },
+    ["0x39d39e0807a20615445c69e2b1bfead87dcec9e1"]: {
+        symbol: "AUSC",
+        logo: USDCBlackLogo,
     },
     ["0xf115d73823b3268aaaa58691a3778c08dee77a91"]: {
         symbol: "AVETH",

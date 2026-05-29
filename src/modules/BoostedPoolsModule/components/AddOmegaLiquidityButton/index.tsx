@@ -18,12 +18,19 @@ interface AddOmegaLiquidityButtonProps {
     poolAddress?: Address;
     tokenId?: number;
     handleCloseModal?: () => void;
+    disabled?: boolean;
 }
 
 const ZERO_PERCENT = new Percent("0");
 const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 
-export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handleCloseModal }: AddOmegaLiquidityButtonProps) => {
+export const AddOmegaLiquidityButton = ({
+    mintInfo,
+    poolAddress,
+    tokenId,
+    handleCloseModal,
+    disabled = false,
+}: AddOmegaLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
     const { open } = useAppKit();
@@ -121,7 +128,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
         mintInfo.position,
         mintOptions,
         poolAddress,
-        handleCloseModal
+        handleCloseModal,
     );
 
     // Check if we need approval or permit for token0
@@ -141,7 +148,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
             (mintInfo.depositADisabled ? true : !needsToken0ApprovalOrPermit) &&
                 (mintInfo.depositBDisabled ? true : !needsToken1ApprovalOrPermit) &&
                 !mintInfo.errorMessage &&
-                !mintInfo.invalidRange
+                !mintInfo.invalidRange,
         );
     }, [mintInfo, needsToken0ApprovalOrPermit, needsToken1ApprovalOrPermit]);
 
@@ -232,7 +239,7 @@ export const AddOmegaLiquidityButton = ({ mintInfo, poolAddress, tokenId, handle
     return (
         <Button
             variant={"primary"}
-            disabled={!isReady || isAddingLiquidityLoading || !addLiquidity}
+            disabled={disabled || !isReady || isAddingLiquidityLoading || !addLiquidity}
             onClick={() => {
                 try {
                     addLiquidity?.();

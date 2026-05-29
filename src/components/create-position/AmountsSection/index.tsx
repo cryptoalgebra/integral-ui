@@ -1,11 +1,11 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import TokenRatio from "../TokenRatio";
-import { Currency } from "@cryptoalgebra/integral-sdk";
+import { Currency, Bound } from "@cryptoalgebra/integral-sdk";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { usePositionAPR } from "@/hooks/positions/usePositionAPR";
 import { getPoolAPR } from "@/utils/pool/getPoolAPR";
 import { Address } from "viem";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import EnterAmounts from "../EnterAmounts";
 import { useParams } from "react-router-dom";
 import { formatAmount } from "@/utils";
@@ -40,10 +40,29 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
     const { data: token0Apr } = useBoostedTokenAPR(currencyA?.wrapped.isBoosted ? (currencyA.wrapped.address as Address) : undefined);
     const { data: token1Apr } = useBoostedTokenAPR(currencyB?.wrapped.isBoosted ? (currencyB.wrapped.address as Address) : undefined);
 
+    const isTicksAlignedWithSpacing = useMemo(() => {
+        if (!mintInfo.pool) return true;
+
+        const tickLower = mintInfo.ticks[Bound.LOWER];
+        const tickUpper = mintInfo.ticks[Bound.UPPER];
+        const tickSpacing = mintInfo.pool.tickSpacing;
+
+        if (tickLower === undefined || tickUpper === undefined) return true;
+
+        return tickLower % tickSpacing === 0 && tickUpper % tickSpacing === 0;
+    }, [mintInfo.pool, mintInfo.ticks]);
+
     useEffect(() => {
         if (!poolAddress) return;
         getPoolAPR(poolAddress).then(setPoolAPR);
     }, [poolAddress]);
+
+    if (!isTicksAlignedWithSpacing)
+        return (
+            <div className="p-3 bg-red-400/10 border border-red-400/30 rounded-lg text-red-400 text-sm">
+                Cannot add liquidity to this position: tick range must be aligned to pool's tick spacing
+            </div>
+        );
 
     return (
         <>
@@ -81,12 +100,14 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
                     </div>
                 </div>
             </div>
+
             {shouldUseOmegaRouter ? (
                 <AddOmegaLiquidityButton
                     mintInfo={mintInfo}
                     poolAddress={poolAddress}
                     tokenId={tokenId}
                     handleCloseModal={handleCloseModal}
+                    disabled={!isTicksAlignedWithSpacing}
                 />
             ) : (
                 <AddLiquidityButton
@@ -96,6 +117,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, handleCloseMo
                     poolAddress={poolAddress}
                     tokenId={tokenId}
                     handleCloseModal={handleCloseModal}
+                    disabled={!isTicksAlignedWithSpacing}
                 />
             )}
         </>

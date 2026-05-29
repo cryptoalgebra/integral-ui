@@ -23,6 +23,7 @@ interface AddLiquidityButtonProps {
     poolAddress?: Address;
     tokenId?: number;
     handleCloseModal?: () => void;
+    disabled?: boolean;
 }
 
 const ZERO_PERCENT = new Percent("0");
@@ -35,6 +36,7 @@ export const AddLiquidityButton = ({
     poolAddress,
     tokenId,
     handleCloseModal,
+    disabled = false,
 }: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
@@ -89,11 +91,11 @@ export const AddLiquidityButton = ({
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
-        NONFUNGIBLE_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId],
     );
     const { approvalState: approvalStateB, approvalCallback: approvalCallbackB } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_B],
-        NONFUNGIBLE_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId],
     );
 
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING;
@@ -105,7 +107,7 @@ export const AddLiquidityButton = ({
             (mintInfo.depositADisabled ? true : approvalStateA === ApprovalState.APPROVED) &&
                 (mintInfo.depositBDisabled ? true : approvalStateB === ApprovalState.APPROVED) &&
                 !mintInfo.errorMessage &&
-                !mintInfo.invalidRange
+                !mintInfo.invalidRange,
         );
     }, [mintInfo, approvalStateA, approvalStateB]);
 
@@ -128,7 +130,7 @@ export const AddLiquidityButton = ({
             tokenB: quoteCurrency?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        isIncreaseMode ? undefined : `/pool/${poolAddress}`
+        isIncreaseMode ? undefined : `/pool/${poolAddress}`,
     );
 
     useEffect(() => {
@@ -180,7 +182,7 @@ export const AddLiquidityButton = ({
 
     return (
         <Button
-            disabled={!isReady || isAddingLiquidityLoading || isPending}
+            disabled={disabled || !isReady || isAddingLiquidityLoading || isPending}
             onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
             variant={"primary"}
         >

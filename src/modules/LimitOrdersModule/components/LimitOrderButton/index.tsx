@@ -86,14 +86,14 @@ export const LimitOrderButton = ({
     const { approvalState, approvalCallback } = useApprove(inputAmount, LIMIT_ORDER_MANAGER[chainId]);
 
     const placeLimitOrderConfig =
-        isReady && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+        isReady && CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainId]
             ? {
                   address: LIMIT_ORDER_MANAGER[chainId],
                   args: [
                       {
                           token0: token0.address as Address,
                           token1: token1.address as Address,
-                          deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                          deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainId],
                       },
                       limitOrder.tickLower,
                       zeroToOne,

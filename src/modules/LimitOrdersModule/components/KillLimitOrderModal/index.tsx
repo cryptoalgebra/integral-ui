@@ -31,13 +31,13 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
         };
     }, [positionLO.amount0, positionLO.amount1, value]);
 
-    const killConfig = CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+    const killConfig = CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainId]
         ? {
               args: [
                   {
                       token0: pool.token0.address as Address,
                       token1: pool.token1.address as Address,
-                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainId],
                   },
                   ticks.tickLower,
                   ticks.tickUpper,

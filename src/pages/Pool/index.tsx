@@ -10,7 +10,7 @@ import { FormattedPosition } from "@/types/formatted-position";
 import { getPositionAPR } from "@/utils/positions/getPositionAPR";
 import { getPositionFees } from "@/utils/positions/getPositionFees";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { CurrencyAmount, ZERO } from "@cryptoalgebra/integral-sdk";
+import { CurrencyAmount, Position, ZERO } from "@cryptoalgebra/integral-sdk";
 import { MoveRightIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -19,7 +19,6 @@ import JSBI from "jsbi";
 import { Address, parseUnits } from "viem";
 import ALMModule from "@/modules/ALMModule";
 import FarmingModule from "@/modules/FarmingModule";
-import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
 import { useAppKit } from "@reown/appkit/react";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
@@ -69,12 +68,12 @@ const PoolPage = () => {
             .filter(({ pool }) => pool.toLowerCase() === poolId.toLowerCase())
             .map((position) => ({
                 positionId: position.tokenId,
-                position: createUncheckedPosition(
-                    poolEntity,
-                    position.liquidity.toString(),
-                    Number(position.tickLower),
-                    Number(position.tickUpper),
-                ),
+                position: Position.fromExistingPosition({
+                    pool: poolEntity,
+                    liquidity: position.liquidity.toString(),
+                    tickLower: Number(position.tickLower),
+                    tickUpper: Number(position.tickUpper),
+                }),
             }));
     }, [positions, poolEntity, poolId]);
 
