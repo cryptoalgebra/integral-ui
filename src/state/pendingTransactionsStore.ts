@@ -112,13 +112,15 @@ export function usePendingTransactions() {
 
     useEffect(() => {
         if (!account || !config) return;
-        const pendingTransactionsList = Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading);
+        const accountTransactions = pendingTransactions[account];
+        if (!accountTransactions) return;
+        const pendingTransactionsList = Object.entries(accountTransactions).filter(([, transaction]) => transaction.loading);
         for (const [txHash] of pendingTransactionsList) {
             waitForTransactionReceipt(config, { confirmations: 1, hash: txHash as Address })
                 .then((data) => {
                     if (data.status === "success") {
                         updatePendingTransaction(account, txHash as Address, {
-                            ...pendingTransactions[account][txHash as Address],
+                            ...accountTransactions[txHash as Address],
                             loading: false,
                             success: true,
                             error: null,
@@ -129,7 +131,7 @@ export function usePendingTransactions() {
                 })
                 .catch((error) =>
                     updatePendingTransaction(account, txHash as Address, {
-                        ...pendingTransactions[account][txHash as Address],
+                        ...accountTransactions[txHash as Address],
                         loading: false,
                         success: false,
                         error,
