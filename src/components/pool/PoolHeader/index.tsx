@@ -67,16 +67,17 @@ const PoolHeader = ({ currencyA, currencyB, poolId, poolStatus, stats, showCreat
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 md:justify-end">
-                    <a
-                        href={`${blockExplorerURL}/address/${poolId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-card-border bg-card-light text-text-300 transition-colors hover:text-text-100"
-                        aria-label="Open pool in block explorer"
-                    >
-                        <ExternalLink size={18} />
-                    </a>
+                <div className="flex items-center gap-3 md:justify-end">
+                    <Link to={`${blockExplorerURL}/address/${poolId}`} target="_blank">
+                        <Button
+                            variant={"icon"}
+                            size={"sm"}
+                            className="flex gap-2 min-h-12 min-w-12 rounded-full border border-card-border"
+                            aria-label="Transaction history"
+                        >
+                            <ExternalLink size={20} />
+                        </Button>
+                    </Link>
 
                     {showCreatePosition && (
                         <Button variant="primaryLink" size="md" className="whitespace-nowrap rounded-full gap-2" asChild>

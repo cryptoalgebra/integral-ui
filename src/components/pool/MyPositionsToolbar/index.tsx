@@ -31,6 +31,10 @@ const MyPositionsToolbar = ({ positionsData }: MyPositionsToolbar) => {
         },
     ];
 
+    if (!positionsData.length) {
+        return null;
+    }
+
     return (
         <div className="flex w-full flex-col gap-3 pb-3">
             <div className="flex items-center justify-between gap-3">
