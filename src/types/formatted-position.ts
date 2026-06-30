@@ -3,6 +3,7 @@ import { Position } from "@cryptoalgebra/integral-sdk";
 export interface FormattedPosition {
     id: string;
     outOfRange: boolean;
+    isClosed: boolean;
     range: string;
     liquidityUSD: number;
     feesUSD: number | null;

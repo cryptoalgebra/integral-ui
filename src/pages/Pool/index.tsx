@@ -5,6 +5,7 @@ import PositionCard from "@/components/position/PositionCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePool, SecurityState } from "@/hooks/pools/usePool";
+import { usePoolStats } from "@/hooks/pools/usePoolStats";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { FormattedPosition } from "@/types/formatted-position";
 import { getPositionAPR } from "@/utils/positions/getPositionAPR";
@@ -60,6 +61,8 @@ const PoolPage = () => {
     const { data: globalStatus } = useReadSecurityRegistryGlobalStatus();
 
     const effectiveStatus = globalStatus !== SecurityState.ENABLED ? globalStatus : poolSecurityStatus;
+
+    const poolStats = usePoolStats(poolId);
 
     const filteredPositions = useMemo(() => {
         if (!positions || !poolEntity) return [];
@@ -131,6 +134,9 @@ const PoolPage = () => {
             );
 
             return positionsAPRs;
+        },
+        {
+            keepPreviousData: true,
         },
     );
 
@@ -210,16 +216,18 @@ const PoolPage = () => {
 
     return (
         <PageContainer>
-            <PoolHeader showCreatePosition={effectiveStatus === SecurityState.ENABLED} />
+            <PoolHeader
+                currencyA={poolEntity && unwrappedToken(poolEntity.token0)}
+                currencyB={poolEntity && unwrappedToken(poolEntity.token1)}
+                poolId={poolId}
+                poolStatus={effectiveStatus}
+                stats={poolStats}
+                showCreatePosition={effectiveStatus === SecurityState.ENABLED}
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full mt-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full">
                 <div className="col-span-2">
-                    <MyPositionsToolbar
-                        currencyA={poolEntity && unwrappedToken(poolEntity.token0)}
-                        currencyB={poolEntity && unwrappedToken(poolEntity.token1)}
-                        positionsData={positionsData}
-                        poolStatus={effectiveStatus}
-                    />
+                    <MyPositionsToolbar positionsData={positionsData} />
                     {!account ? (
                         <NoAccount />
                     ) : isLoading ? (
@@ -275,13 +283,15 @@ const PoolPage = () => {
 };
 
 const NoPositions = ({ poolId }: { poolId: Address }) => (
-    <div className="flex flex-col items-start gap-4 p-6 bg-card border border-card-border rounded-xl animate-fade-in">
-        <h2 className="text-2xl font-bold text-left">You don't have positions for this pool</h2>
-        <p className="text-md font-semibold">Let's create one!</p>
-        <Button variant={"primary"} className="gap-2" asChild>
+    <div className="flex min-h-[220px] flex-col items-center justify-center gap-4 rounded-2xl border border-card-border bg-card/70 p-6 text-center animate-fade-in">
+        <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-bold">No positions found</h2>
+            <p className="text-sm font-semibold text-text-300">Create a position to start providing liquidity in this pool.</p>
+        </div>
+        <Button variant="primary" className="gap-2" size="md" asChild>
             <Link to={`/pool/${poolId}/new-position`}>
                 Create Position
-                <MoveRightIcon />
+                <MoveRightIcon size={18} />
             </Link>
         </Button>
     </div>
@@ -291,10 +301,12 @@ const NoAccount = () => {
     const { open } = useAppKit();
 
     return (
-        <div className="flex flex-col items-start p-6 bg-card border border-card-border rounded-xl animate-fade-in">
-            <h2 className="text-2xl font-bold">Connect Wallet</h2>
-            <p className="text-md font-semibold my-4">Connect your account to view or create positions</p>
-            <Button variant={"primary"} size={"lg"} onClick={() => open()}>
+        <div className="flex min-h-[220px] flex-col items-center justify-center gap-4 rounded-2xl border border-card-border bg-card/70 p-6 text-center animate-fade-in">
+            <div className="flex flex-col gap-1">
+                <h2 className="text-xl font-bold">Connect Wallet</h2>
+                <p className="text-sm font-semibold text-text-300">Connect your account to view or create positions.</p>
+            </div>
+            <Button variant="primary" size="md" onClick={() => open()}>
                 Connect Wallet
             </Button>
         </div>
@@ -302,7 +314,7 @@ const NoAccount = () => {
 };
 
 const LoadingState = () => (
-    <div className="flex flex-col w-full gap-4 p-4 bg-card rounded-xl">
+    <div className="flex flex-col w-full gap-3 rounded-2xl border border-card-border bg-card/70 p-4">
         {[1, 2, 3, 4].map((v) => (
             <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-card-light rounded-xl" />
         ))}
