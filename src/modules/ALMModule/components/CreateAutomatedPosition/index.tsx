@@ -3,16 +3,17 @@ import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { tryParseAmount } from "@cryptoalgebra/integral-sdk";
-import { useState, useEffect } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { ExtendedVault } from "../../hooks";
 import AddAutomatedLiquidityButton from "../AddAutomatedLiquidityButton";
 
 interface CreateAutomatedPositionProps {
     vaults?: ExtendedVault[];
     poolId?: string;
+    modeSwitch?: ReactNode;
 }
 
-export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPositionProps) {
+export function CreateAutomatedPosition({ vaults, poolId, modeSwitch }: CreateAutomatedPositionProps) {
     const [selectedVault, setSelectedVault] = useState<ExtendedVault>();
     const { typedValue } = useMintState();
 
@@ -78,6 +79,7 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
 
             <div className="flex flex-col">
                 <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
+                    {modeSwitch}
                     <EnterAmountCard
                         currency={selectedVault.depositToken}
                         value={typedValue}

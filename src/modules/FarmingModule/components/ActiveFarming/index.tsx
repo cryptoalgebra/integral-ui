@@ -58,7 +58,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
             nonce: BigInt(farming.farming.nonce),
             account: account ?? ADDRESS_ZERO,
         },
-        depositsForActiveFarming
+        depositsForActiveFarming,
     );
 
     const handleHarvestAll = async () => {
@@ -67,7 +67,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
     };
 
     return (
-        <div className="flex items-center flex-col justify-center bg-card border border-card-border/60 rounded-xl mt-3 md:p-6 md:gap-6 gap-3 p-3">
+        <div className="flex items-center flex-col justify-center bg-card border border-card-border rounded-2xl mt-3 md:p-6 md:gap-6 gap-3 p-3">
             <div className="flex flex-col gap-3 w-full">
                 <h3 className="md:text-2xl text-xl font-bold text-left">Active Farming</h3>
             </div>
@@ -88,7 +88,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                                 ? `${formatAmount(formattedRewardEarned + formattedBonusRewardEarned, 2)} ${farming.rewardToken.symbol}`
                                 : `${formatAmount(formattedRewardEarned, 2)} ${farming.rewardToken.symbol} + ${formatAmount(
                                       formattedBonusRewardEarned,
-                                      2
+                                      2,
                                   )} ${farming.bonusRewardToken?.symbol}`
                         }
                         className="w-full"
@@ -126,12 +126,12 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                     </div>
                 </CardInfo>
 
-                <div className="w-full flex gap-3">
+                <div className="w-full flex gap-3 max-md:flex-col">
                     <Button
                         variant={"primary"}
                         disabled={(!rewardEarnedUSD && !bonusRewardEarnedUSD) || isLoading}
                         onClick={handleHarvestAll}
-                        className="w-1/2"
+                        className="md:w-1/2"
                     >
                         {isLoading ? <Loader /> : "Collect Rewards"}
                     </Button>

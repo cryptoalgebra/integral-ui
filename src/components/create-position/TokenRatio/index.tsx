@@ -13,38 +13,42 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
     } = mintInfo;
 
     const [token0Ratio, token1Ratio] = useMemo(() => {
-        const tickUpperAtLimit =
-            mintInfo.upperPrice && nearestUsableTick(TickMath.MAX_TICK, mintInfo.tickSpacing) === priceToClosestTick(mintInfo.upperPrice);
-        const currentPrice = mintInfo.price?.toSignificant(5);
+        try {
+            const tickUpperAtLimit =
+                mintInfo.upperPrice &&
+                nearestUsableTick(TickMath.MAX_TICK, mintInfo.tickSpacing) === priceToClosestTick(mintInfo.upperPrice);
+            const currentPrice = mintInfo.price?.toSignificant(5);
 
-        const left = mintInfo.lowerPrice?.toSignificant(5);
-        const right = mintInfo.upperPrice?.toSignificant(5);
+            const left = mintInfo.lowerPrice?.toSignificant(5);
+            const right = mintInfo.upperPrice?.toSignificant(5);
 
-        if (tickUpperAtLimit) return ["50", "50"];
+            if (tickUpperAtLimit) return ["50", "50"];
 
-        if (!currentPrice) return ["0", "0"];
+            if (!currentPrice) return ["0", "0"];
 
-        if (!left && !right) return ["0", "0"];
+            if (!left && !right) return ["0", "0"];
 
-        if (!left && right) return ["0", "100"];
+            if (!left && right) return ["0", "100"];
 
-        if (!right && left) return ["100", "0"];
+            if (!right && left) return ["100", "0"];
 
-        if (left && right && currentPrice) {
-            const leftRange = +currentPrice - +left;
-            const rightRange = +right - +currentPrice;
+            if (left && right && currentPrice) {
+                const leftRange = +currentPrice - +left;
+                const rightRange = +right - +currentPrice;
 
-            const totalSum = +leftRange + +rightRange;
+                const totalSum = +leftRange + +rightRange;
 
-            const leftRate = (+leftRange * 100) / totalSum;
-            const rightRate = (+rightRange * 100) / totalSum;
+                const leftRate = (+leftRange * 100) / totalSum;
+                const rightRate = (+rightRange * 100) / totalSum;
 
-            if (!mintInfo.invertPrice) {
-                return [String(rightRate >= 100 ? 100 : rightRate), String(leftRate >= 100 ? 100 : leftRate)];
+                if (!mintInfo.invertPrice) {
+                    return [String(rightRate >= 100 ? 100 : rightRate), String(leftRate >= 100 ? 100 : leftRate)];
+                }
+                return [String(leftRate >= 100 ? 100 : leftRate), String(rightRate >= 100 ? 100 : rightRate)];
             }
-            return [String(leftRate >= 100 ? 100 : leftRate), String(rightRate >= 100 ? 100 : rightRate)];
+        } catch (error) {
+            console.error(error);
         }
-
         return [null, null];
     }, [mintInfo.invertPrice, mintInfo.lowerPrice, mintInfo.price, mintInfo.tickSpacing, mintInfo.upperPrice]);
 

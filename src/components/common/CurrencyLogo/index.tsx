@@ -4,6 +4,7 @@ import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import USDCBlackLogo from "@/assets/tokens/usdc-black.png";
 import USDTBlackLogo from "@/assets/tokens/usdt-black.png";
+import m4626Logo from "@/assets/tokens/m4626.png";
 import EtherLogo from "@/assets/tokens/ether.svg";
 import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
@@ -69,6 +70,14 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
     ["0xf115d73823b3268aaaa58691a3778c08dee77a91"]: {
         symbol: "AVETH",
         logo: EtherLogo,
+    },
+    ["0x4db3fBA9958F7eE9715875E485cEae299714029C".toLowerCase()]: {
+        symbol: "m4626",
+        logo: m4626Logo,
+    },
+    ["0x0AcaE280cC7695E5bbBd6fB4b5B1B39C9594638D".toLowerCase()]: {
+        symbol: "USDC",
+        logo: USDCLogo,
     },
 };
 

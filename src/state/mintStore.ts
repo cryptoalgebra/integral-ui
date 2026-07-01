@@ -116,8 +116,8 @@ const initialState = {
     initialUSDPrices: { [Field.CURRENCY_A]: "", [Field.CURRENCY_B]: "" },
     initialTokenPrice: "",
     currentStep: 0,
-    token0InputMode: enabledModules.BoostedPoolsModule ? ("underlying" as const) : ("boosted" as const),
-    token1InputMode: enabledModules.BoostedPoolsModule ? ("underlying" as const) : ("boosted" as const),
+    token0InputMode: "boosted" as const,
+    token1InputMode: "boosted" as const,
 };
 
 export const useMintState = create<MintState>((set, get) => ({
@@ -150,7 +150,7 @@ export const useMintState = create<MintState>((set, get) => ({
 }));
 
 export function useMintActionHandlers(
-    noLiquidity: boolean | undefined
+    noLiquidity: boolean | undefined,
 ): {
     onFieldAInput: (typedValue: string) => void;
     onFieldBInput: (typedValue: string) => void;
@@ -187,7 +187,7 @@ export function useDerivedMintInfo(
     poolAddress?: Address,
     feeAmount?: number,
     baseCurrency?: Currency,
-    existingPosition?: Position
+    existingPosition?: Position,
 ): IDerivedMintInfo {
     const { address: account } = useAccount();
 
@@ -209,7 +209,7 @@ export function useDerivedMintInfo(
             [Field.CURRENCY_A]: currencyA,
             [Field.CURRENCY_B]: currencyB,
         }),
-        [currencyA, currencyB]
+        [currencyA, currencyB],
     );
 
     // formatted with tokens
@@ -226,7 +226,7 @@ export function useDerivedMintInfo(
                     ? [tokenA, tokenB]
                     : [tokenB, tokenA]
                 : [undefined, undefined],
-        [tokenA, tokenB]
+        [tokenA, tokenB],
     );
 
     const [addressA, addressB] = [
@@ -349,7 +349,7 @@ export function useDerivedMintInfo(
             [Bound.LOWER]: tickSpacing ? nearestUsableTick(TickMath.MIN_TICK, tickSpacing) : undefined,
             [Bound.UPPER]: tickSpacing ? nearestUsableTick(TickMath.MAX_TICK, tickSpacing) : undefined,
         }),
-        [tickSpacing]
+        [tickSpacing],
     );
 
     // parse typed range values and determine closest ticks
@@ -387,7 +387,7 @@ export function useDerivedMintInfo(
             [Bound.LOWER]: Boolean(feeAmount) && tickLower === tickSpaceLimits.LOWER,
             [Bound.UPPER]: Boolean(feeAmount) && tickUpper === tickSpaceLimits.UPPER,
         }),
-        [tickSpaceLimits, tickLower, tickUpper, feeAmount]
+        [tickSpaceLimits, tickLower, tickUpper, feeAmount],
     );
 
     // mark invalid range
@@ -404,7 +404,7 @@ export function useDerivedMintInfo(
 
     // liquidity range warning
     const outOfRange = Boolean(
-        !invalidRange && price && lowerPrice && upperPrice && (price.lessThan(lowerPrice) || price.greaterThan(upperPrice))
+        !invalidRange && price && lowerPrice && upperPrice && (price.lessThan(lowerPrice) || price.greaterThan(upperPrice)),
     );
 
     const independentInputMode = independentField === Field.CURRENCY_A ? token0InputMode : token1InputMode;
@@ -423,7 +423,7 @@ export function useDerivedMintInfo(
 
     const debouncedIndependentAmount: CurrencyAmount<Currency> | undefined = tryParseAmount(
         debouncedTypedValue,
-        independentDisplayCurrency
+        independentDisplayCurrency,
     );
 
     const needsConversion = enabledModules.BoostedPoolsModule && independentCurrency?.isBoosted && independentInputMode === "underlying";
@@ -431,7 +431,7 @@ export function useDerivedMintInfo(
     const { outputAmount: convertedAmount } = useBoostedConversion(
         needsConversion ? debouncedIndependentAmount : undefined,
         independentCurrency,
-        "underlying-to-boosted"
+        "underlying-to-boosted",
     );
 
     const independentAmount = needsConversion ? convertedAmount : debouncedIndependentAmount;
@@ -485,7 +485,7 @@ export function useDerivedMintInfo(
     const { outputAmount: convertedDependentAmount } = useBoostedConversion(
         needsDependentConversion ? dependentAmount : undefined,
         dependentCurrency,
-        "boosted-to-underlying"
+        "boosted-to-underlying",
     );
 
     const displayDependentAmount = needsDependentConversion ? convertedDependentAmount : dependentAmount;
@@ -517,13 +517,13 @@ export function useDerivedMintInfo(
         invalidRange ||
         Boolean(
             (deposit0Disabled && poolForPosition && tokenA && poolForPosition.token0.equals(tokenA)) ||
-                (deposit1Disabled && poolForPosition && tokenA && poolForPosition.token1.equals(tokenA))
+                (deposit1Disabled && poolForPosition && tokenA && poolForPosition.token1.equals(tokenA)),
         );
     const depositBDisabled =
         invalidRange ||
         Boolean(
             (deposit0Disabled && poolForPosition && tokenB && poolForPosition.token0.equals(tokenB)) ||
-                (deposit1Disabled && poolForPosition && tokenB && poolForPosition.token1.equals(tokenB))
+                (deposit1Disabled && poolForPosition && tokenB && poolForPosition.token1.equals(tokenB)),
         );
 
     // create position entity based on users selection
@@ -655,7 +655,7 @@ export function useRangeHopCallbacks(
     tickSpacing: number,
     tickLower: number | undefined,
     tickUpper: number | undefined,
-    pool?: Pool | undefined | null
+    pool?: Pool | undefined | null,
 ) {
     const {
         actions: { setFullRange },
@@ -678,7 +678,7 @@ export function useRangeHopCallbacks(
             }
             return "";
         },
-        [baseToken, quoteToken, tickLower, tickSpacing, pool]
+        [baseToken, quoteToken, tickLower, tickSpacing, pool],
     );
 
     const getIncrementLower = useCallback(
@@ -694,7 +694,7 @@ export function useRangeHopCallbacks(
             }
             return "";
         },
-        [baseToken, quoteToken, tickLower, tickSpacing, pool]
+        [baseToken, quoteToken, tickLower, tickSpacing, pool],
     );
 
     const getDecrementUpper = useCallback(
@@ -710,7 +710,7 @@ export function useRangeHopCallbacks(
             }
             return "";
         },
-        [baseToken, quoteToken, tickUpper, tickSpacing, pool]
+        [baseToken, quoteToken, tickUpper, tickSpacing, pool],
     );
 
     const getIncrementUpper = useCallback(
@@ -726,7 +726,7 @@ export function useRangeHopCallbacks(
             }
             return "";
         },
-        [baseToken, quoteToken, tickUpper, tickSpacing, pool]
+        [baseToken, quoteToken, tickUpper, tickSpacing, pool],
     );
 
     const getSetRange = useCallback(
@@ -743,7 +743,7 @@ export function useRangeHopCallbacks(
             }
             return ["", ""];
         },
-        [baseToken, quoteToken, tickSpacing, pool]
+        [baseToken, quoteToken, tickSpacing, pool],
     );
 
     const getSetFullRange = useCallback(() => setFullRange(), []);

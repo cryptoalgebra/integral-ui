@@ -7,14 +7,15 @@ import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated"
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/integral-sdk";
-import { useState, useMemo, useEffect } from "react";
+import { ReactNode, useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 
 interface ManualProps {
     poolAddress?: Address;
+    modeSwitch?: ReactNode;
 }
 
-export function CreateManualPosition({ poolAddress }: ManualProps) {
+export function CreateManualPosition({ poolAddress, modeSwitch }: ManualProps) {
     const { data: token0 } = useReadAlgebraPoolToken0({
         address: poolAddress,
     });
@@ -42,7 +43,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         poolAddress,
         INITIAL_POOL_FEE,
         currencyA ?? undefined,
-        undefined
+        undefined,
     );
 
     const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = mintInfo.pricesAtTicks;
@@ -78,7 +79,7 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         mintInfo.tickSpacing,
         tickLower,
         tickUpper,
-        mintInfo.pool
+        mintInfo.pool,
     );
 
     const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
@@ -104,21 +105,23 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full text-left">
             <div className="col-span-2">
                 <div className="flex flex-col w-full">
-                    <div className="w-full p-3 md:p-6 bg-card flex flex-col gap-3 text-left rounded-xl border border-card-border">
+                    <div className="w-full p-3 md:p-6 bg-card flex flex-col gap-3 text-left rounded-2xl border border-card-border">
                         <div className="flex items-center justify-between w-full">
                             <h2 className="font-semibold text-lg md:text-2xl text-left">Select Range</h2>
                             <div className="flex h-fit w-fit gap-0.5 rounded-xl border border-lighter p-0.5">
                                 <Button
                                     className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
-                                    variant={wasManuallyToggled ? "iconActive" : "icon"}
+                                    variant={wasManuallyToggled ? "iconHover" : "icon"}
                                     onClick={handleCurrencyToggle}
+                                    size="md"
                                 >
                                     {currency0?.symbol}
                                 </Button>
                                 <Button
                                     className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
-                                    variant={!wasManuallyToggled ? "iconActive" : "icon"}
+                                    variant={!wasManuallyToggled ? "iconHover" : "icon"}
                                     onClick={handleCurrencyToggle}
+                                    size="md"
                                 >
                                     {currency1?.symbol}
                                 </Button>
@@ -160,7 +163,8 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
 
             <div className="flex flex-col">
                 {/* <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2> */}
-                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
+                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-2xl p-2">
+                    {modeSwitch}
                     <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />
                 </div>
             </div>

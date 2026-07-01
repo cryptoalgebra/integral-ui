@@ -19,6 +19,8 @@ import {
     votingEscrowABI,
     securityRegistryABI,
     binaryLMSRMarketManagerABI,
+    priceConvergenceVaultABI,
+    priceConvergenceVaultDepositGuardABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -90,6 +92,8 @@ const rawContracts = [
     { name: "VotingEscrow", abi: votingEscrowABI },
     { name: "SecurityRegistry", abi: securityRegistryABI },
     { name: "BinaryLMSRMarketManager", abi: binaryLMSRMarketManagerABI },
+    { name: "PriceConvergenceVault", abi: priceConvergenceVaultABI },
+    { name: "PriceConvergenceVaultDepositGuard", abi: priceConvergenceVaultDepositGuardABI },
 ];
 
 const contractAddresses = {

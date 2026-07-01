@@ -47,7 +47,7 @@ export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoadi
 
     const availablePositions = positionsData.filter(
         (position) =>
-            !position.onFarming && (Number(position.almShares || 0) > 0 || BigInt(position.position?.liquidity.toString() || 0) > 0n)
+            !position.onFarming && (Number(position.almShares || 0) > 0 || BigInt(position.position?.liquidity.toString() || 0) > 0n),
     );
 
     const handleApprove = async () => {
@@ -78,7 +78,7 @@ export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoadi
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant={'primary'} disabled={isHarvestLoading} className="whitespace-nowrap w-1/2">
+                <Button variant={"primary"} disabled={isHarvestLoading} className="whitespace-nowrap md:w-1/2">
                     Deposit
                 </Button>
             </DialogTrigger>
@@ -97,7 +97,7 @@ export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoadi
                                         key={position.id}
                                         className={cn(
                                             "w-full row-span-1 col-span-1",
-                                            selectedPosition?.id === position.id ? "border-primary-button hover:border-primary-button" : ""
+                                            selectedPosition?.id === position.id ? "border-primary-button hover:border-primary-button" : "",
                                         )}
                                         onClick={() => handleSelectPosition(position)}
                                         positionId={position.id}
@@ -114,20 +114,20 @@ export function SelectPositionFarmModal({ farming, positionsData, isHarvestLoadi
                 </div>
                 <div className="w-full flex gap-3 mt-2">
                     {isApproveVerifying ? (
-                        <Button variant={'primary'} disabled className="w-full">
+                        <Button variant={"primary"} disabled className="w-full">
                             Checking Approval...
                         </Button>
                     ) : selectedPosition && availablePositions.length > 0 ? (
                         <>
-                            <Button variant={'primary'} disabled={isApproved || isApproving} className="w-1/2" onClick={handleApprove}>
+                            <Button variant={"primary"} disabled={isApproved || isApproving} className="w-1/2" onClick={handleApprove}>
                                 {isApproved ? <span>1. Approved</span> : isApproving ? <Loader /> : <span>1. Approve</span>}
                             </Button>
-                            <Button variant={'primary'} disabled={!isApproved || isStaking} className="w-1/2" onClick={handleStake}>
+                            <Button variant={"primary"} disabled={!isApproved || isStaking} className="w-1/2" onClick={handleStake}>
                                 {isStaking ? <Loader /> : "2. Deposit"}
                             </Button>
                         </>
                     ) : (
-                        <Button variant={'primary'} disabled className="w-full">
+                        <Button variant={"primary"} disabled className="w-full">
                             Select Position
                         </Button>
                     )}

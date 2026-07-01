@@ -1475,22 +1475,22 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/integral-omega-router-sdk@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-omega-router-sdk/-/integral-omega-router-sdk-1.0.1.tgz#67d355087d14521bed82ae871d77ccd819383a66"
-  integrity sha512-1bsNLX01yEO+M4qVHLDppw/c1p8i6aB/KgCfXO3uMmmCtaGBoZFBXsa13haytw2Rl5iQ2drOsA9CBiSaTURhag==
+"@cryptoalgebra/integral-omega-router-sdk@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-omega-router-sdk/-/integral-omega-router-sdk-1.0.2.tgz#4fac626439af93de32591d8bbbf70ff30d610507"
+  integrity sha512-E3WYszMSiJxER0Y0u4Pk1B1YW31+Gu9EjP6VUBTgDTx3kiSRD6MHQYymhV/8i7R6E76ZkowtNu5XBfPv4WHGKw==
   dependencies:
-    "@cryptoalgebra/integral-sdk" "npm:@cryptoalgebra/integral-sdk@1.1.2"
+    "@cryptoalgebra/integral-sdk" "^1.1.3"
     "@uniswap/permit2-sdk" "^1.4.0"
     "@uniswap/sdk-core" "^7.10.0"
     "@uniswap/v2-sdk" "^4.16.0"
     "@uniswap/v3-sdk" "^3.26.0"
     viem "^2.31.3"
 
-"@cryptoalgebra/integral-sdk@1.1.2", "@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/integral-sdk@1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.1.2.tgz#9d036532829fc4c76df1c52971e2fd0e8c882b4c"
-  integrity sha512-f0yYtK2oeM/8VBSNkJEwdtYdbpMsJjQkmtbHbW7nqjaqpdEwk/NKkekXCliSqew+P9VvQ71+71pGt3YfKgBkMQ==
+"@cryptoalgebra/integral-sdk@1.1.3", "@cryptoalgebra/integral-sdk@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/integral-sdk/-/integral-sdk-1.1.3.tgz#4c58e3818a4351152ccf91dd9fa4a98a8ee2cb5c"
+  integrity sha512-Xf6mnPPQIf4BWp5HhbV2KPnUbBQe4gHu9k6qNKv3h6TDJdZAyYdT6DRqBADareI0LAjq3ojbPQBQWM+8CMNqeA==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"

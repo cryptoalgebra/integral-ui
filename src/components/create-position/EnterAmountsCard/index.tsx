@@ -8,6 +8,7 @@ import { useAccount, useBalance } from "wagmi";
 import { useMintState } from "@/state/mintStore";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
 import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
+import { enabledModules } from "config";
 
 const { BoostedTokenWrapToggle } = BoostedPoolsModule.components;
 
@@ -17,9 +18,17 @@ interface EnterAmountsCardProps {
     handleChange: (value: string) => void;
     valueUsd?: number | null;
     field: Field;
+    showBoostedToggle?: boolean;
 }
 
-const EnterAmountCard = ({ currency, value, handleChange, valueUsd, field }: EnterAmountsCardProps) => {
+const EnterAmountCard = ({
+    currency,
+    value,
+    handleChange,
+    valueUsd,
+    field,
+    showBoostedToggle = enabledModules.ALMModule,
+}: EnterAmountsCardProps) => {
     const { address: account } = useAccount();
     const { token0InputMode, token1InputMode } = useMintState();
 
@@ -49,60 +58,41 @@ const EnterAmountCard = ({ currency, value, handleChange, valueUsd, field }: Ent
             if (value === ".") value = "0.";
             handleChange(value);
         },
-        [handleChange]
+        [handleChange],
     );
 
-    function setMax() {
-        handleChange(balance?.formatted || "0");
-    }
+    // function setMax() {
+    //     handleChange(balance?.formatted || "0");
+    // }
 
     return (
-        <div className="flex w-full bg-card-dark p-3 rounded-lg flex-col gap-3">
-            <div className="flex w-full">
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-4 min-h-10">
-                        <div className="relative w-12 h-12">
-                            <CurrencyLogo currency={displayCurrency} size={48} />
-                        </div>
-
-                        <div>
-                            <div className="text-sm text-text-200">{displayCurrency ? displayCurrency.name : ""}</div>
-                            <div className="flex items-center gap-2">
-                                <span className="font-bold text-lg">{displayCurrency ? displayCurrency.symbol : "Select a token"}</span>
-                            </div>
-                        </div>
-                    </div>
-                    {displayCurrency && (
-                        <div className={"flex text-sm whitespace-nowrap"}>
-                            <div>
-                                <span className="font-semibold">Balance: </span>
-                                <span>{balanceString}</span>
-                            </div>
-                            <button className="ml-2 text-primary-50 underline underline-offset-4 hover:text-primary-50/70" onClick={setMax}>
-                                Max
-                            </button>
-                        </div>
-                    )}
+        <div className="flex w-full flex-col gap-3 rounded-xl bg-card-light p-3 transition-colors hover:bg-card-light/90">
+            <div className="flex w-full items-center justify-between gap-6">
+                <div className="flex min-w-fit items-center gap-2">
+                    <CurrencyLogo currency={displayCurrency} size={30} />
+                    <span className="max-w-[150px] truncate text-lg font-semibold text-text-100">
+                        {displayCurrency ? displayCurrency.symbol : "Select"}
+                    </span>
                 </div>
 
-                <div className="flex flex-col items-end w-full gap-2">
-                    <Input
-                        value={value}
-                        id={`amount-${displayCurrency?.symbol}`}
-                        onUserInput={(v) => handleInput(v)}
-                        className={`text-right border-none text-xl font-bold w-9/12 p-0 ring-0!`}
-                        placeholder={"0.0"}
-                        maxDecimals={displayCurrency?.decimals}
-                    />
-                    {valueUsd && (
-                        <div className="text-sm">
-                            <div>${formatAmount(valueUsd, 2)}</div>
-                        </div>
-                    )}
-                </div>
+                <Input
+                    value={value}
+                    id={`amount-${displayCurrency?.symbol}`}
+                    onUserInput={(v) => handleInput(v)}
+                    className="w-full border-none bg-transparent p-0 text-right text-2xl font-semibold text-text-100 placeholder:text-text-300 focus:ring-0 focus-visible:ring-0"
+                    placeholder="0.00"
+                    maxDecimals={displayCurrency?.decimals}
+                />
             </div>
 
-            <BoostedTokenWrapToggle currency={currency} field={field} currentValue={value} onAmountChange={handleChange} />
+            <div className="flex items-center justify-between gap-3 text-xs text-text-300">
+                {displayCurrency ? <span>Balance: {balanceString}</span> : <span />}
+                {valueUsd !== undefined && valueUsd !== null && <span>${formatAmount(valueUsd, 2)}</span>}
+            </div>
+
+            {showBoostedToggle && (
+                <BoostedTokenWrapToggle currency={currency} field={field} currentValue={value} onAmountChange={handleChange} />
+            )}
         </div>
     );
 };

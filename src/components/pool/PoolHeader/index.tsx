@@ -3,11 +3,16 @@ import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
 import { Button } from "@/components/ui/button";
 import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
 import { PoolStats } from "@/hooks/pools/usePoolStats";
+import NAVHookModule from "@/modules/NAVHookModule";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { Currency } from "@cryptoalgebra/integral-sdk";
+import { enabledModules } from "config";
 import { ChevronLeft, ExternalLink, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Address } from "viem";
+
+const { NAVHookHeaderInfo } = NAVHookModule.components;
+const { useNAVHookPool } = NAVHookModule.hooks;
 
 interface PoolHeaderProps {
     currencyA: Currency | undefined | null;
@@ -20,6 +25,8 @@ interface PoolHeaderProps {
 
 const PoolHeader = ({ currencyA, currencyB, poolId, poolStatus, stats, showCreatePosition = true }: PoolHeaderProps) => {
     const blockExplorerURL = useBlockExplorerURL();
+    const { isNAVHookPool } = useNAVHookPool(poolId);
+    const showNAVHookInfo = enabledModules.NAVHookModule && isNAVHookPool;
 
     const headerStats = [
         {
@@ -41,7 +48,7 @@ const PoolHeader = ({ currencyA, currencyB, poolId, poolStatus, stats, showCreat
     ];
 
     return (
-        <header className="flex w-full flex-col gap-5 mb-6 animate-fade-in">
+        <header className="flex w-full flex-col gap-5 mb-3 animate-fade-in">
             <Link
                 to="/pools"
                 className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-text-300 transition-colors hover:text-text-100"
@@ -63,7 +70,12 @@ const PoolHeader = ({ currencyA, currencyB, poolId, poolStatus, stats, showCreat
                             </h1>
                             <SecurityStatusTag status={poolStatus} />
                         </div>
-                        <p className="text-base font-semibold text-text-300">Fee: {formatAmount(stats.fee, 4)}%</p>
+
+                        {showNAVHookInfo ? (
+                            <NAVHookHeaderInfo />
+                        ) : (
+                            <p className="text-base font-semibold text-text-300">Fee: {formatAmount(stats.fee, 4)}%</p>
+                        )}
                     </div>
                 </div>
 
