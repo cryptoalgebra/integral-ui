@@ -65,12 +65,14 @@ export const BINARY_LMSR_MARKET_MANAGER: Record<number, Address> = {
 export const PRICE_CONVERGENCE_VAULT_BY_POOL: Record<number, Record<Address, Address>> = {
     [ChainId.BaseSepolia]: {
         // pool address -> vault address
-        "0x25827078a91d0875376a8a9f1bcfb35827ce0d4f": "0x1A6EB0846DEaBf20eF5e11F07205D17518Ead9B1",
+        // "0x25827078a91d0875376a8a9f1bcfb35827ce0d4f": "0x1A6EB0846DEaBf20eF5e11F07205D17518Ead9B1",
+        "0xd05e0dc6176f558439184795f6f865719b562720": "0xD936600f96593eA0212e6A13585077C225939b10",
     },
 };
 export const PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL: Record<number, Record<Address, Address>> = {
     [ChainId.BaseSepolia]: {
         // pool address -> vault deposit guard address
-        "0x25827078a91d0875376a8a9f1bcfb35827ce0d4f": "0xb9aA6adde7319c68D90879855D2bE28D3e235A2E",
+        // "0x25827078a91d0875376a8a9f1bcfb35827ce0d4f": "0xb9aA6adde7319c68D90879855D2bE28D3e235A2E",
+        "0xd05e0dc6176f558439184795f6f865719b562720": "0x2F3737B5b16E6fFEc8f2C805b3283159E7f5e6E3",
     },
 };

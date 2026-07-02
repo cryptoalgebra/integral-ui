@@ -118,7 +118,7 @@ export function NAVHookReservesPanel({ token0, token1, vaultState }: NAVHookRese
     return (
         <section className="flex h-fit flex-col gap-4 rounded-xl border border-card-border bg-card p-5 text-left">
             <div className="flex items-end justify-between gap-4">
-                <p className="text-lg font-semibold text-text-100">Reserves</p>
+                <p className="text-lg font-semibold text-text-100">Vault Reserves</p>
                 <div className="text-xs font-semibold text-text-300 py-2 px-3 bg-card-light rounded-full">${formatAmount(totalUSD, 2)}</div>
             </div>
 

@@ -8,11 +8,7 @@ import { useNAVHookPool } from "./useNAVHookPool";
 export function useNAVHookVaultState(poolId: Address | undefined, account: Address | undefined): NAVHookVaultState {
     const { vaultAddress } = useNAVHookPool(poolId);
 
-    const {
-        data: vaultData,
-        isLoading: isVaultDataLoading,
-        refetch: refetchVaultData,
-    } = useReadContracts({
+    const { data: vaultData, isLoading: isVaultDataLoading, refetch: refetchVaultData } = useReadContracts({
         allowFailure: false,
         contracts: vaultAddress
             ? [
@@ -27,11 +23,7 @@ export function useNAVHookVaultState(poolId: Address | undefined, account: Addre
         },
     });
 
-    const {
-        data: userData,
-        isLoading: isUserDataLoading,
-        refetch: refetchUserData,
-    } = useReadContracts({
+    const { data: userData, isLoading: isUserDataLoading, refetch: refetchUserData } = useReadContracts({
         allowFailure: false,
         contracts:
             vaultAddress && account
