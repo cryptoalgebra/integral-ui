@@ -87,7 +87,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 }
                 return true;
             })
-            .map(({ id, token0, token1, overrideFee, totalValueLockedUSD, deployer, poolDayData }) => {
+            .map(({ id, token0, token1, fee: baseFee, overrideFee, totalValueLockedUSD, deployer, poolDayData }) => {
                 const currentPool = poolDayData[0];
                 const lastDate = currentPool ? currentPool.date * 1000 : 0;
                 const currentDate = new Date().getTime();
@@ -123,13 +123,15 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     hasPoolMapping(PRICE_CONVERGENCE_VAULT_BY_POOL[activeChainId], id) &&
                     hasPoolMapping(PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL[activeChainId], id);
 
+                const fee = (Number(overrideFee) || Number(baseFee)) / 10_000;
+
                 return {
                     id: id as Address,
                     pair: {
                         token0,
                         token1,
                     },
-                    fee: Number(overrideFee) / 10_000,
+                    fee,
                     tvlUSD: Number(totalValueLockedUSD),
                     volume24USD: timeDifference <= msIn24Hours ? Number(currentPool.volumeUSD) : 0,
                     fees24USD: timeDifference <= msIn24Hours ? Number(currentPool.feesUSD) : 0,

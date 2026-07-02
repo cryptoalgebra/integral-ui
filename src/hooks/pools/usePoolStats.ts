@@ -45,8 +45,10 @@ export function usePoolStats(poolId: Address): PoolStats {
         const latestDayDataDate = latestDayData ? latestDayData.date * 1000 : 0;
         const isLatestDayDataFresh = Date.now() - latestDayDataDate <= 24 * 60 * 60 * 1000;
 
+        const fee = (Number(poolInfoData?.pool?.overrideFee || 0) || Number(poolInfoData?.pool?.fee || 0)) / 10_000;
+
         return {
-            fee: Number(poolInfoData?.pool?.overrideFee || 0) / 10_000,
+            fee,
             tvlUSD: Number(poolInfoData?.pool?.totalValueLockedUSD || 0),
             volume24USD: isLatestDayDataFresh ? Number(latestDayData?.volumeUSD || 0) : 0,
             fees24USD: isLatestDayDataFresh ? Number(latestDayData?.feesUSD || 0) : 0,
