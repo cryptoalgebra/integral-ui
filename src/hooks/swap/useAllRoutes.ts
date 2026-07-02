@@ -28,7 +28,7 @@ export function useAllRoutes(
     }, [currencyIn, currencyOut, pools, poolsLoading]);
 
     return {
-        normalRoutes: normalRoutes.length > 1 ? [normalRoutes?.[1]] : [],
+        normalRoutes,
         boostedRoutes,
         loading: poolsLoading,
     };
