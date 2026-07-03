@@ -11,9 +11,9 @@ export function NAVHookHeaderInfo() {
                 </div>
             </HoverCardTrigger>
             <HoverCardContent side="bottom" className="w-[320px] p-3 text-sm">
-                <p className="text-left text-sm font-semibold">Price Convergence hook</p>
+                <p className="text-left text-sm font-semibold">Price Convergence plugin</p>
                 <p className="mt-1 text-left text-xs leading-relaxed text-text-300">
-                    This pool does not use manual LP ranges. You deposit into a vault, receive share tokens, and the hook manages liquidity
+                    This pool does not use manual LP ranges. You deposit into a vault, receive share tokens, and the plugin manages liquidity
                     around the oracle price.
                 </p>
             </HoverCardContent>
