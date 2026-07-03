@@ -42,17 +42,17 @@ const LiquidityStats = ({
     const { formatted: tvlToken0USD } = useUSDCValue(
         token0 && statistics?.tvlToken0
             ? CurrencyAmount.fromRawAmount(token0, parseUnits(statistics.tvlToken0, token0.decimals).toString())
-            : undefined
+            : undefined,
     );
     const { formatted: tvlToken1USD } = useUSDCValue(
         token1 && statistics?.tvlToken1
             ? CurrencyAmount.fromRawAmount(token1.wrapped, parseUnits(statistics.tvlToken1, token1.decimals).toString())
-            : undefined
+            : undefined,
     );
 
     return (
         <div className="flex flex-col gap-3 h-fit">
-            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-4 h-fit">
+            <div className="flex flex-col w-full items-start bg-card rounded-2xl border border-card-border p-4 h-fit">
                 <h2 className="font-semibold mb-2">Pool Liquidity</h2>
                 <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.tvlUSD || 0, 4)}</p>
                 <div className="flex flex-col gap-3 items-start w-full">
@@ -80,7 +80,7 @@ const LiquidityStats = ({
                 </div>
             </div>
 
-            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-4 h-fit">
+            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-2xl p-4 h-fit">
                 <h2 className="font-semibold mb-4">Statistics</h2>
                 <div className="flex flex-col gap-3 w-full">
                     <div className="flex justify-between">
@@ -193,7 +193,7 @@ export function AnalyticsPoolPage() {
                 <PageTitle title="Explore pool" showSettings={false} />
             </div>
             <div className="grid grid-cols-1 gap-3 w-full md:grid-cols-3">
-                <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
+                <div className="md:col-span-2 bg-card border border-card-border rounded-2xl p-3">
                     <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={token0} tokenB={token1} />
                     </div>
@@ -214,25 +214,27 @@ export function AnalyticsPoolPage() {
                     />
                 </div>
                 <div className="flex flex-col gap-3">
-                    { enableActions && <div className="grid grid-cols-2 gap-3">
-                        <Link className="col-span-1 w-full " to={"/swap"}>
-                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
-                                <ArrowDownUp size={20} />
-                                Trade
-                            </Button>
-                        </Link>
-                        <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
-                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
-                                <Plus size={20} />
-                                Create Position
-                            </Button>
-                        </Link>
-                    </div> }
+                    {enableActions && (
+                        <div className="grid grid-cols-2 gap-3">
+                            <Link className="col-span-1 w-full " to={"/swap"}>
+                                <Button variant={"primary"} size={"lg"} className="gap-2 rounded-full w-full h-full max-md:text-sm">
+                                    <ArrowDownUp size={20} />
+                                    Trade
+                                </Button>
+                            </Link>
+                            <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
+                                <Button variant={"primaryLink"} size={"lg"} className="gap-2 w-full rounded-full">
+                                    <Plus size={20} />
+                                    Create Position
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                     <LiquidityStats token0={token0} token1={token1} statistics={statistics} />
                 </div>
             </div>
 
-            <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full mt-4">
+            <div className="pb-5 bg-card border border-card-border/60 rounded-2xl w-full mt-4">
                 <TransactionsList poolId={poolId} />
             </div>
         </PageContainer>

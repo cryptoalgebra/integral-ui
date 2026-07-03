@@ -47,7 +47,7 @@ function AssetValue({ token }: { token: Currency | undefined }) {
     if (!token) return <span>-</span>;
 
     const address = token.wrapped.address as Address;
-    const tokenExplorePath = `/explore/token/${address}`;
+    const tokenExplorePath = `/analytics/tokens/${address}`;
     const explorerUrl = blockExplorerUrl ? `${blockExplorerUrl}/address/${address}` : undefined;
 
     const handleCopy = () => {
@@ -96,12 +96,7 @@ function CurrentPriceValue({ priceDetails }: { priceDetails: PoolPriceDetails | 
             <span className="whitespace-nowrap">
                 1 {activePrice.baseSymbol} = {activePrice.value} {activePrice.quoteSymbol}
             </span>
-            <Button
-                variant="icon"
-                size="icon"
-                className="h-6 w-6 rounded-md"
-                onClick={() => setIsInverted((value) => !value)}
-            >
+            <Button variant="icon" size="icon" className="h-6 w-6 rounded-md" onClick={() => setIsInverted((value) => !value)}>
                 <ArrowUpDown size={12} />
             </Button>
         </div>

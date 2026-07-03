@@ -64,26 +64,20 @@ export function NAVHookMyLiquidity({ poolId, pool, token0, token1, vaultState, a
     return (
         <section className="flex min-h-[520px] flex-col overflow-hidden rounded-xl border border-card-border bg-card text-left">
             <div className="flex flex-col gap-4 p-5">
-                <h2 className="text-lg font-semibold text-text-100">My Liquidity</h2>
+                <h2 className="text-lg font-semibold text-text-100">Pool Liquidity</h2>
 
                 <div className="flex min-h-[260px] items-center justify-center rounded-xl bg-card-dark/40 p-3">
-                    {vaultState.hasPosition ? (
-                        <>
-                            {pool && token0 && token1 ? (
-                                <LiquidityChart
-                                    currencyA={token0}
-                                    currencyB={token1}
-                                    pool={pool}
-                                    currentPrice={currentPrice}
-                                    priceLower={undefined}
-                                    priceUpper={undefined}
-                                />
-                            ) : (
-                                <Skeleton className="h-[240px] w-full rounded-xl bg-card-light" />
-                            )}
-                        </>
+                    {pool && token0 && token1 ? (
+                        <LiquidityChart
+                            currencyA={token0}
+                            currencyB={token1}
+                            pool={pool}
+                            currentPrice={currentPrice}
+                            priceLower={undefined}
+                            priceUpper={undefined}
+                        />
                     ) : (
-                        <p className="text-center text-sm font-medium text-text-300">You have no liquidity in this pool</p>
+                        <Skeleton className="h-[240px] w-full rounded-xl bg-card-light" />
                     )}
                 </div>
             </div>
@@ -96,11 +90,17 @@ export function NAVHookMyLiquidity({ poolId, pool, token0, token1, vaultState, a
                         ${formatAmount(depositAmounUsd, 2)}
                     </div>
                 </div>
-                <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-center">
-                    <NAVHookTokenValueCard currency={token0} amountRaw={vaultState.userAmount0} />
-                    <span className="hidden text-xl font-semibold text-text-300 xl:block">+</span>
-                    <NAVHookTokenValueCard currency={token1} amountRaw={vaultState.userAmount1} />
-                </div>
+                {vaultState.hasPosition ? (
+                    <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-center">
+                        <NAVHookTokenValueCard currency={token0} amountRaw={vaultState.userAmount0} />
+                        <span className="hidden text-xl font-semibold text-text-300 xl:block">+</span>
+                        <NAVHookTokenValueCard currency={token1} amountRaw={vaultState.userAmount1} />
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-center p-4 py-5 bg-card-light rounded-xl text-sm text-text-300">
+                        You have no liquidity in this pool
+                    </div>
+                )}
                 {renderActions()}
             </div>
         </section>

@@ -48,7 +48,7 @@ function ReserveRatioBar({
 function ReserveRow({ token, amountRaw }: { token: Currency | undefined; amountRaw: bigint }) {
     const amount = useMemo(() => (token ? CurrencyAmount.fromRawAmount(token, amountRaw.toString()) : undefined), [amountRaw, token]);
     const { formatted: amountUSD } = useUSDCValue(amount);
-    const tokenExplorePath = token?.wrapped.address ? `/explore/token/${token.wrapped.address}` : undefined;
+    const tokenExplorePath = token?.wrapped.address ? `/analytics/tokens/${token.wrapped.address}` : undefined;
 
     return (
         <div className="flex items-center justify-between gap-3 rounded-full bg-card-light px-3 py-3">
