@@ -1,4 +1,5 @@
 import { Pool } from "@cryptoalgebra/integral-sdk";
+import { PoolStats } from "@/hooks/pools/usePoolStats";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useNAVHookPool, useNAVHookVaultState } from "../hooks";
@@ -10,9 +11,10 @@ interface NAVHookPoolLayoutProps {
     poolId: Address | undefined;
     pool: Pool | null;
     poolStatus: number | undefined | null;
+    poolStats: PoolStats;
 }
 
-export function NAVHookPoolLayout({ poolId, pool, poolStatus }: NAVHookPoolLayoutProps) {
+export function NAVHookPoolLayout({ poolId, pool, poolStatus, poolStats }: NAVHookPoolLayoutProps) {
     const { address: account } = useAccount();
     const { token0, token1 } = useNAVHookPool(poolId);
     const vaultState = useNAVHookVaultState(poolId, account);
@@ -30,7 +32,7 @@ export function NAVHookPoolLayout({ poolId, pool, poolStatus }: NAVHookPoolLayou
             />
             <div className="flex flex-col gap-3">
                 <NAVHookReservesPanel token0={token0} token1={token1} vaultState={vaultState} />
-                <NAVHookPoolAttributesPanel poolId={poolId} pool={pool} token0={token0} token1={token1} />
+                <NAVHookPoolAttributesPanel pool={pool} token0={token0} token1={token1} poolStats={poolStats} />
             </div>
         </div>
     );

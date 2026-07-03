@@ -11,6 +11,8 @@ export interface PoolStats {
     volume24USD: number;
     fees24USD: number;
     avgApr: number;
+    txCount: string;
+    createdAtTimestamp: string | undefined;
     isLoading: boolean;
 }
 
@@ -53,6 +55,8 @@ export function usePoolStats(poolId: Address): PoolStats {
             volume24USD: isLatestDayDataFresh ? Number(latestDayData?.volumeUSD || 0) : 0,
             fees24USD: isLatestDayDataFresh ? Number(latestDayData?.feesUSD || 0) : 0,
             avgApr: Number(poolAvgApr || 0),
+            txCount: poolInfoData?.pool?.txCount || "0",
+            createdAtTimestamp: poolInfoData?.pool?.createdAtTimestamp,
             isLoading: isPoolInfoLoading || isPoolDayDataLoading || isPoolAprLoading,
         };
     }, [isPoolAprLoading, isPoolDayDataLoading, isPoolInfoLoading, poolAvgApr, poolDayData?.poolDayDatas, poolInfoData?.pool]);

@@ -2,39 +2,20 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useBlockExplorerURL } from "@/hooks/common/useBlockExplorer";
-import { useClients } from "@/hooks/graphql/useClients";
+import { PoolStats } from "@/hooks/pools/usePoolStats";
 import { formatAmount } from "@/utils";
 import { truncateHash } from "@/utils/common/truncateHash";
 import { Currency, Pool } from "@cryptoalgebra/integral-sdk";
-import { gql, useQuery } from "@apollo/client";
 import { ArrowUpDown, Copy, ExternalLink } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Address } from "viem";
 
-const NAV_HOOK_POOL_ATTRIBUTES_QUERY = gql`
-    query NAVHookPoolAttributes($poolId: ID!) {
-        pool(id: $poolId) {
-            id
-            txCount
-            createdAtTimestamp
-        }
-    }
-`;
-
-interface NAVHookPoolAttributesResponse {
-    pool?: {
-        id: string;
-        txCount: string;
-        createdAtTimestamp: string;
-    } | null;
-}
-
 interface NAVHookPoolAttributesPanelProps {
-    poolId: Address | undefined;
     pool: Pool | null;
     token0: Currency | undefined;
     token1: Currency | undefined;
+    poolStats: PoolStats;
 }
 
 interface PoolPriceDetails {
@@ -137,14 +118,7 @@ function formatCreatedOn(createdAtTimestamp: string | undefined) {
     }).format(new Date(Number(createdAtTimestamp) * 1000));
 }
 
-export function NAVHookPoolAttributesPanel({ poolId, pool, token0, token1 }: NAVHookPoolAttributesPanelProps) {
-    const { infoClient } = useClients();
-    const { data } = useQuery<NAVHookPoolAttributesResponse>(NAV_HOOK_POOL_ATTRIBUTES_QUERY, {
-        client: infoClient,
-        variables: { poolId: poolId?.toLowerCase() ?? "" },
-        skip: !infoClient || !poolId,
-    });
-
+export function NAVHookPoolAttributesPanel({ pool, token0, token1, poolStats }: NAVHookPoolAttributesPanelProps) {
     const priceDetails = useMemo<PoolPriceDetails | null>(() => {
         if (!pool || !token0 || !token1) return null;
 
@@ -169,8 +143,8 @@ export function NAVHookPoolAttributesPanel({ poolId, pool, token0, token1 }: NAV
                 <OverviewAttribute label="Base asset" value={<AssetValue token={token0} />} />
                 <OverviewAttribute label="Quote asset" value={<AssetValue token={token1} />} />
                 <OverviewAttribute label="Current price" value={<CurrentPriceValue priceDetails={priceDetails} />} />
-                <OverviewAttribute label="Transactions" value={formatAmount(data?.pool?.txCount || 0, 0)} />
-                <OverviewAttribute label="Created on" value={formatCreatedOn(data?.pool?.createdAtTimestamp)} />
+                <OverviewAttribute label="Transactions" value={formatAmount(poolStats.txCount, 0)} />
+                <OverviewAttribute label="Created on" value={formatCreatedOn(poolStats.createdAtTimestamp)} />
             </div>
         </section>
     );

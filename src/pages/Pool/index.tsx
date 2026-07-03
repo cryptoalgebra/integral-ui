@@ -233,7 +233,7 @@ const PoolPage = () => {
             />
 
             {showNAVHookPool ? (
-                <NAVHookPoolLayout poolId={poolId} pool={poolEntity} poolStatus={effectiveStatus} />
+                <NAVHookPoolLayout poolId={poolId} pool={poolEntity} poolStatus={effectiveStatus} poolStats={poolStats} />
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-3 md:gap-3 w-full">
                     <div className="col-span-2">
