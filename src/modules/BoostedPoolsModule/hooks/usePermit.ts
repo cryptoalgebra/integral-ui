@@ -17,14 +17,20 @@ function toDeadline(expiration: number): number {
 
 export type PermitStateType = PermitState.LOADING | PermitState.NOT_PERMITTED | PermitState.PERMITTED;
 
+type SignedPermitState = {
+    signature: PermitSignature;
+    address: Address;
+    chainId: number;
+};
+
 export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender: string | undefined) {
     const { address, chainId } = useAccount();
     const token = amount?.currency.wrapped;
+    const tokenAddress = token?.address;
     const permit2Address = chainId ? (PERMIT2[chainId] as Address) : undefined;
-    const amountValue = amount?.quotient.toString();
 
     // Signature state
-    const [signature, setSignature] = useState<PermitSignature>();
+    const [signedPermit, setSignedPermit] = useState<SignedPermitState>();
 
     // Check Permit2 allowance
     const queryEnabled = !!address && !!token?.address && !!spender && !!permit2Address;
@@ -51,16 +57,21 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
     }, [permitData, token]);
 
     // Check if signature is valid
-    const now = useMemo(() => Math.floor(Date.now() / 1000), []);
+    const now = Math.floor(Date.now() / 1000);
     const isSigned = useMemo(() => {
-        if (!amount || !signature) return false;
+        if (!amount || !signedPermit) return false;
+
+        const { signature, address: signedAddress, chainId: signedChainId } = signedPermit;
+
         return (
-            signature.details.token === token?.address &&
+            signedAddress === address &&
+            signedChainId === chainId &&
+            signature.details.token.toLowerCase() === tokenAddress?.toLowerCase() &&
             signature.spender === spender &&
             BigInt(signature.details.amount.toString()) >= BigInt(amount.quotient.toString()) &&
             signature.sigDeadline >= now
         );
-    }, [amount, now, signature, spender, token?.address]);
+    }, [address, amount, chainId, now, signedPermit, spender, tokenAddress]);
 
     // Check if permit is valid
     const isPermitted = useMemo(() => {
@@ -134,7 +145,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
             });
 
             const permitSignature = { ...permit, signature: signatureResult };
-            setSignature(permitSignature);
+            setSignedPermit({ signature: permitSignature, address, chainId });
 
             // Show success toast
             toast({
@@ -159,19 +170,41 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
         }
     }, [address, amount, chainId, nonce, signTypedDataAsync, spender, token, toast, permit2Address]);
 
-    const removePermitSign = () => {
-        setSignature(undefined)
-    }
+    const removePermitSign = useCallback(() => {
+        setSignedPermit(undefined);
+    }, []);
 
     useEffect(() => {
-        removePermitSign()
-    }, [amountValue, spender])
+        if (!signedPermit) return;
+
+        const signatureExpiredIn = signedPermit.signature.sigDeadline * 1000 - Date.now();
+        if (signatureExpiredIn <= 0) {
+            removePermitSign();
+            return;
+        }
+
+        const timeout = setTimeout(removePermitSign, signatureExpiredIn);
+        return () => clearTimeout(timeout);
+    }, [removePermitSign, signedPermit]);
+
+    useEffect(() => {
+        if (!signedPermit) return;
+
+        const { signature, address: signedAddress, chainId: signedChainId } = signedPermit;
+        const contextChanged = signedAddress !== address || signedChainId !== chainId;
+        const tokenChanged = !!tokenAddress && signature.details.token.toLowerCase() !== tokenAddress.toLowerCase();
+        const spenderChanged = !!spender && signature.spender.toLowerCase() !== spender.toLowerCase();
+
+        if (contextChanged || tokenChanged || spenderChanged) {
+            removePermitSign();
+        }
+    }, [address, chainId, removePermitSign, signedPermit, spender, tokenAddress]);
 
     return {
         permitState,
         permitCallback,
-        permitSignature: isSigned ? signature : undefined,
+        permitSignature: isSigned ? signedPermit?.signature : undefined,
         refetchPermit,
-        removePermitSign
+        removePermitSign,
     };
 }
