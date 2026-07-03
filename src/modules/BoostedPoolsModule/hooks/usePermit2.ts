@@ -129,5 +129,6 @@ export function usePermit2({ amount, spender }: { amount?: CurrencyAmount<Curren
         isLoading,
         permitSignature,
         refetchPermit2Data,
+        removePermitSign,
     ]);
 }

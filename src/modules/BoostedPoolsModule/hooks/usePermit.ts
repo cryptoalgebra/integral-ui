@@ -21,6 +21,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
     const { address, chainId } = useAccount();
     const token = amount?.currency.wrapped;
     const permit2Address = chainId ? (PERMIT2[chainId] as Address) : undefined;
+    const amountValue = amount?.quotient.toString();
 
     // Signature state
     const [signature, setSignature] = useState<PermitSignature>();
@@ -53,7 +54,12 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
     const now = useMemo(() => Math.floor(Date.now() / 1000), []);
     const isSigned = useMemo(() => {
         if (!amount || !signature) return false;
-        return signature.details.token === token?.address && signature.spender === spender && signature.sigDeadline >= now;
+        return (
+            signature.details.token === token?.address &&
+            signature.spender === spender &&
+            BigInt(signature.details.amount.toString()) >= BigInt(amount.quotient.toString()) &&
+            signature.sigDeadline >= now
+        );
     }, [amount, now, signature, spender, token?.address]);
 
     // Check if permit is valid
@@ -85,6 +91,9 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
             }
             if (!token) {
                 throw new Error("missing token");
+            }
+            if (!amount) {
+                throw new Error("missing amount");
             }
             if (!spender) {
                 throw new Error("missing spender");
@@ -148,7 +157,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
             });
             throw error;
         }
-    }, [address, chainId, nonce, signTypedDataAsync, spender, token, toast, permit2Address]);
+    }, [address, amount, chainId, nonce, signTypedDataAsync, spender, token, toast, permit2Address]);
 
     const removePermitSign = () => {
         setSignature(undefined)
@@ -156,7 +165,7 @@ export function usePermit(amount: CurrencyAmount<Currency> | undefined, spender:
 
     useEffect(() => {
         removePermitSign()
-    }, [amount?.quotient.toString(), spender])
+    }, [amountValue, spender])
 
     return {
         permitState,

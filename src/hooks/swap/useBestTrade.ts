@@ -50,8 +50,6 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
         currencyOut,
     });
 
-    console.log("n", normalQuotesResults, "b", boostedQuotesResults);
-
     const trade = useMemo(() => {
         const refetch = () => {
             if (routerType === RouterType.OMEGA) {

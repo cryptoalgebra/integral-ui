@@ -30,7 +30,7 @@ export const Algebra = () => (
         <NavLink to={"/"}>
             <div className="flex items-center gap-4 md:mr-2 rounded-3xl duration-200">
                 <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
-                    <img src={AlgebraLogo} width={48} height={48} />
+                    <img className="min-w-8 min-h-8" src={AlgebraLogo} width={48} height={48} />
                 </div>
                 <img className="max-lg:hidden" src={AlgebraIntegral} width={140} height={25} />
             </div>

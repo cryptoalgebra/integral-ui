@@ -8,7 +8,7 @@ import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { tryParseAmount, BoostedRouteStepType } from "@cryptoalgebra/integral-sdk";
+import { tryParseAmount, BoostedRouteStepType, Currency } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
@@ -65,15 +65,14 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         return null;
     }, [trade, isSmartTrade]);
 
+    const tradeInputCurrency = trade?.inputAmount?.currency as Currency | undefined;
+    const tradeOutputCurrency = trade?.outputAmount?.currency as Currency | undefined;
+
     const parsedAmountA =
-        independentField === SwapField.INPUT
-            ? parsedAmount
-            : tryParseAmount(trade?.inputAmount?.toSignificant(), trade?.inputAmount?.currency);
+        independentField === SwapField.INPUT ? parsedAmount : tryParseAmount(trade?.inputAmount?.toSignificant(), tradeInputCurrency);
 
     const parsedAmountB =
-        independentField === SwapField.OUTPUT
-            ? parsedAmount
-            : tryParseAmount(trade?.outputAmount?.toSignificant(), trade?.outputAmount?.currency);
+        independentField === SwapField.OUTPUT ? parsedAmount : tryParseAmount(trade?.outputAmount?.toSignificant(), tradeOutputCurrency);
 
     const parsedAmounts = useMemo(
         () => ({
@@ -160,8 +159,8 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const showWrap = wrapType !== WrapType.NOT_APPLICABLE;
 
     const { callback: smartSwapCallback, isLoading: smartSwapLoading } = useSmartRouterCallback(
-        trade?.inputAmount?.currency,
-        trade?.outputAmount?.currency,
+        tradeInputCurrency,
+        tradeOutputCurrency,
         trade?.inputAmount?.toFixed(),
         smartTradeCallOptions.calldata,
         smartTradeCallOptions.value,
@@ -170,7 +169,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     // Use OmegaRouter callback for boosted routes and Permit2-signed swaps
     const { callback: omegaSwapCallback, isLoading: omegaSwapLoading, error: omegaSwapError } = useOmegaSwapCallback(
-        shouldUseOmegaRouter && !isSmartTrade ? trade : null,
+        shouldUseOmegaRouter && !isSmartTrade ? (!needsApprovalOrPermit ? trade : null) : null,
         allowedSlippage,
         permitSignature,
         onTransactionSuccess,
@@ -181,6 +180,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         !isSmartTrade && !shouldUseOmegaRouter ? trade : null,
         allowedSlippage,
         onTransactionSuccess,
+        approvalState !== ApprovalState.APPROVED,
     );
 
     const isSwapLoading = swapLoading || smartSwapLoading || omegaSwapLoading;
@@ -198,7 +198,6 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                     permit2Allowance.removePermitSign();
                 }
             } else {
-                console.log("Executing regular swap callback", { swapCallback });
                 await swapCallback?.();
             }
         } catch (error) {
@@ -209,6 +208,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const isValid = !swapInputError && !activeSwapError;
 
     const hasLargePriceDifference = priceImpactSeverity > 2;
+    const approvalTokenSymbol = trade?.inputAmount.currency.symbol ?? "token";
 
     const largePriceDifferencePercent = useMemo(() => {
         if (!priceImpact) return "0.00";
@@ -220,7 +220,9 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [priceImpact]);
 
     // Check if we need standard ERC20 approval (for native/smart router)
-    const needsClassicApproval = !shouldUseOmegaRouter && approvalState === ApprovalState.NOT_APPROVED;
+    const isResetApprovalRequired = approvalState === ApprovalState.RESET_REQUIRED;
+    const needsClassicApproval =
+        !shouldUseOmegaRouter && (approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.RESET_REQUIRED);
     const isApproving = approvalState === ApprovalState.PENDING;
 
     const isWrongChain = !userChainId || appChainId !== userChainId;
@@ -263,7 +265,13 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     if (needsClassicApproval || isApproving) {
         return (
             <Button variant={"primary"} onClick={approvalCallback} disabled={isApproving}>
-                {isApproving ? <Loader /> : `Approve ${trade?.inputAmount.currency.symbol}`}
+                {isApproving ? (
+                    <Loader />
+                ) : isResetApprovalRequired ? (
+                    `Reset ${approvalTokenSymbol} approval`
+                ) : (
+                    `Approve ${approvalTokenSymbol}`
+                )}
             </Button>
         );
     }

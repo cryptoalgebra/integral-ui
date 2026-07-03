@@ -88,6 +88,7 @@ const PoolHeader = ({ currencyA, currencyB, poolId, poolStatus, stats, showCreat
                             aria-label="Transaction history"
                         >
                             <ExternalLink size={20} />
+                            Explorer
                         </Button>
                     </Link>
 
