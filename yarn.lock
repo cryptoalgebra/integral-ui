@@ -1431,10 +1431,10 @@
     eventemitter3 "^5.0.1"
     preact "^10.24.2"
 
-"@cryptoalgebra/alm-sdk@^1.0.16":
-  version "1.0.16"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.16.tgz#c838fd2dba9b254041bf81b71772a50c9f1ea183"
-  integrity sha512-2sKF6jh9C/hO7M8fMXsAUt867cLU7c5tyUBqZQGDBAMAQAf5qpRofFLRa9ocEybdjzST26iPIPsog2QqM2outg==
+"@cryptoalgebra/alm-sdk@^1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/alm-sdk/-/alm-sdk-1.0.17.tgz#ec1912e30c269ef6478711cbefae1abb1e9919d8"
+  integrity sha512-4sK9O+J1BQ/jS7jx450qPnrhvcbojIy2bKXIKH8tDCUODaw7VdFBNKwfxGr9O8jHLP+xufuUL8Z9QTSt2dbxTw==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/abstract-signer" "^5.6.2"
