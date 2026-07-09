@@ -28,7 +28,7 @@ function ChartComponent({
     height: number;
     showTypeSelector?: boolean;
 }) {
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
     const [type, setType] = useState<ChartTypeType>(chartType);
 
     const { chartData: chartData, loading: isChartDataLoading } = useDexChartData(span, selector);
@@ -74,7 +74,7 @@ export function DexChartsGrid({
 }
 
 export function DexCharts() {
-    const { dexDayDatas, loading } = useDexChartData(CHART_SPAN.MONTH, "tvlUSD");
+    const { dexDayDatas, loading } = useDexChartData(CHART_SPAN.WEEK, "tvlUSD");
 
     const { currentTVL, currentVolume24H, currentFees24H } = useMemo(() => {
         if (!dexDayDatas)
