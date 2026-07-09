@@ -1,7 +1,7 @@
 import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedSwapInfo, useSwapActionHandlers, useSwapState } from "@/state/swapStore";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { Currency, CurrencyAmount, Percent, maxAmountSpend, ZERO, WNATIVE } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, Percent, maxAmountSpend, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ArrowDownIcon } from "lucide-react";
@@ -107,7 +107,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
 
     useEffect(() => {
-        handleInputSelect(WNATIVE[chainId].wrapped);
+        // handleInputSelect(WNATIVE[chainId].wrapped);
         handleOutputSelect(TOKENS[chainId].USDC);
     }, [chainId, handleOutputSelect, handleInputSelect]);
 

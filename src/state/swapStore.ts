@@ -11,7 +11,6 @@ import {
     Percent,
     Trade,
     TradeType,
-    WNATIVE,
     computePoolAddress,
     tryParseAmount,
 } from "@cryptoalgebra/integral-sdk";
@@ -82,7 +81,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
     typedValue: "",
     routerType: enabledModules.BoostedPoolsModule ? RouterType.OMEGA : RouterType.NATIVE,
     [SwapField.INPUT]: {
-        currencyId: WNATIVE[DEFAULT_CHAIN_ID].address as Address,
+        currencyId: ADDRESS_ZERO as Address,
     },
     [SwapField.OUTPUT]: {
         currencyId: TOKENS[DEFAULT_CHAIN_ID].USDC.address as Address,
