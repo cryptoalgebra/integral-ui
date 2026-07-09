@@ -17,7 +17,7 @@ export const CHAIN_ID = {
 };
 
 export const CHAIN_IMAGE = {
-    [ChainId.ADI]: "/eth-diamond.svg",
+    [ChainId.ADI]: "/network-logo.png",
     // [ChainId.ADI]: "https://www.ethereum-ecosystem.com/logo.webp",
 };
 

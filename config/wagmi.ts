@@ -46,8 +46,8 @@ const mainnet = /*#__PURE__*/ defineChain({
     },
     blockExplorers: {
         default: {
-            name: "Etherscan",
-            url: "https://explorer.adifoundation.ai/",
+            name: "ADI Explorer",
+            url: "https://explorer-bls.adifoundation.ai/",
         },
     },
     contracts: {

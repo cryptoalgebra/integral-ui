@@ -1,7 +1,7 @@
 import { ChainId, Currency, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import React from "react";
 import USDCLogo from "@/assets/tokens/usdc.svg";
-import EtherLogo from "@/assets/tokens/ether.svg";
+import EtherLogo from "@/assets/tokens/adi.png";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
