@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/integral-sdk";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
-import { DEFAULT_CHAIN_ID, SWAP_ROUTER, TOKENS } from "config";
+import { DEFAULT_CHAIN_ID, SWAP_ROUTER } from "config";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 
 import { useNeedAllowance } from "./useNeedAllowance";
@@ -12,7 +12,7 @@ import { Address, erc20Abi } from "viem";
 import { useWriteContract } from "wagmi";
 import { formatAmount } from "@/utils";
 
-const TOKENS_REQUIRING_APPROVAL_RESET = new Set<string>([TOKENS[DEFAULT_CHAIN_ID].USDT.address.toLowerCase()]);
+const TOKENS_REQUIRING_APPROVAL_RESET = new Set<string>();
 
 export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: Address) {
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;

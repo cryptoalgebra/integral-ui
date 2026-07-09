@@ -64,6 +64,6 @@ export function useAllTokens(showNativeToken: boolean = true) {
             tokens: mergedTokens,
             isLoading: loading || Boolean(allTokens && !mergedTokens.length),
         }),
-        [mergedTokens, allTokens, loading]
+        [mergedTokens, allTokens, loading],
     );
 }

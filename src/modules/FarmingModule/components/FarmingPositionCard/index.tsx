@@ -1,5 +1,5 @@
+import { PositionImage } from "@/components/position/PoisitionImage";
 import { cn } from "@/utils/common/cn";
-import { FarmingPositionImg } from "..";
 
 interface FarmingPositionCardProps {
     positionId: string;
@@ -18,7 +18,7 @@ export const FarmingPositionCard = ({ positionId, status, className, onClick, is
             className={cn(
                 "relative w-fit flex gap-4 p-4 bg-card-dark cursor-pointer hover:border-border rounded-xl border border-border/60  transition-all ease-in-out duration-200",
                 className,
-                !isDepositEligible ? "pointer-events-none" : ""
+                !isDepositEligible ? "pointer-events-none" : "",
             )}
         >
             {!isDepositEligible && (
@@ -27,7 +27,7 @@ export const FarmingPositionCard = ({ positionId, status, className, onClick, is
                 </div>
             )}
 
-            <FarmingPositionImg isALM={isALM} positionId={positionId} size={12} />
+            <PositionImage isALM={isALM} positionId={Number(positionId)} size={12} />
             <div className="flex flex-col z-0">
                 <p className="text-start ">Position #{positionId}</p>
                 <div>

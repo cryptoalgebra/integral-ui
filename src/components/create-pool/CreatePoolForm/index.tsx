@@ -120,6 +120,8 @@ const CreatePoolForm = () => {
                 value: undefined,
             };
 
+        console.log("expeceted pool", mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
+
         return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
     }, [customPoolDeployerAddresses, mintInfo.pool, poolDeployer]);
 

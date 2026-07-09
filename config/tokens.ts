@@ -1,12 +1,8 @@
 import { ChainId, Token } from "@cryptoalgebra/integral-sdk";
 
 export const TOKENS = {
-    [ChainId.Ethereum]: {
-        USDC: new Token(ChainId.Ethereum, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", 6, "USDC", "USD Coin"),
-        A7A5: new Token(ChainId.Ethereum, "0x6fa0be17e4bea2fcfa22ef89bf8ac9aab0ab0fc9", 6, "A7A5", "A7A5"),
-        WA7A5: new Token(ChainId.Ethereum, "0xf442ff10b8def89514560a66c0ad28777094636a", 6, "wA7A5", "Wrapped A7A5 1.0"),
-        USDT: new Token(ChainId.Ethereum, "0xdAC17F958D2ee523a2206206994597C13D831ec7", 6, "USDT", "Tether USD"),
-        TOKEN: new Token(ChainId.Ethereum, "0xDeB24A7dD1491966598B3BDd28F51F2Ca939CB1f", 18, "TOKEN", "TOKEN"),
+    [ChainId.ADI]: {
+        USDC: new Token(ChainId.ADI, "0x9cb8142aEBBcdc60AF7c97Af897A67A8f3CA71C2", 6, "USDC.e", "USD Coin"),
     },
 };
 
@@ -19,7 +15,7 @@ export const TOKENS = {
 
 // Boosted tokens whose pools exist on the DEX — used when constructing swap routes through boosted pools
 export const BOOSTED_TOKENS = {
-    [ChainId.Ethereum]: {
+    [ChainId.ADI]: {
         // avUSDC: new BoostedToken(
         //     ChainId.Ethereum,
         //     "0x6045450424C527bEe1A2638D822D11BbCA4F2a46",

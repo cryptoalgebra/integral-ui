@@ -12,10 +12,10 @@ const CreatePoolPage = () => {
                 <div className="flex flex-col gap-4 mb-3">
                     <NavLink
                         className="inline-flex w-fit items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-text-muted transition-colors duration-150 hover:text-text"
-                        to="/pools"
+                        to="/explore"
                     >
                         <ChevronLeft size={16} />
-                        Back to Pools
+                        Back to Explore
                     </NavLink>
 
                     <PageTitle title="Create Pool" description="Select a pair and set the initial price." />

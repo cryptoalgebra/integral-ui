@@ -5,10 +5,10 @@ import { useTransactionAwait } from "../common/useTransactionAwait";
 import { DEFAULT_NATIVE_SYMBOL, WNATIVE_EXTENDED } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
-import { useWriteWa7A5Unwrap, useWriteWa7A5Wrap, useWriteWrappedNativeDeposit, useWriteWrappedNativeWithdraw } from "@/generated";
+import { useWriteWrappedNativeDeposit, useWriteWrappedNativeWithdraw } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
-import { getWa7A5PairTokens, getWa7A5WrapDirection, Wa7A5WrapDirection } from "@/utils/swap/wa7a5";
+import { getWa7A5PairTokens, getWa7A5WrapDirection } from "@/utils/swap/wa7a5";
 
 export const WrapType = {
     NOT_APPLICABLE: "NOT_APPLICABLE",
@@ -72,24 +72,6 @@ export default function useWrapCallback(
         callback: onTransactionSuccess,
     });
 
-    const { data: wa7A5WrapData, writeContract: wa7A5Wrap } = useWriteWa7A5Wrap();
-
-    const { isLoading: isWa7A5WrapLoading } = useTransactionAwait(wa7A5WrapData, {
-        title: `Wrap ${inputAmount?.toSignificant(3)} ${inputCurrency?.symbol ?? "A7A5"}`,
-        tokenA: wa7A5Token?.address as Address,
-        type: TransactionType.SWAP,
-        callback: onTransactionSuccess,
-    });
-
-    const { data: wa7A5UnwrapData, writeContract: wa7A5Unwrap } = useWriteWa7A5Unwrap();
-
-    const { isLoading: isWa7A5UnwrapLoading } = useTransactionAwait(wa7A5UnwrapData, {
-        title: `Unwrap ${inputAmount?.toSignificant(3)} ${inputCurrency?.symbol ?? "wA7A5"}`,
-        tokenA: wa7A5Token?.address as Address,
-        type: TransactionType.SWAP,
-        callback: onTransactionSuccess,
-    });
-
     const { data: balance } = useBalance({
         address: inputCurrency ? account : undefined,
         token: inputCurrency?.isNative ? undefined : (inputCurrency?.address as Address),
@@ -142,58 +124,6 @@ export default function useWrapCallback(
             };
         }
 
-        if (wa7A5WrapDirection === Wa7A5WrapDirection.A7A5_TO_WA7A5) {
-            const inputSymbol = inputCurrency.symbol;
-
-            return {
-                wrapType: WrapType.WRAP,
-                approvalRequired: needsWa7A5Approval,
-                approve: approveWa7A5,
-                approvalLoading: isWa7A5ApprovalLoading,
-                approvalTokenSymbol: inputSymbol,
-                approvalState: wa7A5ApprovalState,
-                execute:
-                    sufficientBalance && inputAmount && !needsWa7A5Approval && !isWa7A5ApprovalLoading
-                        ? () =>
-                              wa7A5Wrap({
-                                  args: [BigInt(inputAmount.quotient.toString())] as const,
-                              })
-                        : undefined,
-                loading: isWa7A5WrapLoading,
-                inputError: sufficientBalance
-                    ? undefined
-                    : hasInputAmount
-                    ? `Insufficient ${inputSymbol} balance`
-                    : `Enter ${inputSymbol} amount`,
-            };
-        }
-
-        if (wa7A5WrapDirection === Wa7A5WrapDirection.WA7A5_TO_A7A5) {
-            const inputSymbol = inputCurrency.symbol;
-
-            return {
-                wrapType: WrapType.UNWRAP,
-                approvalRequired: needsWa7A5Approval,
-                approve: approveWa7A5,
-                approvalLoading: isWa7A5ApprovalLoading,
-                approvalTokenSymbol: inputSymbol,
-                approvalState: wa7A5ApprovalState,
-                execute:
-                    sufficientBalance && inputAmount && !needsWa7A5Approval && !isWa7A5ApprovalLoading
-                        ? () =>
-                              wa7A5Unwrap({
-                                  args: [BigInt(inputAmount.quotient.toString())] as const,
-                              })
-                        : undefined,
-                loading: isWa7A5UnwrapLoading,
-                inputError: sufficientBalance
-                    ? undefined
-                    : hasInputAmount
-                    ? `Insufficient ${inputSymbol} balance`
-                    : `Enter ${inputSymbol} amount`,
-            };
-        }
-
         return NOT_APPLICABLE;
     }, [
         chainId,
@@ -209,11 +139,7 @@ export default function useWrapCallback(
         approveWa7A5,
         isWrapLoading,
         isUnwrapLoading,
-        isWa7A5WrapLoading,
-        isWa7A5UnwrapLoading,
         wrap,
         unwrap,
-        wa7A5Wrap,
-        wa7A5Unwrap,
     ]);
 }

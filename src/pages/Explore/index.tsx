@@ -83,8 +83,8 @@ const ExplorePage = () => {
                 {!enableActions && <SecurityStatusTag status={globalStatus} />}
 
                 {enableActions && (
-                    <Button disabled className="w-fit whitespace-nowrap" variant="primary" size="md">
-                        <Link className="flex gap-2 items-center" to="create">
+                    <Button className="w-fit whitespace-nowrap" variant="primary" size="md">
+                        <Link className="flex gap-2 items-center" to="/create-pool">
                             <Plus size={18} />
                             Create Pool
                         </Link>

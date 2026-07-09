@@ -33,13 +33,7 @@ type ImportableToken = Currency & {
     chainId: number;
 };
 
-const FEATURED_TOKENS = [
-    ADDRESS_ZERO,
-    WNATIVE[DEFAULT_CHAIN_ID].wrapped.address,
-    TOKENS[DEFAULT_CHAIN_ID].USDC.address,
-    TOKENS[DEFAULT_CHAIN_ID].USDT.address,
-    "0x6fA0BE17e4beA2fCfA22ef89BF8ac9aab0AB0fc9", // A7A5
-];
+const FEATURED_TOKENS = [ADDRESS_ZERO, TOKENS[DEFAULT_CHAIN_ID].USDC.address];
 
 const isTokenLocked = (tokenAddress: string, otherCurrency: Currency | null | undefined) =>
     otherCurrency?.isNative ? tokenAddress === ADDRESS_ZERO : tokenAddress.toLowerCase() === otherCurrency?.wrapped.address.toLowerCase();
@@ -55,7 +49,10 @@ const SearchField = ({ query, onQueryChange }: { query: string; onQueryChange: (
                 autoComplete="off"
                 className="pl-9"
                 // className="w-full bg-transparent text-sm text-text outline-none placeholder:text-text-muted"
-                onUserInput={(e) => onQueryChange(e)}
+                onUserInput={(e) => {
+                    console.log("search input", e);
+                    onQueryChange(e);
+                }}
             />
         </div>
     );
@@ -74,7 +71,7 @@ const TokenRow = ({
     onSelect: (currency: Currency) => void;
     otherCurrency: Currency | null | undefined;
 }) => {
-    const currency = useCurrency(token.id as Address, false);
+    const currency = useCurrency(token.id as Address, true);
 
     const { data: balance, isLoading } = useBalance({
         address: account,
@@ -201,6 +198,11 @@ export const TokenSelector = ({
     } = useTokensState();
 
     const { tokens, isLoading } = useAllTokens(showNativeToken);
+    const wrappedNativeAddress = WNATIVE[chainId].address.toLowerCase();
+    const selectableTokens = useMemo(
+        () => tokens.filter((token) => token.id.toLowerCase() !== wrappedNativeAddress),
+        [tokens, wrappedNativeAddress],
+    );
     const debouncedQuery = useDebounce(query, 200);
     const tokenEntity = useAlgebraToken(debouncedQuery && isAddress(debouncedQuery) ? (debouncedQuery as Address) : undefined, chainId);
 
@@ -213,7 +215,7 @@ export const TokenSelector = ({
     );
 
     const { result, search } = useFuse<TokenFieldsFragment>({
-        data: tokens,
+        data: selectableTokens,
         options: fuseOptions,
     });
 
@@ -222,9 +224,12 @@ export const TokenSelector = ({
     }, [query, search]);
 
     const normalizedQuery = query.trim();
+    const isWrappedNativeQuery = normalizedQuery.toLowerCase() === wrappedNativeAddress;
 
     const tokenForImport =
-        normalizedQuery && tokenEntity && !(tokenEntity instanceof ExtendedNative) && result.length === 0 ? tokenEntity : undefined;
+        normalizedQuery && !isWrappedNativeQuery && tokenEntity && !(tokenEntity instanceof ExtendedNative) && result.length === 0
+            ? tokenEntity
+            : undefined;
 
     const selectorView: TokenSelectorViewType = normalizedQuery
         ? result.length > 0
@@ -236,10 +241,10 @@ export const TokenSelector = ({
             : TokenSelectorView.DEFAULT_LIST
         : TokenSelectorView.DEFAULT_LIST;
 
-    const filteredTokens = useMemo(() => (normalizedQuery ? result : tokens), [normalizedQuery, result, tokens]);
+    const filteredTokens = useMemo(() => (normalizedQuery ? result : selectableTokens), [normalizedQuery, result, selectableTokens]);
 
     const featuredTokens = useMemo(() => {
-        const addressLookup = new Map(tokens.map((token) => [token.id?.toLowerCase(), token]));
+        const addressLookup = new Map(selectableTokens.map((token) => [token.id?.toLowerCase(), token]));
         const featured = FEATURED_TOKENS.map((address) =>
             addressLookup.get(address.toLowerCase()),
         ).filter((token): token is TokenFieldsFragment => Boolean(token));
@@ -249,7 +254,7 @@ export const TokenSelector = ({
         }
 
         return [...featured];
-    }, [tokens]);
+    }, [selectableTokens]);
 
     const handleImport = (token: ImportableToken) => {
         importToken(token.address as Address, token.symbol || "Unknown", token.name || "Unknown", token.decimals, token.chainId);

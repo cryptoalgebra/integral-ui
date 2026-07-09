@@ -5,17 +5,17 @@ export type PoolDeployerType = "BASE_DYNAMIC" | "BASE_03" | "BASE_1" | "ALL_INCL
 
 export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | null>> = {
     BASE_DYNAMIC: {
-        [ChainId.Ethereum]: ADDRESS_ZERO,
+        [ChainId.ADI]: ADDRESS_ZERO,
     },
     BASE_03: {
-        [ChainId.Ethereum]: null,
+        [ChainId.ADI]: null,
     },
     BASE_1: {
-        [ChainId.Ethereum]: null,
+        [ChainId.ADI]: null,
     },
     /* Replace with `null` to use as a stub */
     ALL_INCLUSIVE: {
-        [ChainId.Ethereum]: null,
+        [ChainId.ADI]: null,
     },
 } as const;
 

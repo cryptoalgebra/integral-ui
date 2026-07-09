@@ -1,10 +1,5 @@
 import { DEFAULT_CHAIN_ID, enabledModules, TOKENS } from "config";
-import {
-    useReadAlgebraPoolGlobalState,
-    useReadAlgebraPoolTickSpacing,
-    useReadWa7A5GetA7A5BywA7A5,
-    useReadWa7A5GetwA7A5ByA7A5,
-} from "@/generated";
+import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { BestTradeExactIn, BestTradeExactOut, useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance";
@@ -16,6 +11,7 @@ import {
     Percent,
     Trade,
     TradeType,
+    WNATIVE,
     computePoolAddress,
     tryParseAmount,
 } from "@cryptoalgebra/integral-sdk";
@@ -26,7 +22,6 @@ import { create } from "zustand";
 import { delay } from "@/utils/common/delay";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { getWa7A5WrapDirection, Wa7A5WrapDirection } from "@/utils/swap/wa7a5";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
@@ -87,10 +82,10 @@ export const useSwapState = create<SwapState>((set, get) => ({
     typedValue: "",
     routerType: enabledModules.BoostedPoolsModule ? RouterType.OMEGA : RouterType.NATIVE,
     [SwapField.INPUT]: {
-        currencyId: TOKENS[DEFAULT_CHAIN_ID].A7A5.address as Address,
+        currencyId: WNATIVE[DEFAULT_CHAIN_ID].address as Address,
     },
     [SwapField.OUTPUT]: {
-        currencyId: TOKENS[DEFAULT_CHAIN_ID].USDT.address as Address,
+        currencyId: TOKENS[DEFAULT_CHAIN_ID].USDC.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,
@@ -315,39 +310,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
-    const wa7A5WrapDirection = useMemo(() => getWa7A5WrapDirection(inputCurrency ?? undefined, outputCurrency ?? undefined), [
-        inputCurrency,
-        outputCurrency,
-    ]);
-
-    const wrapQuoteAmount = parsedAmount ? BigInt(parsedAmount.quotient.toString()) : undefined;
-
-    const shouldUseGetwA7A5ByA7A5 = Boolean(
-        wrapQuoteAmount !== undefined &&
-            ((independentField === SwapField.INPUT && wa7A5WrapDirection === Wa7A5WrapDirection.A7A5_TO_WA7A5) ||
-                (independentField === SwapField.OUTPUT && wa7A5WrapDirection === Wa7A5WrapDirection.WA7A5_TO_A7A5)),
-    );
-
-    const shouldUseGetA7A5BywA7A5 = Boolean(
-        wrapQuoteAmount !== undefined &&
-            ((independentField === SwapField.INPUT && wa7A5WrapDirection === Wa7A5WrapDirection.WA7A5_TO_A7A5) ||
-                (independentField === SwapField.OUTPUT && wa7A5WrapDirection === Wa7A5WrapDirection.A7A5_TO_WA7A5)),
-    );
-
-    const { data: wa7A5QuoteFromA7A5 } = useReadWa7A5GetwA7A5ByA7A5({
-        args: wrapQuoteAmount !== undefined && shouldUseGetwA7A5ByA7A5 ? [wrapQuoteAmount] : undefined,
-        query: {
-            enabled: wrapQuoteAmount !== undefined && shouldUseGetwA7A5ByA7A5,
-        },
-    });
-
-    const { data: wa7A5QuoteFromwA7A5 } = useReadWa7A5GetA7A5BywA7A5({
-        args: wrapQuoteAmount !== undefined && shouldUseGetA7A5BywA7A5 ? [wrapQuoteAmount] : undefined,
-        query: {
-            enabled: wrapQuoteAmount !== undefined && shouldUseGetA7A5BywA7A5,
-        },
-    });
-
     const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
         if (!limitOrderPrice || !parsedAmount || !outputCurrency || !inputCurrency) return {};
 
@@ -384,40 +346,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
                 };
             }
 
-            if (!wa7A5WrapDirection) {
-                return {
-                    [SwapField.INPUT]: parsedAmount,
-                    [SwapField.OUTPUT]: parsedAmount,
-                };
-            }
-
-            const simulatedRawAmount =
-                shouldUseGetwA7A5ByA7A5 && typeof wa7A5QuoteFromA7A5 === "bigint"
-                    ? wa7A5QuoteFromA7A5
-                    : shouldUseGetA7A5BywA7A5 && typeof wa7A5QuoteFromwA7A5 === "bigint"
-                    ? wa7A5QuoteFromwA7A5
-                    : undefined;
-
-            if (independentField === SwapField.INPUT) {
-                return {
-                    [SwapField.INPUT]: parsedAmount,
-                    [SwapField.OUTPUT]:
-                        outputCurrency && simulatedRawAmount !== undefined
-                            ? CurrencyAmount.fromRawAmount(outputCurrency, simulatedRawAmount.toString())
-                            : undefined,
-                };
-            }
-
-            if (independentField === SwapField.OUTPUT) {
-                return {
-                    [SwapField.INPUT]:
-                        inputCurrency && simulatedRawAmount !== undefined
-                            ? CurrencyAmount.fromRawAmount(inputCurrency, simulatedRawAmount.toString())
-                            : undefined,
-                    [SwapField.OUTPUT]: parsedAmount,
-                };
-            }
-
             return {
                 [SwapField.INPUT]: parsedAmount,
                 [SwapField.OUTPUT]: parsedAmount,
@@ -444,11 +372,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         };
     }, [
         showWrap,
-        wa7A5WrapDirection,
-        shouldUseGetwA7A5ByA7A5,
-        shouldUseGetA7A5BywA7A5,
-        wa7A5QuoteFromA7A5,
-        wa7A5QuoteFromwA7A5,
         independentField,
         inputCurrency,
         parsedAmount,

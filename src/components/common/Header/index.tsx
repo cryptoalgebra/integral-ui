@@ -1,9 +1,8 @@
 // import AlgebraIntegral from "@/assets/algebra-itegral.svg";
 import AlgebraLogo from "@/assets/algebra-logo.png";
-import A7A5Logo from "@/assets/a7a5-logo.svg";
 import NewAlgebraLogo from "@/assets/new-algebra-logo.png";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Clock, WalletIcon, X } from "lucide-react";
+import { ChevronDown, Clock, WalletIcon, } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { type CSSProperties, useEffect, useState } from "react";
 import { Address } from "viem";
@@ -87,10 +86,6 @@ export const Algebra = () => (
         <div className="flex items-center gap-4 max-md:hidden">
             <Link target="_blank" to={"https://algebra.finance"}>
                 <img src={NewAlgebraLogo} width={140} />
-            </Link>
-            <X size={16} />
-            <Link target="_blank" to={"https://a7a5.kg"}>
-                <img src={A7A5Logo} width={72} />
             </Link>
             {/* <span className="font-medium leading-wide text-2xl mt-[5px] text-primary">A7A5</span> */}
         </div>

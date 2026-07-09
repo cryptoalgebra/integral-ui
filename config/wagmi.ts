@@ -18,7 +18,6 @@ import {
     rebaseRewardAbi,
     votingEscrowABI,
     securityRegistryAbi,
-    wa7a5Abi,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
@@ -34,36 +33,27 @@ import {
     VOTING_ESCROW,
 } from "./contract-addresses";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
-import { Address, defineChain } from "viem";
-import { TOKENS } from "./tokens";
+import { defineChain } from "viem";
 
 const mainnet = /*#__PURE__*/ defineChain({
-    id: 1,
-    name: "Ethereum",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    id: 36900,
+    name: "ADI Network",
+    nativeCurrency: { name: "ADI", symbol: "ADI", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://ethereum-rpc.publicnode.com"],
+            http: ["https://rpc.adifoundation.ai/"],
         },
     },
     blockExplorers: {
         default: {
             name: "Etherscan",
-            url: "https://etherscan.io",
-            apiUrl: "https://api.etherscan.io/api",
+            url: "https://explorer.adifoundation.ai/",
         },
     },
     contracts: {
-        ensRegistry: {
-            address: "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e",
-        },
-        ensUniversalResolver: {
-            address: "0xce01f8eee7E479C928F8919abD53E553a36CeF67",
-            blockCreated: 19_258_213,
-        },
         multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 14_353_601,
+            address: "0xD637cbc214Bc3dD354aBb309f4fE717ffdD0B28C",
+            blockCreated: 387_691,
         },
     },
 });
@@ -89,7 +79,6 @@ const rawContracts = [
     { name: "RebaseReward", abi: rebaseRewardAbi },
     { name: "VotingEscrow", abi: votingEscrowABI },
     { name: "SecurityRegistry", abi: securityRegistryAbi },
-    { name: "WA7A5", abi: wa7a5Abi },
 ];
 
 const contractAddresses = {
@@ -104,7 +93,6 @@ const contractAddresses = {
     RebaseReward: REBASE_REWARD,
     VotingEscrow: VOTING_ESCROW,
     SecurityRegistry: SECURITY_REGISTRY,
-    WA7A5: TOKENS[DEFAULT_CHAIN_ID].WA7A5.address as Address,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts
