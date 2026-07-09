@@ -36,7 +36,7 @@ export function ExploreTokenPage() {
     const blockExplorerUrl = useBlockExplorerURL();
 
     const [type, setType] = useState<PoolChartTypeType>(CHART_TYPE.PRICE);
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
     const [activeSection, setActiveSection] = useState<"overview" | "pools" | "activity">("overview");
 
     const tokenAddress = tokenId as Address | undefined;

@@ -5,6 +5,7 @@ import { Token, WNATIVE } from "@cryptoalgebra/integral-sdk";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
 import { useChainId } from "wagmi";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 interface TokensListProps {
     link?: string;
@@ -35,7 +36,7 @@ export function TokensList({ link = "analytics/tokens" }: TokensListProps = {}) 
                   const tvl = Number(token.totalValueLockedUSD);
                   const change = 0; // TODO;
 
-                  const tokenSDK = new Token(chainId, id, Number(decimals), symbol, name);
+                  const tokenSDK = unwrappedToken(new Token(chainId, id, Number(decimals), symbol, name));
 
                   return {
                       id,
