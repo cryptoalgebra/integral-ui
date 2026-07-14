@@ -56,6 +56,7 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_03]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_1]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
+            [CUSTOM_POOL_DEPLOYER_TITLES.NAV_HOOK]: CUSTOM_POOL_DEPLOYER_ADDRESSES.NAV_HOOK[chainid],
         }),
         [chainid],
     );
@@ -70,14 +71,20 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         enabledModules.CustomPoolsModule && areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid], CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid]].filter(isDefined).map(
-                  (customPoolDeployer) =>
-                      computeCustomPoolAddress({
-                          tokenA: currencyA.wrapped,
-                          tokenB: currencyB.wrapped,
-                          customPoolDeployer,
-                      }) as Address,
-              )
+            ? [
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
+                  CUSTOM_POOL_DEPLOYER_ADDRESSES.NAV_HOOK[chainid],
+              ]
+                  .filter(isDefined)
+                  .map(
+                      (customPoolDeployer) =>
+                          computeCustomPoolAddress({
+                              tokenA: currencyA.wrapped,
+                              tokenB: currencyB.wrapped,
+                              customPoolDeployer,
+                          }) as Address,
+                  )
             : [];
 
     const [poolState] = usePool(poolAddress);
@@ -87,12 +94,15 @@ const CreatePoolForm = () => {
     const [poolState1] = usePool(customPoolsAddresses[1]);
     // Base 1%
     const [poolState2] = usePool(customPoolsAddresses[2]);
+    // NAV Hook
+    const [poolState3] = usePool(customPoolsAddresses[3]);
 
     const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC;
     const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_03;
     const isPool2Exists = poolState2 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_1;
+    const isPool3Exists = poolState3 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.NAV_HOOK;
 
-    const isSelectedCustomPoolExists = isPoolExists || isPool1Exists || isPool2Exists;
+    const isSelectedCustomPoolExists = isPoolExists || isPool1Exists || isPool2Exists || isPool3Exists;
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -199,7 +209,7 @@ const CreatePoolForm = () => {
                 {enabledModules.CustomPoolsModule ? (
                     <div className="rounded-xl bg-card-light px-3 py-3">
                         <div className="mb-2 text-xs uppercase tracking-wide text-text-300 text-left">Plugin</div>
-                        <div className="grid w-full grid-cols-3 gap-2">
+                        <div className="grid w-full grid-cols-2 md:grid-cols-4 gap-2">
                             {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
                                 <Button
                                     variant={poolDeployer === v ? "iconActive" : "outline"}

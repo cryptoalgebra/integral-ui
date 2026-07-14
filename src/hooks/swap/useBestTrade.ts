@@ -116,7 +116,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                 amountOut: null,
                 fee: null,
                 priceAfterSwap: null,
-            }
+            },
         );
 
         if (!bestRoute || !amountOut) {
@@ -250,7 +250,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 amountIn: null,
                 fee: null,
                 priceAfterSwap: null,
-            }
+            },
         );
 
         if (!bestRoute || !amountIn) {

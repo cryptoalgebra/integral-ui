@@ -7,6 +7,42 @@ import { useEffect, useState } from "react";
 import { useChainId } from "wagmi";
 import { Address, maxUint128 } from "viem";
 
+type PoolFeeParams = {
+    chainId: number;
+    poolAddress: Address;
+    isZeroToOne: boolean;
+    amount: bigint;
+    baseFee: number;
+};
+
+const getPoolFee = (overrideFee: number, baseFee: number, pluginFee: number) => {
+    return (overrideFee === 0 ? baseFee : overrideFee) + pluginFee;
+};
+
+const getSimulatedPoolFee = async ({ chainId, poolAddress, isZeroToOne, amount, baseFee }: PoolFeeParams) => {
+    const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
+        address: poolAddress,
+    });
+
+    let beforeSwap: [string, number, number];
+
+    try {
+        const { result } = await simulateAlgebraBasePluginV1BeforeSwap(wagmiConfig, {
+            address: plugin,
+            args: [SWAP_ROUTER[chainId], ADDRESS_ZERO, isZeroToOne, amount, maxUint128, false, "0x"] as const,
+            account: poolAddress,
+        });
+
+        beforeSwap = result as [string, number, number];
+    } catch (error) {
+        beforeSwap = ["", 0, 0];
+    }
+
+    const [, overrideFee, pluginFee] = beforeSwap;
+
+    return getPoolFee(overrideFee, baseFee, pluginFee);
+};
+
 export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | null | undefined) {
     const [overrideFees, setOverrideFees] = useState<{
         fee: number | undefined;
@@ -34,48 +70,21 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
                     for (let idx = 0; idx < route.pools.length; idx++) {
                         const pool = route.pools[idx];
                         const split = splits[idx];
-                        const amountIn = route.amountInList?.[idx] || 0n;
-                        const amountOut = route.amountOutList?.[idx] || 0n;
-
                         if (pool.type !== 1) continue;
 
                         const isZeroToOne = split[0].wrapped.sortsBefore(split[1].wrapped);
+                        const amount =
+                            trade.tradeType === TradeType.EXACT_INPUT ? route.amountInList?.[idx] || 0n : route.amountOutList?.[idx] || 0n;
 
-                        const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
-                            address: pool.address,
+                        const poolFee = await getSimulatedPoolFee({
+                            chainId,
+                            poolAddress: pool.address,
+                            isZeroToOne,
+                            amount,
+                            baseFee: Number(route.feeList?.[idx] || 0),
                         });
 
-                        let beforeSwap: [string, number, number];
-
-                        try {
-                            const { result } = await simulateAlgebraBasePluginV1BeforeSwap(wagmiConfig, {
-                                address: plugin,
-                                args: [
-                                    SWAP_ROUTER[chainId],
-                                    ADDRESS_ZERO,
-                                    isZeroToOne,
-                                    trade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
-                                    maxUint128,
-                                    false,
-                                    "0x",
-                                ] as const,
-                                account: pool.address,
-                            });
-
-                            beforeSwap = result as [string, number, number];
-                        } catch (error) {
-                            beforeSwap = ["", 0, 0];
-                        }
-
-                        const [, overrideFee, pluginFee] = beforeSwap || ["", 0, 0];
-
-                        if (overrideFee) {
-                            splitFees.push(overrideFee + pluginFee);
-                        } else {
-                            splitFees.push(Number(route.feeList?.[idx] || 0) + pluginFee);
-                        }
-
-                        splitFees[splitFees.length - 1] = (splitFees[splitFees.length - 1] * route.percent) / 100;
+                        splitFees.push((poolFee * route.percent) / 100);
 
                         fees.push(splitFees);
                     }
@@ -98,42 +107,22 @@ export function useOverrideFee(trade: SmartRouterTrade<TradeType> | Trade<Curren
 
                         const isZeroToOne = route.inputAmount.currency.wrapped.sortsBefore(route.outputAmount.currency.wrapped);
 
-                        const amountIn = BigInt(route.inputAmount.quotient.toString());
-                        const amountOut = BigInt(route.outputAmount.quotient.toString());
+                        const amount = BigInt(
+                            (trade.tradeType === TradeType.EXACT_INPUT
+                                ? route.inputAmount.quotient
+                                : route.outputAmount.quotient
+                            ).toString(),
+                        );
 
-                        const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
-                            address: poolAddress,
-                        });
-
-                        let beforeSwap: [string, number, number];
-
-                        try {
-                            const { result } = await simulateAlgebraBasePluginV1BeforeSwap(wagmiConfig, {
-                                address: plugin,
-                                args: [
-                                    SWAP_ROUTER[chainId],
-                                    ADDRESS_ZERO,
-                                    isZeroToOne,
-                                    trade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
-                                    maxUint128,
-                                    false,
-                                    "0x",
-                                ] as const,
-                                account: poolAddress,
-                            });
-
-                            beforeSwap = result as [string, number, number];
-                        } catch (error) {
-                            beforeSwap = ["", 0, 0];
-                        }
-
-                        const [, overrideFee, pluginFee] = beforeSwap || ["", 0, 0];
-
-                        if (overrideFee) {
-                            splitFees.push(overrideFee + pluginFee);
-                        } else {
-                            splitFees.push(pluginFee);
-                        }
+                        splitFees.push(
+                            await getSimulatedPoolFee({
+                                chainId,
+                                poolAddress,
+                                isZeroToOne,
+                                amount,
+                                baseFee: route.route.pools[idx].fee,
+                            }),
+                        );
                     }
 
                     if (splitFees.length > 0) {

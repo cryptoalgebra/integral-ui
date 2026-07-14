@@ -19,7 +19,10 @@ import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
 const { BoostedTag, BoostedAPR } = BoostedPoolsModule.components;
 const { useBoostedTokenAPR } = BoostedPoolsModule.hooks;
 
-const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: FormattedPool) => {
+import NAVHookModule from "@/modules/NAVHookModule";
+const { NAVHookTag } = NAVHookModule.components;
+
+const PoolPair = ({ pair, id, hasALM, hasActiveFarming, hasNAVHook }: FormattedPool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -42,6 +45,7 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming }: FormattedPool) => {
             <div className="flex items-center gap-2">
                 {hasActiveFarming && <FarmTag poolAddress={id} />}
                 {hasALM && <ALMTag poolAddress={id} />}
+                {enabledModules.NAVHookModule && hasNAVHook && <NAVHookTag />}
                 <BoostedTag currencyA={currencyA} currencyB={currencyB} />
             </div>
             {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}

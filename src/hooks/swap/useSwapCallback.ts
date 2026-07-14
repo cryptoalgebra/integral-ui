@@ -33,6 +33,7 @@ export function useSwapCallback(
     trade: Trade<Currency, Currency, TradeType> | null | undefined,
     allowedSlippage: Percent,
     onTransactionSuccess?: () => void,
+    disabled?: boolean,
 ) {
     const { address: account } = useAccount();
 
@@ -46,6 +47,7 @@ export function useSwapCallback(
 
     useEffect(() => {
         async function findBestCall() {
+            if (disabled) return;
             if (!swapCalldata || swapCalldata.length === 0 || swapCalldata.every((call) => call.calldata.length === 0)) return;
             if (!account || !client) return;
 
@@ -88,7 +90,7 @@ export function useSwapCallback(
         }
 
         findBestCall();
-    }, [swapCalldata, account, chainId, client]);
+    }, [swapCalldata, account, chainId, client, disabled]);
 
     const swapConfig = useMemo(
         () =>

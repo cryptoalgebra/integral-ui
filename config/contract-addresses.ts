@@ -17,6 +17,7 @@ export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
 export const SECURITY_REGISTRY: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0x6aa9481De990bC12F906C5e8DE70D8556ac5ba2e",
 };
+
 /* Farming */
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xB50E639E23C954546C75d9C15363FC0375E5E95E",
@@ -58,4 +59,22 @@ export const REBASE_REWARD: Record<number, Address> = {
 /* Prediction */
 export const BINARY_LMSR_MARKET_MANAGER: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xf04604de76eb31004F2331bd0701b6eBF8ffdCB1",
+};
+
+/* NAV Hook */
+export const PRICE_CONVERGENCE_VAULT_BY_POOL: Record<number, Record<Address, Address>> = {
+    [ChainId.BaseSepolia]: {
+        // pool address -> vault address
+        // "0x25827078a91d0875376a8a9f1bcfb35827ce0d4f": "0x1A6EB0846DEaBf20eF5e11F07205D17518Ead9B1",
+        "0xd05e0dc6176f558439184795f6f865719b562720": "0xD936600f96593eA0212e6A13585077C225939b10",
+        "0x4A5856Ea3803aa06FF9d0ba63E18914C05773c94": "0xD0D27ED3b59D0E07A4889D765468a76660dd4dAA",
+    },
+};
+export const PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL: Record<number, Record<Address, Address>> = {
+    [ChainId.BaseSepolia]: {
+        // pool address -> vault deposit guard address
+        // "0x25827078a91d0875376a8a9f1bcfb35827ce0d4f": "0xb9aA6adde7319c68D90879855D2bE28D3e235A2E",
+        "0xd05e0dc6176f558439184795f6f865719b562720": "0x2F3737B5b16E6fFEc8f2C805b3283159E7f5e6E3",
+        "0x4A5856Ea3803aa06FF9d0ba63E18914C05773c94": "0xf1f865Ee407Bfe9413e60Ee3a0daa4AAB76B83eC",
+    },
 };

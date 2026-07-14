@@ -38,7 +38,7 @@ const LiquidityStats = ({
 }) => {
     return (
         <div className="flex flex-col gap-3 h-fit">
-            <div className="flex flex-col w-full items-start bg-card rounded-xl border border-card-border p-4 h-fit">
+            <div className="flex flex-col w-full items-start bg-card rounded-2xl border border-card-border p-4 h-fit">
                 <h2 className="font-semibold mb-2">Price</h2>
                 <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.priceUSD || 0, 4)}</p>
                 <h2 className="font-semibold mb-2">Liquidity</h2>
@@ -55,7 +55,7 @@ const LiquidityStats = ({
                 </div>
             </div>
 
-            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-xl p-4 h-fit">
+            <div className="flex flex-col w-full items-start bg-card border border-card-border rounded-2xl p-4 h-fit">
                 <h2 className="font-semibold mb-4">Statistics</h2>
                 <div className="flex flex-col gap-3 w-full">
                     <div className="flex justify-between">
@@ -161,7 +161,7 @@ export function AnalyticsTokenPage() {
                 <PageTitle title="Explore token" showSettings={false} />
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3 w-full">
-                <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
+                <div className="md:col-span-2 bg-card border border-card-border rounded-2xl p-3">
                     <div className="flex flex-col p-3 gap-6 border-b border-card-border mb-4">
                         <CurrenciesInfoHeader tokenA={currency} tokenB={null} />
                     </div>
@@ -182,13 +182,13 @@ export function AnalyticsTokenPage() {
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full" to={"/swap"}>
-                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-xl w-full h-full max-md:text-sm">
+                            <Button variant={"primary"} size={"lg"} className="gap-2 rounded-full w-full h-full max-md:text-sm">
                                 <ArrowDownUp size={20} />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={"/pools"}>
-                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 rounded-xl">
+                            <Button variant={"primaryLink"} size={"lg"} className="gap-2 w-full rounded-full">
                                 <Plus size={20} />
                                 Create Position
                             </Button>

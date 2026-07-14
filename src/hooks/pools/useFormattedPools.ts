@@ -9,7 +9,8 @@ import { usePositions } from "../positions/usePositions";
 import ALMModule from "@/modules/ALMModule";
 import { Address } from "viem";
 import { BOOSTED_TOKENS } from "config/tokens";
-import { DEFAULT_CHAIN_ID } from "config";
+import { DEFAULT_CHAIN_ID, PRICE_CONVERGENCE_VAULT_BY_POOL, PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL } from "config";
+import { enabledModules } from "config/app-modules";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
 interface Pair {
@@ -30,11 +31,18 @@ export interface FormattedPool {
     isMyPool: boolean;
     hasActiveFarming: boolean;
     hasALM: boolean;
+    hasNAVHook: boolean;
     deployer: string;
     isBoostedPool: boolean;
     isBoostedToken0: boolean;
     isBoostedToken1: boolean;
-    isShowcase: boolean;
+    // isShowcase: boolean;
+}
+
+function hasPoolMapping(mapping: Record<Address, Address> | undefined, poolId: string): boolean {
+    if (!mapping) return false;
+
+    return Object.keys(mapping).some((address) => address.toLowerCase() === poolId.toLowerCase());
 }
 
 export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPool[]; isLoading: boolean } {
@@ -79,7 +87,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 }
                 return true;
             })
-            .map(({ id, token0, token1, overrideFee, totalValueLockedUSD, deployer, poolDayData }) => {
+            .map(({ id, token0, token1, fee: baseFee, overrideFee, totalValueLockedUSD, deployer, poolDayData }) => {
                 const currentPool = poolDayData[0];
                 const lastDate = currentPool ? currentPool.date * 1000 : 0;
                 const currentDate = new Date().getTime();
@@ -89,7 +97,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 const msIn24Hours = 24 * 60 * 60 * 1000;
 
                 const openPositions = positions?.filter(
-                    (position) => position.pool.toLowerCase() === id.toLowerCase() && position.liquidity > 0n
+                    (position) => position.pool.toLowerCase() === id.toLowerCase() && position.liquidity > 0n,
                 );
                 const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
@@ -102,13 +110,20 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
 
                 const avgApr = farmApr + poolAvgApr;
 
-                const isBoostedToken0 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
-                    (bt) => bt.address.toLowerCase() === token0.id.toLowerCase()
+                const activeChainId = chainId || DEFAULT_CHAIN_ID;
+                const isBoostedToken0 = Object.values(BOOSTED_TOKENS[activeChainId]).find(
+                    (bt) => bt.address.toLowerCase() === token0.id.toLowerCase(),
                 );
-                const isBoostedToken1 = Object.values(BOOSTED_TOKENS[chainId || DEFAULT_CHAIN_ID]).find(
-                    (bt) => bt.address.toLowerCase() === token1.id.toLowerCase()
+                const isBoostedToken1 = Object.values(BOOSTED_TOKENS[activeChainId]).find(
+                    (bt) => bt.address.toLowerCase() === token1.id.toLowerCase(),
                 );
                 const isBoosted = isBoostedToken0 || isBoostedToken1;
+                const hasNAVHook =
+                    enabledModules.NAVHookModule &&
+                    hasPoolMapping(PRICE_CONVERGENCE_VAULT_BY_POOL[activeChainId], id) &&
+                    hasPoolMapping(PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL[activeChainId], id);
+
+                const fee = (Number(overrideFee) || Number(baseFee)) / 10_000;
 
                 return {
                     id: id as Address,
@@ -116,7 +131,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                         token0,
                         token1,
                     },
-                    fee: Number(overrideFee) / 10_000,
+                    fee,
                     tvlUSD: Number(totalValueLockedUSD),
                     volume24USD: timeDifference <= msIn24Hours ? Number(currentPool.volumeUSD) : 0,
                     fees24USD: timeDifference <= msIn24Hours ? Number(currentPool.feesUSD) : 0,
@@ -126,12 +141,13 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     avgApr,
                     isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
                     hasALM: Boolean(openVaults?.length),
+                    hasNAVHook,
                     hasActiveFarming: Boolean(activeFarming),
                     isBoostedPool: Boolean(isBoosted),
                     isBoostedToken0: Boolean(isBoostedToken0),
                     isBoostedToken1: Boolean(isBoostedToken1),
                     deployer: deployer.toLowerCase(),
-                    isShowcase: token0.id === '0x4200000000000000000000000000000000000006' && token1.id === '0xabac6f23fdf1313fc2e9c9244f666157ccd32990'
+                    // isShowcase: token0.id === '0x4200000000000000000000000000000000000006' && token1.id === '0xabac6f23fdf1313fc2e9c9244f666157ccd32990'
                 };
             });
     }, [
@@ -145,6 +161,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
         poolsMaxApr,
         poolsAvgApr,
         farmingsAPR,
+        chainId,
     ]);
 
     return { pools: formattedPools, isLoading };

@@ -4,6 +4,8 @@ import BTCLogo from "@/assets/tokens/wbtc.svg";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import USDCBlackLogo from "@/assets/tokens/usdc-black.png";
 import USDTBlackLogo from "@/assets/tokens/usdt-black.png";
+import m4626Logo from "@/assets/tokens/m4626.png";
+import WTSGOVLogo from "@/assets/tokens/wtsgov.png";
 import EtherLogo from "@/assets/tokens/ether.svg";
 import ProjectXLogo from "@/assets/tokens/project-x.jpg";
 import TOKENLogo from "@/assets/algebra-logo.svg";
@@ -70,6 +72,26 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "AVETH",
         logo: EtherLogo,
     },
+    ["0x4db3fba9958f7ee9715875e485ceae299714029c"]: {
+        symbol: "m4626",
+        logo: m4626Logo,
+    },
+    ["0x0acae280cc7695e5bbbd6fb4b5b1b39c9594638d"]: {
+        symbol: "USDC",
+        logo: USDCLogo,
+    },
+    ["0xdDC1FD535E7243f43465094f43Ee8a03A5189acd"]: {
+        symbol: "USDC",
+        logo: USDCLogo,
+    },
+    ["0x980447AbF3B26B41c7f1777C2A8dF41cCd62ace6"]: {
+        symbol: "WTSGOV",
+        logo: WTSGOVLogo,
+    },
+};
+
+const getSpecialToken = (address: Address): { symbol: string; logo: string } | undefined => {
+    return Object.entries(specialTokens).find(([key]) => key.toLowerCase() === address.toLowerCase())?.[1];
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {
@@ -85,17 +107,9 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
 
     const classString = cn(`w-[${size}px] h-[${size}px] min-w-[${size}px] min-h-[${size}px] bg-card-dark rounded-full`, className);
 
-    if (address in specialTokens) {
-        return (
-            <img
-                src={specialTokens[address].logo}
-                alt={specialTokens[address].symbol}
-                width={size}
-                height={size}
-                className={classString}
-                style={style}
-            />
-        );
+    const specialToken = getSpecialToken(address);
+    if (specialToken) {
+        return <img src={specialToken.logo} alt={specialToken.symbol} width={size} height={size} className={classString} style={style} />;
     }
 
     if (currency.isNative) {

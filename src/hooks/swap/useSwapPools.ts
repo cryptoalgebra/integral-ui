@@ -16,7 +16,7 @@ import { isDefined } from "@/utils";
  */
 export function useSwapPools(
     currencyIn?: Currency,
-    currencyOut?: Currency
+    currencyOut?: Currency,
 ): {
     pools: Pool[];
     isLoading: boolean;
@@ -40,8 +40,8 @@ export function useSwapPools(
                     tokenA,
                     tokenB,
                     customPoolDeployer,
-                })
-            )
+                }),
+            ),
         );
 
         return [...basePoolAddresses, ...customPoolAddresses];
@@ -66,14 +66,14 @@ export function useSwapPools(
                     pool.token0.id,
                     Number(pool.token0.decimals),
                     pool.token0.symbol,
-                    pool.token0.name
+                    pool.token0.name,
                 );
                 const token1 = tryCreateBoostedToken(
                     chainId,
                     pool.token1.id,
                     Number(pool.token1.decimals),
                     pool.token1.symbol,
-                    pool.token1.name
+                    pool.token1.name,
                 );
 
                 return new Pool(
@@ -84,7 +84,7 @@ export function useSwapPools(
                     pool.deployer,
                     pool.liquidity,
                     Number(pool.tick),
-                    Number(pool.tickSpacing)
+                    Number(pool.tickSpacing),
                 );
             })
             .filter(isDefined);

@@ -24,5 +24,5 @@ export function useNeedAllowance(
         !currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString())
     );
 
-    return { needAllowance, refetchAllowance: refetch };
+    return { needAllowance, allowance, refetchAllowance: refetch };
 }

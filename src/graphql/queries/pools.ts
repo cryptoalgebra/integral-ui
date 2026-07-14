@@ -24,6 +24,8 @@ export const POOL_FRAGMENT = gql`
         feesToken0
         feesToken1
         deployer
+        txCount
+        createdAtTimestamp
     }
 `;
 export const TICK_FRAGMENT = gql`
