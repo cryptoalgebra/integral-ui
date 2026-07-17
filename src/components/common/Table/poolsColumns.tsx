@@ -22,7 +22,10 @@ const { useBoostedTokenAPR } = BoostedPoolsModule.hooks;
 import NAVHookModule from "@/modules/NAVHookModule";
 const { NAVHookTag } = NAVHookModule.components;
 
-const PoolPair = ({ pair, id, hasALM, hasActiveFarming, hasNAVHook }: FormattedPool) => {
+import KYCModule from "@/modules/KYCModule";
+const { KycTag } = KYCModule.components;
+
+const PoolPair = ({ pair, id, hasALM, hasActiveFarming, hasNAVHook, hasKyc }: FormattedPool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -46,6 +49,7 @@ const PoolPair = ({ pair, id, hasALM, hasActiveFarming, hasNAVHook }: FormattedP
                 {hasActiveFarming && <FarmTag poolAddress={id} />}
                 {hasALM && <ALMTag poolAddress={id} />}
                 {enabledModules.NAVHookModule && hasNAVHook && <NAVHookTag />}
+                {enabledModules.KYCModule && hasKyc && <KycTag />}
                 <BoostedTag currencyA={currencyA} currencyB={currencyB} />
             </div>
             {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}

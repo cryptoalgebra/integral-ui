@@ -5,7 +5,7 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { tryParseAmount, BoostedRouteStepType, Currency } from "@cryptoalgebra/integral-sdk";
@@ -14,6 +14,7 @@ import { useApproveCallbackFromTrade } from "@/hooks/common/useApprove";
 import { ApprovalState } from "@/types/approve-state";
 import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 import { TradeState } from "@/types/trade-state";
+import { KycStatus } from "@/types/kyc";
 import { AlertTriangle } from "lucide-react";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
@@ -21,6 +22,10 @@ const { useSmartRouterCallback } = SmartRouterModule.hooks;
 
 import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
 const { useOmegaSwapCallback, usePermit2 } = BoostedPoolsModule.hooks;
+
+import KYCModule from "@/modules/KYCModule";
+const { KycVerificationModal } = KYCModule.components;
+const { useTradeKycGate, useKycIdentity } = KYCModule.hooks;
 
 export enum AllowanceState {
     LOADING = 0,
@@ -36,6 +41,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { chainId: userChainId } = useAppKitNetwork();
 
     const { address: account } = useAccount();
+    const [isKycModalOpen, setIsKycModalOpen] = useState(false);
 
     const { independentField, typedValue } = useSwapState();
     const {
@@ -49,9 +55,14 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         smartTradeCallOptions,
         refetchBalances,
         priceImpact: derivedPriceImpact,
+        kycQuoteState,
     } = derivedSwap;
 
     const isSmartTrade = trade && "routes" in trade;
+    const kycGate = useTradeKycGate(trade);
+    const isTradeKycRequired = enabledModules.KYCModule && Boolean(kycGate.isKycRequired);
+    const hasKycContext = isTradeKycRequired || kycQuoteState.hasLockedKycRoutes;
+    const kycIdentity = useKycIdentity(hasKycContext);
 
     const erc4626WrapType = useMemo(() => {
         if (isSmartTrade || !trade || !trade.swaps[0].route.isBoosted) return null;
@@ -246,6 +257,46 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             </Button>
         );
 
+    if (kycQuoteState.isError && userHasSpecifiedInputOutput)
+        return (
+            <Button variant="outline" onClick={() => kycQuoteState.refetch()}>
+                Retry KYC check
+            </Button>
+        );
+
+    if (kycQuoteState.isLoading && userHasSpecifiedInputOutput)
+        return (
+            <Button variant="primary" disabled>
+                <Loader /> Checking pool requirements
+            </Button>
+        );
+
+    if (routeNotFound && kycQuoteState.hasLockedKycRoutes && userHasSpecifiedInputOutput) {
+        const verificationButton =
+            kycIdentity.status === KycStatus.ERROR ? (
+                <Button variant="outline" onClick={() => kycIdentity.refetch?.()}>
+                    Retry KYC status
+                </Button>
+            ) : (
+                <Button variant="primary" onClick={() => setIsKycModalOpen(true)} disabled={kycIdentity.isLoading}>
+                    {kycIdentity.isLoading ? (
+                        <Loader />
+                    ) : kycIdentity.status === KycStatus.IDENTITY_REQUIRED ? (
+                        "Deploy Onchain ID"
+                    ) : (
+                        "Complete verification"
+                    )}
+                </Button>
+            );
+
+        return (
+            <>
+                {verificationButton}
+                <KycVerificationModal open={isKycModalOpen} onOpenChange={setIsKycModalOpen} identity={kycIdentity} />
+            </>
+        );
+    }
+
     if (routeNotFound && userHasSpecifiedInputOutput)
         return (
             <Button variant={"primary"} disabled>
@@ -260,6 +311,36 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             </Button>
         );
     }
+
+    if (trade && enabledModules.KYCModule && kycGate.isLoading)
+        return (
+            <Button variant="primary" disabled>
+                <Loader /> Checking pool requirements
+            </Button>
+        );
+
+    if (trade && enabledModules.KYCModule && kycGate.isError)
+        return (
+            <Button variant="outline" onClick={() => kycGate.refetch?.()}>
+                Retry KYC check
+            </Button>
+        );
+
+    if (trade && isTradeKycRequired && kycIdentity.status !== KycStatus.VERIFIED)
+        return (
+            <>
+                <Button variant="primary" onClick={() => setIsKycModalOpen(true)} disabled={kycIdentity.isLoading}>
+                    {kycIdentity.isLoading ? (
+                        <Loader />
+                    ) : kycIdentity.status === KycStatus.IDENTITY_REQUIRED ? (
+                        "Deploy Onchain ID"
+                    ) : (
+                        "Complete verification"
+                    )}
+                </Button>
+                <KycVerificationModal open={isKycModalOpen} onOpenChange={setIsKycModalOpen} identity={kycIdentity} />
+            </>
+        );
 
     // Show standard ERC20 approval button for native/smart router
     if (needsClassicApproval || isApproving) {

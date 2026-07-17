@@ -16,17 +16,31 @@ import { Route as SmartRoute, V3Pool } from "@cryptoalgebra/router-custom-pools-
 import { Currency, TradeType, Route as SDKRoute, BoostedRoute, BoostedRouteStepType } from "@cryptoalgebra/integral-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
 import { formatAmount } from "@/utils";
+import KYCModule from "@/modules/KYCModule";
+
+const { getSdkPoolAddress } = KYCModule.utils;
+const { KycTag } = KYCModule.components;
 
 interface ISwapRouteModal {
     isOpen: boolean;
     setIsOpen: (state: boolean) => void;
-    routes: SmartRoute[] | SDKRoute<Currency, Currency>[] | BoostedRoute<Currency, Currency>[] | undefined;
+    routes: Array<SmartRoute | SDKRoute<Currency, Currency> | BoostedRoute<Currency, Currency>> | undefined;
     fees: number[][];
     tradeType: TradeType;
+    kycPoolAddresses?: Address[];
     children: React.ReactNode;
 }
 
-const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deployer: Address; fee: number } }) => {
+const isKycPool = (address: Address, kycPoolAddresses: Address[]) =>
+    kycPoolAddresses.some((poolAddress) => poolAddress.toLowerCase() === address.toLowerCase());
+
+const RoutePool = ({
+    pool,
+    kycPoolAddresses,
+}: {
+    pool: { path: Currency[]; address: Address; deployer: Address; fee: number };
+    kycPoolAddresses: Address[];
+}) => {
     const [token0, token1] = [pool.path[0], pool.path[1]];
     const currencyA = useCurrency(token0.wrapped.address as Address, true);
     const currencyB = useCurrency(token1.wrapped.address as Address, true);
@@ -42,6 +56,7 @@ const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deplo
             <div className={"flex flex-2 flex-col gap-2 items-center"}>
                 <ArrowRight size={"16px"} />
                 <span>{`${deployer} ${currencyA?.symbol}/${currencyB?.symbol} (${formatAmount(pool.fee / 10_000, 4)}%)`}</span>
+                {isKycPool(pool.address, kycPoolAddresses) && <KycTag />}
             </div>
             <div className={"flex flex-1 flex-col gap-2 items-end"}>
                 <CurrencyLogo currency={currencyB} size={24} />
@@ -52,18 +67,28 @@ const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deplo
 };
 
 // Component for SDK Route (multihop through pools)
-const SDKRouteDisplay = ({ route, fees }: { route: SDKRoute<Currency, Currency>; fees: number[] }) => {
-    return route.pools.map((_, idx) => {
+const SDKRouteDisplay = ({
+    route,
+    fees,
+    kycPoolAddresses,
+}: {
+    route: SDKRoute<Currency, Currency>;
+    fees: number[];
+    kycPoolAddresses: Address[];
+}) => {
+    return route.pools.map((pool, idx) => {
         const token0 = route.tokenPath[idx];
         const token1 = route.tokenPath[idx + 1];
         const fee = fees[idx] || 0;
 
-        return <RouteHop key={`hop-${idx}`} token0={token0} token1={token1} fee={fee} />;
+        const hasKyc = kycPoolAddresses.length > 0 && isKycPool(getSdkPoolAddress(pool), kycPoolAddresses);
+
+        return <RouteHop key={`hop-${idx}`} token0={token0} token1={token1} fee={fee} isKyc={hasKyc} />;
     });
 };
 
 // Component for single hop in route
-const RouteHop = ({ token0, token1, fee, type }: { token0: Currency; token1: Currency; fee: number; type?: string }) => {
+const RouteHop = ({ token0, token1, fee, type, isKyc = false }: { token0: Currency; token1: Currency; fee: number; type?: string; isKyc?: boolean }) => {
     const currencyA = useCurrency(token0.wrapped.address as Address, true);
     const currencyB = useCurrency(token1.wrapped.address as Address, true);
 
@@ -82,6 +107,7 @@ const RouteHop = ({ token0, token1, fee, type }: { token0: Currency; token1: Cur
                 ) : (
                     <span>{`Swap ${currencyA?.symbol}/${currencyB?.symbol} (${formatAmount(fee / 10_000, 4)}%)`}</span>
                 )}
+                {isKyc && <KycTag />}
             </div>
             <div className={"flex flex-1 flex-col gap-2 items-end"}>
                 <CurrencyLogo currency={currencyB} size={24} />
@@ -91,8 +117,9 @@ const RouteHop = ({ token0, token1, fee, type }: { token0: Currency; token1: Cur
     );
 };
 
+
 // Component for BoostedRoute (with wrap/unwrap steps)
-const BoostedRouteDisplay = ({ route, fees }: { route: BoostedRoute<Currency, Currency>; fees: number[] }) => {
+const BoostedRouteDisplay = ({ route, fees, kycPoolAddresses }: { route: BoostedRoute<Currency, Currency>; fees: number[]; kycPoolAddresses: Address[] }) => {
     const stepsWithFees = useMemo(() => {
         let poolIndex = 0;
 
@@ -100,20 +127,21 @@ const BoostedRouteDisplay = ({ route, fees }: { route: BoostedRoute<Currency, Cu
             if (step.type === BoostedRouteStepType.SWAP) {
                 const fee = fees[poolIndex] || 0;
                 poolIndex++;
-                return { step, fee };
+                const isKyc = kycPoolAddresses.length > 0 && isKycPool(getSdkPoolAddress(step.pool), kycPoolAddresses);
+                return { step, fee, isKyc };
             }
-            return { step, fee: 0 };
+            return { step, fee: 0, isKyc: false };
         });
-    }, [route.steps, fees]);
+    }, [route.steps, fees, kycPoolAddresses]);
 
-    return stepsWithFees.map(({ step, fee }, idx) => {
+    return stepsWithFees.map(({ step, fee, isKyc }, idx) => {
         const type = step.type === BoostedRouteStepType.WRAP ? "wrap" : step.type === BoostedRouteStepType.UNWRAP ? "unwrap" : undefined;
 
-        return <RouteHop key={`step-${idx}`} token0={step.tokenIn} token1={step.tokenOut} fee={fee} type={type} />;
+        return <RouteHop key={`step-${idx}`} token0={step.tokenIn} token1={step.tokenOut} fee={fee} type={type} isKyc={isKyc} />;
     });
 };
 
-const RouteSplit = ({ route, fees }: { route: SmartRoute; fees: number[][]; tradeType: TradeType }) => {
+const RouteSplit = ({ route, fees, kycPoolAddresses }: { route: SmartRoute; fees: number[][]; tradeType: TradeType; kycPoolAddresses: Address[] }) => {
     const { splits, splitFees } = useMemo(() => {
         const splits = [];
         const splitFees = [];
@@ -144,6 +172,7 @@ const RouteSplit = ({ route, fees }: { route: SmartRoute; fees: number[][]; trad
                             address: pool.address,
                             deployer: pool.deployer,
                         }}
+                        kycPoolAddresses={kycPoolAddresses}
                     />
                 ) : null
             )}
@@ -151,7 +180,7 @@ const RouteSplit = ({ route, fees }: { route: SmartRoute; fees: number[][]; trad
     );
 };
 
-export const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, children }: ISwapRouteModal) => {
+export const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, kycPoolAddresses = [], children }: ISwapRouteModal) => {
     if (!routes) return null;
 
     // Determine route type
@@ -178,15 +207,16 @@ export const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, chi
                                 route={route}
                                 fees={fees}
                                 tradeType={tradeType}
+                                kycPoolAddresses={kycPoolAddresses}
                             />
                         ))}
                     {isBoostedSDKRoute &&
                         (routes as BoostedRoute<Currency, Currency>[]).map((route, idx) => (
-                            <BoostedRouteDisplay key={`boosted-route-${idx}`} route={route} fees={fees[idx] || []} />
+                            <BoostedRouteDisplay key={`boosted-route-${idx}`} route={route} fees={fees[idx] || []} kycPoolAddresses={kycPoolAddresses} />
                         ))}
                     {isSDKRoute &&
                         (routes as SDKRoute<Currency, Currency>[]).map((route, idx) => (
-                            <SDKRouteDisplay key={`sdk-route-${idx}`} route={route} fees={fees[idx] || []} />
+                            <SDKRouteDisplay key={`sdk-route-${idx}`} route={route} fees={fees[idx] || []} kycPoolAddresses={kycPoolAddresses} />
                         ))}
                 </CredenzaBody>
                 <CredenzaClose asChild>

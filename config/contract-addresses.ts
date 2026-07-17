@@ -78,3 +78,14 @@ export const PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL: Record<number, Recor
         "0x4A5856Ea3803aa06FF9d0ba63E18914C05773c94": "0xf1f865Ee407Bfe9413e60Ee3a0daa4AAB76B83eC",
     },
 };
+
+/* KYC */
+export const IID_FACTORY: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x7a1ca9131139F0A8dbf3CC41f3642BcaAA9a849e",
+};
+export const GATEWAY: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x592C49164940ff8dDA47FDd543C2bcb2acC96494",
+};
+export const CLAIM_ISSUER: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0xd5a5A781c6835a41479c372Eb416381727d8bb0F",
+};

@@ -21,11 +21,16 @@ import {
     binaryLMSRMarketManagerABI,
     priceConvergenceVaultABI,
     priceConvergenceVaultDepositGuardABI,
+    gatewayABI,
+    identityABI,
+    iidFactoryABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
     ALGEBRA_FACTORY,
     BINARY_LMSR_MARKET_MANAGER,
+    GATEWAY,
+    IID_FACTORY,
     FARMING_CENTER,
     LIMIT_ORDER_MANAGER,
     NONFUNGIBLE_POSITION_MANAGER,
@@ -94,6 +99,9 @@ const rawContracts = [
     { name: "BinaryLMSRMarketManager", abi: binaryLMSRMarketManagerABI },
     { name: "PriceConvergenceVault", abi: priceConvergenceVaultABI },
     { name: "PriceConvergenceVaultDepositGuard", abi: priceConvergenceVaultDepositGuardABI },
+    { name: "Gateway", abi: gatewayABI },
+    { name: "Identity", abi: identityABI },
+    { name: "IIDFactory", abi: iidFactoryABI },
 ];
 
 const contractAddresses = {
@@ -109,6 +117,8 @@ const contractAddresses = {
     VotingEscrow: VOTING_ESCROW,
     SecurityRegistry: SECURITY_REGISTRY,
     BinaryLMSRMarketManager: BINARY_LMSR_MARKET_MANAGER,
+    Gateway: GATEWAY,
+    IIDFactory: IID_FACTORY,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts

@@ -24,6 +24,7 @@ import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pool
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
+import { EMPTY_KYC_QUOTE_STATE, type KycQuoteState } from "@/types/kyc";
 const { useSmartRouterBestTrade } = SmartRouterModule.hooks;
 
 export enum RouterType {
@@ -74,6 +75,7 @@ export interface IDerivedSwapInfo {
     isExactIn: boolean;
     refetchBalances: () => void;
     priceImpact?: Percent | null;
+    kycQuoteState: KycQuoteState;
 }
 
 export const useSwapState = create<SwapState>((set, get) => ({
@@ -378,6 +380,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
 
     // Extract priceImpact from trade state (only for non-SmartRouter trades)
     const priceImpact = "priceImpact" in trade ? trade.priceImpact : null;
+    const kycQuoteState = "kycQuoteState" in trade ? trade.kycQuoteState : EMPTY_KYC_QUOTE_STATE;
 
     return {
         currencies,
@@ -396,5 +399,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         parsedAmounts,
         refetchBalances,
         priceImpact,
+        kycQuoteState,
     };
 }

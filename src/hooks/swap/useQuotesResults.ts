@@ -1,8 +1,8 @@
 import { quoterV2ABI, QUOTER_V2 } from "config";
-import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, encodeRouteToPath, Route } from "@cryptoalgebra/integral-sdk";
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
-import { useAllRoutes } from "./useAllRoutes";
+import { Hex } from "viem";
+import { useAccount, useChainId, useReadContracts } from "wagmi";
 
 type QuoteResult = [
     bigint[], // amountOutList
@@ -10,59 +10,55 @@ type QuoteResult = [
     bigint[], // sqrtPriceX96AfterList
     number[], // initializedTicksCrossedList
     bigint, // gasEstimate
-    number[] // feeList
+    number[], // feeList
 ];
 
 export function useQuotesResults({
     exactInput,
     amountIn,
     amountOut,
-    currencyIn,
-    currencyOut,
+    routes,
 }: {
     exactInput: boolean;
     amountIn?: CurrencyAmount<Currency>;
     amountOut?: CurrencyAmount<Currency>;
-    currencyIn?: Currency;
-    currencyOut?: Currency;
+    routes: Route<Currency, Currency>[];
 }): {
-    data: QuoteResult[];
+    data: (QuoteResult | undefined)[];
     isLoading: boolean;
     refetch: () => void;
 } {
+    const { address: walletAddress } = useAccount();
+
     const chainId = useChainId();
-    const { normalRoutes: routes, loading: routesLoading } = useAllRoutes(
-        exactInput ? amountIn?.currency : currencyIn,
-        !exactInput ? amountOut?.currency : currencyOut
-    );
+    const amount = exactInput ? amountIn : amountOut;
 
     const quoteInputs = useMemo(() => {
-        return routes.map((route) => [
-            encodeRouteToPath(route, !exactInput),
-            exactInput
-                ? amountIn
-                    ? `0x${amountIn.quotient.toString(16)}`
-                    : undefined
-                : amountOut
-                ? `0x${amountOut.quotient.toString(16)}`
-                : undefined,
-        ]);
-    }, [amountIn, amountOut, routes, exactInput]);
+        return routes.map((route) => [encodeRouteToPath(route, !exactInput), amount?.quotient ?? 0n] as readonly [Hex, bigint]);
+    }, [amount, routes, exactInput]);
 
     const functionName = exactInput ? "quoteExactInput" : "quoteExactOutput";
 
     const { data: quotesResults, isLoading, refetch } = useReadContracts({
-        contracts: quoteInputs.map((quote: any) => ({
+        account: walletAddress,
+        contracts: quoteInputs.map((quote) => ({
             address: QUOTER_V2[chainId],
             abi: quoterV2ABI,
             functionName: functionName,
             args: quote,
         })),
+        allowFailure: true,
+        query: { enabled: Boolean(amount && quoteInputs.length > 0) },
     });
 
     return {
-        data: (quotesResults?.map((d) => d?.result) as unknown) as QuoteResult[],
-        isLoading: isLoading || routesLoading,
+        data: (quotesResults?.map((result) =>
+            result.status === "success" ? (result.result as unknown as QuoteResult) : undefined,
+        ) || []) as (
+            | QuoteResult
+            | undefined
+        )[],
+        isLoading,
         refetch,
     };
 }

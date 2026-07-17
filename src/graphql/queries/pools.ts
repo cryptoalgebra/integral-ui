@@ -24,6 +24,10 @@ export const POOL_FRAGMENT = gql`
         feesToken0
         feesToken1
         deployer
+        plugin {
+            id
+            activeModules
+        }
         txCount
         createdAtTimestamp
     }

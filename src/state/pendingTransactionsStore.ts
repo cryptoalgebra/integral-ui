@@ -11,6 +11,7 @@ export enum TransactionType {
     FARM = "FARM",
     POOL = "POOL",
     LIMIT_ORDER = "LIMIT_ORDER",
+    KYC = "KYC",
 }
 
 export interface TransactionInfo {

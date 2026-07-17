@@ -5,6 +5,9 @@ import { SwapTypeSelector } from "../SwapTypeSelector";
 import SwapButton from "../SwapButton";
 import SwapPair from "../SwapPair";
 import SwapParams from "../SwapParams";
+import KYCModule from "@/modules/KYCModule";
+
+const { KycSwapNoticeSection } = KYCModule.components;
 
 export function SwapForm({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) {
     return (
@@ -12,6 +15,7 @@ export function SwapForm({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) {
             <FormContainer>
                 <SwapTypeSelector type={SwapPageView.SWAP} />
                 <SwapPair derivedSwap={derivedSwap} />
+                <KycSwapNoticeSection trade={derivedSwap.toggledTrade} quoteState={derivedSwap.kycQuoteState} />
                 <SwapParams derivedSwap={derivedSwap} />
             </FormContainer>
             <SwapButton derivedSwap={derivedSwap} />

@@ -29,6 +29,7 @@ import useSWR from "swr";
 import { Deposit, useSinglePositionLazyQuery } from "@/graphql/generated/graphql";
 import { useReadSecurityRegistryGlobalStatus } from "@/generated";
 import { enabledModules } from "config";
+import KYCModule from "@/modules/KYCModule";
 
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
@@ -38,6 +39,7 @@ const { useNAVHookPool } = NAVHookModule.hooks;
 
 const { ActiveFarming, UnclaimedRewards } = FarmingModule.components;
 const { useActiveFarming, useClosedFarmings, useUnclaimedRewards } = FarmingModule.hooks;
+const { KycPoolInfo } = KYCModule.components;
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -231,6 +233,8 @@ const PoolPage = () => {
                 stats={poolStats}
                 showCreatePosition={effectiveStatus === SecurityState.ENABLED && !showNAVHookPool}
             />
+
+            {enabledModules.KYCModule && <KycPoolInfo poolAddress={poolId} />}
 
             {showNAVHookPool ? (
                 <NAVHookPoolLayout poolId={poolId} pool={poolEntity} poolStatus={effectiveStatus} poolStats={poolStats} />

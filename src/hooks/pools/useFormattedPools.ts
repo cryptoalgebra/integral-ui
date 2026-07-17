@@ -13,6 +13,8 @@ import { DEFAULT_CHAIN_ID, PRICE_CONVERGENCE_VAULT_BY_POOL, PRICE_CONVERGENCE_VA
 import { enabledModules } from "config/app-modules";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
+const KYC_MODULE_NAME = "KYC Plugin";
+
 interface Pair {
     token0: TokenFieldsFragment;
     token1: TokenFieldsFragment;
@@ -32,6 +34,7 @@ export interface FormattedPool {
     hasActiveFarming: boolean;
     hasALM: boolean;
     hasNAVHook: boolean;
+    hasKyc: boolean;
     deployer: string;
     isBoostedPool: boolean;
     isBoostedToken0: boolean;
@@ -61,7 +64,6 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
 
     const { data: almPositions } = useAllUserALMAmounts(account);
     const { data: almVaults } = useAllALMVaults();
-
     const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
     const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
     const { data: farmingsAPR, isLoading: isFarmingsAPRLoading } = useSWR(ETERNAL_FARMINGS_API, fetcher);
@@ -87,7 +89,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                 }
                 return true;
             })
-            .map(({ id, token0, token1, fee: baseFee, overrideFee, totalValueLockedUSD, deployer, poolDayData }) => {
+            .map(({ id, token0, token1, fee: baseFee, overrideFee, totalValueLockedUSD, deployer, poolDayData, plugin }) => {
                 const currentPool = poolDayData[0];
                 const lastDate = currentPool ? currentPool.date * 1000 : 0;
                 const currentDate = new Date().getTime();
@@ -124,6 +126,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     hasPoolMapping(PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL[activeChainId], id);
 
                 const fee = (Number(overrideFee) || Number(baseFee)) / 10_000;
+                const hasKyc = Boolean(enabledModules.KYCModule && plugin?.activeModules.includes(KYC_MODULE_NAME));
 
                 return {
                     id: id as Address,
@@ -142,6 +145,7 @@ export function useFormattedPools(tokenAddress?: Address): { pools: FormattedPoo
                     isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
                     hasALM: Boolean(openVaults?.length),
                     hasNAVHook,
+                    hasKyc,
                     hasActiveFarming: Boolean(activeFarming),
                     isBoostedPool: Boolean(isBoosted),
                     isBoostedToken0: Boolean(isBoostedToken0),

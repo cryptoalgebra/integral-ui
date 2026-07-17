@@ -9,6 +9,7 @@ export enum AppFeatureModule {
     VE_33 = "Ve33Module",
     BoostedPools = "BoostedPoolsModule",
     Prediction = "PredictionModule",
+    KYC = "KYCModule",
 }
 
 /* configure enabled modules here */
@@ -23,4 +24,5 @@ export const enabledModules: Record<AppFeatureModule, boolean> = {
     [AppFeatureModule.VE_33]: true,
     [AppFeatureModule.BoostedPools]: true,
     [AppFeatureModule.Prediction]: true,
+    [AppFeatureModule.KYC]: true,
 };
