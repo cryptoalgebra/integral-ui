@@ -37,7 +37,7 @@ export const KycPoolInfo = ({ poolAddress }: { poolAddress: Address }) => {
                         <KycTag />
                     </div>
                     <p className="text-sm text-text-300">
-                        Swaps and liquidity additions require an Onchain ID with a valid demo verification claim.
+                        Swaps and liquidity deposits in this pool require an Onchain ID with a valid Demo KYC claim.
                     </p>
                 </div>
 
