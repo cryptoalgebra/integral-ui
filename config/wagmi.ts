@@ -40,32 +40,32 @@ import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
+    id: 43111,
+    network: "hemi",
+    name: "Hemi",
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://rpc.hemi.network/rpc"],
         },
         public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://rpc.hemi.network/rpc"],
         },
     },
     blockExplorers: {
         default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "Hemi explorer",
+            url: "https://explorer.hemi.xyz",
         },
         etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "Hemi explorer",
+            url: "https://explorer.hemi.xyz",
         },
     },
     contracts: {
         multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
+            address: "0x69D57B9D705eaD73a5d2f2476C30c55bD755cc2F",
+            blockCreated: 4904420,
         },
     },
 });

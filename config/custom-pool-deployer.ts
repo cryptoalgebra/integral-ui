@@ -1,28 +1,16 @@
 import { ADDRESS_ZERO, ChainId } from "@cryptoalgebra/integral-sdk";
 import { Address } from "viem";
 
-export type PoolDeployerType = "BASE_DYNAMIC" | "BASE_03" | "BASE_1" | "NAV_HOOK";
+export type PoolDeployerType = "BASE_DYNAMIC";
 
 export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<number, Address | null>> = {
     BASE_DYNAMIC: {
-        [ChainId.BaseSepolia]: ADDRESS_ZERO,
-    },
-    BASE_03: {
-        [ChainId.BaseSepolia]: "0xa972B8650e5c4Db00Cb78c8E208AC7B38Ac1c189",
-    },
-    BASE_1: {
-        [ChainId.BaseSepolia]: "0x5f3b3cff2dD159c3A28402527cfE72BC175A0bb4",
-    },
-    NAV_HOOK: {
-        [ChainId.BaseSepolia]: "0x122a64aE8eb84Ffb754A5B5619F138da7633e5b3",
+        [ChainId.Hemi]: ADDRESS_ZERO,
     },
 } as const;
 
 export const CUSTOM_POOL_DEPLOYER_TITLES: Record<PoolDeployerType, string> = {
     BASE_DYNAMIC: "Dynamic",
-    BASE_03: "0.3%",
-    BASE_1: "1%",
-    NAV_HOOK: "NAV Hook",
 } as const;
 
 export const customPoolDeployerTitleByAddress: Record<Address, string> = Object.fromEntries(

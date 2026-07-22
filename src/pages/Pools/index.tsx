@@ -1,6 +1,5 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
-import PoolTokensFaucetModal from "@/components/modals/PoolTokensFaucetModal";
 import PoolsList from "@/components/pools/PoolsList";
 import SecurityStatusTag from "@/components/pools/SecurityStatusTag";
 import { Button } from "@/components/ui/button";
@@ -21,7 +20,7 @@ const PoolsPage = () => {
 
                 <div className="flex items-center gap-2 ml-auto justify-end flex-wrap min-w-1/3">
                     <SecurityStatusTag status={globalStatus} />
-                    <PoolTokensFaucetModal />
+                    {/* <PoolTokensFaucetModal /> */}
                     {enableActions && (
                         <Link to={"create"}>
                             <Button variant={"primaryLink"} size={"md"} className="whitespace-nowrap rounded-full gap-2">
