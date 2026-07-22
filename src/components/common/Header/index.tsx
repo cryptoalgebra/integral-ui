@@ -1,6 +1,5 @@
 import { Navigation } from "@/components/common/Navigation";
-import AlgebraLogo from "@/assets/algebra-logo.svg";
-import AlgebraIntegral from "@/assets/algebra-itegral.svg";
+import AlgebraIntegral from "@/assets/clamm-logo.svg";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Clock, WalletIcon } from "lucide-react";
@@ -17,7 +16,7 @@ import Settings from "../Settings";
 
 const Header = () => (
     <header className="md:px-8 px-4 z-50 flex h-full md:backdrop-blur-2xl max-md:border-b border-card-border left-0 top-0 absolute md:fixed w-full max-h-[72px] md:max-h-[82px] justify-between md:justify-between items-center gap-4">
-        <nav className="w-fit flex gap-8 h-full py-2">
+        <nav className="w-fit flex gap-4 h-full py-2">
             <Algebra />
             <Navigation />
         </nav>
@@ -26,13 +25,13 @@ const Header = () => (
 );
 
 export const Algebra = () => (
-    <div className="flex items-center gap-2 w-full py-2">
+    <div className="flex items-center  gap-2 w-full p-2">
         <NavLink to={"/"}>
-            <div className="flex items-center gap-4 md:mr-2 rounded-3xl duration-200">
-                <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
-                    <img className="min-w-8 min-h-8" src={AlgebraLogo} width={48} height={48} />
-                </div>
-                <img className="max-lg:hidden" src={AlgebraIntegral} width={140} height={25} />
+            <div className="flex items-center gap-2 md:mr-2 rounded-3xl duration-200">
+                {/* <div className="flex items-center justify-center w-[32px] h-[32px] rounded-lg">
+                    <img src={AlgebraLogo} width={25} height={25} />
+                </div> */}
+                <img className="max-lg:hidden mb-2" src={AlgebraIntegral} width={140} height={25} />
             </div>
         </NavLink>
     </div>
