@@ -15,7 +15,7 @@ export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
     [ChainId.Base]: "0x62a314428455600a7fDf1D4F250a475121356E67",
 };
 export const SECURITY_REGISTRY: Record<number, Address> = {
-    [ChainId.Base]: "0x6aa9481De990bC12F906C5e8DE70D8556ac5ba2e",
+    [ChainId.Base]: "0x2A8831aD920ae75Ca715DFd98C6cEF3f081c0248",
 };
 
 /* Farming */
