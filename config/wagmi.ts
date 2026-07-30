@@ -39,39 +39,39 @@ import {
 import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+const alpenTestnetChain = /*#__PURE__*/ defineChain({
+    id: 20310,
+    network: "alpen-testnet",
+    name: "Alpen Testnet",
+    nativeCurrency: { name: "Signet BTC", symbol: "sBTC", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://alpen.testnet.alpen.org"],
         },
         public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://alpen.testnet.alpen.org"],
         },
     },
     blockExplorers: {
         default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "Alpen Explorer",
+            url: "https://explorer.testnet.alpen.org",
         },
         etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "Alpen Explorer",
+            url: "https://explorer.testnet.alpen.org",
         },
     },
     contracts: {
         multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
+            address: "0x69D57B9D705eaD73a5d2f2476C30c55bD755cc2F",
+            blockCreated: 206836,
         },
     },
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [alpenTestnetChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
