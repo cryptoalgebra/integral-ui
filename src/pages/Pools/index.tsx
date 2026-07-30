@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 const PoolsPage = () => {
     const { data: globalStatus } = useReadSecurityRegistryGlobalStatus();
 
+    console.log("sta", globalStatus);
+
     const enableActions = globalStatus === SecurityState.ENABLED;
 
     return (

@@ -39,39 +39,39 @@ import {
 import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+const zenithTestnetChain = /*#__PURE__*/ defineChain({
+    id: 936485,
+    network: "zenith-testnet",
+    name: "Zenith Testnet",
+    nativeCurrency: { name: "Signet BTC", symbol: "sBTC", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://rpc.testnet.zenith.network"],
         },
         public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://rpc.testnet.zenith.network"],
         },
     },
     blockExplorers: {
         default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "Zenith Explorer",
+            url: "https://explorer.testnet.zenith.network/",
         },
         etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "Zenith Explorer",
+            url: "https://explorer.testnet.zenith.network/",
         },
     },
     contracts: {
         multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
+            address: "0x38A5C36FA8c8c9E4649b51FCD61810B14e7ce047",
+            blockCreated: 35280,
         },
     },
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [zenithTestnetChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
