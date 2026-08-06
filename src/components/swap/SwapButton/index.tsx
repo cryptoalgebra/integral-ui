@@ -2,7 +2,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_CHAIN_NAME, enabledModules, OMEGA_ROUTER } from "config";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
-import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
+import { IDerivedSwapInfo, RouterType, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo, useState } from "react";
@@ -43,7 +43,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { address: account } = useAccount();
     const [isKycModalOpen, setIsKycModalOpen] = useState(false);
 
-    const { independentField, typedValue } = useSwapState();
+    const { independentField, typedValue, routerType } = useSwapState();
     const {
         allowedSlippage,
         parsedAmount,
@@ -109,7 +109,8 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const chainId = useChainId();
 
-    const shouldUseOmegaRouter = enabledModules.BoostedPoolsModule;
+    const shouldUseOmegaRouter =
+        !isSmartTrade && enabledModules.BoostedPoolsModule && routerType === RouterType.OMEGA;
 
     const inputAmount = useMemo(() => {
         if (!trade || !shouldUseOmegaRouter || isSmartTrade) return undefined;
@@ -277,6 +278,10 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                 <Button variant="outline" onClick={() => kycIdentity.refetch?.()}>
                     Retry KYC status
                 </Button>
+            ) : kycIdentity.status === KycStatus.VERIFIED ? (
+                <Button variant="outline" onClick={() => void Promise.all([kycQuoteState.refetch(), kycGate.refetch()])}>
+                    Retry KYC check
+                </Button>
             ) : (
                 <Button variant="primary" onClick={() => setIsKycModalOpen(true)} disabled={kycIdentity.isLoading}>
                     {kycIdentity.isLoading ? (
@@ -292,7 +297,12 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         return (
             <>
                 {verificationButton}
-                <KycVerificationModal open={isKycModalOpen} onOpenChange={setIsKycModalOpen} identity={kycIdentity} />
+                <KycVerificationModal
+                    open={isKycModalOpen}
+                    onOpenChange={setIsKycModalOpen}
+                    identity={kycIdentity}
+                    onStatusChange={() => void Promise.all([kycQuoteState.refetch(), kycGate.refetch()])}
+                />
             </>
         );
     }
@@ -326,19 +336,30 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
             </Button>
         );
 
-    if (trade && isTradeKycRequired && kycIdentity.status !== KycStatus.VERIFIED)
+    if (trade && isTradeKycRequired && !kycGate.canSwap)
         return (
             <>
-                <Button variant="primary" onClick={() => setIsKycModalOpen(true)} disabled={kycIdentity.isLoading}>
+                <Button
+                    variant="primary"
+                    onClick={() => setIsKycModalOpen(true)}
+                    disabled={kycIdentity.isLoading || kycIdentity.status === KycStatus.VERIFIED}
+                >
                     {kycIdentity.isLoading ? (
                         <Loader />
                     ) : kycIdentity.status === KycStatus.IDENTITY_REQUIRED ? (
                         "Deploy Onchain ID"
+                    ) : kycIdentity.status === KycStatus.VERIFIED ? (
+                        "KYC access required"
                     ) : (
                         "Complete verification"
                     )}
                 </Button>
-                <KycVerificationModal open={isKycModalOpen} onOpenChange={setIsKycModalOpen} identity={kycIdentity} />
+                <KycVerificationModal
+                    open={isKycModalOpen}
+                    onOpenChange={setIsKycModalOpen}
+                    identity={kycIdentity}
+                    onStatusChange={() => void Promise.all([kycQuoteState.refetch(), kycGate.refetch()])}
+                />
             </>
         );
 

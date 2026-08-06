@@ -12,10 +12,11 @@ interface KycVerificationModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     identity: KycIdentityState;
+    onStatusChange?: () => void;
 }
 
-export const KycVerificationModal = ({ open, onOpenChange, identity }: KycVerificationModalProps) => {
-    const actions = useKycActions(identity);
+export const KycVerificationModal = ({ open, onOpenChange, identity, onStatusChange }: KycVerificationModalProps) => {
+    const actions = useKycActions(identity, onStatusChange);
     const { open: openWalletModal } = useAppKit();
     const { resetSession } = actions;
     const { address: account } = useAccount();
@@ -42,9 +43,7 @@ export const KycVerificationModal = ({ open, onOpenChange, identity }: KycVerifi
             <DialogContent className="max-w-[500px] rounded-2xl! bg-card">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-left">Demo KYC verification</DialogTitle>
-                    <DialogDescription className="text-left text-text-300">
-                        Creates an Onchain ID and adds a demo claim to your wallet.
-                    </DialogDescription>
+                    <DialogDescription className="text-left text-text-300">Creates the verified Onchain ID</DialogDescription>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-3">
@@ -58,7 +57,7 @@ export const KycVerificationModal = ({ open, onOpenChange, identity }: KycVerifi
                     <Step
                         step={2}
                         title="Add verification claim"
-                        description="Store the demo KYC claim in your Identity contract."
+                        description="Validate the onchain identity. This step is automatic in the demo."
                         done={identity.status === KycStatus.VERIFIED}
                         active={identity.status === KycStatus.CLAIM_REQUIRED || identity.status === KycStatus.INVALID_CLAIM}
                     />
@@ -95,7 +94,7 @@ export const KycVerificationModal = ({ open, onOpenChange, identity }: KycVerifi
                     ) : identity.status === KycStatus.VERIFIED ? (
                         <>
                             <div className="flex items-center gap-2 rounded-xl border border-green-400/30 bg-green-400/10 p-3 text-sm text-green-300">
-                                <CheckCircle2 size={17} /> Your Identity has a valid KYC claim.
+                                <CheckCircle2 size={17} /> Your Identity has a valid KYC verification.
                             </div>
                             <Button variant="destructive" className="w-full" onClick={actions.removeClaim} disabled={isBusy}>
                                 {actions.isRemovingClaim ? <Loader /> : "Remove claim"}

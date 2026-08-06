@@ -13,16 +13,38 @@ export const KycActionGuard = ({ poolAddress, children }: { poolAddress?: Addres
 
     if (!poolAddress) return <>{children}</>;
     if (requirement.isLoading) return <Button disabled><Loader /></Button>;
-    if (requirement.isError) return <Button variant="outline" onClick={() => requirement.refetch()}>Retry KYC check</Button>;
+    if (requirement.isError)
+        return (
+            <Button variant="outline" onClick={() => requirement.refetch()}>
+                Retry KYC check
+            </Button>
+        );
     if (!requirement.isKycRequired) return <>{children}</>;
-    if (identity.status === KycStatus.VERIFIED) return <>{children}</>;
+    if (requirement.canAddLiquidity) return <>{children}</>;
 
     return (
         <>
-            <Button variant="primary" onClick={() => setOpen(true)} disabled={identity.isLoading}>
-                {identity.isLoading ? <Loader /> : identity.status === KycStatus.IDENTITY_REQUIRED ? "Deploy Onchain ID" : "Complete verification"}
+            <Button
+                variant="primary"
+                onClick={() => setOpen(true)}
+                disabled={identity.isLoading || identity.status === KycStatus.VERIFIED}
+            >
+                {identity.isLoading ? (
+                    <Loader />
+                ) : identity.status === KycStatus.IDENTITY_REQUIRED ? (
+                    "Deploy Onchain ID"
+                ) : identity.status === KycStatus.VERIFIED ? (
+                    "KYC access required"
+                ) : (
+                    "Complete verification"
+                )}
             </Button>
-            <KycVerificationModal open={open} onOpenChange={setOpen} identity={identity} />
+            <KycVerificationModal
+                open={open}
+                onOpenChange={setOpen}
+                identity={identity}
+                onStatusChange={() => void requirement.refetch()}
+            />
         </>
     );
 };

@@ -16,11 +16,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { KycIdentityState } from "../types";
 import { getClaimDigest, getGatewayAuthorizationDigest } from "../utils";
+import { CLAIM_DATA, CLAIM_SCHEME, CLAIM_URI } from "../constants";
 
-const KYC_TOPIC = 42n;
-const KYC_SCHEME = 1n;
-const KYC_DATA = "0x" as Hex;
-const KYC_URI = "";
 const CLAIM_KEY_PURPOSE = 3n;
 
 function getDemoPrivateKey(value: string | undefined): Hex | undefined {
@@ -33,7 +30,7 @@ function getErrorMessage(error: unknown): string {
     return error instanceof Error ? error.message : "KYC transaction could not be prepared.";
 }
 
-export function useKycActions(identity: KycIdentityState) {
+export function useKycActions(identity: KycIdentityState, onStatusChange?: () => void) {
     const chainId = useChainId();
     const { address: account } = useAccount();
     const publicClient = usePublicClient();
@@ -66,7 +63,14 @@ export function useKycActions(identity: KycIdentityState) {
         query: { enabled: Boolean(claimIssuerAddress && demoSignerKey) },
     });
 
-    const transactionInfo = useMemo(() => ({ title: "Demo KYC", type: TransactionType.KYC, callback: identityRefetch }), [identityRefetch]);
+    const refreshStatus = useCallback(() => {
+        void identityRefetch();
+        onStatusChange?.();
+    }, [identityRefetch, onStatusChange]);
+    const transactionInfo = useMemo(
+        () => ({ title: "Demo KYC", type: TransactionType.KYC, callback: refreshStatus }),
+        [refreshStatus],
+    );
     const deployReceipt = useTransactionAwait(deployWrite.data, { ...transactionInfo, description: "Deploying your Onchain ID" });
     const claimReceipt = useTransactionAwait(claimWrite.data, { ...transactionInfo, description: "Adding your KYC claim" });
     const removeReceipt = useTransactionAwait(removeWrite.data, { ...transactionInfo, description: "Removing your KYC claim" });
@@ -135,7 +139,9 @@ export function useKycActions(identity: KycIdentityState) {
                 throw new Error("The Demo KYC signer is not a claim key of the ClaimIssuer contract.");
             }
 
-            const digest = getClaimDigest(identity.identityAddress, KYC_TOPIC, KYC_DATA);
+            if (identity.topic === undefined) throw new Error("The required claim topic is not available.");
+
+            const digest = getClaimDigest(identity.identityAddress, identity.topic, CLAIM_DATA);
             const signature = await demoSigner.signMessage({
                 message: { raw: digest },
             });
@@ -143,7 +149,7 @@ export function useKycActions(identity: KycIdentityState) {
                 address: claimIssuerAddress,
                 abi: identityAbi,
                 functionName: "isClaimValid",
-                args: [identity.identityAddress, KYC_TOPIC, signature, KYC_DATA],
+                args: [identity.identityAddress, identity.topic, signature, CLAIM_DATA],
             });
             if (!isValid) throw new Error("The configured signer is not a valid claim key for the ClaimIssuer Identity.");
 
@@ -152,7 +158,7 @@ export function useKycActions(identity: KycIdentityState) {
                 address: identity.identityAddress,
                 abi: identityAbi,
                 functionName: "addClaim",
-                args: [KYC_TOPIC, KYC_SCHEME, claimIssuerAddress, signature, KYC_DATA, KYC_URI],
+                args: [identity.topic, CLAIM_SCHEME, claimIssuerAddress, signature, CLAIM_DATA, CLAIM_URI],
             });
             claimWrite.writeContract(request);
         } catch (cause) {
@@ -167,6 +173,7 @@ export function useKycActions(identity: KycIdentityState) {
         demoSignerPurposeRead.isError,
         demoSignerPurposeRead.isLoading,
         identity.identityAddress,
+        identity.topic,
         publicClient,
     ]);
 

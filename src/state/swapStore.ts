@@ -81,7 +81,8 @@ export interface IDerivedSwapInfo {
 export const useSwapState = create<SwapState>((set, get) => ({
     independentField: SwapField.INPUT,
     typedValue: "",
-    routerType: enabledModules.BoostedPoolsModule ? RouterType.OMEGA : RouterType.NATIVE,
+    // routerType: enabledModules.BoostedPoolsModule ? RouterType.OMEGA : RouterType.NATIVE,
+    routerType: RouterType.NATIVE,
     [SwapField.INPUT]: {
         currencyId: ADDRESS_ZERO,
     },

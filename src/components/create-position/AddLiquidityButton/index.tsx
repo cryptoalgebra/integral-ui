@@ -165,15 +165,34 @@ export const AddLiquidityButton = ({
         return <Button disabled><Loader /></Button>;
 
     if (enabledModules.KYCModule && kycRequirement.isError)
-        return <Button variant="outline" onClick={() => kycRequirement.refetch()}>Retry KYC check</Button>;
+        return (
+            <Button variant="outline" onClick={() => kycRequirement.refetch()}>
+                Retry KYC check
+            </Button>
+        );
 
-    if (isKycRequired && kycIdentity.status !== KycStatus.VERIFIED)
+    if (isKycRequired && !kycRequirement.canAddLiquidity)
         return (
             <>
-                <Button variant="primary" onClick={() => setIsKycModalOpen(true)} disabled={kycIdentity.isLoading}>
-                    {kycIdentity.isLoading ? <Loader /> : kycIdentity.status === KycStatus.IDENTITY_REQUIRED ? "Deploy Onchain ID" : "Complete verification"}
+                <Button
+                    variant="primary"
+                    onClick={() => setIsKycModalOpen(true)}
+                    disabled={kycIdentity.isLoading || kycIdentity.status === KycStatus.VERIFIED}
+                >
+                    {kycIdentity.isLoading
+                        ? <Loader />
+                        : kycIdentity.status === KycStatus.IDENTITY_REQUIRED
+                          ? "Deploy Onchain ID"
+                          : kycIdentity.status === KycStatus.VERIFIED
+                            ? "KYC access required"
+                            : "Complete verification"}
                 </Button>
-                <KycVerificationModal open={isKycModalOpen} onOpenChange={setIsKycModalOpen} identity={kycIdentity} />
+                <KycVerificationModal
+                    open={isKycModalOpen}
+                    onOpenChange={setIsKycModalOpen}
+                    identity={kycIdentity}
+                    onStatusChange={() => void kycRequirement.refetch()}
+                />
             </>
         );
 

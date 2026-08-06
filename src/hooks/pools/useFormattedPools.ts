@@ -13,7 +13,7 @@ import { DEFAULT_CHAIN_ID, PRICE_CONVERGENCE_VAULT_BY_POOL, PRICE_CONVERGENCE_VA
 import { enabledModules } from "config/app-modules";
 const { useAllUserALMAmounts, useAllALMVaults } = ALMModule.hooks;
 
-const KYC_MODULE_NAME = "KYC Plugin";
+const KYC_MODULE_NAME = "Permissioned Pool Plugin";
 
 interface Pair {
     token0: TokenFieldsFragment;

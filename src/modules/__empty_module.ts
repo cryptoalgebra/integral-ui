@@ -39,6 +39,8 @@ export default {
     useKycIdentity: () => ({}),
     useKycQuotePolicy: () => ({}),
     usePoolKycRequirement: () => ({}),
+    usePoolsPermissions: () => ({}),
+    usePoolPermissions: () => ({}),
     useTradeKycGate: () => ({}),
     useLimitOrderInfo: () => ({}),
     useNAVHookDeposit: () => ({}),

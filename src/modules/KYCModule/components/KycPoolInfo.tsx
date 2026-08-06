@@ -1,4 +1,3 @@
-import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
@@ -12,12 +11,15 @@ export const KycPoolInfo = ({ poolAddress }: { poolAddress: Address }) => {
     const requirement = usePoolKycRequirement(poolAddress);
     const identity = useKycIdentity(requirement.isKycRequired);
     const [open, setOpen] = useState(false);
+    const hasFullPermission = requirement.canSwap && requirement.canAddLiquidity;
+
+    if (requirement.isLoading) return null;
 
     if (requirement.isError) {
         return (
             <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-red-400/30 bg-red-400/10 p-4 text-left">
                 <p className="flex items-center gap-2 text-sm text-red-300">
-                    <AlertTriangle size={16} /> Pool restrictions could not be checked.
+                    <AlertTriangle size={16} /> Pool KYC requirements could not be checked.
                 </p>
                 <Button variant="outline" onClick={() => requirement.refetch()}>
                     Retry
@@ -26,7 +28,7 @@ export const KycPoolInfo = ({ poolAddress }: { poolAddress: Address }) => {
         );
     }
 
-    if (!requirement.isKycRequired && !requirement.isLoading) return null;
+    if (!requirement.isKycRequired) return null;
 
     return (
         <>
@@ -37,29 +39,31 @@ export const KycPoolInfo = ({ poolAddress }: { poolAddress: Address }) => {
                         <KycTag />
                     </div>
                     <p className="text-sm text-text-300">
-                        Swaps and liquidity deposits in this pool require an Onchain ID with a valid Demo KYC claim.
+                        Swaps and liquidity deposits in this pool require the verified onchain identity.
                     </p>
                 </div>
 
-                {requirement.isLoading ? (
-                    <Button disabled className="md:w-fit">
-                        <Loader />
-                    </Button>
-                ) : (
-                    <Button
-                        size="md"
-                        variant={identity.status === KycStatus.VERIFIED ? "outline" : "primary"}
-                        onClick={() => setOpen(true)}
-                    >
-                        {identity.status === KycStatus.VERIFIED
-                            ? "Verified"
-                            : identity.status === KycStatus.IDENTITY_REQUIRED
+                <Button
+                    size="md"
+                    variant={hasFullPermission ? "outline" : "primary"}
+                    onClick={() => setOpen(true)}
+                    disabled={identity.status === KycStatus.VERIFIED && !hasFullPermission}
+                >
+                    {hasFullPermission
+                        ? "Verified"
+                        : identity.status === KycStatus.VERIFIED
+                          ? "KYC access limited"
+                          : identity.status === KycStatus.IDENTITY_REQUIRED
                             ? "Deploy Onchain ID"
                             : "Complete verification"}
-                    </Button>
-                )}
+                </Button>
             </div>
-            <KycVerificationModal open={open} onOpenChange={setOpen} identity={identity} />
+            <KycVerificationModal
+                open={open}
+                onOpenChange={setOpen}
+                identity={identity}
+                onStatusChange={() => void requirement.refetch()}
+            />
         </>
     );
 };

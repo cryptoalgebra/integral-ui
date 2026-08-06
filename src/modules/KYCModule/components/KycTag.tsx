@@ -10,7 +10,7 @@ export const KycTag = () => (
         <HoverCardContent side="top" className="w-[300px] p-3 text-sm">
             <p className="text-left text-sm font-semibold">Demo KYC pool</p>
             <p className="mt-1 text-left text-xs leading-relaxed text-text-300">
-                Swaps and liquidity deposits in this pool require an Onchain ID with a valid Demo KYC claim.
+                Swaps and liquidity deposits in this pool require the verified onchain identity.
             </p>
         </HoverCardContent>
     </HoverCard>

@@ -6,13 +6,13 @@ export const ALGEBRA_FACTORY: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0x285C74f3d01296F96c5d3858ab482f707e8Bfdfc",
 };
 export const QUOTER_V2: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xE7E57600a294d9e82DdD44AC9242754EC0c3D4A3",
+    [ChainId.BaseSepolia]: "0x41e65169b71Adb184EF4093a2D1A802F9C815c13",
 };
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x32327f375148019A7C3B72E34a66c982951779C3",
+    [ChainId.BaseSepolia]: "0x97c011Be3B2AF1908c8dAF8A2c1915F4f56E8125",
 };
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xCcD3A4AB7bD75bab509d25101eDDc37778cA49A4",
+    [ChainId.BaseSepolia]: "0xF207b9E74Ff3943eC0Fc371C2607A7a1Bfb0eDCd",
 };
 export const SECURITY_REGISTRY: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0x6aa9481De990bC12F906C5e8DE70D8556ac5ba2e",
@@ -88,4 +88,10 @@ export const GATEWAY: Record<number, Address> = {
 };
 export const CLAIM_ISSUER: Record<number, Address> = {
     [ChainId.BaseSepolia]: "0xd5a5A781c6835a41479c372Eb416381727d8bb0F",
+};
+export const ALLOWLIST_CHECKER_REGISTRY: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0x06b982a1870F739b1b18841dF43F5c7404561163",
+};
+export const ONCHAIN_ID_ALLOWLIST_CHECKER: Record<number, Address> = {
+    [ChainId.BaseSepolia]: "0xCEb36E63B9789F2CAae4B9F97E93807338Ef0643",
 };

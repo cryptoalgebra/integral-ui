@@ -1,18 +1,21 @@
-import { usePoolActiveModules } from "@/hooks/pools/usePoolActiveModules";
 import { Address } from "viem";
 import { KycPoolRequirement } from "../types";
-
-const KYC_MODULE_NAME = "KYC Plugin";
+import { usePoolPermissions } from "./usePoolsPermissions";
+import { PERMISSIONED_POOL_MODULE_NAME } from "../constants";
 
 export function usePoolKycRequirement(poolAddress: Address | undefined): KycPoolRequirement {
-    const { activeModules, pluginAddress, isLoading, isError, refetch } = usePoolActiveModules(poolAddress);
+    const { permission, isLoading, isError, refetch } = usePoolPermissions(poolAddress);
 
     return {
-        isKycRequired: activeModules.includes(KYC_MODULE_NAME),
+        isKycRequired: Boolean(permission?.isPermissioned),
+        canSwap: permission?.canSwap ?? true,
+        canAddLiquidity: permission?.canAddLiquidity ?? true,
+        deniedSwapTokens: permission?.deniedSwapTokens ?? [],
+        deniedLiquidityTokens: permission?.deniedLiquidityTokens ?? [],
         isLoading,
         isError,
-        pluginAddress,
-        activeModules,
+        pluginAddress: permission?.pluginAddress,
+        activeModules: permission?.hasPermissionModule ? [PERMISSIONED_POOL_MODULE_NAME] : [],
         refetch,
     };
 }

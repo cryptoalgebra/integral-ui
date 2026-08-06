@@ -1,0 +1,107 @@
+export const ONCHAIN_ID_ALLOWLIST_CHECKER_ABI = [
+    {
+        inputs: [
+            { internalType: "address", name: "_admin", type: "address" },
+            { internalType: "address", name: "_identityFactory", type: "address" },
+            { internalType: "uint256", name: "_requiredTopic", type: "uint256" },
+        ],
+        stateMutability: "nonpayable",
+        type: "constructor",
+    },
+    { inputs: [], name: "LengthMismatch", type: "error" },
+    { inputs: [], name: "OnlyAdmin", type: "error" },
+    {
+        anonymous: false,
+        inputs: [{ indexed: false, internalType: "uint256", name: "requiredTopic", type: "uint256" }],
+        name: "RequiredTopicUpdated",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            { indexed: true, internalType: "address", name: "issuer", type: "address" },
+            { indexed: false, internalType: "bool", name: "trusted", type: "bool" },
+        ],
+        name: "TrustedIssuerUpdated",
+        type: "event",
+    },
+    {
+        inputs: [],
+        name: "admin",
+        outputs: [{ internalType: "address", name: "", type: "address" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "address", name: "account", type: "address" },
+            { internalType: "address", name: "", type: "address" },
+        ],
+        name: "checkAllowlist",
+        outputs: [{ internalType: "PermissionFlag", name: "", type: "bytes2" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "identityFactory",
+        outputs: [{ internalType: "address", name: "", type: "address" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [{ internalType: "address", name: "account", type: "address" }],
+        name: "isEligible",
+        outputs: [{ internalType: "bool", name: "", type: "bool" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [{ internalType: "address", name: "", type: "address" }],
+        name: "isTrustedIssuer",
+        outputs: [{ internalType: "bool", name: "", type: "bool" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [],
+        name: "requiredTopic",
+        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [{ internalType: "uint256", name: "newRequiredTopic", type: "uint256" }],
+        name: "setRequiredTopic",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "address", name: "issuer", type: "address" },
+            { internalType: "bool", name: "trusted", type: "bool" },
+        ],
+        name: "setTrustedIssuer",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            { internalType: "address[]", name: "issuers", type: "address[]" },
+            { internalType: "bool[]", name: "trusted", type: "bool[]" },
+        ],
+        name: "setTrustedIssuersBatch",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
+        name: "supportsInterface",
+        outputs: [{ internalType: "bool", name: "", type: "bool" }],
+        stateMutability: "view",
+        type: "function",
+    },
+] as const;

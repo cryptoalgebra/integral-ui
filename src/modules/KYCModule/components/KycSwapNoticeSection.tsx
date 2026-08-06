@@ -25,15 +25,22 @@ export const KycSwapNoticeSection = ({ trade, quoteState }: KycSwapNoticeSection
             {quoteState.hasLockedKycRoutes ? (
                 <KycLockedRoutesNotice
                     identity={identity}
-                    onVerify={account ? () => setIsModalOpen(true) : undefined}
-                    onRetry={account ? identity.refetch : undefined}
+                    onVerify={() => setIsModalOpen(true)}
+                    onRetry={
+                        account
+                            ? () => void Promise.all([identity.refetch(), quoteState.refetch(), tradeGate.refetch()])
+                            : undefined
+                    }
                 />
             ) : (
                 <KycSwapNotice identity={identity} />
             )}
-            {account && (
-                <KycVerificationModal open={isModalOpen} onOpenChange={setIsModalOpen} identity={identity} />
-            )}
+            <KycVerificationModal
+                open={isModalOpen}
+                onOpenChange={setIsModalOpen}
+                identity={identity}
+                onStatusChange={() => void Promise.all([quoteState.refetch(), tradeGate.refetch()])}
+            />
         </>
     );
 };

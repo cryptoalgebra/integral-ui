@@ -13,22 +13,24 @@ export const KycLockedRoutesNotice = ({ identity, onVerify, onRetry }: KycLocked
         <div className="flex items-start gap-3">
             <Lock className="mt-0.5 shrink-0 text-cyan-300" size={14} />
             <div>
-                <p className=" text-text-100">KYC pools are excluded</p>
+                <p className="text-text-100">KYC pools are excluded</p>
                 <p className="text-text-300 text-xs">
                     {identity.status === KycStatus.ERROR
                         ? "Your verification status could not be checked. The displayed price only uses public pools."
+                        : identity.status === KycStatus.VERIFIED
+                        ? "Your KYC verification is valid, but this pool still rejected the route. The displayed price only uses public pools."
                         : "A better route may be available through a KYC-restricted pool."}
                 </p>
             </div>
         </div>
 
-        {identity.status === KycStatus.ERROR && onRetry ? (
+        {(identity.status === KycStatus.ERROR || identity.status === KycStatus.VERIFIED) && onRetry ? (
             <Button className="shrink-0" size="md" variant="outline" onClick={onRetry}>
-                Retry status
+                Retry KYC check
             </Button>
         ) : onVerify ? (
             <Button className="shrink-0" size="md" variant="outline" onClick={onVerify}>
-                Complete Demo KYC
+                Complete KYC
             </Button>
         ) : null}
     </div>
