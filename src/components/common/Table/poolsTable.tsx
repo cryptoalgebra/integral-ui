@@ -23,6 +23,7 @@ type ActiveFilters = {
     hasActiveFarming?: boolean;
     hasALM?: boolean;
     hasNAVHook?: boolean;
+    hasKyc?: boolean;
     isMyPool?: boolean;
     isBoosted?: boolean;
 };
@@ -99,6 +100,7 @@ const PoolsTable = <TData, TValue>({
             if (f.hasActiveFarming && !row.original.hasActiveFarming) return false;
             if (f.hasALM && !row.original.hasALM) return false;
             if (f.hasNAVHook && !row.original.hasNAVHook) return false;
+            if (f.hasKyc && !row.original.hasKyc) return false;
             if (f.isMyPool && !row.original.isMyPool) return false;
             if (f.isBoosted && !row.original.isBoosted) return false;
             return true;
@@ -128,6 +130,7 @@ const PoolsTable = <TData, TValue>({
         activeFilters.hasActiveFarming,
         activeFilters.hasALM,
         activeFilters.hasNAVHook,
+        activeFilters.hasKyc,
         activeFilters.isBoosted,
     ].filter(Boolean).length;
 
@@ -207,6 +210,15 @@ const PoolsTable = <TData, TValue>({
                                             />
                                         </label>
                                     )}
+                                    {enabledModules.KYCModule && (
+                                        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-text-200 transition-colors hover:bg-card-hover">
+                                            <span className="flex items-center gap-3">
+                                                <span className="h-2.5 w-2.5 rotate-45 border border-cyan-700 bg-cyan-950" />
+                                                KYC
+                                            </span>
+                                            <Checkbox checked={isFilterActive("hasKyc")} onCheckedChange={() => toggleFilter("hasKyc")} />
+                                        </label>
+                                    )}
                                     {enabledModules.BoostedPoolsModule && (
                                         <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm text-text-200 transition-colors hover:bg-card-hover">
                                             <span className="flex items-center gap-3">
@@ -230,6 +242,7 @@ const PoolsTable = <TData, TValue>({
                                 isFilterActive("hasActiveFarming") ||
                                 isFilterActive("hasALM") ||
                                 isFilterActive("hasNAVHook") ||
+                                isFilterActive("hasKyc") ||
                                 isFilterActive("isBoosted")
                             )
                         }
