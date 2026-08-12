@@ -57,7 +57,6 @@ const CreatePoolForm = () => {
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_03]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_1]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
             [CUSTOM_POOL_DEPLOYER_TITLES.NAV_HOOK]: CUSTOM_POOL_DEPLOYER_ADDRESSES.NAV_HOOK[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.KYC]: CUSTOM_POOL_DEPLOYER_ADDRESSES.KYC[chainid],
         }),
         [chainid],
     );
@@ -76,7 +75,6 @@ const CreatePoolForm = () => {
                   CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
                   CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
                   CUSTOM_POOL_DEPLOYER_ADDRESSES.NAV_HOOK[chainid],
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.KYC[chainid],
               ]
                   .filter(isDefined)
                   .map(
