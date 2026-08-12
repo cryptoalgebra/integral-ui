@@ -1,17 +1,22 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER } from "config";
+import { DEFAULT_CHAIN_NAME, OMEGA_ROUTER, enabledModules } from "config";
 import { IDerivedMintInfo, useMintState } from "@/state/mintStore";
 import { useUserState } from "@/state/userStore";
 import { Field, Percent } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { OmegaMintOptions } from "@cryptoalgebra/integral-omega-router-sdk";
 import { useOmegaMintCallback } from "../../hooks/useOmegaMintCallback";
 import { usePermit2 } from "../../hooks";
 import { AllowanceState } from "../../types";
+import { KycStatus } from "@/types/kyc";
+import KYCModule from "@/modules/KYCModule";
+
+const { KycVerificationModal } = KYCModule.components;
+const { usePoolKycRequirement, useKycIdentity } = KYCModule.hooks;
 
 interface AddOmegaLiquidityButtonProps {
     mintInfo: IDerivedMintInfo;
@@ -32,6 +37,10 @@ export const AddOmegaLiquidityButton = ({
     disabled = false,
 }: AddOmegaLiquidityButtonProps) => {
     const { address: account } = useAccount();
+    const [isKycModalOpen, setIsKycModalOpen] = useState(false);
+    const kycRequirement = usePoolKycRequirement(poolAddress);
+    const isKycRequired = enabledModules.KYCModule && Boolean(kycRequirement.isKycRequired);
+    const kycIdentity = useKycIdentity(isKycRequired);
 
     const { open } = useAppKit();
 
@@ -163,6 +172,41 @@ export const AddOmegaLiquidityButton = ({
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+
+    if (enabledModules.KYCModule && kycRequirement.isLoading)
+        return <Button disabled><Loader /></Button>;
+
+    if (enabledModules.KYCModule && kycRequirement.isError)
+        return (
+            <Button variant="outline" onClick={() => kycRequirement.refetch()}>
+                Retry KYC check
+            </Button>
+        );
+
+    if (isKycRequired && !kycRequirement.canAddLiquidity)
+        return (
+            <>
+                <Button
+                    variant="primary"
+                    onClick={() => setIsKycModalOpen(true)}
+                    disabled={kycIdentity.isLoading || kycIdentity.status === KycStatus.VERIFIED}
+                >
+                    {kycIdentity.isLoading
+                        ? <Loader />
+                        : kycIdentity.status === KycStatus.IDENTITY_REQUIRED
+                          ? "Deploy Onchain ID"
+                          : kycIdentity.status === KycStatus.VERIFIED
+                            ? "KYC access required"
+                            : "Complete verification"}
+                </Button>
+                <KycVerificationModal
+                    open={isKycModalOpen}
+                    onOpenChange={setIsKycModalOpen}
+                    identity={kycIdentity}
+                    onStatusChange={() => void kycRequirement.refetch()}
+                />
+            </>
+        );
 
     if (mintInfo.errorMessage)
         return (

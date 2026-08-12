@@ -9,6 +9,11 @@ import { calculatePriceImpact } from "@/utils/swap/calculatePriceImpact";
 import BoostedPoolsModule from "@/modules/BoostedPoolsModule";
 const { useBoostedQuotesResults } = BoostedPoolsModule.hooks;
 
+import KYCModule from "@/modules/KYCModule";
+import { EMPTY_KYC_QUOTE_STATE, type KycQuoteState } from "@/types/kyc";
+import { enabledModules } from "config";
+const { useKycQuotePolicy } = KYCModule.hooks;
+
 // const DEFAULT_GAS_QUOTE = 2_000_000
 
 export interface BestTradeExactIn {
@@ -17,6 +22,7 @@ export interface BestTradeExactIn {
     fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
     priceImpact?: Percent | null;
+    kycQuoteState: KycQuoteState;
     refetch: () => void;
 }
 
@@ -26,6 +32,7 @@ export interface BestTradeExactOut {
     fee?: number[] | null;
     priceAfterSwap?: bigint[] | null;
     priceImpact?: Percent | null;
+    kycQuoteState: KycQuoteState;
     refetch: () => void;
 }
 
@@ -36,18 +43,36 @@ export interface BestTradeExactOut {
  */
 export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currencyOut?: Currency): BestTradeExactIn {
     const { routerType } = useSwapState();
-    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut);
+    const candidateRoutes = useAllRoutes(amountIn?.currency, currencyOut);
+    const candidateBoostedRoutes = useMemo(
+        () => (routerType === RouterType.OMEGA ? candidateRoutes.boostedRoutes : []),
+        [candidateRoutes.boostedRoutes, routerType],
+    );
+    const kycPolicy = useKycQuotePolicy({
+        normalRoutes: candidateRoutes.normalRoutes,
+        boostedRoutes: candidateBoostedRoutes,
+    });
+
+    const boostedRoutes = useMemo(
+        () => (enabledModules.KYCModule ? kycPolicy.boostedRoutes : candidateBoostedRoutes),
+        [candidateBoostedRoutes, kycPolicy.boostedRoutes],
+    );
+    const normalRoutes = useMemo(
+        () => (enabledModules.KYCModule ? kycPolicy.normalRoutes : candidateRoutes.normalRoutes),
+        [candidateRoutes.normalRoutes, kycPolicy.normalRoutes],
+    );
+    const kycQuoteState = enabledModules.KYCModule ? kycPolicy.kycQuoteState : EMPTY_KYC_QUOTE_STATE;
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
         exactInput: true,
         amountIn,
-        currencyOut,
+        routes: boostedRoutes,
     });
 
     const { data: normalQuotesResults, isLoading: isNormalQuotesLoading, refetch: refetchNormal } = useQuotesResults({
         exactInput: true,
         amountIn,
-        currencyOut,
+        routes: normalRoutes,
     });
 
     const trade = useMemo(() => {
@@ -56,20 +81,32 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                 refetchBoosted?.();
             }
             refetchNormal();
+            kycQuoteState.refetch();
         };
 
         if (!amountIn || !currencyOut) {
             return {
                 state: TradeState.INVALID,
                 trade: null,
+                kycQuoteState,
                 refetch,
             };
         }
 
-        if (routesLoading || isBoostedQuotesLoading || isNormalQuotesLoading) {
+        if (candidateRoutes.loading || kycQuoteState.isLoading || isBoostedQuotesLoading || isNormalQuotesLoading) {
             return {
                 state: TradeState.LOADING,
                 trade: null,
+                kycQuoteState,
+                refetch,
+            };
+        }
+
+        if (kycQuoteState.isError) {
+            return {
+                state: TradeState.NO_ROUTE_FOUND,
+                trade: null,
+                kycQuoteState,
                 refetch,
             };
         }
@@ -126,6 +163,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
                 fee: null,
                 priceAfterSwap: null,
                 priceImpact: null,
+                kycQuoteState,
                 refetch,
             };
         }
@@ -143,6 +181,7 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
             }),
             priceAfterSwap,
             priceImpact,
+            kycQuoteState,
             refetch,
         };
     }, [
@@ -152,12 +191,13 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
         normalQuotesResults,
         boostedRoutes,
         normalRoutes,
-        routesLoading,
+        candidateRoutes.loading,
         isBoostedQuotesLoading,
         isNormalQuotesLoading,
         refetchBoosted,
         refetchNormal,
         routerType,
+        kycQuoteState,
     ]);
 
     return trade;
@@ -170,18 +210,35 @@ export function useBestTradeExactIn(amountIn?: CurrencyAmount<Currency>, currenc
  */
 export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: CurrencyAmount<Currency>): BestTradeExactOut {
     const { routerType } = useSwapState();
-    const { boostedRoutes, normalRoutes, loading: routesLoading } = useAllRoutes(currencyIn, amountOut?.currency);
+    const candidateRoutes = useAllRoutes(currencyIn, amountOut?.currency);
+    const candidateBoostedRoutes = useMemo(
+        () => (routerType === RouterType.OMEGA ? candidateRoutes.boostedRoutes : []),
+        [candidateRoutes.boostedRoutes, routerType],
+    );
+    const kycPolicy = useKycQuotePolicy({
+        normalRoutes: candidateRoutes.normalRoutes,
+        boostedRoutes: candidateBoostedRoutes,
+    });
+    const boostedRoutes = useMemo(
+        () => (enabledModules.KYCModule ? kycPolicy.boostedRoutes : candidateBoostedRoutes),
+        [candidateBoostedRoutes, kycPolicy.boostedRoutes],
+    );
+    const normalRoutes = useMemo(
+        () => (enabledModules.KYCModule ? kycPolicy.normalRoutes : candidateRoutes.normalRoutes),
+        [candidateRoutes.normalRoutes, kycPolicy.normalRoutes],
+    );
+    const kycQuoteState = enabledModules.KYCModule ? kycPolicy.kycQuoteState : EMPTY_KYC_QUOTE_STATE;
 
     const { data: boostedQuotesResults, isLoading: isBoostedQuotesLoading, refetch: refetchBoosted } = useBoostedQuotesResults({
         exactInput: false,
-        currencyIn,
         amountOut,
+        routes: boostedRoutes,
     });
 
     const { data: normalQuotesResults, isLoading: isNormalQuotesLoading, refetch: refetchNormal } = useQuotesResults({
         exactInput: false,
-        currencyIn,
         amountOut,
+        routes: normalRoutes,
     });
 
     const trade = useMemo(() => {
@@ -190,20 +247,32 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 refetchBoosted?.();
             }
             refetchNormal();
+            kycQuoteState.refetch();
         };
 
         if (!amountOut || !currencyIn) {
             return {
                 state: TradeState.INVALID,
                 trade: null,
+                kycQuoteState,
                 refetch,
             };
         }
 
-        if (routesLoading || isBoostedQuotesLoading || isNormalQuotesLoading) {
+        if (candidateRoutes.loading || kycQuoteState.isLoading || isBoostedQuotesLoading || isNormalQuotesLoading) {
             return {
                 state: TradeState.LOADING,
                 trade: null,
+                kycQuoteState,
+                refetch,
+            };
+        }
+
+        if (kycQuoteState.isError) {
+            return {
+                state: TradeState.NO_ROUTE_FOUND,
+                trade: null,
+                kycQuoteState,
                 refetch,
             };
         }
@@ -260,6 +329,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
                 fee: null,
                 priceAfterSwap,
                 priceImpact: null,
+                kycQuoteState,
                 refetch,
             };
         }
@@ -277,6 +347,7 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
             }),
             priceAfterSwap,
             priceImpact,
+            kycQuoteState,
             refetch,
         };
     }, [
@@ -286,12 +357,13 @@ export function useBestTradeExactOut(currencyIn?: Currency, amountOut?: Currency
         normalQuotesResults,
         boostedRoutes,
         normalRoutes,
-        routesLoading,
+        candidateRoutes.loading,
         isBoostedQuotesLoading,
         isNormalQuotesLoading,
         refetchBoosted,
         refetchNormal,
         routerType,
+        kycQuoteState,
     ]);
 
     return trade;

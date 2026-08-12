@@ -1,4 +1,4 @@
-import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
+import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME, enabledModules } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -7,14 +7,19 @@ import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
+import { KycStatus } from "@/types/kyc";
 import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/integral-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
+import KYCModule from "@/modules/KYCModule";
+
+const { KycVerificationModal } = KYCModule.components;
+const { usePoolKycRequirement, useKycIdentity } = KYCModule.hooks;
 
 interface AddLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -39,6 +44,10 @@ export const AddLiquidityButton = ({
     disabled = false,
 }: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
+    const [isKycModalOpen, setIsKycModalOpen] = useState(false);
+    const kycRequirement = usePoolKycRequirement(poolAddress);
+    const isKycRequired = enabledModules.KYCModule && Boolean(kycRequirement.isKycRequired);
+    const kycIdentity = useKycIdentity(isKycRequired);
 
     const { open } = useAppKit();
 
@@ -151,6 +160,41 @@ export const AddLiquidityButton = ({
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+
+    if (enabledModules.KYCModule && kycRequirement.isLoading)
+        return <Button disabled><Loader /></Button>;
+
+    if (enabledModules.KYCModule && kycRequirement.isError)
+        return (
+            <Button variant="outline" onClick={() => kycRequirement.refetch()}>
+                Retry KYC check
+            </Button>
+        );
+
+    if (isKycRequired && !kycRequirement.canAddLiquidity)
+        return (
+            <>
+                <Button
+                    variant="primary"
+                    onClick={() => setIsKycModalOpen(true)}
+                    disabled={kycIdentity.isLoading || kycIdentity.status === KycStatus.VERIFIED}
+                >
+                    {kycIdentity.isLoading
+                        ? <Loader />
+                        : kycIdentity.status === KycStatus.IDENTITY_REQUIRED
+                          ? "Deploy Onchain ID"
+                          : kycIdentity.status === KycStatus.VERIFIED
+                            ? "KYC access required"
+                            : "Complete verification"}
+                </Button>
+                <KycVerificationModal
+                    open={isKycModalOpen}
+                    onOpenChange={setIsKycModalOpen}
+                    identity={kycIdentity}
+                    onStatusChange={() => void kycRequirement.refetch()}
+                />
+            </>
+        );
 
     if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 

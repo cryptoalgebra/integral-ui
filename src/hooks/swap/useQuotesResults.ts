@@ -1,8 +1,9 @@
 import { quoterV2ABI, QUOTER_V2 } from "config";
-import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/integral-sdk";
+import { Currency, CurrencyAmount, encodeRouteToPath, Route } from "@cryptoalgebra/integral-sdk";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useChainId, useReadContracts } from "wagmi";
-import { useAllRoutes } from "./useAllRoutes";
+import { useAccount, useChainId, usePublicClient } from "wagmi";
+import { Hex } from "viem";
 
 type QuoteResult = [
     bigint[], // amountOutList
@@ -10,59 +11,76 @@ type QuoteResult = [
     bigint[], // sqrtPriceX96AfterList
     number[], // initializedTicksCrossedList
     bigint, // gasEstimate
-    number[] // feeList
+    number[], // feeList
 ];
 
 export function useQuotesResults({
     exactInput,
     amountIn,
     amountOut,
-    currencyIn,
-    currencyOut,
+    routes,
 }: {
     exactInput: boolean;
     amountIn?: CurrencyAmount<Currency>;
     amountOut?: CurrencyAmount<Currency>;
-    currencyIn?: Currency;
-    currencyOut?: Currency;
+    routes: Route<Currency, Currency>[];
 }): {
-    data: QuoteResult[];
+    data: (QuoteResult | undefined)[];
     isLoading: boolean;
     refetch: () => void;
 } {
+    const { address: walletAddress } = useAccount();
     const chainId = useChainId();
-    const { normalRoutes: routes, loading: routesLoading } = useAllRoutes(
-        exactInput ? amountIn?.currency : currencyIn,
-        !exactInput ? amountOut?.currency : currencyOut
-    );
+    const publicClient = usePublicClient();
+    const quoterAddress = QUOTER_V2[chainId];
+    const amount = exactInput ? amountIn : amountOut;
 
-    const quoteInputs = useMemo(() => {
-        return routes.map((route) => [
-            encodeRouteToPath(route, !exactInput),
-            exactInput
-                ? amountIn
-                    ? `0x${amountIn.quotient.toString(16)}`
-                    : undefined
-                : amountOut
-                ? `0x${amountOut.quotient.toString(16)}`
-                : undefined,
-        ]);
-    }, [amountIn, amountOut, routes, exactInput]);
+    const quoteInputs = useMemo(
+        () => routes.map((route) => [encodeRouteToPath(route, !exactInput) as Hex, BigInt(amount?.quotient.toString() ?? 0)] as const),
+        [amount, exactInput, routes],
+    );
+    const quoteKey = useMemo(() => quoteInputs.map(([path, quoteAmount]) => `${path}:${quoteAmount.toString()}`), [quoteInputs]);
 
     const functionName = exactInput ? "quoteExactInput" : "quoteExactOutput";
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ["direct-quotes", chainId, quoterAddress, walletAddress, functionName, quoteKey],
+        queryFn: async () => {
+            if (!publicClient || !quoterAddress) return [];
 
-    const { data: quotesResults, isLoading, refetch } = useReadContracts({
-        contracts: quoteInputs.map((quote: any) => ({
-            address: QUOTER_V2[chainId],
-            abi: quoterV2ABI,
-            functionName: functionName,
-            args: quote,
-        })),
+            return Promise.all(
+                quoteInputs.map(
+                    async (quote): Promise<QuoteResult | undefined> => {
+                        try {
+                            const simulation = exactInput
+                                ? await publicClient.simulateContract({
+                                      account: walletAddress,
+                                      address: quoterAddress,
+                                      abi: quoterV2ABI,
+                                      functionName: "quoteExactInput",
+                                      args: quote,
+                                  })
+                                : await publicClient.simulateContract({
+                                      account: walletAddress,
+                                      address: quoterAddress,
+                                      abi: quoterV2ABI,
+                                      functionName: "quoteExactOutput",
+                                      args: quote,
+                                  });
+
+                            return simulation.result as QuoteResult;
+                        } catch {
+                            return undefined;
+                        }
+                    },
+                ),
+            );
+        },
+        enabled: Boolean(publicClient && quoterAddress && amount && quoteInputs.length > 0),
     });
 
     return {
-        data: (quotesResults?.map((d) => d?.result) as unknown) as QuoteResult[],
-        isLoading: isLoading || routesLoading,
-        refetch,
+        data: data ?? [],
+        isLoading,
+        refetch: () => void refetch(),
     };
 }

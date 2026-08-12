@@ -13,6 +13,10 @@ import { TradeState } from "@/types/trade-state";
 import { cn } from "@/utils";
 import { SwapRouteModal } from "../SwapRouteModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import KYCModule from "@/modules/KYCModule";
+import { enabledModules } from "config";
+
+const { useTradeKycGate } = KYCModule.hooks;
 
 const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +33,8 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
     const { fee, fees } = useOverrideFee(trade);
 
     const isSmartTrade = trade && "routes" in trade;
+    const kycGate = useTradeKycGate(trade);
+    const kycPoolAddresses = enabledModules.KYCModule ? kycGate.requiredPoolAddresses || [] : [];
 
     const priceImpact = useMemo(() => {
         if (!trade) return undefined;
@@ -108,6 +114,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                                     routes={isSmartTrade ? trade?.routes : trade.swaps.map((swap) => swap.route)}
                                     fees={fees}
                                     tradeType={trade?.tradeType}
+                                    kycPoolAddresses={kycPoolAddresses}
                                 >
                                     <button
                                         onClick={() => setIsOpen(true)}

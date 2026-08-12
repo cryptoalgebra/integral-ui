@@ -1,6 +1,24 @@
 export const quoterV2ABI = [
     {
         inputs: [
+            { internalType: "address", name: "token", type: "address" },
+            { internalType: "address", name: "account", type: "address" },
+        ],
+        name: "NotAllowed",
+        type: "error",
+    },
+    {
+        inputs: [{ internalType: "address", name: "router", type: "address" }],
+        name: "RouterNotAllowed",
+        type: "error",
+    },
+    {
+        inputs: [],
+        name: "RouterMsgSenderCallFailed",
+        type: "error",
+    },
+    {
+        inputs: [
             {
                 internalType: "address",
                 name: "_factory",

@@ -21,11 +21,18 @@ import {
     binaryLMSRMarketManagerABI,
     priceConvergenceVaultABI,
     priceConvergenceVaultDepositGuardABI,
+    gatewayABI,
+    identityABI,
+    iidFactoryABI,
+    ALLOWLIST_CHECKER_REGISTRY_ABI,
+    ONCHAIN_ID_ALLOWLIST_CHECKER_ABI,
 } from "./abis";
 import {
     ALGEBRA_ETERNAL_FARMING,
     ALGEBRA_FACTORY,
     BINARY_LMSR_MARKET_MANAGER,
+    GATEWAY,
+    IID_FACTORY,
     FARMING_CENTER,
     LIMIT_ORDER_MANAGER,
     NONFUNGIBLE_POSITION_MANAGER,
@@ -35,6 +42,8 @@ import {
     SWAP_ROUTER,
     VOTER,
     VOTING_ESCROW,
+    ALLOWLIST_CHECKER_REGISTRY,
+    ONCHAIN_ID_ALLOWLIST_CHECKER,
 } from "./contract-addresses";
 import { defineChain } from "viem";
 import { DEFAULT_CHAIN_ID } from "./default-chain";
@@ -94,6 +103,11 @@ const rawContracts = [
     { name: "BinaryLMSRMarketManager", abi: binaryLMSRMarketManagerABI },
     { name: "PriceConvergenceVault", abi: priceConvergenceVaultABI },
     { name: "PriceConvergenceVaultDepositGuard", abi: priceConvergenceVaultDepositGuardABI },
+    { name: "Gateway", abi: gatewayABI },
+    { name: "Identity", abi: identityABI },
+    { name: "IIDFactory", abi: iidFactoryABI },
+    { name: "AllowlistCheckerRegistry", abi: ALLOWLIST_CHECKER_REGISTRY_ABI },
+    { name: "OnchainIdAllowlistChecker", abi: ONCHAIN_ID_ALLOWLIST_CHECKER_ABI },
 ];
 
 const contractAddresses = {
@@ -109,6 +123,10 @@ const contractAddresses = {
     VotingEscrow: VOTING_ESCROW,
     SecurityRegistry: SECURITY_REGISTRY,
     BinaryLMSRMarketManager: BINARY_LMSR_MARKET_MANAGER,
+    Gateway: GATEWAY,
+    IIDFactory: IID_FACTORY,
+    AllowlistCheckerRegistry: ALLOWLIST_CHECKER_REGISTRY,
+    OnchainIdAllowlistChecker: ONCHAIN_ID_ALLOWLIST_CHECKER,
 };
 
 export const wagmiContracts: ContractConfig[] = rawContracts

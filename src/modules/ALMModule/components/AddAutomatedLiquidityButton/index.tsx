@@ -1,11 +1,12 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { DEFAULT_CHAIN_NAME, enabledModules } from "config";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
+import { KycStatus } from "@/types/kyc";
 import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/integral-sdk";
 import { deposit, depositNativeToken, SupportedChainId, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useCallback, useEffect, useState } from "react";
@@ -14,6 +15,10 @@ import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
 import { Address } from "viem";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { ExtendedVault, useUserALMVaultsByPool } from "../../hooks";
+import KYCModule from "@/modules/KYCModule";
+
+const { KycVerificationModal } = KYCModule.components;
+const { usePoolKycRequirement, useKycIdentity } = KYCModule.hooks;
 
 interface AddAutomatedLiquidityButtonProps {
     vault: ExtendedVault | undefined;
@@ -23,6 +28,10 @@ interface AddAutomatedLiquidityButtonProps {
 
 export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutomatedLiquidityButtonProps) => {
     const { address: account } = useAccount();
+    const [isKycModalOpen, setIsKycModalOpen] = useState(false);
+    const kycRequirement = usePoolKycRequirement(poolId as Address | undefined);
+    const isKycRequired = enabledModules.KYCModule && Boolean(kycRequirement.isKycRequired);
+    const kycIdentity = useKycIdentity(isKycRequired);
 
     const slippage = useUserSlippageToleranceWithDefault(new Percent(50, 1_000));
     const chainId = useChainId();
@@ -115,6 +124,41 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     if (isWrongChain)
         return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+
+    if (enabledModules.KYCModule && kycRequirement.isLoading)
+        return <Button disabled><Loader /></Button>;
+
+    if (enabledModules.KYCModule && kycRequirement.isError)
+        return (
+            <Button variant="outline" onClick={() => kycRequirement.refetch()}>
+                Retry KYC check
+            </Button>
+        );
+
+    if (isKycRequired && !kycRequirement.canAddLiquidity)
+        return (
+            <>
+                <Button
+                    variant="primary"
+                    onClick={() => setIsKycModalOpen(true)}
+                    disabled={kycIdentity.isLoading || kycIdentity.status === KycStatus.VERIFIED}
+                >
+                    {kycIdentity.isLoading
+                        ? <Loader />
+                        : kycIdentity.status === KycStatus.IDENTITY_REQUIRED
+                          ? "Deploy Onchain ID"
+                          : kycIdentity.status === KycStatus.VERIFIED
+                            ? "KYC access required"
+                            : "Complete verification"}
+                </Button>
+                <KycVerificationModal
+                    open={isKycModalOpen}
+                    onOpenChange={setIsKycModalOpen}
+                    identity={kycIdentity}
+                    onStatusChange={() => void kycRequirement.refetch()}
+                />
+            </>
+        );
 
     // if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 

@@ -12,3 +12,4 @@ export * from "./ve33";
 export * from "./omegaQuoter";
 export * from "./prediction";
 export * from "./nav-hook";
+export * from "./kyc";
