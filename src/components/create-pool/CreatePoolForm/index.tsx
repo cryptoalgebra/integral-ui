@@ -2,13 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { useEffect, useMemo, useState } from "react";
 import { SwapField } from "@/types/swap-field";
-import {
-    computePoolAddress,
-    computeCustomPoolAddress,
-    NonfungiblePositionManager,
-    ADDRESS_ZERO,
-    INITIAL_POOL_FEE,
-} from "@cryptoalgebra/integral-sdk";
+import { computePoolAddress, NonfungiblePositionManager, ADDRESS_ZERO, INITIAL_POOL_FEE } from "@cryptoalgebra/integral-sdk";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useAccount, useChainId } from "wagmi";
 import { useDerivedMintInfo, useMintState } from "@/state/mintStore";
@@ -21,7 +15,6 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
 import { useWriteAlgebraCustomPluginFactoryCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
-import { isDefined } from "@/utils";
 import { FormContainer } from "@/components/common/FormContainer";
 
 type PoolDeployerType = typeof CUSTOM_POOL_DEPLOYER_TITLES[keyof typeof CUSTOM_POOL_DEPLOYER_TITLES];
@@ -54,9 +47,6 @@ const CreatePoolForm = () => {
     const customPoolDeployerAddresses = useMemo(
         () => ({
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_DYNAMIC[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.BASE_03]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.BASE_1]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.NAV_HOOK]: CUSTOM_POOL_DEPLOYER_ADDRESSES.NAV_HOOK[chainid],
         }),
         [chainid],
     );
@@ -69,40 +59,11 @@ const CreatePoolForm = () => {
               }) as Address)
             : undefined;
 
-    const customPoolsAddresses =
-        enabledModules.CustomPoolsModule && areCurrenciesSelected && !isSameToken
-            ? [
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_03[chainid],
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE_1[chainid],
-                  CUSTOM_POOL_DEPLOYER_ADDRESSES.NAV_HOOK[chainid],
-              ]
-                  .filter(isDefined)
-                  .map(
-                      (customPoolDeployer) =>
-                          computeCustomPoolAddress({
-                              tokenA: currencyA.wrapped,
-                              tokenB: currencyB.wrapped,
-                              customPoolDeployer,
-                          }) as Address,
-                  )
-            : [];
-
     const [poolState] = usePool(poolAddress);
 
-    // TODO
-    // Base 0.3%
-    const [poolState1] = usePool(customPoolsAddresses[1]);
-    // Base 1%
-    const [poolState2] = usePool(customPoolsAddresses[2]);
-    // NAV Hook
-    const [poolState3] = usePool(customPoolsAddresses[3]);
-
     const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_DYNAMIC;
-    const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_03;
-    const isPool2Exists = poolState2 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE_1;
-    const isPool3Exists = poolState3 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.NAV_HOOK;
 
-    const isSelectedCustomPoolExists = isPoolExists || isPool1Exists || isPool2Exists || isPool3Exists;
+    const isSelectedCustomPoolExists = isPoolExists;
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -173,7 +134,7 @@ const CreatePoolForm = () => {
 
         return () => {
             selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-            selectCurrency(SwapField.OUTPUT, TOKENS[chainid].USDC.address as Address);
+            selectCurrency(SwapField.OUTPUT, TOKENS[chainid].USDG.address as Address);
             typeStartPriceInput("");
         };
     }, [chainid, selectCurrency, typeStartPriceInput]);
