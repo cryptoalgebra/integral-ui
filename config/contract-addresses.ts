@@ -65,7 +65,7 @@ export const BINARY_LMSR_MARKET_MANAGER: Record<number, Address> = {
 export const PRICE_CONVERGENCE_VAULT_BY_POOL: Record<number, Record<Address, Address>> = {
     [ChainId.Base]: {
         // pool address -> vault address
-        "0x677deB381d39E44dE0641EaCB6E36637318043F7": "0x72BB034960A3D3bd37D09DDfeE7F2EB6B6b28Cb4",
+        "0x677deB381d39E44dE0641EaCB6E36637318043F7": "0xD659008589EFb620A9B9b72715d9B7Bf8717aD23",
     },
 };
 export const PRICE_CONVERGENCE_VAULT_DEPOSIT_GUARD_BY_POOL: Record<number, Record<Address, Address>> = {
