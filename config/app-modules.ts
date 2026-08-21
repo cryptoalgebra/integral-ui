@@ -19,7 +19,7 @@ export const enabledModules: Record<AppFeatureModule, boolean> = {
     [AppFeatureModule.Farming]: true,
     [AppFeatureModule.LimitOrders]: false,
     [AppFeatureModule.ALM]: false,
-    [AppFeatureModule.NAVHook]: false,
+    [AppFeatureModule.NAVHook]: true,
     [AppFeatureModule.VE_33]: false,
     [AppFeatureModule.BoostedPools]: false,
     [AppFeatureModule.Prediction]: false,

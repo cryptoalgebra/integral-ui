@@ -76,7 +76,7 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                                 {fee !== undefined ? (
                                     <span className="text-text-200">
                                         {dynamicFeePlugin && "Dynamic "}
-                                        Fee: <span className="text-white font-medium">{fee?.toFixed(2)}%</span>
+                                        Fee: <span className="text-text-100 font-medium">{fee?.toFixed(2)}%</span>
                                     </span>
                                 ) : (
                                     <Loader size={14} />
@@ -120,10 +120,10 @@ const SwapParams = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
                         />
                         <SwapDetailRow
                             label={trade.tradeType === TradeType.EXACT_INPUT ? "Min. received" : "Max. sent"}
-                            value={<span className="text-white">{minimumAmountOut}</span>}
+                            value={<span className="text-text-100">{minimumAmountOut}</span>}
                         />
                         <SwapDetailRow label="Price impact" value={<PriceImpact priceImpact={priceImpact} />} />
-                        <SwapDetailRow label="Slippage" value={<span className="text-white">{allowedSlippage.toFixed(2)}%</span>} />
+                        <SwapDetailRow label="Slippage" value={<span className="text-text-100">{allowedSlippage.toFixed(2)}%</span>} />
                     </div>
                 </div>
             )}

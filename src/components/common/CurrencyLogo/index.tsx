@@ -3,6 +3,7 @@ import React from "react";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import USDTLogo from "@/assets/tokens/usdt.png";
 import EtherLogo from "@/assets/tokens/ether.svg";
+import MicroStrategyLogo from "@/assets/tokens/microstrategy.png";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -20,21 +21,25 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "ETH",
         logo: EtherLogo,
     },
-    ["0xa0E430870c4604CcfC7B38Ca7845B1FF653D0ff1".toLowerCase()]: {
+    ["0xa0E430870c4604CcfC7B38Ca7845B1FF653D0ff1"]: {
         symbol: "ETH",
         logo: EtherLogo,
     },
-    [TOKENS[ChainId.Base].USDC.address.toLowerCase()]: {
+    [TOKENS[ChainId.Base].USDC.address]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
-    [TOKENS[ChainId.Base].USDT.address.toLowerCase()]: {
+    [TOKENS[ChainId.Base].USDT.address]: {
         symbol: "USDT",
         logo: USDTLogo,
     },
-    ["0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A".toLowerCase()]: {
+    ["0x7BfA7C4f149E7415b73bdeDfe609237e29CBF34A"]: {
         symbol: "USDC",
         logo: USDCLogo,
+    },
+    ["0xFF05E1bD696900dc6A52CA35Ca61Bb1024eDa8e2"]: {
+        symbol: "wtMSTR",
+        logo: MicroStrategyLogo,
     },
 };
 

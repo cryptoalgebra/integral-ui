@@ -103,7 +103,7 @@ const PoolHeader = ({ currencyA, currencyB, poolId, poolStatus, stats, showCreat
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-card-border bg-bg-100/60 p-3 md:grid-cols-4 md:gap-3">
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-card-border bg-card p-3 md:grid-cols-4 md:gap-3">
                 {headerStats.map(({ label, value }) => (
                     <div key={label} className="flex min-h-16 flex-col items-start justify-center rounded-xl px-2 py-1 text-left">
                         <span className="text-sm font-semibold text-text-300">{label}</span>

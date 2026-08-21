@@ -1504,10 +1504,10 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-sdk/-/clamm-sdk-1.0.0.tgz#6da87bddeba7ec28f12e2adb9b94e37c676240f0"
-  integrity sha512-1MaSMwWeH6zsKj6Ps3FP41agNgicaakA0DTN24UYMsj8yQWlxW/NPj+hyOVudwiE27frDuZyCID4cHSFDcjTPQ==
+"@cryptoalgebra/integral-sdk@npm:@cryptoalgebra/clamm-sdk@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-sdk/-/clamm-sdk-1.0.1.tgz#44d47fe3776ec0afbf377e16386203815021f166"
+  integrity sha512-61ReDcNCnMnIg/NEFbTvOlBisHvUwJ1uhYytsCPC2EsGKIBrMNAwmjGo0bU+do9NnfjQFQOqmekg5y6zkyCQSQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
